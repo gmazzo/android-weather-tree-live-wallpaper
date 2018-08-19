@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/location">
+        <CheckBoxPreference android:persistent="true" android:title="@string/use_curr_loc" android:key="location_src" android:summary="@string/use_curr_loc_summary" android:defaultValue="true" />
+        <PreferenceScreen android:persistent="true" android:title="@string/specify_loc" android:key="weather_city" android:summary="@string/specify_loc_summary" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/title_todPreferences">
+        <CheckBoxPreference android:title="@string/pref_usetimeofday" android:key="pref_usetimeofday" android:summary="@string/pref_usetimeofday_desc" android:defaultValue="false" />
+        <PreferenceScreen android:title="@string/title_timeofdaysettings" android:dependency="pref_usetimeofday">
+            <CheckBoxPreference android:title="@string/pref_superfastday" android:key="pref_superfastday" android:summary="@string/pref_superfastday_desc" android:defaultValue="false" />
+        </PreferenceScreen>
+        <CheckBoxPreference android:title="@string/pref_usesun" android:key="pref_usesun" android:defaultValue="true" />
+        <CheckBoxPreference android:title="@string/pref_usemoon" android:key="pref_usemoon" android:defaultValue="true" />
+    </PreferenceCategory>
+</PreferenceScreen>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:id="@id/gamesurfaceview" android:layout_width="fill_parent" android:layout_height="fill_parent" />
+    <LinearLayout android:gravity="center_horizontal" android:orientation="vertical" android:id="@id/ButtonLayoutBottom" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="4.0dip" android:layout_alignParentBottom="true">
+        <LinearLayout android:gravity="center_horizontal" android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="2.0dip">
+            <Button android:id="@id/button_1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="1" />
+            <Button android:id="@id/button_2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="2" />
+            <Button android:id="@id/button_3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="3" />
+            <Button android:id="@id/button_4" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="4" />
+            <Button android:id="@id/button_5" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="5" />
+        </LinearLayout>
+        <LinearLayout android:gravity="center_horizontal" android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content">
+            <Button android:id="@id/button_clear" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="clear" />
+            <Button android:id="@id/button_cloudy" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="cloudy" />
+            <Button android:id="@id/button_rain" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="rain" />
+            <Button android:id="@id/button_storm" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="storm" />
+            <Button android:id="@id/button_snow" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="snowy" />
+            <Button android:id="@id/button_fog" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="fog" />
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>

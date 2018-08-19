@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wallpaper android:description="@string/description" android:settingsActivity="com.hm.weather.WallpaperSettings" android:thumbnail="@drawable/thumbnail"
+  xmlns:android="http://schemas.android.com/apk/res/android" />

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <View android:id="@id/preview" android:layout_width="48.0dip" android:layout_height="fill_parent" android:layout_marginLeft="8.0dip" android:layout_marginTop="8.0dip" android:layout_marginBottom="8.0dip" />
+        <LinearLayout android:orientation="vertical" android:padding="8.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content">
+            <SeekBar android:id="@id/hue" android:padding="4.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:max="119" android:progress="50" android:progressDrawable="@drawable/color_picker_hues" />
+            <SeekBar android:id="@id/saturation" android:padding="4.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:max="63" />
+            <SeekBar android:id="@id/value" android:padding="4.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:max="63" />
+            <SeekBar android:id="@id/alpha" android:padding="4.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:max="63" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

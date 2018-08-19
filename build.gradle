@@ -1,0 +1,35 @@
+buildscript {
+    repositories {
+        jcenter()
+        google()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.1.4'
+    }
+}
+apply plugin: 'com.android.application'
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+android {
+    compileSdkVersion 23
+
+    defaultConfig {
+        applicationId 'com.hm.weather'
+        minSdkVersion 9
+        targetSdkVersion 21
+        versionCode 1
+        versionName "1.0"
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+}
+
+dependencies {
+    androidTestImplementation fileTree(dir: 'libs', include: '*.jar')
+}
