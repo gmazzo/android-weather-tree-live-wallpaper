@@ -2,18 +2,17 @@ package com.hm.weather;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.net.Uri;
+
 import com.hm.weather.engine.GlobalRand;
 import com.hm.weather.engine.GlobalTime;
 import com.hm.weather.engine.Mesh;
 import com.hm.weather.engine.MeshManager;
 import com.hm.weather.engine.TextureManager;
-import com.hm.weather.engine.Thing;
 import com.hm.weather.engine.ThingManager;
 import com.hm.weather.engine.Vector3;
 import com.hm.weather.engine.Vector4;
 import com.hm.weather.sky_manager.TimeOfDay;
+
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
@@ -29,11 +28,7 @@ public class SceneClear extends SceneBase {
     protected static String[] validBalloonTextures = new String[]{"bal_red", "bal_blue", "bal_yellow", "bal_green"};
     protected int batteryLevel;
     protected float nextUfoSpawn;
-    private int pref_numBalloons;
-    private boolean pref_redBalloonsOnly;
-    private boolean pref_smsBalloons;
     private boolean pref_ufoBattery;
-    private boolean pref_useBalloons;
     private boolean pref_useMoon;
     private boolean pref_useSun;
     private boolean pref_useUfo;
@@ -56,15 +51,11 @@ public class SceneClear extends SceneBase {
         this.batteryLevel = 100;
         this.pref_numClouds = 20;
         this.pref_numWisps = 6;
-        this.pref_numBalloons = 5;
         this.pref_useUfo = true;
         this.pref_ufoBattery = true;
         this.pref_useSun = true;
         this.pref_useMoon = true;
         this.nextUfoSpawn = WISPY_X_RANGE;
-        this.pref_useBalloons = false;
-        this.pref_smsBalloons = false;
-        this.pref_redBalloonsOnly = false;
         this.smsUnreadCount = 0;
         this.smsLastUnreadCheckTime = 0;
     }
@@ -80,20 +71,13 @@ public class SceneClear extends SceneBase {
             backgroundFromPrefs(prefs);
             windSpeedFromPrefs(prefs);
             numCloudsFromPrefs(prefs);
-            numBalloonsFromPrefs(prefs);
             todFromPrefs(prefs);
             this.pref_useSun = prefs.getBoolean("pref_usesun", true);
             this.pref_useMoon = prefs.getBoolean("pref_usemoon", true);
-            this.pref_useBalloons = prefs.getBoolean("pref_useballoons", false);
-            this.pref_smsBalloons = prefs.getBoolean("pref_smsballoons", false);
-            this.pref_redBalloonsOnly = prefs.getBoolean("pref_redballoonsonly", false);
             this.pref_useUfo = prefs.getBoolean("pref_useufo", false);
             this.pref_ufoBattery = prefs.getBoolean("pref_ufobattery", true);
             if (key != null && (key.contains("numclouds") || key.contains("windspeed") || key.contains("numwisps"))) {
                 spawnClouds(true);
-            }
-            if (!this.pref_useBalloons) {
-                clearBalloons();
             }
             if (key != null && key.contains("usesun")) {
                 spawnSun();
@@ -132,29 +116,6 @@ public class SceneClear extends SceneBase {
         this.mMeshManager.createMeshFromFile(gl10, "trees_overlay_terrain");
     }
 
-    private void checkBalloonCount() {
-        if (this.pref_useBalloons) {
-            long currentTime = this.mGlobalTime.msTimeCurrent;
-            if (!this.pref_smsBalloons) {
-                this.smsUnreadCount = this.pref_numBalloons;
-            } else if (currentTime > this.smsLastUnreadCheckTime + 10000) {
-                try {
-                    Cursor localCursor = this.mContext.getContentResolver().query(Uri.parse("content://sms/inbox"), null, "read = 0", null, null);
-                    this.smsUnreadCount = localCursor.getCount();
-                    localCursor.deactivate();
-                    localCursor.close();
-                } catch (Exception e) {
-                }
-                this.smsLastUnreadCheckTime = currentTime;
-            }
-            if (this.smsUnreadCount < 0) {
-                this.smsUnreadCount = 0;
-            } else {
-                manageBalloons(this.smsUnreadCount);
-            }
-        }
-    }
-
     private void checkSpawnUFO(float timeDelta) {
         if (this.pref_useUfo && !this.pref_ufoBattery) {
             this.nextUfoSpawn -= timeDelta;
@@ -185,14 +146,6 @@ public class SceneClear extends SceneBase {
         }
     }
 
-    private void spawnBallonAt(Vector3 pos) {
-        spawnBalloonAt(pos, this.pref_redBalloonsOnly);
-    }
-
-    public void numBalloonsFromPrefs(SharedPreferences prefs) {
-        this.pref_numBalloons = Integer.valueOf(prefs.getString("pref_ballooncounttarget", "5")).intValue();
-    }
-
     public void backgroundFromPrefs(SharedPreferences prefs) {
         String bg = "bg3";
         if (!bg.equals(this.pref_background)) {
@@ -209,77 +162,12 @@ public class SceneClear extends SceneBase {
         this.pref_todColors[3].set(prefs.getString(BaseWallpaperSettings.PREF_LIGHT_COLOR4, "1 0.85 0.75 1"), 0.0f, 1.0f);
     }
 
-    private void clearBalloons() {
-        this.mThingManager.clearByTargetname("balloon");
-    }
-
-    private void manageBalloons(int desiredCount) {
-        int i;
-        if (desiredCount > 12) {
-            desiredCount = 12;
-        }
-        Thing[] balloons = this.mThingManager.getByTargetname("balloon");
-        int numActive = 0;
-        for (Thing thing : balloons) {
-            if (((ThingBalloon) thing).isActive()) {
-                numActive++;
-            }
-        }
-        int diff;
-        if (numActive < desiredCount) {
-            diff = desiredCount - numActive;
-            for (i = 0; i < diff; i++) {
-                spawnBalloon(this.pref_redBalloonsOnly);
-            }
-        } else if (numActive > desiredCount) {
-            diff = numActive - desiredCount;
-            for (i = 0; i < diff; i++) {
-                ((ThingBalloon) balloons[i]).deactivate();
-            }
-        }
-    }
-
     private void removeMoon() {
         this.mThingManager.clearByTargetname("moon");
     }
 
     private void removeSun() {
         this.mThingManager.clearByTargetname("sun");
-    }
-
-    private void spawnBalloon(boolean redOnly) {
-        ThingBalloon thingballoon = new ThingBalloon();
-        if (redOnly) {
-            thingballoon.texName = "bal_red";
-        } else {
-            thingballoon.texName = validBalloonTextures[GlobalRand.intRange(0, validBalloonTextures.length)];
-        }
-        float r_c = GlobalRand.floatRange(0.0f, 1.0f);
-        float y = 87.5f + ((CLOUD_START_DISTANCE * GlobalRand.floatRange(0.0f, 1.0f)) * 0.5f);
-        thingballoon.origin.x = GlobalRand.floatRange(-15.0f, 15.0f);
-        thingballoon.origin.y = y;
-        thingballoon.origin.z = BALLOON_START_ALTITUDE;
-        float color = 1.0f - (r_c * 0.5f);
-        thingballoon.color.set(color, color, color, color);
-        thingballoon.goalAltitude = GlobalRand.floatRange(9.900001f, WISPY_Z_RANGE);
-        this.mThingManager.add(thingballoon);
-    }
-
-    private void spawnBalloonAt(Vector3 pos, boolean redOnly) {
-        ThingBalloon thingballoon = new ThingBalloon();
-        if (redOnly) {
-            thingballoon.texName = "bal_red";
-        } else {
-            thingballoon.texName = validBalloonTextures[GlobalRand.intRange(0, validBalloonTextures.length)];
-        }
-        float y = 87.5f + ((CLOUD_START_DISTANCE * GlobalRand.floatRange(0.0f, 1.0f)) * 0.5f);
-        thingballoon.origin.x = pos.x;
-        thingballoon.origin.y = y;
-        thingballoon.origin.z = pos.z;
-        float c = 1.0f - (GlobalRand.floatRange(0.0f, 1.0f) * 0.5f);
-        thingballoon.color.set(c, c, c, c);
-        thingballoon.goalAltitude = GlobalRand.floatRange(9.900001f, WISPY_Z_RANGE);
-        this.mThingManager.add(thingballoon);
     }
 
     private void spawnMoon() {
