@@ -1,31 +1,25 @@
 buildscript {
+    ext {
+        kotlinVersion = '1.2.60'
+        appCompatVersion = '27.1.1'
+    }
     repositories {
         jcenter()
         google()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.1.4'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     }
 }
 
-apply plugin: 'com.android.application'
-
-repositories {
-    mavenCentral()
-    jcenter()
-}
-
-android {
-    compileSdkVersion 23
-
-    defaultConfig {
-        minSdkVersion 9
-        targetSdkVersion 21
-
-        versionCode 1
-        versionName '1.0'
+allprojects {
+    repositories {
+        google()
+        jcenter()
     }
 }
 
-dependencies {
+task clean(type: Delete) {
+    delete rootProject.buildDir
 }
