@@ -15,9 +15,11 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+
 import com.hm.weather.sky_manager.GeoInfoManager;
 import com.hm.weather.sky_manager.WeatherCondition;
 import com.hm.weather.sky_manager.WeatherCondition.CityInfo;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 

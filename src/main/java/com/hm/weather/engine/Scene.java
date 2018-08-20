@@ -2,7 +2,9 @@ package com.hm.weather.engine;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+
 import com.hm.weather.sky_manager.TimeOfDay;
+
 import javax.microedition.khronos.opengles.GL10;
 
 public abstract class Scene {

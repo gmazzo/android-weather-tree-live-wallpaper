@@ -2,6 +2,7 @@ package com.luckycatlabs.sunrisesunset;
 
 import com.luckycatlabs.sunrisesunset.calculator.SolarEventCalculator;
 import com.luckycatlabs.sunrisesunset.dto.Location;
+
 import java.util.Calendar;
 import java.util.TimeZone;
 

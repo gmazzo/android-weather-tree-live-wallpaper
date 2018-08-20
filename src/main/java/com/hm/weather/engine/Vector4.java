@@ -1,6 +1,7 @@
 package com.hm.weather.engine;
 
 import android.graphics.Color;
+
 import java.io.Serializable;
 
 public class Vector4 implements Serializable {

@@ -1,9 +1,8 @@
 package com.hm.weather;
 
-import android.service.wallpaper.WallpaperService.Engine;
 import android.util.Log;
 import android.view.SurfaceHolder;
-import com.hm.weather.GLWallpaperService.GLEngine;
+
 import com.hm.weather.sky_manager.WeatherCondition.WeatherResult;
 import com.hm.weather.sky_manager.WeatherInfoManager;
 import com.hm.weather.sky_manager.WeatherInfoManager.WeatherStateReceiver;

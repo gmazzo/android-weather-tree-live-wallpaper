@@ -2,6 +2,7 @@ package com.luckycatlabs.sunrisesunset.calculator;
 
 import com.luckycatlabs.sunrisesunset.Zenith;
 import com.luckycatlabs.sunrisesunset.dto.Location;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Calendar;

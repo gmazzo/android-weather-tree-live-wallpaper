@@ -7,16 +7,19 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.util.Log;
-import java.io.IOException;
-import java.net.URL;
-import java.util.List;
-import java.util.Locale;
-import javax.xml.parsers.SAXParserFactory;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.List;
+import java.util.Locale;
+
+import javax.xml.parsers.SAXParserFactory;
 
 public class GeoInfoManager {
     private static final String TAG = "GeoInfoManager";

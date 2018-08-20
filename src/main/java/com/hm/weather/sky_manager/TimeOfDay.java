@@ -1,6 +1,7 @@
 package com.hm.weather.sky_manager;
 
 import android.util.Log;
+
 import java.util.Calendar;
 
 public class TimeOfDay {

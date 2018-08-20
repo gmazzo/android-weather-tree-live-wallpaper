@@ -13,9 +13,11 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.preference.PreferenceManager;
 import android.util.Log;
+
 import com.hm.weather.sky_manager.WeatherCondition.ForcastCondition;
 import com.hm.weather.sky_manager.WeatherCondition.WeatherResult;
 import com.hm.weather.sky_manager.WeatherSettingsUtil.OnSettingChangeListener;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.TimeZone;

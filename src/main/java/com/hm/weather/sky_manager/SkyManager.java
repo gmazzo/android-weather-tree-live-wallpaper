@@ -2,8 +2,9 @@ package com.hm.weather.sky_manager;
 
 import android.location.Location;
 import android.util.Log;
-import com.hm.weather.BaseWallpaperSettings;
+
 import com.luckycatlabs.sunrisesunset.SunriseSunsetCalculator;
+
 import java.util.Calendar;
 import java.util.TimeZone;
 
@@ -38,14 +39,14 @@ public class SkyManager {
     }
 
     private static int DayOfYear() {
-        return Calendar.getInstance().get(6);
+        return Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
     }
 
     public static double GetMoonPhase() {
         Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(1);
-        int month = calendar.get(2);
-        int day = calendar.get(5);
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DATE);
         double transformedYear = ((double) year) - Math.floor((double) ((12 - month) / 10));
         int transformedMonth = month + 9;
         if (transformedMonth >= 12) {
@@ -68,7 +69,7 @@ public class SkyManager {
         TimeZone tz = TimeZone.getDefault();
         Calendar calendar = Calendar.getInstance(tz);
         switch (AnonymousClass1.$SwitchMap$com$hm$weather$sky_manager$SkyManager$SunEvent[event.ordinal()]) {
-            case BaseWallpaperSettings.REQUESTCODE_PREF_IMAGE /*1*/:
+            case 1:
                 Log.i(TAG, "GetSunriseEvent: tz=" + tz.getDisplayName() + " lat=" + lat + " lon=" + lon);
                 return SunriseSunsetCalculator.getSunrise(lat, lon, tz, calendar, degree);
             case 2:

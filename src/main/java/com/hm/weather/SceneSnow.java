@@ -2,6 +2,7 @@ package com.hm.weather;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+
 import com.hm.weather.engine.GlobalRand;
 import com.hm.weather.engine.GlobalTime;
 import com.hm.weather.engine.Mesh;
@@ -11,6 +12,7 @@ import com.hm.weather.engine.ThingManager;
 import com.hm.weather.engine.Vector3;
 import com.hm.weather.engine.Vector4;
 import com.hm.weather.sky_manager.TimeOfDay;
+
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
@@ -111,11 +113,11 @@ public class SceneSnow extends SceneBase {
     }
 
     private void todFromPrefs(SharedPreferences prefs) {
-        pref_useTimeOfDay = prefs.getBoolean(BaseWallpaperSettings.PREF_USE_TOD, false);
-        this.pref_todColors[0].set(prefs.getString(BaseWallpaperSettings.PREF_LIGHT_COLOR1, "0.5 0.5 0.75 1"), 0.0f, 1.0f);
-        this.pref_todColors[1].set(prefs.getString(BaseWallpaperSettings.PREF_LIGHT_COLOR2, "1 0.73 0.58 1"), 0.0f, 1.0f);
-        this.pref_todColors[2].set(prefs.getString(BaseWallpaperSettings.PREF_LIGHT_COLOR3, "1 1 1 1"), 0.0f, 1.0f);
-        this.pref_todColors[3].set(prefs.getString(BaseWallpaperSettings.PREF_LIGHT_COLOR4, "1 0.85 0.75 1"), 0.0f, 1.0f);
+        pref_useTimeOfDay = prefs.getBoolean(WallpaperSettings.PREF_USE_TOD, false);
+        this.pref_todColors[0].set(prefs.getString(WallpaperSettings.PREF_LIGHT_COLOR1, "0.5 0.5 0.75 1"), 0.0f, 1.0f);
+        this.pref_todColors[1].set(prefs.getString(WallpaperSettings.PREF_LIGHT_COLOR2, "1 0.73 0.58 1"), 0.0f, 1.0f);
+        this.pref_todColors[2].set(prefs.getString(WallpaperSettings.PREF_LIGHT_COLOR3, "1 1 1 1"), 0.0f, 1.0f);
+        this.pref_todColors[3].set(prefs.getString(WallpaperSettings.PREF_LIGHT_COLOR4, "1 0.85 0.75 1"), 0.0f, 1.0f);
     }
 
     private void snowDensityFromPrefs(SharedPreferences prefs) {

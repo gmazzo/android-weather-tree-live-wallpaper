@@ -4,12 +4,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.opengl.GLSurfaceView;
-import android.opengl.GLSurfaceView.Renderer;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -114,44 +114,44 @@ public class RenderSurfaceView extends GLSurfaceView {
         Editor e = PreferenceManager.getDefaultSharedPreferences(getContext()).edit();
         int ret = 2000;
         switch (type) {
-            case BaseWallpaperSettings.REQUESTCODE_PREF_IMAGE /*1*/:
-                e.putInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 2);
-                e.putInt(BaseWallpaperSettings.PREF_NUM_WISPS, 2);
+            case 1:
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 2);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 2);
                 ret = 2000;
                 break;
             case 2:
-                e.putInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 3);
-                e.putInt(BaseWallpaperSettings.PREF_NUM_WISPS, 3);
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 3);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 3);
                 ret = 2000;
                 break;
             case 3:
-                e.putInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 4);
-                e.putInt(BaseWallpaperSettings.PREF_NUM_WISPS, 4);
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 4);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 4);
                 ret = 2000;
                 break;
             case 4:
-                e.putInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 10);
-                e.putInt(BaseWallpaperSettings.PREF_NUM_WISPS, 5);
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 10);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
                 ret = 2000;
                 break;
             case 5:
-                e.putInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 5);
-                e.putInt(BaseWallpaperSettings.PREF_NUM_WISPS, 10);
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 5);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 10);
                 ret = 2000;
                 break;
             case 6:
-                e.putInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 15);
-                e.putInt(BaseWallpaperSettings.PREF_NUM_WISPS, 5);
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 15);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
                 ret = 2001;
                 break;
             case 7:
-                e.putInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 20);
-                e.putInt(BaseWallpaperSettings.PREF_NUM_WISPS, 5);
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 20);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
                 ret = 2001;
                 break;
             case 8:
-                e.putInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 25);
-                e.putInt(BaseWallpaperSettings.PREF_NUM_WISPS, 5);
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 25);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
                 ret = 2001;
                 break;
             case 9:
@@ -163,158 +163,158 @@ public class RenderSurfaceView extends GLSurfaceView {
             case 32:
                 break;
             case 11:
-                e.putInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 5);
-                e.putInt(BaseWallpaperSettings.PREF_NUM_WISPS, 10);
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 5);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 10);
                 ret = 2004;
                 break;
             case 12:
-                e.putInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 10);
-                e.putInt(BaseWallpaperSettings.PREF_NUM_WISPS, 5);
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 10);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
                 ret = 2005;
                 break;
             case 13:
-                e.putInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 20);
-                e.putInt(BaseWallpaperSettings.PREF_NUM_WISPS, 5);
-                e.putInt(BaseWallpaperSettings.PREF_RAIN_DENSITY, 6);
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 20);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
+                e.putInt(WallpaperSettings.PREF_RAIN_DENSITY, 6);
                 ret = 2005;
                 break;
             case 14:
-                e.putInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 15);
-                e.putInt(BaseWallpaperSettings.PREF_NUM_WISPS, 5);
-                e.putInt(BaseWallpaperSettings.PREF_RAIN_DENSITY, 5);
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 15);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
+                e.putInt(WallpaperSettings.PREF_RAIN_DENSITY, 5);
                 ret = 2005;
                 break;
             case 15:
-                e.putInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 20);
-                e.putInt(BaseWallpaperSettings.PREF_NUM_WISPS, 5);
-                e.putInt(BaseWallpaperSettings.PREF_RAIN_DENSITY, 10);
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 20);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
+                e.putInt(WallpaperSettings.PREF_RAIN_DENSITY, 10);
                 ret = 2002;
                 break;
             case 16:
-                e.putInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 25);
-                e.putInt(BaseWallpaperSettings.PREF_NUM_WISPS, 5);
-                e.putInt(BaseWallpaperSettings.PREF_RAIN_DENSITY, 7);
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 25);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
+                e.putInt(WallpaperSettings.PREF_RAIN_DENSITY, 7);
                 ret = 2002;
                 break;
             case 17:
-                e.putInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 15);
-                e.putInt(BaseWallpaperSettings.PREF_NUM_WISPS, 5);
-                e.putInt(BaseWallpaperSettings.PREF_RAIN_DENSITY, 6);
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 15);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
+                e.putInt(WallpaperSettings.PREF_RAIN_DENSITY, 6);
                 ret = 2002;
                 break;
             case 18:
-                e.putInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 20);
-                e.putInt(BaseWallpaperSettings.PREF_NUM_WISPS, 5);
-                e.putInt(BaseWallpaperSettings.PREF_RAIN_DENSITY, 10);
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 20);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
+                e.putInt(WallpaperSettings.PREF_RAIN_DENSITY, 10);
                 ret = 2005;
                 break;
             case 19:
-                e.putInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 20);
-                e.putInt(BaseWallpaperSettings.PREF_NUM_WISPS, 5);
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 20);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
                 ret = 2003;
                 break;
             case 20:
-                e.putInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 25);
-                e.putInt(BaseWallpaperSettings.PREF_NUM_WISPS, 5);
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 25);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
                 ret = 2003;
                 break;
             case 21:
-                e.putInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 15);
-                e.putInt(BaseWallpaperSettings.PREF_NUM_WISPS, 5);
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 15);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
                 ret = 2003;
                 break;
             case 22:
-                e.putInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 20);
-                e.putInt(BaseWallpaperSettings.PREF_NUM_WISPS, 5);
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 20);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
                 ret = 2003;
                 break;
             case 23:
-                e.putInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 25);
-                e.putInt(BaseWallpaperSettings.PREF_NUM_WISPS, 5);
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 25);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
                 ret = 2003;
                 break;
             case 24:
-                e.putInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 20);
-                e.putInt(BaseWallpaperSettings.PREF_NUM_WISPS, 5);
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 20);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
                 ret = 2003;
                 break;
             case 25:
-                e.putInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 20);
-                e.putInt(BaseWallpaperSettings.PREF_NUM_WISPS, 5);
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 20);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
                 ret = 2003;
                 break;
             case 26:
-                e.putInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 20);
-                e.putInt(BaseWallpaperSettings.PREF_NUM_WISPS, 5);
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 20);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
                 ret = 2005;
                 break;
             case 29:
-                e.putInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 20);
-                e.putInt(BaseWallpaperSettings.PREF_NUM_WISPS, 5);
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 20);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
                 ret = 2005;
                 break;
             case 33:
-                e.putInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 2);
-                e.putInt(BaseWallpaperSettings.PREF_NUM_WISPS, 2);
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 2);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 2);
                 ret = 2000;
                 break;
             case 34:
-                e.putInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 4);
-                e.putInt(BaseWallpaperSettings.PREF_NUM_WISPS, 4);
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 4);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 4);
                 ret = 2000;
                 break;
             case 35:
-                e.putInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 8);
-                e.putInt(BaseWallpaperSettings.PREF_NUM_WISPS, 5);
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 8);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
                 ret = 2001;
                 break;
             case 36:
-                e.putInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 15);
-                e.putInt(BaseWallpaperSettings.PREF_NUM_WISPS, 5);
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 15);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
                 ret = 2001;
                 break;
             case 37:
-                e.putInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 2);
-                e.putInt(BaseWallpaperSettings.PREF_NUM_WISPS, 20);
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 2);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 20);
                 ret = 2001;
                 break;
             case 38:
-                e.putInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 15);
-                e.putInt(BaseWallpaperSettings.PREF_NUM_WISPS, 5);
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 15);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
                 ret = 2001;
                 break;
             case 39:
-                e.putInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 15);
-                e.putInt(BaseWallpaperSettings.PREF_NUM_WISPS, 5);
-                e.putInt(BaseWallpaperSettings.PREF_RAIN_DENSITY, 6);
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 15);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
+                e.putInt(WallpaperSettings.PREF_RAIN_DENSITY, 6);
                 ret = 2005;
                 break;
             case 40:
-                e.putInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 25);
-                e.putInt(BaseWallpaperSettings.PREF_NUM_WISPS, 5);
-                e.putInt(BaseWallpaperSettings.PREF_RAIN_DENSITY, 7);
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 25);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
+                e.putInt(WallpaperSettings.PREF_RAIN_DENSITY, 7);
                 ret = 2005;
                 break;
             case 41:
-                e.putInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 15);
-                e.putInt(BaseWallpaperSettings.PREF_NUM_WISPS, 5);
-                e.putInt(BaseWallpaperSettings.PREF_RAIN_DENSITY, 6);
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 15);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
+                e.putInt(WallpaperSettings.PREF_RAIN_DENSITY, 6);
                 ret = 2002;
                 break;
             case 42:
-                e.putInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 25);
-                e.putInt(BaseWallpaperSettings.PREF_NUM_WISPS, 5);
-                e.putInt(BaseWallpaperSettings.PREF_RAIN_DENSITY, 7);
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 25);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
+                e.putInt(WallpaperSettings.PREF_RAIN_DENSITY, 7);
                 ret = 2002;
                 break;
             case 43:
-                e.putInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 20);
-                e.putInt(BaseWallpaperSettings.PREF_NUM_WISPS, 5);
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 20);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
                 ret = 2003;
                 break;
             case 44:
-                e.putInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 20);
-                e.putInt(BaseWallpaperSettings.PREF_NUM_WISPS, 5);
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 20);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
                 ret = 2003;
                 break;
             default:

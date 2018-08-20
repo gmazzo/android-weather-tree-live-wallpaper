@@ -18,8 +18,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
+
 import com.hm.weather.R;
 import com.hm.weather.sky_manager.WeatherCondition.WeatherResult;
+
 import java.util.HashMap;
 
 public class WeatherSettingsUtil implements OnCancelListener {

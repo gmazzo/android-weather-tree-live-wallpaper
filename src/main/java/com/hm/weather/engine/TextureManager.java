@@ -8,7 +8,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
 import android.opengl.GLUtils;
 
-import com.hm.weather.BaseWallpaperSettings;
+import com.hm.weather.WallpaperSettings;
 import com.hm.weather.engine.Utility.Logger;
 
 import java.io.DataInputStream;
@@ -379,6 +379,6 @@ public class TextureManager {
     }
 
     public void updatePrefs(boolean useMipMap) {
-        this.pref_useMipMaps = this.context.getSharedPreferences(BaseWallpaperSettings.PREFS_NAME, 0).getBoolean("pref_usemipmaps", useMipMap);
+        this.pref_useMipMaps = this.context.getSharedPreferences(WallpaperSettings.PREFS_NAME, 0).getBoolean("pref_usemipmaps", useMipMap);
     }
 }

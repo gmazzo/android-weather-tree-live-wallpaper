@@ -1,11 +1,13 @@
 package com.hm.weather;
 
 import android.util.Log;
+
 import com.hm.weather.engine.MeshManager;
 import com.hm.weather.engine.TextureManager;
 import com.hm.weather.engine.Thing;
 import com.hm.weather.engine.Vector4;
 import com.hm.weather.sky_manager.SkyManager;
+
 import javax.microedition.khronos.opengles.GL10;
 
 public class ThingMoon extends Thing {

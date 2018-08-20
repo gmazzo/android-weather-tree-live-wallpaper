@@ -6,6 +6,7 @@ import com.hm.weather.engine.MeshManager;
 import com.hm.weather.engine.TextureManager;
 import com.hm.weather.engine.Thing;
 import com.hm.weather.engine.Vector4;
+
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 

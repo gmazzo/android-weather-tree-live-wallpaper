@@ -2,7 +2,7 @@ package com.hm.weather;
 
 import com.hm.weather.engine.GlobalRand;
 import com.hm.weather.engine.ParticleSystem;
-import com.hm.weather.engine.ParticleSystem.Particle;
+
 import javax.microedition.khronos.opengles.GL10;
 
 public class ParticleSnow extends ParticleSystem {

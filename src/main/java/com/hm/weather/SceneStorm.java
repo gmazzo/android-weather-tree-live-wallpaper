@@ -2,6 +2,7 @@ package com.hm.weather;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+
 import com.hm.weather.engine.GlobalRand;
 import com.hm.weather.engine.GlobalTime;
 import com.hm.weather.engine.Mesh;
@@ -11,6 +12,7 @@ import com.hm.weather.engine.ThingManager;
 import com.hm.weather.engine.Vector3;
 import com.hm.weather.engine.Vector4;
 import com.hm.weather.sky_manager.TimeOfDay;
+
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
@@ -96,11 +98,11 @@ public class SceneStorm extends SceneBase {
     }
 
     private void rainDensityFromPrefs(SharedPreferences prefs) {
-        this.rainDensity = prefs.getInt(BaseWallpaperSettings.PREF_RAIN_DENSITY, 10);
+        this.rainDensity = prefs.getInt(WallpaperSettings.PREF_RAIN_DENSITY, 10);
     }
 
     private void todFromPrefs(SharedPreferences prefs) {
-        pref_useTimeOfDay = prefs.getBoolean(BaseWallpaperSettings.PREF_USE_TOD, false);
+        pref_useTimeOfDay = prefs.getBoolean(WallpaperSettings.PREF_USE_TOD, false);
         this.pref_todColors[0].set("0.25 0.2 0.2 1", 0.0f, 1.0f);
         this.pref_todColors[1].set("0.6 0.6 0.6 1", 0.0f, 1.0f);
         this.pref_todColors[2].set("0.9 0.9 0.9 1", 0.0f, 1.0f);

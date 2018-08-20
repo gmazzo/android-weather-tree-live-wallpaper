@@ -1,6 +1,7 @@
 package com.hm.weather;
 
 import android.content.SharedPreferences;
+
 import com.hm.weather.engine.AnimPlayer;
 import com.hm.weather.engine.GlobalRand;
 import com.hm.weather.engine.GlobalTime;
@@ -8,6 +9,7 @@ import com.hm.weather.engine.Mesh;
 import com.hm.weather.engine.Scene;
 import com.hm.weather.engine.Vector4;
 import com.hm.weather.sky_manager.TimeOfDay;
+
 import javax.microedition.khronos.opengles.GL10;
 
 public abstract class SceneBase extends Scene {
@@ -47,15 +49,11 @@ public abstract class SceneBase extends Scene {
     }
 
     public void numCloudsFromPrefs(SharedPreferences prefs) {
-        this.pref_numClouds = prefs.getInt(BaseWallpaperSettings.PREF_NUM_CLOUDS, 10);
-    }
-
-    public void numWispsFromPrefs(SharedPreferences prefs) {
-        this.pref_numWisps = prefs.getInt(BaseWallpaperSettings.PREF_NUM_WISPS, 5);
+        this.pref_numClouds = prefs.getInt(WallpaperSettings.PREF_NUM_CLOUDS, 10);
     }
 
     public void windSpeedFromPrefs(SharedPreferences prefs) {
-        pref_windSpeed = Float.valueOf(prefs.getString(BaseWallpaperSettings.PREF_WIND_SPEED, "3")).floatValue() * 0.5f;
+        pref_windSpeed = Float.valueOf(prefs.getString(WallpaperSettings.PREF_WIND_SPEED, "3")) * 0.5f;
     }
 
     public void update(GlobalTime globalTime) {

@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.opengl.GLU;
 import android.preference.PreferenceManager;
+
 import com.hm.weather.engine.GlobalRand;
 import com.hm.weather.engine.GlobalTime;
 import com.hm.weather.engine.Scene;
@@ -12,7 +13,9 @@ import com.hm.weather.engine.Utility;
 import com.hm.weather.engine.Vector3;
 import com.hm.weather.sky_manager.TimeOfDay;
 import com.hm.weather.sky_manager.WeatherSettingsUtil;
+
 import java.util.Calendar;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
