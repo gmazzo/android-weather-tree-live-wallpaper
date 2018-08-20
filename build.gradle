@@ -7,6 +7,7 @@ buildscript {
         classpath 'com.android.tools.build:gradle:3.1.4'
     }
 }
+
 apply plugin: 'com.android.application'
 
 repositories {
@@ -18,18 +19,13 @@ android {
     compileSdkVersion 23
 
     defaultConfig {
-        applicationId 'com.hm.weather'
         minSdkVersion 9
         targetSdkVersion 21
-        versionCode 1
-        versionName "1.0"
-    }
 
-    lintOptions {
-        abortOnError false
+        versionCode 1
+        versionName '1.0'
     }
 }
 
 dependencies {
-    androidTestImplementation fileTree(dir: 'libs', include: '*.jar')
 }
