@@ -1,5 +1,6 @@
 package gs.weather;
 
+import android.app.WallpaperManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -85,6 +86,10 @@ public class WallpaperSettings extends PreferenceActivity implements OnPreferenc
             }
         }
         this.mSharedPreferences.registerOnSharedPreferenceChangeListener(this);
+
+        if (BuildConfig.DEBUG && bundle == null) {
+            startActivity(new Intent(WallpaperManager.ACTION_LIVE_WALLPAPER_CHOOSER));
+        }
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
