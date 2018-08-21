@@ -12,13 +12,13 @@ import gs.weather.engine.Mesh;
 import gs.weather.engine.MeshManager;
 import gs.weather.engine.TextureManager;
 import gs.weather.engine.ThingManager;
-import gs.weather.engine.Vector3;
-import gs.weather.engine.Vector4;
+import gs.weather.engine.Vector;
+import gs.weather.engine.Color;
 import gs.weather.sky_manager.TimeOfDay;
 
 public class SceneStorm extends SceneBase {
     private static final String TAG = "Storm";
-    static Vector4 pref_boltColor = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+    static Color pref_boltColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
     float lastLightningSpawn;
     float[] light1_ambientLight;
     float[] light1_position;
@@ -29,13 +29,13 @@ public class SceneStorm extends SceneBase {
     float[] light_position;
     float[] light_specularLight;
     ParticleRain particleRain;
-    Vector3 particleRainOrigin;
+    Vector particleRainOrigin;
     float pref_boltFrequency;
     float[] pref_diffuseLight;
     boolean pref_flashLights;
     boolean pref_randomBoltColor;
     int rainDensity;
-    Vector4 v_light1_ambientLight;
+    Color v_light1_ambientLight;
 
     public SceneStorm(Context ctx) {
         this.rainDensity = 10;
@@ -54,19 +54,19 @@ public class SceneStorm extends SceneBase {
         this.light_specularLight = new float[]{0.1f, 0.1f, 0.1f, 1.0f};
         this.light_position = new float[]{0.0f, 0.0f, 0.0f, 1.0f};
         this.light_flashColor = new float[]{1.0f, 1.0f, 1.0f, 1.0f};
-        this.v_light1_ambientLight = new Vector4(0.5f, 0.5f, 0.5f, 1.0f);
+        this.v_light1_ambientLight = new Color(0.5f, 0.5f, 0.5f, 1.0f);
         this.light1_ambientLight = new float[4];
         this.light1_position = new float[]{0.0f, 0.0f, 0.0f, 1.0f};
         this.pref_background = "storm_bg";
         this.pref_numClouds = 20;
-        todColorFinal = new Vector4();
-        this.pref_todColors = new Vector4[4];
-        this.pref_todColors[0] = new Vector4();
-        this.pref_todColors[1] = new Vector4();
-        this.pref_todColors[2] = new Vector4();
-        this.pref_todColors[3] = new Vector4();
+        todColorFinal = new Color();
+        this.pref_todColors = new Color[4];
+        this.pref_todColors[0] = new Color();
+        this.pref_todColors[1] = new Color();
+        this.pref_todColors[2] = new Color();
+        this.pref_todColors[3] = new Color();
         this.particleRain = new ParticleRain(this.rainDensity);
-        this.particleRainOrigin = new Vector3(0.0f, 25.0f, 10.0f);
+        this.particleRainOrigin = new Vector(0.0f, 25.0f, 10.0f);
         this.reloadAssets = false;
     }
 
@@ -157,7 +157,7 @@ public class SceneStorm extends SceneBase {
         if (pref_useTimeOfDay) {
             int iMain = tod.getMainIndex();
             int iBlend = tod.getBlendIndex();
-            Vector4.mix(this.v_light1_ambientLight, this.pref_todColors[iMain], this.pref_todColors[iBlend], tod.getBlendAmount());
+            this.v_light1_ambientLight.blend(this.pref_todColors[iMain], this.pref_todColors[iBlend], tod.getBlendAmount());
         }
     }
 
@@ -179,7 +179,7 @@ public class SceneStorm extends SceneBase {
     private void renderBackground(GL10 gl, float timeDelta) {
         Mesh mesh = this.mMeshManager.getMeshByName(gl, "plane_16x16");
         this.mTextureManager.bindTextureID(gl, this.pref_background);
-        gl.glColor4f(todColorFinal.x, todColorFinal.y, todColorFinal.z, 1.0f);
+        gl.glColor4f(todColorFinal.getR(), todColorFinal.getG(), todColorFinal.getB(), 1.0f);
         gl.glMatrixMode(5888);
         gl.glPushMatrix();
         gl.glTranslatef(0.0f, 250.0f, 35.0f);
@@ -190,10 +190,10 @@ public class SceneStorm extends SceneBase {
         if (!this.pref_flashLights || this.lightFlashTime <= 0.0f) {
             gl.glEnable(2896);
             gl.glEnable(16385);
-            this.light1_ambientLight[0] = this.v_light1_ambientLight.x;
-            this.light1_ambientLight[1] = this.v_light1_ambientLight.y;
-            this.light1_ambientLight[2] = this.v_light1_ambientLight.z;
-            this.light1_ambientLight[3] = this.v_light1_ambientLight.a;
+            this.light1_ambientLight[0] = this.v_light1_ambientLight.getR();
+            this.light1_ambientLight[1] = this.v_light1_ambientLight.getG();
+            this.light1_ambientLight[2] = this.v_light1_ambientLight.getB();
+            this.light1_ambientLight[3] = this.v_light1_ambientLight.getA();
             gl.glLightfv(16385, 4608, this.light1_ambientLight, 0);
         }
         mesh.render(gl);
@@ -241,23 +241,23 @@ public class SceneStorm extends SceneBase {
                 ThingDarkCloud cloud = new ThingDarkCloud(true);
                 cloud.randomizeScale();
                 if (GlobalRand.intRange(0, 2) == 0) {
-                    cloud.scale.x *= -1.0f;
+                    cloud.scale.setX(cloud.scale.getX() * -1.0f);
                 }
-                cloud.origin.x = (((float) i) * (90.0f / ((float) num_clouds))) - 0.099609375f;
-                cloud.origin.y = cloudDepthList[i];
-                cloud.origin.z = GlobalRand.floatRange(-20.0f, -10.0f);
+                cloud.origin.setX((((float) i) * (90.0f / ((float) num_clouds))) - 0.099609375f);
+                cloud.origin.setY(cloudDepthList[i]);
+                cloud.origin.setZ(GlobalRand.floatRange(-20.0f, -10.0f));
                 int which = (i % 5) + 1;
                 cloud.meshName = "cloud" + which + "m";
                 cloud.texName = "clouddark" + which;
                 cloud.texNameFlare = "cloudflare" + which;
                 cloud.targetName = "dark_cloud";
-                cloud.velocity = new Vector3(pref_windSpeed * 1.5f, 0.0f, 0.0f);
+                cloud.velocity = new Vector(pref_windSpeed * 1.5f, 0.0f, 0.0f);
                 this.mThingManager.add(cloud);
             }
         }
     }
 
-    private void spawnLightning(Vector3 touchPos) {
+    private void spawnLightning(Vector touchPos) {
         boolean isTouch = false;
         if (touchPos != null) {
             isTouch = true;
@@ -265,19 +265,19 @@ public class SceneStorm extends SceneBase {
         if (this.pref_randomBoltColor) {
             GlobalRand.randomNormalizedVector(pref_boltColor);
         }
-        ThingLightning lightning = new ThingLightning(pref_boltColor.x, pref_boltColor.y, pref_boltColor.z, isTouch);
+        ThingLightning lightning = new ThingLightning(pref_boltColor.getR(), pref_boltColor.getG(), pref_boltColor.getB(), isTouch);
         if (isTouch) {
             lightning.origin.set(touchPos);
         } else {
             lightning.origin.set(GlobalRand.floatRange(-25.0f, 25.0f), GlobalRand.floatRange(95.0f, 168.0f), 20.0f);
         }
         if (GlobalRand.intRange(0, 2) == 0) {
-            lightning.scale.z *= -1.0f;
+            lightning.scale.setZ(lightning.scale.getZ() * -1.0f);
         }
         this.mThingManager.add(lightning);
         this.mThingManager.sortByY();
         this.lightFlashTime = 0.25f;
-        this.lightFlashX = lightning.origin.x;
+        this.lightFlashX = lightning.origin.getX();
     }
 
     private void checkForLightning(float timeDelta) {
@@ -294,9 +294,9 @@ public class SceneStorm extends SceneBase {
         } else {
             float flashRemaining = this.lightFlashTime / 0.25f;
             this.light_position[0] = (this.lightFlashX * flashRemaining) + ((1.0f - flashRemaining) * lightPosX);
-            this.light_flashColor[0] = pref_boltColor.x;
-            this.light_flashColor[1] = pref_boltColor.y;
-            this.light_flashColor[2] = pref_boltColor.z;
+            this.light_flashColor[0] = pref_boltColor.getR();
+            this.light_flashColor[1] = pref_boltColor.getG();
+            this.light_flashColor[2] = pref_boltColor.getB();
             gl.glLightfv(16384, 4610, this.light_flashColor, 0);
             this.lightFlashTime -= timeDelta;
         }

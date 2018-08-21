@@ -8,7 +8,7 @@ import gs.weather.engine.Mesh;
 import gs.weather.engine.MeshManager;
 import gs.weather.engine.TextureManager;
 import gs.weather.engine.Thing;
-import gs.weather.engine.Vector4;
+import gs.weather.engine.Color;
 
 public class ThingLightning extends Thing {
     static final int NUM_LIGHTNING_MODELS = 3;
@@ -20,7 +20,7 @@ public class ThingLightning extends Thing {
             this.meshName = "lightning" + GlobalRand.intRange(1, 4);
         }
         this.texName = "lightning_pieces_core";
-        this.color = new Vector4(r, g, b, 1.0f);
+        this.color = new Color(r, g, b, 1.0f);
     }
 
     public void render(GL10 gl, TextureManager tm, MeshManager mm) {
@@ -32,11 +32,11 @@ public class ThingLightning extends Thing {
             Mesh mesh = mm.getMeshByName(gl, this.meshName);
             gl.glBlendFunc(770, 1);
             gl.glPushMatrix();
-            gl.glTranslatef(this.origin.x, this.origin.y, this.origin.z);
-            gl.glScalef(this.scale.x, this.scale.x, this.scale.x);
-            gl.glRotatef(this.angles.a, this.angles.x, this.angles.y, this.angles.z);
+            gl.glTranslatef(this.origin.getX(), this.origin.getY(), this.origin.getZ());
+            gl.glScalef(this.scale.getX(), this.scale.getX(), this.scale.getX());
+            gl.glRotatef(this.angles.getA(), this.angles.getR(), this.angles.getG(), this.angles.getB());
             if (this.color != null) {
-                gl.glColor4f(this.color.x, this.color.y, this.color.z, this.color.a);
+                gl.glColor4f(this.color.getR(), this.color.getG(), this.color.getB(), this.color.getA());
             }
             mesh.renderFrameMultiTexture((GL11) gl, 0, glowId, coreId, 260, false);
             gl.glPopMatrix();
@@ -48,8 +48,8 @@ public class ThingLightning extends Thing {
 
     public void update(float timeDelta) {
         super.update(timeDelta);
-        this.color.a -= 2.0f * timeDelta;
-        if (this.color.a <= 0.0f) {
+        this.color.setA(this.color.getA() - 2.0f * timeDelta);
+        if (this.color.getA() <= 0.0f) {
             delete();
         }
     }

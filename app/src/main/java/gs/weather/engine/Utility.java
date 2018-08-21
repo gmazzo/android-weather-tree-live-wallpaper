@@ -41,12 +41,12 @@ public class Utility {
         }
     }
 
-    public static void adjustScreenPosForDepth(Vector3 destVector, float cameraFOV, float screenWidth, float screenHeight, float touchX, float touchY, float depth) {
+    public static void adjustScreenPosForDepth(Vector destVector, float cameraFOV, float screenWidth, float screenHeight, float touchX, float touchY, float depth) {
         float f10 = (cameraFOV * (screenWidth / screenHeight)) * 0.01111111f;
         float f14 = (cameraFOV * 0.01111111f) * ((((1.0f - (touchY / screenHeight)) - 0.5f) * 2.0f) * depth);
-        destVector.x = ((((touchX / screenWidth) - 0.5f) * 2.0f) * depth) * f10;
-        destVector.y = depth;
-        destVector.z = f14;
+        destVector.setX(((((touchX / screenWidth) - 0.5f) * 2.0f) * depth) * f10);
+        destVector.setY(depth);
+        destVector.setZ(f14);
     }
 
     public static String baseFilenameFromPath(String filePath) {

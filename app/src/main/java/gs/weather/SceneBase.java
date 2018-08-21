@@ -9,13 +9,13 @@ import gs.weather.engine.GlobalRand;
 import gs.weather.engine.GlobalTime;
 import gs.weather.engine.Mesh;
 import gs.weather.engine.Scene;
-import gs.weather.engine.Vector4;
+import gs.weather.engine.Color;
 import gs.weather.sky_manager.TimeOfDay;
 
 public abstract class SceneBase extends Scene {
     public static boolean pref_useTimeOfDay;
     public static float pref_windSpeed = 3.0f;
-    public static Vector4 todColorFinal;
+    public static Color todColorFinal;
     public static float todSunPosition = 0.0f;
     protected float BG_PADDING = 20.0f;
     protected final boolean DBG = false;
@@ -25,7 +25,7 @@ public abstract class SceneBase extends Scene {
     protected String pref_background;
     protected int pref_numClouds;
     protected int pref_numWisps;
-    public Vector4[] pref_todColors;
+    public Color[] pref_todColors;
     protected boolean pref_treeAnim = true;
     protected boolean reloadAssets;
     protected AnimPlayer treesAnim = new AnimPlayer(0, 19, 5.0f, false);
@@ -64,7 +64,7 @@ public abstract class SceneBase extends Scene {
         if (pref_useTimeOfDay) {
             int iMain = tod.getMainIndex();
             int iBlend = tod.getBlendIndex();
-            Vector4.mix(todColorFinal, this.pref_todColors[iMain], this.pref_todColors[iBlend], tod.getBlendAmount());
+            todColorFinal.blend(this.pref_todColors[iMain], this.pref_todColors[iBlend], tod.getBlendAmount());
             return;
         }
         todColorFinal.set(1.0f, 1.0f, 1.0f, 1.0f);

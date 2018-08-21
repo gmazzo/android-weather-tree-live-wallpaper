@@ -15,7 +15,7 @@ import gs.weather.engine.GlobalRand;
 import gs.weather.engine.GlobalTime;
 import gs.weather.engine.Scene;
 import gs.weather.engine.Utility;
-import gs.weather.engine.Vector3;
+import gs.weather.engine.Vector;
 import gs.weather.sky_manager.TimeOfDay;
 import gs.weather.sky_manager.WeatherSettingsUtil;
 
@@ -42,12 +42,12 @@ public class IsolatedRenderer implements OnSharedPreferenceChangeListener {
     boolean IS_LANDSCAPE = DBG;
     private TimeOfDay _tod = new TimeOfDay();
     private Calendar calendarInstance;
-    private Vector3 cameraDir = new Vector3();
+    private Vector cameraDir = new Vector();
     private float cameraFOV = 65.0f;
-    private Vector3 cameraPos;
+    private Vector cameraPos;
     Context context;
     private Scene currentScene;
-    private Vector3 desiredCameraPos;
+    private Vector desiredCameraPos;
     private GlobalTime globalTime;
     boolean isPaused;
     private float lastCalendarUpdate;
@@ -67,8 +67,8 @@ public class IsolatedRenderer implements OnSharedPreferenceChangeListener {
         this.lastCalendarUpdate = 10.0f;
         this.lastPositionUpdate = 300.0f;
         this.globalTime = new GlobalTime();
-        this.cameraPos = new Vector3(0.0f, 0.0f, 0.0f);
-        this.desiredCameraPos = new Vector3(0.0f, 0.0f, 0.0f);
+        this.cameraPos = new Vector(0.0f, 0.0f, 0.0f);
+        this.desiredCameraPos = new Vector(0.0f, 0.0f, 0.0f);
         this.currentScene = new SceneClear(ctx);
         currentSceneId = SCENE_CLEAR;
         setContext(ctx);
@@ -215,15 +215,15 @@ public class IsolatedRenderer implements OnSharedPreferenceChangeListener {
             } else {
                 GLU.gluPerspective(gl, this.cameraFOV, this.screenRatio, 1.0f, 400.0f);
             }
-            GLU.gluLookAt(gl, this.cameraPos.x, this.cameraPos.y, this.cameraPos.z, this.cameraPos.x, 400.0f, this.cameraPos.z, 0.0f, 0.0f, 1.0f);
+            GLU.gluLookAt(gl, this.cameraPos.getX(), this.cameraPos.getY(), this.cameraPos.getZ(), this.cameraPos.getX(), 400.0f, this.cameraPos.getZ(), 0.0f, 0.0f, 1.0f);
             this.currentScene.draw(gl, this.globalTime);
         }
     }
 
     public void setTouchPos(float x, float y) {
-        Vector3 vPos = new Vector3();
-        Utility.adjustScreenPosForDepth(vPos, this.cameraFOV, this.screenWidth, this.screenHeight, x, y, GlobalRand.floatRange(35.0f, 68.0f) - this.cameraPos.y);
-        vPos.x += this.cameraPos.x;
+        Vector vPos = new Vector();
+        Utility.adjustScreenPosForDepth(vPos, this.cameraFOV, this.screenWidth, this.screenHeight, x, y, GlobalRand.floatRange(35.0f, 68.0f) - this.cameraPos.getY());
+        vPos.setX(vPos.getX() + this.cameraPos.getX());
     }
 
     public void updateOffset(float offset) {
@@ -256,14 +256,14 @@ public class IsolatedRenderer implements OnSharedPreferenceChangeListener {
     private void updateCameraPosition(GL10 gl, float timeDelta) {
         this.desiredCameraPos.set((28.0f * homeOffsetPercentage) - CAMERA_X_RANGE, 0.0f, 0.0f);
         float rate = (3.5f * timeDelta) * this.pref_cameraSpeed;
-        float dx = (this.desiredCameraPos.x - this.cameraPos.x) * rate;
-        float dy = (this.desiredCameraPos.y - this.cameraPos.y) * rate;
-        float dz = (this.desiredCameraPos.z - this.cameraPos.z) * rate;
-        this.cameraPos.x += dx;
-        this.cameraPos.y += dy;
-        this.cameraPos.z += dz;
-        this.cameraDir.x = this.cameraPos.x - this.cameraPos.x;
-        this.cameraDir.y = 100.0f - this.cameraPos.y;
+        float dx = (this.desiredCameraPos.getX() - this.cameraPos.getX()) * rate;
+        float dy = (this.desiredCameraPos.getY() - this.cameraPos.getY()) * rate;
+        float dz = (this.desiredCameraPos.getZ() - this.cameraPos.getZ()) * rate;
+        this.cameraPos.setX(this.cameraPos.getX() + dx);
+        this.cameraPos.setY(this.cameraPos.getY() + dy);
+        this.cameraPos.setZ(this.cameraPos.getZ() + dz);
+        this.cameraDir.setX(this.cameraPos.getX() - this.cameraPos.getX());
+        this.cameraDir.setY(100.0f - this.cameraPos.getY());
         if (this.IS_LANDSCAPE) {
             this.cameraFOV = 45.0f;
         } else {

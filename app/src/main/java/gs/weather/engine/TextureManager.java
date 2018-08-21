@@ -110,7 +110,7 @@ public class TextureManager {
             new_h = closestPowerOfTwo(org_h);
             new_w = closestPowerOfTwo((int) ((((float) org_w) * ((float) new_h)) / ((float) org_h)));
         }
-        Logger.v(TAG, "  - scaling image to " + new_w + " x " + new_h);
+        Logger.v(TAG, "  - scaling image to " + new_w + " r " + new_h);
         Bitmap result = Bitmap.createScaledBitmap(bitmap, new_w, new_h, true);
         bitmap.recycle();
         return result;
@@ -265,7 +265,7 @@ public class TextureManager {
             int h = localDataInputStream.readInt();
             float r = localDataInputStream.readFloat();
             localDataInputStream.close();
-            Logger.v(TAG, "Reading cached size data: " + w + " x " + h + " = " + r);
+            Logger.v(TAG, "Reading cached size data: " + w + " r " + h + " = " + r);
             return r;
         } catch (Exception e) {
             Options opt = new Options();

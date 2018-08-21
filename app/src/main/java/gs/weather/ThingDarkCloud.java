@@ -8,10 +8,10 @@ import gs.weather.engine.Mesh;
 import gs.weather.engine.MeshManager;
 import gs.weather.engine.TextureManager;
 import gs.weather.engine.Thing;
-import gs.weather.engine.Vector4;
+import gs.weather.engine.Color;
 
 public class ThingDarkCloud extends Thing {
-    static Vector4 pref_boltColor = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+    static Color pref_boltColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
     public static boolean pref_minimalist = false;
     private float flashIntensity;
     public String texNameFlare;
@@ -19,19 +19,19 @@ public class ThingDarkCloud extends Thing {
 
     public ThingDarkCloud(boolean flare) {
         this.withFlare = false;
-        this.color = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+        this.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
         this.withFlare = flare;
         this.flashIntensity = 0.0f;
         this.texNameFlare = "";
     }
 
     private void setFade(float alpha) {
-        this.color.multiply(alpha);
-        this.color.a = alpha;
+        this.color.times(alpha);
+        this.color.setA(alpha);
     }
 
     private float calculateCloudRangeX() {
-        return ((this.origin.y * IsolatedRenderer.horizontalFOV) / 90.0f) + Math.abs(this.scale.x * 1.0f);
+        return ((this.origin.getY() * IsolatedRenderer.horizontalFOV) / 90.0f) + Math.abs(this.scale.getX() * 1.0f);
     }
 
     public float randomWithinRangeX() {
@@ -52,16 +52,16 @@ public class ThingDarkCloud extends Thing {
             Mesh mesh = mm.getMeshByName(gl, this.meshName);
             gl.glBlendFunc(1, 771);
             gl.glPushMatrix();
-            gl.glTranslatef(this.origin.x, this.origin.y, this.origin.z);
-            gl.glScalef(this.scale.x, this.scale.y, this.scale.z);
-            gl.glRotatef(this.angles.a, this.angles.x, this.angles.y, this.angles.z);
+            gl.glTranslatef(this.origin.getX(), this.origin.getY(), this.origin.getZ());
+            gl.glScalef(this.scale.getX(), this.scale.getY(), this.scale.getZ());
+            gl.glRotatef(this.angles.getA(), this.angles.getR(), this.angles.getG(), this.angles.getB());
             if (!pref_minimalist) {
                 mesh.render(gl);
             }
             if (this.withFlare && this.flashIntensity > 0.0f) {
                 gl.glDisable(2896);
                 tm.bindTextureID(gl, this.texNameFlare);
-                gl.glColor4f(pref_boltColor.x, pref_boltColor.y, pref_boltColor.z, this.flashIntensity);
+                gl.glColor4f(pref_boltColor.getR(), pref_boltColor.getG(), pref_boltColor.getB(), this.flashIntensity);
                 gl.glBlendFunc(770, 1);
                 mesh.render(gl);
                 gl.glEnable(2896);
@@ -74,15 +74,15 @@ public class ThingDarkCloud extends Thing {
     public void update(float timeDelta) {
         super.update(timeDelta);
         float rangX = calculateCloudRangeX();
-        if (this.origin.x > rangX) {
-            this.origin.x = -rangX;
-        } else if (this.origin.x < (-rangX)) {
-            this.origin.x = rangX;
+        if (this.origin.getX() > rangX) {
+            this.origin.setX(-rangX);
+        } else if (this.origin.getX() < (-rangX)) {
+            this.origin.setX(rangX);
         }
-        Vector4 todColors = SceneBase.todColorFinal;
-        this.color.x = 0.2f;
-        this.color.y = 0.2f;
-        this.color.z = 0.2f;
+        Color todColors = SceneBase.todColorFinal;
+        this.color.setR(0.2f);
+        this.color.setG(0.2f);
+        this.color.setB(0.2f);
         if (this.sTimeElapsed < 2.0f) {
             setFade(this.sTimeElapsed * 0.5f);
         }

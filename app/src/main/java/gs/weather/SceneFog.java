@@ -10,15 +10,15 @@ import gs.weather.engine.Mesh;
 import gs.weather.engine.MeshManager;
 import gs.weather.engine.TextureManager;
 import gs.weather.engine.ThingManager;
-import gs.weather.engine.Vector4;
+import gs.weather.engine.Color;
 import gs.weather.sky_manager.TimeOfDay;
 
 public class SceneFog extends SceneBase {
     private static final String TAG = "Fog";
     static float[] fogColor = new float[]{0.8f, 0.8f, 0.8f, 1.0f};
     static float pref_fog_density = 0.2f;
-    Vector4 fogColorFinal;
-    Vector4[] fog_todColors;
+    Color fogColorFinal;
+    Color[] fog_todColors;
 
     public SceneFog(Context ctx) {
         this.mThingManager = new ThingManager();
@@ -26,14 +26,14 @@ public class SceneFog extends SceneBase {
         this.mMeshManager = new MeshManager(ctx);
         this.mContext = ctx;
         this.pref_background = "bg1";
-        todColorFinal = new Vector4();
-        this.pref_todColors = new Vector4[4];
-        this.pref_todColors[0] = new Vector4();
-        this.pref_todColors[1] = new Vector4();
-        this.pref_todColors[2] = new Vector4();
-        this.pref_todColors[3] = new Vector4();
-        this.fogColorFinal = new Vector4();
-        this.fog_todColors = new Vector4[4];
+        todColorFinal = new Color();
+        this.pref_todColors = new Color[4];
+        this.pref_todColors[0] = new Color();
+        this.pref_todColors[1] = new Color();
+        this.pref_todColors[2] = new Color();
+        this.pref_todColors[3] = new Color();
+        this.fogColorFinal = new Color();
+        this.fog_todColors = new Color[4];
         this.reloadAssets = false;
     }
 
@@ -77,10 +77,10 @@ public class SceneFog extends SceneBase {
         this.pref_todColors[1].set(prefs.getString(WallpaperSettings.PREF_LIGHT_COLOR2, "1 0.73 0.58 1"), 0.0f, 1.0f);
         this.pref_todColors[2].set(prefs.getString(WallpaperSettings.PREF_LIGHT_COLOR3, "1 1 1 1"), 0.0f, 1.0f);
         this.pref_todColors[3].set(prefs.getString(WallpaperSettings.PREF_LIGHT_COLOR4, "1 0.85 0.75 1"), 0.0f, 1.0f);
-        this.fog_todColors[0] = new Vector4(0.2f, 0.2f, 0.2f, 1.0f);
-        this.fog_todColors[1] = new Vector4(0.5f, 0.5f, 0.5f, 1.0f);
-        this.fog_todColors[2] = new Vector4(0.8f, 0.8f, 0.8f, 1.0f);
-        this.fog_todColors[3] = new Vector4(0.5f, 0.5f, 0.5f, 1.0f);
+        this.fog_todColors[0] = new Color(0.2f, 0.2f, 0.2f, 1.0f);
+        this.fog_todColors[1] = new Color(0.5f, 0.5f, 0.5f, 1.0f);
+        this.fog_todColors[2] = new Color(0.8f, 0.8f, 0.8f, 1.0f);
+        this.fog_todColors[3] = new Color(0.5f, 0.5f, 0.5f, 1.0f);
     }
 
     public void updateTimeOfDay(TimeOfDay tod) {
@@ -88,8 +88,8 @@ public class SceneFog extends SceneBase {
             int iMain = tod.getMainIndex();
             int iBlend = tod.getBlendIndex();
             float blendAmount = tod.getBlendAmount();
-            Vector4.mix(todColorFinal, this.pref_todColors[iMain], this.pref_todColors[iBlend], blendAmount);
-            Vector4.mix(this.fogColorFinal, this.fog_todColors[iMain], this.fog_todColors[iBlend], blendAmount);
+            this.todColorFinal.blend(this.pref_todColors[iMain], this.pref_todColors[iBlend], blendAmount);
+            this.fogColorFinal.blend(this.fog_todColors[iMain], this.fog_todColors[iBlend], blendAmount);
         } else {
             todColorFinal.set(1.0f, 1.0f, 1.0f, 1.0f);
             this.fogColorFinal.set(0.8f, 0.8f, 0.8f, 1.0f);
@@ -123,7 +123,7 @@ public class SceneFog extends SceneBase {
     private void renderBackground(GL10 gl, float timeDelta) {
         Mesh mesh = this.mMeshManager.getMeshByName(gl, "plane_16x16");
         this.mTextureManager.bindTextureID(gl, this.pref_background);
-        gl.glColor4f(todColorFinal.x, todColorFinal.y, todColorFinal.z, 1.0f);
+        gl.glColor4f(todColorFinal.getR(), todColorFinal.getG(), todColorFinal.getB(), 1.0f);
         gl.glMatrixMode(5888);
         gl.glPushMatrix();
         gl.glTranslatef(0.0f, 250.0f, 35.0f);

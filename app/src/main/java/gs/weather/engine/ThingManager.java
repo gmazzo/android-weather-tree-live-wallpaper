@@ -55,7 +55,7 @@ public class ThingManager {
         Collections.sort(thingList, new Comparator<Thing>() {
             @Override
             public int compare(Thing lhs, Thing rhs) {
-                return (int) (lhs.origin.y - rhs.origin.y);
+                return (int) (lhs.origin.getY() - rhs.origin.getY());
             }
         });
     }

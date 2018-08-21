@@ -41,7 +41,7 @@ public class ParticleSnow extends ParticleSystem {
     public void update(float timeDelta) {
         super.update(timeDelta);
         this.texName = SceneSnow.pref_snowImage;
-        this.startColor.set(SceneBase.todColorFinal.x, SceneBase.todColorFinal.y, SceneBase.todColorFinal.z, 3.0f);
-        this.destColor.set(SceneBase.todColorFinal.x, SceneBase.todColorFinal.y, SceneBase.todColorFinal.z, 0.0f);
+        this.startColor.set(SceneBase.todColorFinal.getR(), SceneBase.todColorFinal.getG(), SceneBase.todColorFinal.getB(), 3.0f);
+        this.destColor.set(SceneBase.todColorFinal.getR(), SceneBase.todColorFinal.getG(), SceneBase.todColorFinal.getB(), 0.0f);
     }
 }

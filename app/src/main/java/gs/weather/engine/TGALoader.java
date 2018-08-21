@@ -148,7 +148,7 @@ class TGALoader {
             var4.bytesPerPixel = var4.bpp / 8;
             var4.imageSize = var4.bytesPerPixel * var4.width * var4.height;
             var4.imageData = ByteBuffer.allocate(var4.imageSize);
-            Logger.v("GL Engine", " - " + var4.width + "x" + var4.height + "x" + var4.bpp + "(" + var4.imageSize + ")");
+            Logger.v("GL Engine", " - " + var4.width + "r" + var4.height + "r" + var4.bpp + "(" + var4.imageSize + ")");
             this.readBuffer(var1, var4.imageData);
 
             for (int var3 = 0; var3 < var4.imageSize - 2; var3 += var4.bytesPerPixel) {

@@ -68,30 +68,30 @@ public class Mesh {
             this.position[(i * 3) + 2] = f2;
         }
 
-        public void getNormal(Vector3 vector3, int i) {
+        public void getNormal(Vector vector, int i) {
             if (i * 3 >= this.position.length) {
                 Logger.v(Mesh.TAG, "ERROR: Tried to get tag normal on invalid frame " + i);
-                vector3.y = 0.0f;
-                vector3.x = 0.0f;
-                vector3.z = 1.0f;
+                vector.setY(0.0f);
+                vector.setX(0.0f);
+                vector.setZ(1.0f);
                 return;
             }
-            vector3.x = this.normal[i * 3];
-            vector3.y = this.normal[(i * 3) + 1];
-            vector3.z = this.normal[(i * 3) + 2];
+            vector.setX(this.normal[i * 3]);
+            vector.setY(this.normal[(i * 3) + 1]);
+            vector.setZ(this.normal[(i * 3) + 2]);
         }
 
-        public void getPosition(Vector3 vector3, int i) {
+        public void getPosition(Vector vector, int i) {
             if (i * 3 >= this.position.length) {
                 Logger.v(Mesh.TAG, "ERROR: Tried to get tag position on invalid frame " + i);
-                vector3.z = 0.0f;
-                vector3.y = 0.0f;
-                vector3.x = 0.0f;
+                vector.setZ(0.0f);
+                vector.setY(0.0f);
+                vector.setX(0.0f);
                 return;
             }
-            vector3.x = this.position[i * 3];
-            vector3.y = this.position[(i * 3) + 1];
-            vector3.z = this.position[(i * 3) + 2];
+            vector.setX(this.position[i * 3]);
+            vector.setY(this.position[(i * 3) + 1]);
+            vector.setZ(this.position[(i * 3) + 2]);
         }
 
         public String toString(int i) {

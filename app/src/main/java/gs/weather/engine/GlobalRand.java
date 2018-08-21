@@ -20,23 +20,13 @@ public class GlobalRand {
         return rand.nextInt(max - min) + min;
     }
 
-    public static void randomNormalizedVector(Vector3 dest) {
-        float x = floatRange(-1.0f, 1.0f);
-        float y = floatRange(-1.0f, 1.0f);
-        float z = floatRange(-1.0f, 1.0f);
-        float length_reciprocal = 1.0f / Vector3.magnitude(x, y, z);
-        dest.x = x * length_reciprocal;
-        dest.y = y * length_reciprocal;
-        dest.z = z * length_reciprocal;
+    public static void randomNormalizedVector(Color dest) {
+        dest.set(new Vector(
+                        floatRange(-1.0f, 1.0f),
+                        floatRange(-1.0f, 1.0f),
+                        floatRange(-1.0f, 1.0f))
+                        .normalize(),
+                dest.getA());
     }
 
-    public static void randomNormalizedVector(Vector4 dest) {
-        float x = floatRange(-1.0f, 1.0f);
-        float y = floatRange(-1.0f, 1.0f);
-        float z = floatRange(-1.0f, 1.0f);
-        float length_reciprocal = 1.0f / Vector3.magnitude(x, y, z);
-        dest.x = x * length_reciprocal;
-        dest.y = y * length_reciprocal;
-        dest.z = z * length_reciprocal;
-    }
 }

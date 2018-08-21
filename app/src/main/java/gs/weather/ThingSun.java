@@ -7,7 +7,7 @@ import gs.weather.engine.Mesh;
 import gs.weather.engine.MeshManager;
 import gs.weather.engine.TextureManager;
 import gs.weather.engine.Thing;
-import gs.weather.engine.Vector4;
+import gs.weather.engine.Color;
 
 public class ThingSun extends Thing {
     private static final String TAG = "Sun";
@@ -15,7 +15,7 @@ public class ThingSun extends Thing {
     public ThingSun() {
         this.texName = "sun";
         this.meshName = "plane_16x16";
-        this.color = new Vector4(1.0f, 1.0f, 0.95f, 1.0f);
+        this.color = new Color(1.0f, 1.0f, 0.95f, 1.0f);
     }
 
     public void render(GL10 gl, TextureManager texturemanager, MeshManager meshmanager) {
@@ -23,12 +23,12 @@ public class ThingSun extends Thing {
         int blendTexId = texturemanager.getTextureID(gl, "sun_blend");
         int sunTexId = texturemanager.getTextureID(gl, "sun");
         Mesh mesh = meshmanager.getMeshByName(gl, this.meshName);
-        gl.glColor4f(this.color.x, this.color.y, this.color.z, this.color.a);
+        gl.glColor4f(this.color.getR(), this.color.getG(), this.color.getB(), this.color.getA());
         gl.glMatrixMode(5888);
         gl.glPushMatrix();
         gl.glLoadIdentity();
-        gl.glTranslatef(this.origin.x, this.origin.y, this.origin.z);
-        gl.glScalef(this.scale.x, this.scale.y, this.scale.z);
+        gl.glTranslatef(this.origin.getX(), this.origin.getY(), this.origin.getZ());
+        gl.glScalef(this.scale.getX(), this.scale.getY(), this.scale.getZ());
         gl.glRotatef((this.sTimeElapsed * 12.0f) % 360.0f, 0.0f, 1.0f, 0.0f);
         gl.glMatrixMode(5890);
         gl.glPushMatrix();
@@ -58,14 +58,14 @@ public class ThingSun extends Thing {
             if (alpha > 1.0f) {
                 alpha = 1.0f;
             }
-            this.origin.z = altitude - 50.0f;
-            if (this.origin.z > 40.0f) {
-                this.origin.z = 40.0f;
+            this.origin.setZ(altitude - 50.0f);
+            if (this.origin.getZ() > 40.0f) {
+                this.origin.setZ(40.0f);
             }
         } else {
             this.scale.set(0.0f);
         }
         this.color.set(SceneBase.todColorFinal);
-        this.color.multiply(alpha);
+        this.color.times(alpha);
     }
 }

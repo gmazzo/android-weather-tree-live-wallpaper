@@ -16,37 +16,37 @@ public class ParticleSystem {
     protected int animFrameOffset = 0;
     protected float animFramerate = 20.0f;
     protected int animLastFrame = 0;
-    protected Vector4 destColor = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+    protected Color destColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
     public boolean enableSpawning = true;
-    protected Vector3 flowDirection = null;
+    protected Vector flowDirection = null;
     protected String meshName;
-    private Vector3 orientScratch = null;
+    private Vector orientScratch = null;
     protected int spawnBurst = 0;
     protected float spawnRangeX = 0.0f;
     protected float spawnRangeY = 0.0f;
     protected float spawnRangeZ = 0.0f;
     protected float spawnRate = 1.0f;
     protected float spawnRateVariance = 0.2f;
-    protected Vector4 startColor = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+    protected Color startColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
     protected String texName;
 
     public class Particle {
         private float _angle;
-        private Vector4 _color = new Vector4();
-        private Vector3 _position = new Vector3();
-        private Vector3 _scale = new Vector3();
+        private Color _color = new Color();
+        private Vector _position = new Vector();
+        private Vector _scale = new Vector();
         private float _timeElapsed;
         private boolean _useAngles;
         private boolean _useScale;
-        protected Vector3 _velocity = new Vector3();
+        protected Vector _velocity = new Vector();
         public boolean alive = false;
         public float destAngle;
-        public Vector3 destScale = new Vector3();
-        public Vector3 destVelocity = new Vector3();
+        public Vector destScale = new Vector();
+        public Vector destVelocity = new Vector();
         public float lifetime;
         public float startAngle;
-        public Vector3 startScale = new Vector3();
-        public Vector3 startVelocity = new Vector3();
+        public Vector startScale = new Vector();
+        public Vector startVelocity = new Vector();
 
         public Particle() {
             this._position.set(0.0f);
@@ -57,20 +57,20 @@ public class ParticleSystem {
         }
 
         void modifyPosition(float offset_x, float offset_y, float offset_z) {
-            this._position.x += offset_x;
-            this._position.y += offset_y;
-            this._position.z += offset_z;
+            this._position.setX(this._position.getX() + offset_x);
+            this._position.setY(this._position.getY() + offset_y);
+            this._position.setZ(this._position.getZ() + offset_z);
         }
 
         public void render(GL11 gl11, Mesh mesh) {
             gl11.glMatrixMode(5888);
             gl11.glPushMatrix();
-            gl11.glTranslatef(this._position.x, this._position.y, this._position.z);
+            gl11.glTranslatef(this._position.getX(), this._position.getY(), this._position.getZ());
             if (ParticleSystem.this._useColor) {
-                gl11.glColor4f(this._color.x, this._color.y, this._color.z, this._color.a);
+                gl11.glColor4f(this._color.getR(), this._color.getG(), this._color.getB(), this._color.getA());
             }
             if (this._useScale) {
-                gl11.glScalef(this._scale.x, this._scale.y, this._scale.z);
+                gl11.glScalef(this._scale.getX(), this._scale.getY(), this._scale.getZ());
             }
             if (this._useAngles) {
                 gl11.glRotatef(this._angle, 0.0f, 1.0f, 0.0f);
@@ -97,7 +97,7 @@ public class ParticleSystem {
             } else {
                 this._useAngles = true;
             }
-            if (this.startScale.x == 1.0f && this.startScale.y == 1.0f && this.startScale.z == 1.0f && this.destScale.x == 1.0f && this.destScale.y == 1.0f && this.destScale.z == 1.0f) {
+            if (this.startScale.getX() == 1.0f && this.startScale.getY() == 1.0f && this.startScale.getZ() == 1.0f && this.destScale.getX() == 1.0f && this.destScale.getY() == 1.0f && this.destScale.getZ() == 1.0f) {
                 this._useScale = false;
             } else {
                 this._useScale = true;
@@ -114,20 +114,20 @@ public class ParticleSystem {
             float invPercentage = 1.0f - percentage;
             updateVelocity(timeDelta, percentage, invPercentage);
             if (ParticleSystem.this._useColor) {
-                this._color.set((ParticleSystem.this.startColor.x * invPercentage) + (ParticleSystem.this.destColor.x * percentage), (ParticleSystem.this.startColor.y * invPercentage) + (ParticleSystem.this.destColor.y * percentage), (ParticleSystem.this.startColor.z * invPercentage) + (ParticleSystem.this.destColor.z * percentage), (ParticleSystem.this.startColor.a * invPercentage) + (ParticleSystem.this.destColor.a * percentage));
+                this._color.set((ParticleSystem.this.startColor.getR() * invPercentage) + (ParticleSystem.this.destColor.getR() * percentage), (ParticleSystem.this.startColor.getG() * invPercentage) + (ParticleSystem.this.destColor.getG() * percentage), (ParticleSystem.this.startColor.getB() * invPercentage) + (ParticleSystem.this.destColor.getB() * percentage), (ParticleSystem.this.startColor.getA() * invPercentage) + (ParticleSystem.this.destColor.getA() * percentage));
             }
             if (this._useScale) {
-                this._scale.set((this.startScale.x * invPercentage) + (this.destScale.x * percentage), (this.startScale.y * invPercentage) + (this.destScale.y * percentage), (this.startScale.z * invPercentage) + (this.destScale.z * percentage));
+                this._scale.set((this.startScale.getX() * invPercentage) + (this.destScale.getX() * percentage), (this.startScale.getY() * invPercentage) + (this.destScale.getY() * percentage), (this.startScale.getZ() * invPercentage) + (this.destScale.getZ() * percentage));
             }
             if (this._useAngles) {
                 this._angle = (this.startAngle * invPercentage) + (this.destAngle * percentage);
             }
-            this._position.add(this._velocity.x * timeDelta, this._velocity.y * timeDelta, this._velocity.z * timeDelta);
+            this._position.plus(this._velocity.getX() * timeDelta, this._velocity.getY() * timeDelta, this._velocity.getZ() * timeDelta);
             return true;
         }
 
         public void updateVelocity(float timeDelta, float percentage, float invPercentage) {
-            this._velocity.set((this.startVelocity.x * invPercentage) + (this.destVelocity.x * percentage), (this.startVelocity.y * invPercentage) + (this.destVelocity.y * percentage), (this.startVelocity.z * invPercentage) + (this.destVelocity.z * percentage));
+            this._velocity.set((this.startVelocity.getX() * invPercentage) + (this.destVelocity.getX() * percentage), (this.startVelocity.getY() * invPercentage) + (this.destVelocity.getY() * percentage), (this.startVelocity.getZ() * invPercentage) + (this.destVelocity.getZ() * percentage));
         }
     }
 
@@ -137,13 +137,12 @@ public class ParticleSystem {
         }
     }
 
-    private void handleOrientation(GL11 gl11, Vector3 newDirection) {
+    private void handleOrientation(GL11 gl11, Vector newDirection) {
         if (this.orientScratch == null) {
-            this.orientScratch = new Vector3();
+            this.orientScratch = new Vector();
         }
-        Vector3.crossProduct(this.orientScratch, this.flowDirection, newDirection);
-        this.orientScratch.normalize();
-        gl11.glRotatef(((float) Math.acos((double) newDirection.dotProduct(this.flowDirection))) * 57.295776f, this.orientScratch.x, this.orientScratch.y, this.orientScratch.z);
+        this.orientScratch.crossProduct(this.flowDirection, newDirection).normalize();
+        gl11.glRotatef(((float) Math.acos((double) newDirection.times(this.flowDirection))) * 57.295776f, this.orientScratch.getX(), this.orientScratch.getY(), this.orientScratch.getZ());
     }
 
     protected float getSpawnRangeX() {
@@ -180,16 +179,16 @@ public class ParticleSystem {
         particle.alive = true;
     }
 
-    public void render(GL11 gl, TextureManager tm, MeshManager mm, Vector3 systemOrigin) {
+    public void render(GL11 gl, TextureManager tm, MeshManager mm, Vector systemOrigin) {
         render(gl, tm, mm, systemOrigin, null);
     }
 
-    public void render(GL11 gl, TextureManager tm, MeshManager mm, Vector3 systemOrigin, Vector3 direction) {
+    public void render(GL11 gl, TextureManager tm, MeshManager mm, Vector systemOrigin, Vector direction) {
         tm.bindTextureID(gl, this.texName);
         Mesh mesg = mm.getMeshByName(gl, this.meshName);
         gl.glMatrixMode(5888);
         gl.glPushMatrix();
-        gl.glTranslatef(systemOrigin.x, systemOrigin.y, systemOrigin.z);
+        gl.glTranslatef(systemOrigin.getX(), systemOrigin.getY(), systemOrigin.getZ());
         if (!(direction == null || this.flowDirection == null)) {
             handleOrientation(gl, direction);
         }
@@ -213,7 +212,7 @@ public class ParticleSystem {
     }
 
     protected void setUsageFlags() {
-        if (this.startColor.x == 1.0f && this.startColor.y == 1.0f && this.startColor.z == 1.0f && this.startColor.a == 1.0f && this.destColor.x == 1.0f && this.destColor.y == 1.0f && this.destColor.z == 1.0f && this.destColor.a == 1.0f) {
+        if (this.startColor.getR() == 1.0f && this.startColor.getG() == 1.0f && this.startColor.getB() == 1.0f && this.startColor.getA() == 1.0f && this.destColor.getR() == 1.0f && this.destColor.getG() == 1.0f && this.destColor.getB() == 1.0f && this.destColor.getA() == 1.0f) {
             this._useColor = false;
         } else {
             this._useColor = true;

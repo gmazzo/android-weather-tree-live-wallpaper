@@ -74,7 +74,7 @@ public class TimeOfDay {
         this._todTime[3] = minOfSunset;
         this._latitude = latitude;
         this._longitude = longitude;
-        Log.v(TAG, "calculateTimeTable @ " + latitude + "x" + longitude + ": " + minOfMidnight + "   " + minOfSunrise + "   " + minOfNoon + "   " + minOfSunset);
+        Log.v(TAG, "calculateTimeTable @ " + latitude + "r" + longitude + ": " + minOfMidnight + "   " + minOfSunrise + "   " + minOfNoon + "   " + minOfSunset);
     }
 
     public float getBlendAmount() {

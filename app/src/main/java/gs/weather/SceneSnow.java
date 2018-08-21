@@ -12,8 +12,8 @@ import gs.weather.engine.Mesh;
 import gs.weather.engine.MeshManager;
 import gs.weather.engine.TextureManager;
 import gs.weather.engine.ThingManager;
-import gs.weather.engine.Vector3;
-import gs.weather.engine.Vector4;
+import gs.weather.engine.Vector;
+import gs.weather.engine.Color;
 import gs.weather.sky_manager.TimeOfDay;
 
 public class SceneSnow extends SceneBase {
@@ -28,9 +28,9 @@ public class SceneSnow extends SceneBase {
     public static float pref_snowNoise;
     ParticleSnow particleSnow;
     int pref_snowDensity;
-    Vector3 snowPos1;
-    Vector3 snowPos2;
-    Vector3 snowPos3;
+    Vector snowPos1;
+    Vector snowPos2;
+    Vector snowPos3;
 
     public SceneSnow(Context ctx) {
         this.mThingManager = new ThingManager();
@@ -38,18 +38,18 @@ public class SceneSnow extends SceneBase {
         this.mMeshManager = new MeshManager(ctx);
         this.mContext = ctx;
         this.pref_background = "bg2";
-        todColorFinal = new Vector4();
-        this.pref_todColors = new Vector4[4];
-        this.pref_todColors[0] = new Vector4();
-        this.pref_todColors[1] = new Vector4();
-        this.pref_todColors[2] = new Vector4();
-        this.pref_todColors[3] = new Vector4();
+        todColorFinal = new Color();
+        this.pref_todColors = new Color[4];
+        this.pref_todColors[0] = new Color();
+        this.pref_todColors[1] = new Color();
+        this.pref_todColors[2] = new Color();
+        this.pref_todColors[3] = new Color();
         this.reloadAssets = false;
         this.pref_numClouds = 20;
         this.pref_numWisps = 6;
-        this.snowPos1 = new Vector3(0.0f, CLOUD_Z_RANGE, -20.0f);
-        this.snowPos2 = new Vector3(8.0f, 15.0f, -20.0f);
-        this.snowPos3 = new Vector3(-8.0f, 10.0f, -20.0f);
+        this.snowPos1 = new Vector(0.0f, CLOUD_Z_RANGE, -20.0f);
+        this.snowPos2 = new Vector(8.0f, 15.0f, -20.0f);
+        this.snowPos3 = new Vector(-8.0f, 10.0f, -20.0f);
     }
 
     public void load(GL10 gl) {
@@ -158,16 +158,16 @@ public class SceneSnow extends SceneBase {
                 ThingCloud cloud = new ThingCloud();
                 cloud.randomizeScale();
                 if (GlobalRand.intRange(0, 2) == 0) {
-                    cloud.scale.x *= -1.0f;
+                    cloud.scale.setX(cloud.scale.getX() * -1.0f);
                 }
-                cloud.origin.x = (((float) i) * (90.0f / ((float) num_clouds))) - 0.099609375f;
-                cloud.origin.y = cloudDepthList[i];
-                cloud.origin.z = GlobalRand.floatRange(-20.0f, -10.0f);
+                cloud.origin.setX((((float) i) * (90.0f / ((float) num_clouds))) - 0.099609375f);
+                cloud.origin.setY(cloudDepthList[i]);
+                cloud.origin.setZ(GlobalRand.floatRange(-20.0f, -10.0f));
                 int which = (i % 5) + 1;
                 cloud.meshName = "cloud" + which + "m";
                 cloud.texName = "cloud" + which;
                 cloud.targetName = "cloud";
-                cloud.velocity = new Vector3(pref_windSpeed * 1.5f, 0.0f, 0.0f);
+                cloud.velocity = new Vector(pref_windSpeed * 1.5f, 0.0f, 0.0f);
                 this.mThingManager.add(cloud);
             }
             for (i = 0; i < cloudDepthList.length; i++) {
@@ -175,11 +175,11 @@ public class SceneSnow extends SceneBase {
                 wispy.meshName = "plane_16x16";
                 wispy.texName = "wispy" + ((i % 3) + 1);
                 wispy.targetName = "wispy";
-                wispy.velocity = new Vector3(pref_windSpeed * 1.5f, 0.0f, 0.0f);
+                wispy.velocity = new Vector(pref_windSpeed * 1.5f, 0.0f, 0.0f);
                 wispy.scale.set(GlobalRand.floatRange(1.0f, 3.0f), 1.0f, GlobalRand.floatRange(1.0f, 1.5f));
-                wispy.origin.x = (((float) i) * (120.0f / ((float) num_wisps))) - 0.0703125f;
-                wispy.origin.y = GlobalRand.floatRange(87.5f, CLOUD_START_DISTANCE);
-                wispy.origin.z = GlobalRand.floatRange(-40.0f, -20.0f);
+                wispy.origin.setX((((float) i) * (120.0f / ((float) num_wisps))) - 0.0703125f);
+                wispy.origin.setY(GlobalRand.floatRange(87.5f, CLOUD_START_DISTANCE));
+                wispy.origin.setZ(GlobalRand.floatRange(-40.0f, -20.0f));
                 this.mThingManager.add(wispy);
             }
         }
@@ -223,7 +223,7 @@ public class SceneSnow extends SceneBase {
     private void renderBackground(GL10 gl, float timeDelta) {
         Mesh mesh = this.mMeshManager.getMeshByName(gl, "plane_16x16");
         this.mTextureManager.bindTextureID(gl, this.pref_background);
-        gl.glColor4f(todColorFinal.x, todColorFinal.y, todColorFinal.z, 1.0f);
+        gl.glColor4f(todColorFinal.getR(), todColorFinal.getG(), todColorFinal.getB(), 1.0f);
         gl.glMatrixMode(5888);
         gl.glPushMatrix();
         gl.glTranslatef(0.0f, 250.0f, 35.0f);

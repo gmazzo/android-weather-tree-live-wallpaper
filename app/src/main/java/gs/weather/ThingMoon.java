@@ -7,7 +7,7 @@ import javax.microedition.khronos.opengles.GL10;
 import gs.weather.engine.MeshManager;
 import gs.weather.engine.TextureManager;
 import gs.weather.engine.Thing;
-import gs.weather.engine.Vector4;
+import gs.weather.engine.Color;
 import gs.weather.sky_manager.SkyManager;
 
 public class ThingMoon extends Thing {
@@ -20,7 +20,7 @@ public class ThingMoon extends Thing {
         this.mOldPhase = 6;
         this.texName = "moon_6";
         this.meshName = "plane_16x16";
-        this.color = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+        this.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
     }
 
     public void render(GL10 gl, TextureManager texturemanager, MeshManager meshmanager) {
@@ -45,10 +45,10 @@ public class ThingMoon extends Thing {
             if (alpha > 1.0f) {
                 alpha = 1.0f;
             }
-            this.color.a = alpha;
-            this.origin.z = altitude - 80.0f;
-            if (this.origin.z > 0.0f) {
-                this.origin.z = 0.0f;
+            this.color.setA(alpha);
+            this.origin.setZ(altitude - 80.0f);
+            if (this.origin.getZ() > 0.0f) {
+                this.origin.setZ(0.0f);
             }
         }
         double moon_phase = SkyManager.GetMoonPhase();

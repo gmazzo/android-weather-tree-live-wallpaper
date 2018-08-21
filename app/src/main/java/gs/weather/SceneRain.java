@@ -12,17 +12,17 @@ import gs.weather.engine.Mesh;
 import gs.weather.engine.MeshManager;
 import gs.weather.engine.TextureManager;
 import gs.weather.engine.ThingManager;
-import gs.weather.engine.Vector3;
-import gs.weather.engine.Vector4;
+import gs.weather.engine.Vector;
+import gs.weather.engine.Color;
 import gs.weather.sky_manager.TimeOfDay;
 
 public class SceneRain extends SceneBase {
     private final String TAG;
     float[] light_diffuse;
     ParticleRain particleRain;
-    Vector3 particleRainOrigin;
+    Vector particleRainOrigin;
     int rainDensity;
-    Vector4 v_light_diffuse;
+    Color v_light_diffuse;
 
     public SceneRain(Context ctx) {
         this.TAG = "Rain";
@@ -32,19 +32,19 @@ public class SceneRain extends SceneBase {
         this.mMeshManager = new MeshManager(ctx);
         this.mContext = ctx;
         this.pref_background = "storm_bg";
-        todColorFinal = new Vector4();
-        this.pref_todColors = new Vector4[4];
-        this.pref_todColors[0] = new Vector4();
-        this.pref_todColors[1] = new Vector4();
-        this.pref_todColors[2] = new Vector4();
-        this.pref_todColors[3] = new Vector4();
+        todColorFinal = new Color();
+        this.pref_todColors = new Color[4];
+        this.pref_todColors[0] = new Color();
+        this.pref_todColors[1] = new Color();
+        this.pref_todColors[2] = new Color();
+        this.pref_todColors[3] = new Color();
         this.reloadAssets = false;
         this.pref_numClouds = 20;
         this.pref_numWisps = 6;
-        this.v_light_diffuse = new Vector4(0.5f, 0.5f, 0.5f, 1.0f);
+        this.v_light_diffuse = new Color(0.5f, 0.5f, 0.5f, 1.0f);
         this.light_diffuse = new float[]{0.1f, 0.1f, 0.1f, 1.0f};
         this.particleRain = new ParticleRain(this.rainDensity);
-        this.particleRainOrigin = new Vector3(0.0f, 25.0f, 10.0f);
+        this.particleRainOrigin = new Vector(0.0f, 25.0f, 10.0f);
     }
 
     public void load(GL10 gl) {
@@ -75,16 +75,16 @@ public class SceneRain extends SceneBase {
                 ThingDarkCloud cloud = new ThingDarkCloud(false);
                 cloud.randomizeScale();
                 if (GlobalRand.intRange(0, 2) == 0) {
-                    cloud.scale.x *= -1.0f;
+                    cloud.scale.setX(cloud.scale.getX() * -1.0f);
                 }
-                cloud.origin.x = (((float) i) * (90.0f / ((float) num_clouds))) - 0.099609375f;
-                cloud.origin.y = cloudDepthList[i];
-                cloud.origin.z = GlobalRand.floatRange(-20.0f, -10.0f);
+                cloud.origin.setX((((float) i) * (90.0f / ((float) num_clouds))) - 0.099609375f);
+                cloud.origin.setY(cloudDepthList[i]);
+                cloud.origin.setZ(GlobalRand.floatRange(-20.0f, -10.0f));
                 int which = (i % 5) + 1;
                 cloud.meshName = "cloud" + which + "m";
                 cloud.texName = "clouddark" + which;
                 cloud.targetName = "dark_cloud";
-                cloud.velocity = new Vector3(pref_windSpeed * 1.5f, 0.0f, 0.0f);
+                cloud.velocity = new Vector(pref_windSpeed * 1.5f, 0.0f, 0.0f);
                 this.mThingManager.add(cloud);
             }
         }
@@ -154,14 +154,14 @@ public class SceneRain extends SceneBase {
         if (pref_useTimeOfDay) {
             int iMain = tod.getMainIndex();
             int iBlend = tod.getBlendIndex();
-            Vector4.mix(this.v_light_diffuse, this.pref_todColors[iMain], this.pref_todColors[iBlend], tod.getBlendAmount());
+            this.v_light_diffuse.blend(this.pref_todColors[iMain], this.pref_todColors[iBlend], tod.getBlendAmount());
         }
     }
 
     private void renderBackground(GL10 gl, float timeDelta) {
         Mesh mesh = this.mMeshManager.getMeshByName(gl, "plane_16x16");
         this.mTextureManager.bindTextureID(gl, this.pref_background);
-        gl.glColor4f(todColorFinal.x, todColorFinal.y, todColorFinal.z, 1.0f);
+        gl.glColor4f(todColorFinal.getR(), todColorFinal.getG(), todColorFinal.getB(), 1.0f);
         gl.glMatrixMode(5888);
         gl.glPushMatrix();
         gl.glTranslatef(0.0f, 250.0f, 35.0f);
@@ -197,10 +197,10 @@ public class SceneRain extends SceneBase {
         gl.glMatrixMode(5888);
         gl.glLoadIdentity();
         gl.glBlendFunc(1, 771);
-        this.light_diffuse[0] = this.v_light_diffuse.x;
-        this.light_diffuse[1] = this.v_light_diffuse.y;
-        this.light_diffuse[2] = this.v_light_diffuse.z;
-        this.light_diffuse[3] = this.v_light_diffuse.a;
+        this.light_diffuse[0] = this.v_light_diffuse.getR();
+        this.light_diffuse[1] = this.v_light_diffuse.getG();
+        this.light_diffuse[2] = this.v_light_diffuse.getB();
+        this.light_diffuse[3] = this.v_light_diffuse.getA();
         gl.glLightfv(16384, 4609, this.light_diffuse, 0);
         gl.glLightfv(16384, 4608, this.light_diffuse, 0);
         renderBackground(gl, time.sTimeElapsed);

@@ -8,8 +8,8 @@ import gs.weather.engine.Mesh;
 import gs.weather.engine.MeshManager;
 import gs.weather.engine.TextureManager;
 import gs.weather.engine.Thing;
-import gs.weather.engine.Vector3;
-import gs.weather.engine.Vector4;
+import gs.weather.engine.Vector;
+import gs.weather.engine.Color;
 
 public class ThingUFO extends Thing {
     private boolean active;
@@ -24,8 +24,8 @@ public class ThingUFO extends Thing {
         this.hasReachedGoalAltitude = false;
         this.goalAltitude = 15.0f;
         this.loopsRemaining = 0;
-        this.velocity = new Vector3(0.0f, 0.0f, 0.0f);
-        this.color = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+        this.velocity = new Vector(0.0f, 0.0f, 0.0f);
+        this.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
         this.anim = new AnimPlayer(0, 39, GlobalRand.floatRange(2.0f, 4.0f), true);
         this.targetName = "ufo";
         this.loopsRemaining = GlobalRand.intRange(1, 4);
@@ -33,16 +33,16 @@ public class ThingUFO extends Thing {
     }
 
     private void updateArrival(float f) {
-        if (this.origin.z <= this.goalAltitude + 1.0f) {
+        if (this.origin.getZ() <= this.goalAltitude + 1.0f) {
             this.hasReachedGoalAltitude = true;
             return;
         }
-        this.velocity.x = SceneBase.pref_windSpeed * this.speedMod;
-        this.velocity.z = (this.goalAltitude - this.origin.z) * 0.5f;
+        this.velocity.setX(SceneBase.pref_windSpeed * this.speedMod);
+        this.velocity.setZ((this.goalAltitude - this.origin.getZ()) * 0.5f);
     }
 
     private void updateIdle(float f) {
-        this.velocity.x = this.speedMod;
+        this.velocity.setX(this.speedMod);
     }
 
     public void render(GL10 gl, TextureManager texturemanager, MeshManager meshmanager) {
@@ -53,20 +53,20 @@ public class ThingUFO extends Thing {
         gl.glEnable(2929);
         gl.glMatrixMode(5888);
         gl.glPushMatrix();
-        gl.glTranslatef(this.origin.x, this.origin.y, this.origin.z);
-        gl.glScalef(this.scale.x, this.scale.y, this.scale.z);
+        gl.glTranslatef(this.origin.getX(), this.origin.getY(), this.origin.getZ());
+        gl.glScalef(this.scale.getX(), this.scale.getY(), this.scale.getZ());
         gl.glBindTexture(3553, ufoTexId);
         gl.glBlendFunc(770, 771);
-        gl.glColor4f(this.color.x, this.color.y, this.color.z, this.color.a);
+        gl.glColor4f(this.color.getR(), this.color.getG(), this.color.getB(), this.color.getA());
         ring.render(gl);
         gl.glBindTexture(3553, glowTexId);
         gl.glBlendFunc(1, 1);
         gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
         ring.render(gl);
-        gl.glRotatef((this.sTimeElapsed * 270.0f) % 360.0f, this.angles.x, this.angles.y, this.angles.z);
+        gl.glRotatef((this.sTimeElapsed * 270.0f) % 360.0f, this.angles.getR(), this.angles.getG(), this.angles.getB());
         gl.glBindTexture(3553, ufoTexId);
         gl.glBlendFunc(770, 771);
-        gl.glColor4f(this.color.x, this.color.y, this.color.z, this.color.a);
+        gl.glColor4f(this.color.getR(), this.color.getG(), this.color.getB(), this.color.getA());
         ufo.render(gl);
         gl.glBindTexture(3553, glowTexId);
         gl.glBlendFunc(1, 1);
@@ -79,20 +79,20 @@ public class ThingUFO extends Thing {
 
     public void update(float f) {
         super.update(f);
-        this.color.x = SceneBase.todColorFinal.x;
-        this.color.y = SceneBase.todColorFinal.y;
-        this.color.z = SceneBase.todColorFinal.z;
-        float x = 45.0f + (0.5f * this.origin.y);
-        if (this.origin.x > x) {
-            this.origin.x -= 2.0f * x;
+        this.color.setR(SceneBase.todColorFinal.getR());
+        this.color.setG(SceneBase.todColorFinal.getG());
+        this.color.setB(SceneBase.todColorFinal.getB());
+        float x = 45.0f + (0.5f * this.origin.getY());
+        if (this.origin.getX() > x) {
+            this.origin.setX(this.origin.getX() - 2.0f * x);
             this.loopsRemaining--;
         }
         if (this.loopsRemaining <= 0) {
             this.active = false;
         }
         if (!this.active) {
-            this.velocity.z += 1.0f * f;
-            if (this.origin.z > 65.0f) {
+            this.velocity.setZ(this.velocity.getZ() + 1.0f * f);
+            if (this.origin.getZ() > 65.0f) {
                 delete();
             }
         } else if (this.hasReachedGoalAltitude) {
