@@ -14,6 +14,8 @@ import javax.microedition.khronos.opengles.GL11;
 
 import gs.weather.engine.Utility.Logger;
 
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
+
 public class Mesh {
     private static final String TAG = "GL Engine";
     static final boolean assertionsDisabled;
@@ -474,7 +476,7 @@ public class Mesh {
 
     public void renderFrameMultiTexture(GL11 gl11, int frameNum, int tex1, int tex2, int combine, boolean envMap) {
         gl11.glActiveTexture(33984);
-        gl11.glBindTexture(3553, tex1);
+        gl11.glBindTexture(GL_TEXTURE_2D, tex1);
         if (envMap) {
             gl11.glBindBuffer(34962, this.frames[frameNum].bufNormalHandle);
             gl11.glTexCoordPointer(3, 5126, 0, 0);
@@ -484,10 +486,10 @@ public class Mesh {
         }
         gl11.glTexEnvi(8960, 8704, 8448);
         gl11.glActiveTexture(33985);
-        gl11.glEnable(3553);
+        gl11.glEnable(GL_TEXTURE_2D);
         gl11.glClientActiveTexture(33985);
         gl11.glEnableClientState(32888);
-        gl11.glBindTexture(3553, tex2);
+        gl11.glBindTexture(GL_TEXTURE_2D, tex2);
         gl11.glBindBuffer(34962, this.bufTCHandle);
         gl11.glTexCoordPointer(2, 5126, 0, 0);
         gl11.glTexEnvi(8960, 8704, combine);
@@ -499,7 +501,7 @@ public class Mesh {
         gl11.glDrawElements(4, this.numIndices, 5123, 0);
         gl11.glBindBuffer(34962, 0);
         gl11.glBindBuffer(34963, 0);
-        gl11.glDisable(3553);
+        gl11.glDisable(GL_TEXTURE_2D);
         gl11.glActiveTexture(33984);
         gl11.glClientActiveTexture(33984);
     }

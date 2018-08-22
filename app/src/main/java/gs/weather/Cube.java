@@ -10,6 +10,8 @@ import javax.microedition.khronos.opengles.GL10;
 
 import gs.weather.engine.TextureManager;
 
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
+
 public class Cube {
     private static float cubeRotX;
     private static float cubeRotY;
@@ -60,7 +62,7 @@ public class Cube {
         gl.glRotatef(cubeRotX, 1.0f, 0.0f, 0.0f);
         gl.glRotatef(cubeRotY, 0.0f, 1.0f, 0.0f);
         gl.glRotatef(cubeRotZ, 0.0f, 0.0f, 1.0f);
-        gl.glBindTexture(3553, this.textureId);
+        gl.glBindTexture(GL_TEXTURE_2D, this.textureId);
         gl.glEnableClientState(32884);
         gl.glEnableClientState(32888);
         for (int i = 0; i < 6; i++) {

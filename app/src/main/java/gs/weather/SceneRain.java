@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
+import gs.weather.engine.Color;
 import gs.weather.engine.GlobalRand;
 import gs.weather.engine.GlobalTime;
 import gs.weather.engine.Mesh;
@@ -13,8 +14,8 @@ import gs.weather.engine.MeshManager;
 import gs.weather.engine.TextureManager;
 import gs.weather.engine.ThingManager;
 import gs.weather.engine.Vector;
-import gs.weather.engine.Color;
 import gs.weather.sky_manager.TimeOfDay;
+import gs.weather.wallpaper.Textures;
 
 public class SceneRain extends SceneBase {
     private final String TAG;
@@ -131,14 +132,15 @@ public class SceneRain extends SceneBase {
     }
 
     public void precacheAssets(GL10 gl10) {
+        Textures txs = new Textures(mContext.getResources(), gl10);
         this.mTextureManager.loadTextureFromPath(gl10, this.pref_background);
-        this.mTextureManager.loadTextureFromPath(gl10, "trees_overlay");
-        this.mTextureManager.loadTextureFromPath(gl10, "clouddark1");
-        this.mTextureManager.loadTextureFromPath(gl10, "clouddark2");
-        this.mTextureManager.loadTextureFromPath(gl10, "clouddark3");
-        this.mTextureManager.loadTextureFromPath(gl10, "clouddark4");
-        this.mTextureManager.loadTextureFromPath(gl10, "clouddark5");
-        this.mTextureManager.loadTextureFromPath(gl10, "raindrop");
+        this.mTextureManager.bind(txs.loadBitmap("trees_overlay", R.drawable.trees_overlay));
+        this.mTextureManager.bind(txs.loadBitmap("clouddark1", R.drawable.clouddark1));
+        this.mTextureManager.bind(txs.loadBitmap("clouddark2", R.drawable.clouddark2));
+        this.mTextureManager.bind(txs.loadBitmap("clouddark3", R.drawable.clouddark3));
+        this.mTextureManager.bind(txs.loadBitmap("clouddark4", R.drawable.clouddark4));
+        this.mTextureManager.bind(txs.loadBitmap("clouddark5", R.drawable.clouddark5));
+        this.mTextureManager.bind(txs.loadBitmap("raindrop", R.drawable.raindrop));
         this.mMeshManager.createMeshFromFile(gl10, "plane_16x16");
         this.mMeshManager.createMeshFromFile(gl10, "cloud1m");
         this.mMeshManager.createMeshFromFile(gl10, "cloud2m");

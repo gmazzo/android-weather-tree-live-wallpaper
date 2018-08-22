@@ -5,12 +5,14 @@ import android.content.SharedPreferences;
 import javax.microedition.khronos.opengles.GL10;
 
 import gs.weather.engine.AnimPlayer;
+import gs.weather.engine.Color;
 import gs.weather.engine.GlobalRand;
 import gs.weather.engine.GlobalTime;
 import gs.weather.engine.Mesh;
 import gs.weather.engine.Scene;
-import gs.weather.engine.Color;
 import gs.weather.sky_manager.TimeOfDay;
+
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
 
 public abstract class SceneBase extends Scene {
     public static boolean pref_useTimeOfDay;
@@ -79,7 +81,7 @@ public abstract class SceneBase extends Scene {
             }
         }
         Mesh tree_terrain = this.mMeshManager.getMeshByName(gl, "trees_overlay_terrain");
-        gl.glBindTexture(3553, this.mTextureManager.getTextureID(gl, "trees_overlay"));
+        gl.glBindTexture(GL_TEXTURE_2D, this.mTextureManager.getTextureID(gl, "trees_overlay"));
         gl.glMatrixMode(5888);
         gl.glPushMatrix();
         if (this.mLandscape) {

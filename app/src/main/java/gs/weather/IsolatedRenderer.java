@@ -19,6 +19,8 @@ import gs.weather.engine.Vector;
 import gs.weather.sky_manager.TimeOfDay;
 import gs.weather.sky_manager.WeatherSettingsUtil;
 
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
+
 public class IsolatedRenderer implements OnSharedPreferenceChangeListener {
     static final float BACKGROUND_DISTANCE = 300.0f;
     static final float CALENDAR_UPDATE_INTERVAL = 10.0f;
@@ -176,7 +178,7 @@ public class IsolatedRenderer implements OnSharedPreferenceChangeListener {
     public void setRenderDefaults(GL10 gl) {
         gl.glHint(3152, 4353);
         gl.glShadeModel(7425);
-        gl.glEnable(3553);
+        gl.glEnable(GL_TEXTURE_2D);
         gl.glEnable(3042);
         gl.glAlphaFunc(518, 0.02f);
         gl.glDepthMask(DBG);

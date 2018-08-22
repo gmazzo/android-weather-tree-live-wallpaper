@@ -3,13 +3,15 @@ package gs.weather;
 import javax.microedition.khronos.opengles.GL10;
 
 import gs.weather.engine.AnimPlayer;
+import gs.weather.engine.Color;
 import gs.weather.engine.GlobalRand;
 import gs.weather.engine.Mesh;
 import gs.weather.engine.MeshManager;
 import gs.weather.engine.TextureManager;
 import gs.weather.engine.Thing;
 import gs.weather.engine.Vector;
-import gs.weather.engine.Color;
+
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
 
 public class ThingUFO extends Thing {
     private boolean active;
@@ -55,20 +57,20 @@ public class ThingUFO extends Thing {
         gl.glPushMatrix();
         gl.glTranslatef(this.origin.getX(), this.origin.getY(), this.origin.getZ());
         gl.glScalef(this.scale.getX(), this.scale.getY(), this.scale.getZ());
-        gl.glBindTexture(3553, ufoTexId);
+        gl.glBindTexture(GL_TEXTURE_2D, ufoTexId);
         gl.glBlendFunc(770, 771);
         gl.glColor4f(this.color.getR(), this.color.getG(), this.color.getB(), this.color.getA());
         ring.render(gl);
-        gl.glBindTexture(3553, glowTexId);
+        gl.glBindTexture(GL_TEXTURE_2D, glowTexId);
         gl.glBlendFunc(1, 1);
         gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
         ring.render(gl);
         gl.glRotatef((this.sTimeElapsed * 270.0f) % 360.0f, this.angles.getR(), this.angles.getG(), this.angles.getB());
-        gl.glBindTexture(3553, ufoTexId);
+        gl.glBindTexture(GL_TEXTURE_2D, ufoTexId);
         gl.glBlendFunc(770, 771);
         gl.glColor4f(this.color.getR(), this.color.getG(), this.color.getB(), this.color.getA());
         ufo.render(gl);
-        gl.glBindTexture(3553, glowTexId);
+        gl.glBindTexture(GL_TEXTURE_2D, glowTexId);
         gl.glBlendFunc(1, 1);
         gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
         ufo.render(gl);

@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
+import gs.weather.engine.Color;
 import gs.weather.engine.GlobalRand;
 import gs.weather.engine.GlobalTime;
 import gs.weather.engine.Mesh;
@@ -13,8 +14,8 @@ import gs.weather.engine.MeshManager;
 import gs.weather.engine.TextureManager;
 import gs.weather.engine.ThingManager;
 import gs.weather.engine.Vector;
-import gs.weather.engine.Color;
 import gs.weather.sky_manager.TimeOfDay;
+import gs.weather.wallpaper.Textures;
 
 public class SceneClear extends SceneBase {
     protected static final float BALLOON_START_ALTITUDE = -50.0f;
@@ -92,19 +93,20 @@ public class SceneClear extends SceneBase {
         this.reloadAssets = true;
     }
 
-    public void precacheAssets(GL10 gl10) {
+    public void precacheAssets(final GL10 gl10) {
+        Textures txs = new Textures(mContext.getResources(), gl10);
         this.mTextureManager.loadTextureFromPath(gl10, this.pref_background);
-        this.mTextureManager.loadTextureFromPath(gl10, "trees_overlay");
-        this.mTextureManager.loadTextureFromPath(gl10, "cloud1");
-        this.mTextureManager.loadTextureFromPath(gl10, "cloud2");
-        this.mTextureManager.loadTextureFromPath(gl10, "cloud3");
-        this.mTextureManager.loadTextureFromPath(gl10, "cloud4");
-        this.mTextureManager.loadTextureFromPath(gl10, "cloud5");
-        this.mTextureManager.loadTextureFromPath(gl10, "wispy1");
-        this.mTextureManager.loadTextureFromPath(gl10, "wispy2");
-        this.mTextureManager.loadTextureFromPath(gl10, "wispy3");
-        this.mTextureManager.loadTextureFromPath(gl10, "sun", false);
-        this.mTextureManager.loadTextureFromPath(gl10, "sun_blend", false);
+        this.mTextureManager.bind(txs.loadBitmap("trees_overlay", R.drawable.trees_overlay));
+        this.mTextureManager.bind(txs.loadBitmap("cloud1", R.drawable.cloud1));
+        this.mTextureManager.bind(txs.loadBitmap("cloud2", R.drawable.cloud2));
+        this.mTextureManager.bind(txs.loadBitmap("cloud3", R.drawable.cloud3));
+        this.mTextureManager.bind(txs.loadBitmap("cloud4", R.drawable.cloud4));
+        this.mTextureManager.bind(txs.loadBitmap("cloud5", R.drawable.cloud5));
+        this.mTextureManager.bind(txs.loadTGA("wispy1", R.raw.wispy1));
+        this.mTextureManager.bind(txs.loadTGA("wispy2", R.raw.wispy2));
+        this.mTextureManager.bind(txs.loadTGA("wispy3", R.raw.wispy3));
+        this.mTextureManager.bind(txs.loadTGA("sun", R.raw.sun));
+        this.mTextureManager.bind(txs.loadTGA("sun_blend", R.raw.sun_blend));
         this.mMeshManager.createMeshFromFile(gl10, "plane_16x16");
         this.mMeshManager.createMeshFromFile(gl10, "cloud1m");
         this.mMeshManager.createMeshFromFile(gl10, "cloud2m");

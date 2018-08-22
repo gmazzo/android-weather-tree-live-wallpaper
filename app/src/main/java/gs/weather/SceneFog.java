@@ -5,13 +5,14 @@ import android.content.SharedPreferences;
 
 import javax.microedition.khronos.opengles.GL10;
 
+import gs.weather.engine.Color;
 import gs.weather.engine.GlobalTime;
 import gs.weather.engine.Mesh;
 import gs.weather.engine.MeshManager;
 import gs.weather.engine.TextureManager;
 import gs.weather.engine.ThingManager;
-import gs.weather.engine.Color;
 import gs.weather.sky_manager.TimeOfDay;
+import gs.weather.wallpaper.Textures;
 
 public class SceneFog extends SceneBase {
     private static final String TAG = "Fog";
@@ -53,8 +54,9 @@ public class SceneFog extends SceneBase {
     }
 
     public void precacheAssets(GL10 gl10) {
+        Textures txs = new Textures(mContext.getResources(), gl10);
         this.mTextureManager.loadTextureFromPath(gl10, this.pref_background);
-        this.mTextureManager.loadTextureFromPath(gl10, "trees_overlay");
+        this.mTextureManager.bind(txs.loadBitmap("trees_overlay", R.drawable.trees_overlay));
         this.mTextureManager.loadTextureFromPath(gl10, "sun", false);
         this.mTextureManager.loadTextureFromPath(gl10, "sun_blend", false);
         this.mMeshManager.createMeshFromFile(gl10, "plane_16x16");

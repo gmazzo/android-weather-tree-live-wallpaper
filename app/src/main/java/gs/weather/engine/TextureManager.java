@@ -24,6 +24,10 @@ import javax.microedition.khronos.opengles.GL11;
 
 import gs.weather.WallpaperSettings;
 import gs.weather.engine.Utility.Logger;
+import gs.weather.wallpaper.Texture;
+
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
+import static javax.microedition.khronos.opengles.GL11.GL_GENERATE_MIPMAP;
 
 public class TextureManager {
     private static final String SIZE_FILE_SUFFIX = "_size";
@@ -145,10 +149,10 @@ public class TextureManager {
             }
             if (useMipMap && (gl10 instanceof GL11)) {
                 Logger.v(TAG, " - Using mipmap generation");
-                gl10.glTexParameterf(3553, 33169, 1.0f);
-                GLUtils.texImage2D(3553, 0, bitmap, 0);
+                gl10.glTexParameterf(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, 1.0f);
+                GLUtils.texImage2D(GL_TEXTURE_2D, 0, bitmap, 0);
             } else {
-                GLUtils.texImage2D(3553, 0, bitmap, 0);
+                GLUtils.texImage2D(GL_TEXTURE_2D, 0, bitmap, 0);
             }
             bitmap.recycle();
             return true;
@@ -171,13 +175,13 @@ public class TextureManager {
             Logger.v(TAG, " - bitmap was null!");
             return false;
         } else if (bitmapSanityCheck(bitmap)) {
-            Logger.v(TAG, " - loadDrawable");
+            Logger.v(TAG, " - loadBitmap");
             if (useMipMap) {
                 Logger.v(TAG, " - Using mipmap generation");
-                gl10.glTexParameterf(3553, 33169, 1.0f);
-                GLUtils.texImage2D(3553, 0, bitmap, 0);
+                gl10.glTexParameterf(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, 1.0f);
+                GLUtils.texImage2D(GL_TEXTURE_2D, 0, bitmap, 0);
             } else {
-                GLUtils.texImage2D(3553, 0, bitmap, 0);
+                GLUtils.texImage2D(GL_TEXTURE_2D, 0, bitmap, 0);
             }
             bitmap.recycle();
             return true;
@@ -196,10 +200,10 @@ public class TextureManager {
             }
             if (useMipMap && (gl10 instanceof GL11)) {
                 Logger.v(TAG, " - Using mipmap generation");
-                gl10.glTexParameterf(3553, 33169, 1.0f);
-                GLUtils.texImage2D(3553, 0, bitmap, 0);
+                gl10.glTexParameterf(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, 1.0f);
+                GLUtils.texImage2D(GL_TEXTURE_2D, 0, bitmap, 0);
             } else {
-                GLUtils.texImage2D(3553, 0, bitmap, 0);
+                GLUtils.texImage2D(GL_TEXTURE_2D, 0, bitmap, 0);
             }
             bitmap.recycle();
             return true;
@@ -214,13 +218,13 @@ public class TextureManager {
             TGALoader.TGA tga = new TGALoader().loadTGA(is);
             if (tga.bpp == 8) {
                 Logger.v(TAG, " - tga read as 8-bit grey");
-                gl.glTexImage2D(3553, 0, 6409, tga.width, tga.height, 0, 6409, 5121, tga.imageData);
+                gl.glTexImage2D(GL_TEXTURE_2D, 0, 6409, tga.width, tga.height, 0, 6409, 5121, tga.imageData);
             } else if (tga.bpp == 24) {
                 Logger.v(TAG, " - tga read as 24-bit");
-                gl.glTexImage2D(3553, 0, 6407, tga.width, tga.height, 0, 6407, 5121, tga.imageData);
+                gl.glTexImage2D(GL_TEXTURE_2D, 0, 6407, tga.width, tga.height, 0, 6407, 5121, tga.imageData);
             } else if (tga.bpp == 32) {
                 Logger.v(TAG, " - tga read as 32-bit");
-                gl.glTexImage2D(3553, 0, 6408, tga.width, tga.height, 0, 6408, 5121, tga.imageData);
+                gl.glTexImage2D(GL_TEXTURE_2D, 0, 6408, tga.width, tga.height, 0, 6408, 5121, tga.imageData);
             }
             is.close();
             return true;
@@ -232,7 +236,7 @@ public class TextureManager {
 
     public int bindTextureID(GL10 gl10, String name) {
         int tId = getTextureID(gl10, name);
-        gl10.glBindTexture(3553, tId);
+        gl10.glBindTexture(GL_TEXTURE_2D, tId);
         return tId;
     }
 
@@ -314,25 +318,25 @@ public class TextureManager {
         }
         Logger.v(TAG, "TextureManager reading " + name);
         if (this.pref_useMipMaps && (gl instanceof GL11) && useMipMap) {
-            gl.glTexParameterf(3553, 10241, 9985.0f);
-            gl.glTexParameterf(3553, 10240, 9729.0f);
+            gl.glTexParameterf(GL_TEXTURE_2D, 10241, 9985.0f);
+            gl.glTexParameterf(GL_TEXTURE_2D, 10240, 9729.0f);
         } else {
-            gl.glTexParameterf(3553, 10241, 9729.0f);
-            gl.glTexParameterf(3553, 10240, 9729.0f);
+            gl.glTexParameterf(GL_TEXTURE_2D, 10241, 9729.0f);
+            gl.glTexParameterf(GL_TEXTURE_2D, 10240, 9729.0f);
         }
         if (useClamp) {
-            gl.glTexParameterf(3553, 10242, 33071.0f);
-            gl.glTexParameterf(3553, 10243, 33071.0f);
+            gl.glTexParameterf(GL_TEXTURE_2D, 10242, 33071.0f);
+            gl.glTexParameterf(GL_TEXTURE_2D, 10243, 33071.0f);
         } else {
-            gl.glTexParameterf(3553, 10242, 10497.0f);
-            gl.glTexParameterf(3553, 10243, 10497.0f);
+            gl.glTexParameterf(GL_TEXTURE_2D, 10242, 10497.0f);
+            gl.glTexParameterf(GL_TEXTURE_2D, 10243, 10497.0f);
         }
         boolean loadSuccess = false;
         Resources resources = this.context.getResources();
         IntBuffer textureBuffer = IntBuffer.allocate(1);
-        gl.glEnable(3553);
+        gl.glEnable(GL_TEXTURE_2D);
         gl.glGenTextures(1, textureBuffer);
-        gl.glBindTexture(3553, textureBuffer.get(0));
+        gl.glBindTexture(GL_TEXTURE_2D, textureBuffer.get(0));
         int drawable_id = resources.getIdentifier(name, "drawable", context.getPackageName());
         int raw_id = resources.getIdentifier(name, "raw", context.getPackageName());
         if (drawable_id != 0) {
@@ -352,6 +356,10 @@ public class TextureManager {
             Logger.d(TAG, "load " + name + " failed");
         }
         return textureBuffer.get(0);
+    }
+
+    public void bind(Texture texture) {
+        this.texIDs.put(texture.getName(), texture.getId());
     }
 
     public void unload(GL10 gl10) {

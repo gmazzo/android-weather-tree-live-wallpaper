@@ -3,6 +3,8 @@ package gs.weather.engine;
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
+
 public class Thing {
     public Color angles = new Color(0.0f, 0.0f, 1.0f, 0.0f);
     public AnimPlayer anim = null;
@@ -57,7 +59,7 @@ public class Thing {
             if (this.angles.getA() != 0.0f) {
                 gl.glRotatef(this.angles.getA(), this.angles.getR(), this.angles.getG(), this.angles.getB());
             }
-            gl.glBindTexture(3553, textureId);
+            gl.glBindTexture(GL_TEXTURE_2D, textureId);
             if (this.color != null) {
                 gl.glColor4f(this.color.getR(), this.color.getG(), this.color.getB(), this.color.getA());
             }
