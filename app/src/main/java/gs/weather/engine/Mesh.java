@@ -14,7 +14,12 @@ import javax.microedition.khronos.opengles.GL11;
 
 import gs.weather.engine.Utility.Logger;
 
+import static javax.microedition.khronos.opengles.GL10.GL_FLOAT;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
+import static javax.microedition.khronos.opengles.GL10.GL_TRIANGLES;
+import static javax.microedition.khronos.opengles.GL10.GL_UNSIGNED_SHORT;
+import static javax.microedition.khronos.opengles.GL11.GL_ARRAY_BUFFER;
+import static javax.microedition.khronos.opengles.GL11.GL_ELEMENT_ARRAY_BUFFER;
 
 public class Mesh {
     private static final String TAG = "GL Engine";
@@ -22,19 +27,17 @@ public class Mesh {
     private static Tag tagOrigin = null;
     private ShortBuffer bufIndex;
     private ByteBuffer bufIndexDirect;
-    private int bufIndexHandle = 0;
-    private FloatBuffer bufScratch = null;
-    private float[] bufScratchArray = null;
-    private ByteBuffer bufScratchDirect = null;
+    public int bufIndexHandle = 0;
+    public FloatBuffer bufScratch = null;
     private FloatBuffer bufTC;
     private ByteBuffer bufTCDirect;
-    private int bufTCHandle = 0;
-    private Frame[] frames;
+    public int bufTCHandle = 0;
+    public Frame[] frames;
     public String meshName;
-    protected int numElements;
-    protected int numIndices;
+    public int numElements;
+    public int numIndices;
     protected int numTriangles;
-    private float[] originalVertexArray;
+    public float[] originalVertexArray;
 
     public static class Frame {
         public FloatBuffer bufNormal;
@@ -125,22 +128,10 @@ public class Mesh {
         }
     }
 
-    public Mesh(String meshName, int numElements, int numIndices, int bufIndexHandle, int bufTCHandle, float[] originalVertexArray, Frame[] frames) {
-        this.bufIndexHandle = bufIndexHandle;
-        this.bufTCHandle = bufTCHandle;
-        this.frames = frames;
-        this.meshName = meshName;
-        this.numElements = numElements;
-        this.numIndices = numIndices;
-        this.originalVertexArray = originalVertexArray;
-    }
-
-    private void allocateScratchBuffers(GL10 gl) {
-        int n = this.numElements * 3;
-        this.bufScratchArray = new float[n];
-        this.bufScratchDirect = ByteBuffer.allocateDirect(n * 4);
-        this.bufScratchDirect.order(ByteOrder.nativeOrder());
-        this.bufScratch = this.bufScratchDirect.asFloatBuffer();
+    private void allocateScratchBuffers() {
+        this.bufScratch = ByteBuffer.allocateDirect(this.numElements * 3 * 4)
+                .order(ByteOrder.nativeOrder())
+                .asFloatBuffer();
     }
 
     public void createFromArrays(GL10 gl, float[] vertexs, float[] normals, float[] tcs, short[] indices, int num_elements, int num_frames, boolean willBeInterpolated) {
@@ -388,17 +379,17 @@ public class Mesh {
             renderFrame_gl11((GL11) gl10, frameNum);
             return;
         }
-        gl10.glVertexPointer(3, 5126, 0, this.frames[frameNum].bufVertex);
-        gl10.glNormalPointer(5126, 0, this.frames[frameNum].bufNormal);
-        gl10.glTexCoordPointer(2, 5126, 0, this.bufTC);
-        gl10.glDrawElements(4, this.numIndices, 5123, this.bufIndex);
+        gl10.glVertexPointer(3, GL_FLOAT, 0, this.frames[frameNum].bufVertex);
+        gl10.glNormalPointer(GL_FLOAT, 0, this.frames[frameNum].bufNormal);
+        gl10.glTexCoordPointer(2, GL_FLOAT, 0, this.bufTC);
+        gl10.glDrawElements(GL_TRIANGLES, this.numIndices, GL_UNSIGNED_SHORT, this.bufIndex);
     }
 
     public void renderFrameEnvMap(GL10 gl10, int i) {
-        gl10.glVertexPointer(3, 5126, 0, this.frames[i].bufVertex);
-        gl10.glNormalPointer(5126, 0, this.frames[i].bufNormal);
-        gl10.glTexCoordPointer(3, 5126, 0, this.frames[i].bufNormal);
-        gl10.glDrawElements(4, this.numIndices, 5123, this.bufIndex);
+        gl10.glVertexPointer(3, GL_FLOAT, 0, this.frames[i].bufVertex);
+        gl10.glNormalPointer(GL_FLOAT, 0, this.frames[i].bufNormal);
+        gl10.glTexCoordPointer(3, GL_FLOAT, 0, this.frames[i].bufNormal);
+        gl10.glDrawElements(GL_TRIANGLES, this.numIndices, GL_UNSIGNED_SHORT, this.bufIndex);
     }
 
     public void renderFrameInterpolated(GL10 gl, int frameNum, int frameBlendNum, float blendAmount) {
@@ -426,39 +417,39 @@ public class Mesh {
                 Logger.v(TAG, sb.toString());
                 frameBlendNum = this.frames.length - 1;
             }
-            if (this.bufScratchArray == null) {
-                allocateScratchBuffers(gl);
+            if (this.bufScratch == null) {
+                allocateScratchBuffers();
                 Logger.v(TAG, this.meshName + " allocated animation buffers");
             }
             int firstFrameOffset = (this.numElements * frameNum) * 3;
             int blendFrameOffset = (this.numElements * frameBlendNum) * 3;
             float oneminusblend = 1.0f - blendAmount;
-            for (int i = 0; i < this.numElements * 3; i++) {
-                this.bufScratchArray[i] = (this.originalVertexArray[firstFrameOffset + i] * oneminusblend) + (this.originalVertexArray[blendFrameOffset + i] * blendAmount);
+            for (int i = 0, c = bufScratch.capacity(); i < c; i++) {
+                this.bufScratch.put(i,
+                        (this.originalVertexArray[firstFrameOffset + i] * oneminusblend) +
+                                (this.originalVertexArray[blendFrameOffset + i] * blendAmount));
             }
-            this.bufScratch.clear();
-            this.bufScratch.put(this.bufScratchArray);
             this.bufScratch.position(0);
 
-            gl.glVertexPointer(3, 5126, 0, this.bufScratch);
+            gl.glVertexPointer(3, GL_FLOAT, 0, this.bufScratch);
             if (gl instanceof GL11) {
                 GL11 gl11 = (GL11) gl;
-                gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, this.frames[frameNum].bufNormalHandle);
-                gl11.glNormalPointer(5126, 0, 0);
+                gl11.glBindBuffer(GL_ARRAY_BUFFER, this.frames[frameNum].bufNormalHandle);
+                gl11.glNormalPointer(GL_FLOAT, 0, 0);
 
-                gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, this.bufTCHandle);
-                gl11.glTexCoordPointer(2, 5126, 0, 0);
+                gl11.glBindBuffer(GL_ARRAY_BUFFER, this.bufTCHandle);
+                gl11.glTexCoordPointer(2, GL_FLOAT, 0, 0);
 
-                gl11.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, this.bufIndexHandle);
-                gl11.glDrawElements(4, this.numIndices, 5123, 0);
+                gl11.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this.bufIndexHandle);
+                gl11.glDrawElements(4, this.numIndices, GL_UNSIGNED_SHORT, 0);
 
-                gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, 0);
-                gl11.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, 0);
+                gl11.glBindBuffer(GL_ARRAY_BUFFER, 0);
+                gl11.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
             } else {
-                gl.glNormalPointer(5126, 0, this.frames[frameNum].bufNormal);
-                gl.glTexCoordPointer(2, 5126, 0, this.bufTC);
-                gl.glDrawElements(4, this.numIndices, 5123, this.bufIndex);
+                gl.glNormalPointer(GL_FLOAT, 0, this.frames[frameNum].bufNormal);
+                gl.glTexCoordPointer(2, GL_FLOAT, 0, this.bufTC);
+                gl.glDrawElements(GL_TRIANGLES, this.numIndices, GL_UNSIGNED_SHORT, this.bufIndex);
             }
         }
     }
@@ -471,10 +462,10 @@ public class Mesh {
         } else if (((double) f) > 0.99d) {
             renderFrame(gl10, j);
         } else {
-            gl10.glVertexPointer(3, 5126, 0, this.bufScratch);
-            gl10.glNormalPointer(5126, 0, this.frames[i].bufNormal);
-            gl10.glTexCoordPointer(2, 5126, 0, this.bufTC);
-            gl10.glDrawElements(4, this.numIndices, 5123, this.bufIndex);
+            gl10.glVertexPointer(3, GL_FLOAT, 0, this.bufScratch);
+            gl10.glNormalPointer(GL_FLOAT, 0, this.frames[i].bufNormal);
+            gl10.glTexCoordPointer(2, GL_FLOAT, 0, this.bufTC);
+            gl10.glDrawElements(GL_TRIANGLES, this.numIndices, GL_UNSIGNED_SHORT, this.bufIndex);
         }
     }
 
@@ -483,10 +474,10 @@ public class Mesh {
         gl11.glBindTexture(GL_TEXTURE_2D, tex1);
         if (envMap) {
             gl11.glBindBuffer(34962, this.frames[frameNum].bufNormalHandle);
-            gl11.glTexCoordPointer(3, 5126, 0, 0);
+            gl11.glTexCoordPointer(3, GL_FLOAT, 0, 0);
         } else {
             gl11.glBindBuffer(34962, this.bufTCHandle);
-            gl11.glTexCoordPointer(2, 5126, 0, 0);
+            gl11.glTexCoordPointer(2, GL_FLOAT, 0, 0);
         }
         gl11.glTexEnvi(8960, 8704, 8448);
         gl11.glActiveTexture(33985);
@@ -495,14 +486,14 @@ public class Mesh {
         gl11.glEnableClientState(32888);
         gl11.glBindTexture(GL_TEXTURE_2D, tex2);
         gl11.glBindBuffer(34962, this.bufTCHandle);
-        gl11.glTexCoordPointer(2, 5126, 0, 0);
+        gl11.glTexCoordPointer(2, GL_FLOAT, 0, 0);
         gl11.glTexEnvi(8960, 8704, combine);
         gl11.glBindBuffer(34962, this.frames[frameNum].bufVertexHandle);
-        gl11.glVertexPointer(3, 5126, 0, 0);
+        gl11.glVertexPointer(3, GL_FLOAT, 0, 0);
         gl11.glBindBuffer(34962, this.frames[frameNum].bufNormalHandle);
-        gl11.glNormalPointer(5126, 0, 0);
+        gl11.glNormalPointer(GL_FLOAT, 0, 0);
         gl11.glBindBuffer(34963, this.bufIndexHandle);
-        gl11.glDrawElements(4, this.numIndices, 5123, 0);
+        gl11.glDrawElements(4, this.numIndices, GL_UNSIGNED_SHORT, 0);
         gl11.glBindBuffer(34962, 0);
         gl11.glBindBuffer(34963, 0);
         gl11.glDisable(GL_TEXTURE_2D);
@@ -522,7 +513,7 @@ public class Mesh {
     }
 
     public void renderFrame_gl11_render(GL11 gl11) {
-        gl11.glDrawElements(4, this.numIndices, 5123, 0);
+        gl11.glDrawElements(4, this.numIndices, GL_UNSIGNED_SHORT, 0);
     }
 
     public void renderFrame_gl11_setup(GL11 gl11, int frameNum) {
@@ -533,11 +524,11 @@ public class Mesh {
             frameNum = this.frames.length - 1;
         }
         gl11.glBindBuffer(34962, this.frames[frameNum].bufVertexHandle);
-        gl11.glVertexPointer(3, 5126, 0, 0);
+        gl11.glVertexPointer(3, GL_FLOAT, 0, 0);
         gl11.glBindBuffer(34962, this.frames[frameNum].bufNormalHandle);
-        gl11.glNormalPointer(5126, 0, 0);
+        gl11.glNormalPointer(GL_FLOAT, 0, 0);
         gl11.glBindBuffer(34962, this.bufTCHandle);
-        gl11.glTexCoordPointer(2, 5126, 0, 0);
+        gl11.glTexCoordPointer(2, GL_FLOAT, 0, 0);
         gl11.glBindBuffer(34963, this.bufIndexHandle);
     }
 
@@ -567,6 +558,5 @@ public class Mesh {
             gl11.glDeleteBuffers(2, tmpBuffer, 0);
         }
         this.bufScratch = null;
-        this.bufScratchArray = null;
     }
 }

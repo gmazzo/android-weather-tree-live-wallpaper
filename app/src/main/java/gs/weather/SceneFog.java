@@ -63,8 +63,8 @@ public class SceneFog extends SceneBase {
         this.mTextureManager.loadTextureFromPath(gl10, "sun_blend", false);
         Models mlds = new Models(mContext.getResources(), (GL11) gl10);
         this.mMeshManager.bind(mlds.loadBMDL("plane_16x16", R.raw.plane_16x16));
-        this.mMeshManager.bind(mlds.loadBMDL("grass_overlay", R.raw.grass_overlay, true));
-        this.mMeshManager.bind(mlds.loadBMDL("trees_overlay", R.raw.trees_overlay, true));
+        this.mMeshManager.bind(mlds.loadBMDL("grass_overlay", R.raw.grass_overlay));
+        this.mMeshManager.bind(mlds.loadBMDL("trees_overlay", R.raw.trees_overlay));
         this.mMeshManager.bind(mlds.loadBMDL("trees_overlay_terrain", R.raw.trees_overlay_terrain));
     }
 

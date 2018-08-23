@@ -17,6 +17,11 @@ public class AnimPlayer {
     private float sTimeElapsed = 0.0f;
     private int timesCompleted = 0;
 
+    // TODO temporary workaround
+    @Deprecated
+    public AnimPlayer() {
+    }
+
     public AnimPlayer(int first, int last, float duration, boolean loop) {
         this.frameFirst = first;
         this.frameLast = last;

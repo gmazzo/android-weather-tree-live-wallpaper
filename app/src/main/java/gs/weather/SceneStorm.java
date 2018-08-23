@@ -141,8 +141,8 @@ public class SceneStorm extends SceneBase {
         this.mMeshManager.bind(mlds.loadBMDL("cloud3m", R.raw.cloud3m));
         this.mMeshManager.bind(mlds.loadBMDL("cloud4m", R.raw.cloud4m));
         this.mMeshManager.bind(mlds.loadBMDL("cloud5m", R.raw.cloud5m));
-        this.mMeshManager.bind(mlds.loadBMDL("grass_overlay", R.raw.grass_overlay, true));
-        this.mMeshManager.bind(mlds.loadBMDL("trees_overlay", R.raw.trees_overlay, true));
+        this.mMeshManager.bind(mlds.loadBMDL("grass_overlay", R.raw.grass_overlay));
+        this.mMeshManager.bind(mlds.loadBMDL("trees_overlay", R.raw.trees_overlay));
         this.mMeshManager.bind(mlds.loadBMDL("trees_overlay_terrain", R.raw.trees_overlay_terrain));
     }
 

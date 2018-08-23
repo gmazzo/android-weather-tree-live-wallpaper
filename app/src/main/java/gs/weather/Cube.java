@@ -10,6 +10,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 import gs.weather.engine.TextureManager;
 
+import static javax.microedition.khronos.opengles.GL10.GL_FLOAT;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
 
 public class Cube {
@@ -66,8 +67,8 @@ public class Cube {
         gl.glEnableClientState(32884);
         gl.glEnableClientState(32888);
         for (int i = 0; i < 6; i++) {
-            gl.glVertexPointer(3, 5126, 0, cubeVertexBfr[i]);
-            gl.glTexCoordPointer(2, 5126, 0, cubeTextureBfr[i]);
+            gl.glVertexPointer(3, GL_FLOAT, 0, cubeVertexBfr[i]);
+            gl.glTexCoordPointer(2, GL_FLOAT, 0, cubeTextureBfr[i]);
             gl.glDrawArrays(6, 0, 4);
         }
         gl.glDisableClientState(32884);

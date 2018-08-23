@@ -6,7 +6,7 @@ public class GlobalTime {
     final float WORST_FRAMERATE = 3.0f;
     final float WORST_FRAME_TIME = 0.3333333f;
     public long msTimeCurrent;
-    public int msTimeDelta;
+    private int msTimeDelta;
     private long msTimePrev;
     public float sTimeDelta;
     public float sTimeElapsed;
