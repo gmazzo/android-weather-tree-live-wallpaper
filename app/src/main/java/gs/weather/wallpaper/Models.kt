@@ -2,20 +2,21 @@ package gs.weather.wallpaper
 
 import android.content.res.Resources
 import android.support.annotation.RawRes
+import java.io.Closeable
 import java.io.DataInputStream
 import java.io.InputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.charset.Charset
-import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 import javax.microedition.khronos.opengles.GL11.*
 
 class Models(private val resources: Resources,
-             private val gl: GL10) {
+             private val gl: GL11) : Closeable {
+    private val models = mutableMapOf<String, Model>()
 
     @JvmOverloads // TODO delete this once finished
-    fun loadBMDL(@RawRes rawId: Int, interpolated: Boolean = false) {
+    fun loadBMDL(name: String, @RawRes rawId: Int, interpolated: Boolean = false) = models.getOrPut(name) {
         DataInputStream(resources.openRawResource(rawId)).use { input ->
             val buffer4 = ByteArray(4)
 
@@ -53,62 +54,63 @@ class Models(private val resources: Resources,
             input.skip(8)
             val normals = FloatArray(normalsCount * 3 * frames, init = normalsMapper)
 
-            return loadWithArrays(vertices, normals, texts, indices, elements, frames, interpolated)
+            return loadWithArrays(name, vertices, normals, texts, indices, elements, frames, interpolated)
         }
     }
 
-    private fun loadWithArrays(vertexs: FloatArray, normals: FloatArray, tcs: FloatArray, indices: ShortArray, num_elements: Int, num_frames: Int, willBeInterpolated: Boolean) {
-        val useVertexBufferObjects = gl is GL11
+    private fun loadWithArrays(name: String,
+                               vertices: FloatArray,
+                               normals: FloatArray,
+                               texts: FloatArray,
+                               indices: ShortArray,
+                               elementsCount: Int,
+                               framesCount: Int,
+                               interpolated: Boolean) = models.getOrPut(name) {
         val iCapacity = indices.size
-        val numTriangles = indices.size / 3
-        val frames = arrayOfNulls<Model.Frame>(num_frames)
-        val numElements = num_elements
-        val originalVertexArray = if (willBeInterpolated) vertexs else null
+        val originalVertexArray = if (interpolated) vertices else null
 
-        val length = num_elements * 3
+        val length = elementsCount * 3
         val vertexBufferBytes = length * 4
         val normalBufferBytes = length * 4
-        val tcBufferBytes = num_elements * 2 * 4
+        val tcBufferBytes = elementsCount * 2 * 4
         val indexBufferBytes = iCapacity * 2
-        for (i in 0 until num_frames) {
-            val frame = Model.Frame().apply { frames[i] = this }
 
-            frame.bufVertexDirect = ByteBuffer.allocateDirect(vertexBufferBytes).order(ByteOrder.nativeOrder())
-            frame.bufVertex = frame.bufVertexDirect!!.asFloatBuffer().apply {
+        val frames = Array(framesCount) { i ->
+            val bufVertexDirect = ByteBuffer.allocateDirect(vertexBufferBytes).order(ByteOrder.nativeOrder())
+            val bufVertex = bufVertexDirect.asFloatBuffer().apply {
                 clear()
-                put(vertexs, i * length, length)
+                put(vertices, i * length, length)
                 position(0)
             }
 
-            frame.bufNormalDirect = ByteBuffer.allocateDirect(normalBufferBytes).order(ByteOrder.nativeOrder())
-            frame.bufNormal = frame.bufNormalDirect!!.asFloatBuffer().apply {
+            val bufNormalDirect = ByteBuffer.allocateDirect(normalBufferBytes).order(ByteOrder.nativeOrder())
+            val bufNormal = bufNormalDirect.asFloatBuffer().apply {
                 clear()
                 put(normals, i * length, length)
                 position(0)
             }
 
-            if (useVertexBufferObjects) {
-                val gl11 = gl as GL11
-                val handleTemp = IntArray(1)
+            val handleTemp = IntArray(1)
 
-                gl11.glGenBuffers(1, handleTemp, 0)
-                frame.bufVertexHandle = handleTemp[0]
-                gl11.glBindBuffer(GL_ARRAY_BUFFER, frame.bufVertexHandle)
-                gl11.glBufferData(GL_ARRAY_BUFFER, vertexBufferBytes, frame.bufVertex, GL_STATIC_DRAW)
-                gl11.glBindBuffer(GL_ARRAY_BUFFER, 0)
+            gl.glGenBuffers(1, handleTemp, 0)
+            val bufVertexHandle = handleTemp[0]
+            gl.glBindBuffer(GL_ARRAY_BUFFER, bufVertexHandle)
+            gl.glBufferData(GL_ARRAY_BUFFER, vertexBufferBytes, bufVertex, GL_STATIC_DRAW)
+            gl.glBindBuffer(GL_ARRAY_BUFFER, 0)
 
-                gl11.glGenBuffers(1, handleTemp, 0)
-                frame.bufNormalHandle = handleTemp[0]
-                gl11.glBindBuffer(GL_ARRAY_BUFFER, frame.bufNormalHandle)
-                gl11.glBufferData(GL_ARRAY_BUFFER, normalBufferBytes, frame.bufNormal, GL_STATIC_DRAW)
-                gl11.glBindBuffer(GL_ARRAY_BUFFER, 0)
-            }
+            gl.glGenBuffers(1, handleTemp, 0)
+            val bufNormalHandle = handleTemp[0]
+            gl.glBindBuffer(GL_ARRAY_BUFFER, bufNormalHandle)
+            gl.glBufferData(GL_ARRAY_BUFFER, normalBufferBytes, bufNormal, GL_STATIC_DRAW)
+            gl.glBindBuffer(GL_ARRAY_BUFFER, 0)
+
+            return@Array Model.Frame(bufNormalHandle, bufVertexHandle)
         }
 
         val bufTCDirect = ByteBuffer.allocateDirect(tcBufferBytes).order(ByteOrder.nativeOrder())
         val bufTC = bufTCDirect.asFloatBuffer().apply {
             clear()
-            put(tcs)
+            put(texts)
             position(0)
         }
 
@@ -119,23 +121,21 @@ class Models(private val resources: Resources,
             position(0)
         }
 
-        val numIndices = bufIndex.capacity()
-        if (useVertexBufferObjects) {
-            val gl11 = gl as GL11
-            val handleTemp = IntArray(1)
-            gl11.glGenBuffers(1, handleTemp, 0)
+        val indicesCount = bufIndex.capacity()
+        val handleTemp = IntArray(2)
+        gl.glGenBuffers(2, handleTemp, 0)
 
-            val bufIndexHandle = handleTemp[0]
-            gl11.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufIndexHandle)
-            gl11.glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBufferBytes, bufIndex, GL_STATIC_DRAW)
-            gl11.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
-            gl11.glGenBuffers(1, handleTemp, 0)
+        val bufIndexHandle = handleTemp[0]
+        gl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufIndexHandle)
+        gl.glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBufferBytes, bufIndex, GL_STATIC_DRAW)
+        gl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
 
-            val bufTCHandle = handleTemp[0]
-            gl11.glBindBuffer(GL_ARRAY_BUFFER, bufTCHandle)
-            gl11.glBufferData(GL_ARRAY_BUFFER, tcBufferBytes, bufTC, GL_STATIC_DRAW)
-            gl11.glBindBuffer(GL_ARRAY_BUFFER, 0)
-        }
+        val bufTCHandle = handleTemp[1]
+        gl.glBindBuffer(GL_ARRAY_BUFFER, bufTCHandle)
+        gl.glBufferData(GL_ARRAY_BUFFER, tcBufferBytes, bufTC, GL_STATIC_DRAW)
+        gl.glBindBuffer(GL_ARRAY_BUFFER, 0)
+
+        return Model(name, gl, frames, elementsCount, indicesCount, originalVertexArray, bufTCHandle, bufIndexHandle)
     }
 
     private fun InputStream.assertChunk(header: String, buffer: ByteArray) {
@@ -145,6 +145,11 @@ class Models(private val resources: Resources,
         if (header != value) {
             throw  IllegalArgumentException("Unexpected chunk: $header!=$value")
         }
+    }
+
+    override fun close() {
+        models.values.forEach(Model::unload)
+        models.clear()
     }
 
 }

@@ -7,8 +7,11 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.microedition.khronos.opengles.GL10;
+
+import gs.weather.wallpaper.Model;
 
 public class MeshManager {
     private static final String TAG = "GL Engine";
@@ -16,7 +19,7 @@ public class MeshManager {
     private Context context;
     private Mesh lastMesh = null;
     private String lastName = null;
-    private HashMap meshList = new HashMap();
+    private Map<String, Mesh> meshList = new HashMap<>();
 
     public MeshManager(Context context1) {
         this.context = context1;
@@ -124,6 +127,10 @@ public class MeshManager {
 
     public void setContext(Context context1) {
         this.context = context1;
+    }
+
+    public void bind(Model model) {
+        this.meshList.put(model.getName(), model.asMesh());
     }
 
     public void unload(GL10 gl10) {

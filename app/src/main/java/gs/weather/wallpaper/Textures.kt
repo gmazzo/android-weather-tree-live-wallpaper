@@ -9,13 +9,13 @@ import java.io.Closeable
 import java.io.IOException
 import java.nio.ByteBuffer
 import java.nio.IntBuffer
-import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL10.*
+import javax.microedition.khronos.opengles.GL11
 import kotlin.math.absoluteValue
 
 class Textures(
         private val resources: Resources,
-        private val gl: GL10) : Closeable {
+        private val gl: GL11) : Closeable {
     private val textures = mutableMapOf<String, Texture>()
 
     private fun createTexture(name: String, loader: () -> Unit) = textures.getOrPut(name) {

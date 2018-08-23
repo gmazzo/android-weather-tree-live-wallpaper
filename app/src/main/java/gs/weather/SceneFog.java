@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import javax.microedition.khronos.opengles.GL10;
+import javax.microedition.khronos.opengles.GL11;
 
 import gs.weather.engine.Color;
 import gs.weather.engine.GlobalTime;
@@ -12,6 +13,7 @@ import gs.weather.engine.MeshManager;
 import gs.weather.engine.TextureManager;
 import gs.weather.engine.ThingManager;
 import gs.weather.sky_manager.TimeOfDay;
+import gs.weather.wallpaper.Models;
 import gs.weather.wallpaper.Textures;
 
 public class SceneFog extends SceneBase {
@@ -54,15 +56,16 @@ public class SceneFog extends SceneBase {
     }
 
     public void precacheAssets(GL10 gl10) {
-        Textures txs = new Textures(mContext.getResources(), gl10);
+        Textures txs = new Textures(mContext.getResources(), (GL11) gl10);
         this.mTextureManager.loadTextureFromPath(gl10, this.pref_background);
         this.mTextureManager.bind(txs.loadBitmap("trees_overlay", R.drawable.trees_overlay));
         this.mTextureManager.loadTextureFromPath(gl10, "sun", false);
         this.mTextureManager.loadTextureFromPath(gl10, "sun_blend", false);
-        this.mMeshManager.createMeshFromFile(gl10, "plane_16x16");
-        this.mMeshManager.createMeshFromFile(gl10, "grass_overlay", true);
-        this.mMeshManager.createMeshFromFile(gl10, "trees_overlay", true);
-        this.mMeshManager.createMeshFromFile(gl10, "trees_overlay_terrain");
+        Models mlds = new Models(mContext.getResources(), (GL11) gl10);
+        this.mMeshManager.bind(mlds.loadBMDL("plane_16x16", R.raw.plane_16x16));
+        this.mMeshManager.bind(mlds.loadBMDL("grass_overlay", R.raw.grass_overlay, true));
+        this.mMeshManager.bind(mlds.loadBMDL("trees_overlay", R.raw.trees_overlay, true));
+        this.mMeshManager.bind(mlds.loadBMDL("trees_overlay_terrain", R.raw.trees_overlay_terrain));
     }
 
     public void backgroundFromPrefs(SharedPreferences prefs) {

@@ -35,9 +35,8 @@ public class Mesh {
     protected int numIndices;
     protected int numTriangles;
     private float[] originalVertexArray;
-    private HashMap tags = null;
 
-    class Frame {
+    public static class Frame {
         public FloatBuffer bufNormal;
         public ByteBuffer bufNormalDirect;
         public int bufNormalHandle = 0;
@@ -45,7 +44,7 @@ public class Mesh {
         public ByteBuffer bufVertexDirect;
         public int bufVertexHandle = 0;
 
-        Frame() {
+        public Frame() {
         }
     }
 
@@ -124,6 +123,16 @@ public class Mesh {
             tagOrigin.addPosition(0.0f, 0.0f, 0.0f, 0);
             tagOrigin.addNormal(0.0f, 0.0f, 1.0f, 0);
         }
+    }
+
+    public Mesh(String meshName, int numElements, int numIndices, int bufIndexHandle, int bufTCHandle, float[] originalVertexArray, Frame[] frames) {
+        this.bufIndexHandle = bufIndexHandle;
+        this.bufTCHandle = bufTCHandle;
+        this.frames = frames;
+        this.meshName = meshName;
+        this.numElements = numElements;
+        this.numIndices = numIndices;
+        this.originalVertexArray = originalVertexArray;
     }
 
     private void allocateScratchBuffers(GL10 gl) {
@@ -214,6 +223,13 @@ public class Mesh {
             gl11.glBufferData(34962, tcBufferBytes, this.bufTC, 35044);
             gl11.glBindBuffer(34962, 0);
         }
+
+        // this.numElements = 0;
+        this.numTriangles = 0;
+        this.bufIndex = null;
+        this.bufIndexDirect = null;
+        this.bufTC = null;
+        this.bufTCDirect = null;
     }
 
     public void createFromBinaryFile(GL10 gl, InputStream inputstream, String name, boolean willBeInterpolated) {
@@ -306,37 +322,8 @@ public class Mesh {
                                                         curReadIndex += 3;
                                                     }
                                                 }
-                                                if (fileVersion >= 5) {
-                                                    try {
-                                                        dataInputStream.skip(4);
-                                                        dataInputStream.read(segchars, 0, 4);
-                                                        if (segchars[0] == (byte) 84 && segchars[1] == (byte) 65 && segchars[2] == (byte) 71 && segchars[3] == (byte) 83) {
-                                                            int numTags = dataInputStream.readInt();
-                                                            dataInputStream.skip(8);
-                                                            for (i = 0; i < numTags; i++) {
-                                                                Tag currentTag = new Tag(fileFrames);
-                                                                byte[] rawTagName = new byte[16];
-                                                                dataInputStream.read(rawTagName, 0, 16);
-                                                                for (int ii = 0; ii < fileFrames; ii++) {
-                                                                    currentTag.addPosition(dataInputStream.readFloat(), dataInputStream.readFloat(), dataInputStream.readFloat(), ii);
-                                                                    currentTag.addNormal(dataInputStream.readFloat(), dataInputStream.readFloat(), dataInputStream.readFloat(), ii);
-                                                                }
-                                                                String tagName = new String(rawTagName).trim();
-                                                                tagList.put(tagName, currentTag);
-                                                                Logger.v(TAG, " - Reading tag \"" + tagName + "\"");
-                                                            }
-                                                        } else {
-                                                            Logger.v(TAG, " - invalid chunk tag: TAGS");
-                                                            return;
-                                                        }
-                                                    } catch (IOException ex) {
-                                                        ex.printStackTrace();
-                                                        return;
-                                                    }
-                                                }
                                                 createFromArrays(gl, vertexList, normalList, tcList, indices, fileElements, fileFrames, willBeInterpolated);
                                                 if (tagList.size() > 0) {
-                                                    this.tags = tagList;
                                                     return;
                                                 }
                                                 return;
@@ -452,10 +439,27 @@ public class Mesh {
             this.bufScratch.clear();
             this.bufScratch.put(this.bufScratchArray);
             this.bufScratch.position(0);
+
             gl.glVertexPointer(3, 5126, 0, this.bufScratch);
-            gl.glNormalPointer(5126, 0, this.frames[frameNum].bufNormal);
-            gl.glTexCoordPointer(2, 5126, 0, this.bufTC);
-            gl.glDrawElements(4, this.numIndices, 5123, this.bufIndex);
+            if (gl instanceof GL11) {
+                GL11 gl11 = (GL11) gl;
+                gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, this.frames[frameNum].bufNormalHandle);
+                gl11.glNormalPointer(5126, 0, 0);
+
+                gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, this.bufTCHandle);
+                gl11.glTexCoordPointer(2, 5126, 0, 0);
+
+                gl11.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, this.bufIndexHandle);
+                gl11.glDrawElements(4, this.numIndices, 5123, 0);
+
+                gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, 0);
+                gl11.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, 0);
+
+            } else {
+                gl.glNormalPointer(5126, 0, this.frames[frameNum].bufNormal);
+                gl.glTexCoordPointer(2, 5126, 0, this.bufTC);
+                gl.glDrawElements(4, this.numIndices, 5123, this.bufIndex);
+            }
         }
     }
 

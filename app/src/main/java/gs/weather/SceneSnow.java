@@ -15,6 +15,7 @@ import gs.weather.engine.TextureManager;
 import gs.weather.engine.ThingManager;
 import gs.weather.engine.Vector;
 import gs.weather.sky_manager.TimeOfDay;
+import gs.weather.wallpaper.Models;
 import gs.weather.wallpaper.Textures;
 
 public class SceneSnow extends SceneBase {
@@ -77,7 +78,7 @@ public class SceneSnow extends SceneBase {
     }
 
     public void precacheAssets(GL10 gl10) {
-        Textures txs = new Textures(mContext.getResources(), gl10);
+        Textures txs = new Textures(mContext.getResources(), (GL11) gl10);
         this.mTextureManager.loadTextureFromPath(gl10, this.pref_background);
         this.mTextureManager.bind(txs.loadBitmap("trees_overlay", R.drawable.trees_overlay));
         this.mTextureManager.bind(txs.loadBitmap("cloud1", R.drawable.cloud1));
@@ -90,16 +91,17 @@ public class SceneSnow extends SceneBase {
         this.mTextureManager.bind(txs.loadTGA("wispy3", R.raw.wispy3));
         this.mTextureManager.bind(txs.loadTGA("p_snow1", R.raw.p_snow1));
         this.mTextureManager.bind(txs.loadTGA("p_snow2", R.raw.p_snow2));
-        this.mMeshManager.createMeshFromFile(gl10, "plane_16x16");
-        this.mMeshManager.createMeshFromFile(gl10, "cloud1m");
-        this.mMeshManager.createMeshFromFile(gl10, "cloud2m");
-        this.mMeshManager.createMeshFromFile(gl10, "cloud3m");
-        this.mMeshManager.createMeshFromFile(gl10, "cloud4m");
-        this.mMeshManager.createMeshFromFile(gl10, "cloud5m");
-        this.mMeshManager.createMeshFromFile(gl10, "grass_overlay", true);
-        this.mMeshManager.createMeshFromFile(gl10, "trees_overlay", true);
-        this.mMeshManager.createMeshFromFile(gl10, "trees_overlay_terrain");
-        this.mMeshManager.createMeshFromFile(gl10, "flakes");
+        Models mlds = new Models(mContext.getResources(), (GL11) gl10);
+        this.mMeshManager.bind(mlds.loadBMDL("plane_16x16", R.raw.plane_16x16));
+        this.mMeshManager.bind(mlds.loadBMDL("cloud1m", R.raw.cloud1m));
+        this.mMeshManager.bind(mlds.loadBMDL("cloud2m", R.raw.cloud2m));
+        this.mMeshManager.bind(mlds.loadBMDL("cloud3m", R.raw.cloud3m));
+        this.mMeshManager.bind(mlds.loadBMDL("cloud4m", R.raw.cloud4m));
+        this.mMeshManager.bind(mlds.loadBMDL("cloud5m", R.raw.cloud5m));
+        this.mMeshManager.bind(mlds.loadBMDL("grass_overlay", R.raw.grass_overlay, true));
+        this.mMeshManager.bind(mlds.loadBMDL("trees_overlay", R.raw.trees_overlay, true));
+        this.mMeshManager.bind(mlds.loadBMDL("trees_overlay_terrain", R.raw.trees_overlay_terrain));
+        this.mMeshManager.bind(mlds.loadBMDL("flakes", R.raw.flakes));
     }
 
     private void spawnClouds(boolean force) {
