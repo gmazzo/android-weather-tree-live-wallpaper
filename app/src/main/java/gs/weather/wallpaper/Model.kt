@@ -7,8 +7,8 @@ import javax.microedition.khronos.opengles.GL11.GL_ARRAY_BUFFER
 import javax.microedition.khronos.opengles.GL11.GL_ELEMENT_ARRAY_BUFFER
 
 open class Model internal constructor(
-        val name: String,
         internal val gl: GL11,
+        val name: String,
         internal val frames: Array<Frame>,
         internal val indicesCount: Int,
         internal val bufTCHandle: Int,

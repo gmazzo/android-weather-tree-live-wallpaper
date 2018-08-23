@@ -2,7 +2,6 @@ package gs.weather.wallpaper
 
 import android.content.res.Resources
 import android.support.annotation.RawRes
-import gs.weather.engine.AnimPlayer
 import gs.weather.engine.MeshManager
 import java.io.Closeable
 import java.io.DataInputStream
@@ -13,8 +12,10 @@ import javax.microedition.khronos.opengles.GL11.*
 
 class Models(private val resources: Resources,
              private val gl: GL11,
-             private val manager: MeshManager /*TODO remove once done*/) : Closeable {
+             val manager: MeshManager /*TODO remove once done*/) : Closeable {
     private val models = mutableMapOf<String, Model>()
+
+    operator fun get(name: String) = models.getOrElse(name) { throw IllegalArgumentException("Unknown model: $name") }
 
     fun loadBMDL(name: String, @RawRes rawId: Int) = models.getOrPut(name) {
         DataInputStream(resources.openRawResource(rawId)).use { input ->
@@ -120,13 +121,20 @@ class Models(private val resources: Resources,
         gl.glBindBuffer(GL_ARRAY_BUFFER, 0)
 
         if (animated) {
-            val animator = AnimPlayer() // TODO delete this when done
             val bufScratch = (elementsCount * 3).asDirectFloatBuffer()
 
-            return AnimatedModel(name, gl, frames, indicesCount, bufTCHandle, bufIndexHandle,
-                    animator, elementsCount, vertices, bufScratch)
+            return AnimatedModel(gl, name, frames, indicesCount, bufTCHandle, bufIndexHandle,
+                    null, elementsCount, vertices, bufScratch)
         }
-        return Model(name, gl, frames, indicesCount, bufTCHandle, bufIndexHandle).apply(manager::bind)
+        return Model(gl, name, frames, indicesCount, bufTCHandle, bufIndexHandle).apply(manager::bind)
+    }
+
+    fun unload(model: Model) {
+        if (models.remove(model.name) == null) {
+            throw IllegalArgumentException("Model is not from this container")
+        }
+
+        model.unload()
     }
 
     override fun close() {

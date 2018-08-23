@@ -16,6 +16,9 @@ import gs.weather.engine.ThingManager;
 import gs.weather.engine.Vector;
 import gs.weather.sky_manager.TimeOfDay;
 
+import static javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT;
+import static javax.microedition.khronos.opengles.GL10.GL_LIGHTING;
+
 public class SceneStorm extends SceneBase {
     private static final String TAG = "Storm";
     static Color pref_boltColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
@@ -150,9 +153,9 @@ public class SceneStorm extends SceneBase {
 
     public void unload(GL10 gl) {
         super.unload(gl);
-        gl.glDisable(16384);
+        gl.glDisable(GL_COLOR_BUFFER_BIT);
         gl.glDisable(16385);
-        gl.glDisable(2896);
+        gl.glDisable(GL_LIGHTING);
     }
 
     public void updateTimeOfDay(TimeOfDay tod) {
@@ -174,7 +177,7 @@ public class SceneStorm extends SceneBase {
         checkForLightning(time.sTimeDelta);
         updateLightValues(gl, time.sTimeDelta);
         gl.glTranslatef(0.0f, 0.0f, 40.0f);
-        this.mThingManager.render(gl, this.mTextureManager, this.mMeshManager);
+        this.mThingManager.render(gl, textures, models);
         drawTree(gl, time.sTimeDelta);
     }
 
@@ -190,7 +193,7 @@ public class SceneStorm extends SceneBase {
         gl.glPushMatrix();
         gl.glTranslatef(((pref_windSpeed * timeDelta) * -0.005f) % 1.0f, 0.0f, 0.0f);
         if (!this.pref_flashLights || this.lightFlashTime <= 0.0f) {
-            gl.glEnable(2896);
+            gl.glEnable(GL_LIGHTING);
             gl.glEnable(16385);
             this.light1_ambientLight[0] = this.v_light1_ambientLight.getR();
             this.light1_ambientLight[1] = this.v_light1_ambientLight.getG();
@@ -249,8 +252,8 @@ public class SceneStorm extends SceneBase {
                 cloud.origin.setY(cloudDepthList[i]);
                 cloud.origin.setZ(GlobalRand.floatRange(-20.0f, -10.0f));
                 int which = (i % 5) + 1;
-                cloud.meshName = "cloud" + which + "m";
-                cloud.texName = "clouddark" + which;
+                cloud.model = models.get("cloud" + which + "m");
+                cloud.texture = textures.get("clouddark" + which);
                 cloud.texNameFlare = "cloudflare" + which;
                 cloud.targetName = "dark_cloud";
                 cloud.velocity = new Vector(pref_windSpeed * 1.5f, 0.0f, 0.0f);
@@ -259,20 +262,12 @@ public class SceneStorm extends SceneBase {
         }
     }
 
-    private void spawnLightning(Vector touchPos) {
-        boolean isTouch = false;
-        if (touchPos != null) {
-            isTouch = true;
-        }
+    private void spawnLightning() {
         if (this.pref_randomBoltColor) {
             GlobalRand.randomNormalizedVector(pref_boltColor);
         }
-        ThingLightning lightning = new ThingLightning(pref_boltColor.getR(), pref_boltColor.getG(), pref_boltColor.getB(), isTouch);
-        if (isTouch) {
-            lightning.origin.set(touchPos);
-        } else {
-            lightning.origin.set(GlobalRand.floatRange(-25.0f, 25.0f), GlobalRand.floatRange(95.0f, 168.0f), 20.0f);
-        }
+        ThingLightning lightning = new ThingLightning(pref_boltColor.getR(), pref_boltColor.getG(), pref_boltColor.getB());
+        lightning.origin.set(GlobalRand.floatRange(-25.0f, 25.0f), GlobalRand.floatRange(95.0f, 168.0f), 20.0f);
         if (GlobalRand.intRange(0, 2) == 0) {
             lightning.scale.setZ(lightning.scale.getZ() * -1.0f);
         }
@@ -284,7 +279,7 @@ public class SceneStorm extends SceneBase {
 
     private void checkForLightning(float timeDelta) {
         if (GlobalRand.floatRange(0.0f, this.pref_boltFrequency * 0.75f) < timeDelta) {
-            spawnLightning(null);
+            spawnLightning();
         }
     }
 
@@ -292,20 +287,20 @@ public class SceneStorm extends SceneBase {
         float lightPosX = GlobalTime.waveCos(0.0f, 500.0f, 0.0f, 0.005f);
         if (!this.pref_flashLights || this.lightFlashTime <= 0.0f) {
             this.light_position[0] = lightPosX;
-            gl.glLightfv(16384, 4610, this.light_specularLight, 0);
+            gl.glLightfv(GL_COLOR_BUFFER_BIT, 4610, this.light_specularLight, 0);
         } else {
             float flashRemaining = this.lightFlashTime / 0.25f;
             this.light_position[0] = (this.lightFlashX * flashRemaining) + ((1.0f - flashRemaining) * lightPosX);
             this.light_flashColor[0] = pref_boltColor.getR();
             this.light_flashColor[1] = pref_boltColor.getG();
             this.light_flashColor[2] = pref_boltColor.getB();
-            gl.glLightfv(16384, 4610, this.light_flashColor, 0);
+            gl.glLightfv(GL_COLOR_BUFFER_BIT, 4610, this.light_flashColor, 0);
             this.lightFlashTime -= timeDelta;
         }
         this.light_position[1] = 50.0f;
         this.light_position[2] = GlobalTime.waveSin(0.0f, 500.0f, 0.0f, 0.005f);
-        gl.glLightfv(16384, 4608, this.light_ambientLight, 0);
-        gl.glLightfv(16384, 4609, this.pref_diffuseLight, 0);
-        gl.glLightfv(16384, 4611, this.light_position, 0);
+        gl.glLightfv(GL_COLOR_BUFFER_BIT, 4608, this.light_ambientLight, 0);
+        gl.glLightfv(GL_COLOR_BUFFER_BIT, 4609, this.pref_diffuseLight, 0);
+        gl.glLightfv(GL_COLOR_BUFFER_BIT, 4611, this.light_position, 0);
     }
 }

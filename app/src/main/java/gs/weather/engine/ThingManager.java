@@ -10,6 +10,9 @@ import java.util.List;
 
 import javax.microedition.khronos.opengles.GL10;
 
+import gs.weather.wallpaper.Models;
+import gs.weather.wallpaper.Textures;
+
 public class ThingManager {
     private static final int MAX_THINGS = 64;
     private static final String TAG = "GL Engine";
@@ -45,9 +48,9 @@ public class ThingManager {
         return count;
     }
 
-    public synchronized void render(GL10 gl10, TextureManager texMagr, MeshManager meshMagr) {
+    public synchronized void render(GL10 gl10, Textures textures, Models models) {
         for (Thing thing : thingList) {
-            thing.renderIfVisible(gl10, texMagr, meshMagr);
+            thing.renderIfVisible(gl10, textures, models);
         }
     }
 

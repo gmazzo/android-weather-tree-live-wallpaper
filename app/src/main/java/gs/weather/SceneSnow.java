@@ -16,6 +16,9 @@ import gs.weather.engine.ThingManager;
 import gs.weather.engine.Vector;
 import gs.weather.sky_manager.TimeOfDay;
 
+import static javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT;
+import static javax.microedition.khronos.opengles.GL10.GL_LIGHTING;
+
 public class SceneSnow extends SceneBase {
     static final float CLOUD_START_DISTANCE = 175.0f;
     static final float CLOUD_X_RANGE = 45.0f;
@@ -166,16 +169,16 @@ public class SceneSnow extends SceneBase {
                 cloud.origin.setY(cloudDepthList[i]);
                 cloud.origin.setZ(GlobalRand.floatRange(-20.0f, -10.0f));
                 int which = (i % 5) + 1;
-                cloud.meshName = "cloud" + which + "m";
-                cloud.texName = "cloud" + which;
+                cloud.model = models.get("cloud" + which + "m");
+                cloud.texture = textures.get("cloud" + which);
                 cloud.targetName = "cloud";
                 cloud.velocity = new Vector(pref_windSpeed * 1.5f, 0.0f, 0.0f);
                 this.mThingManager.add(cloud);
             }
             for (i = 0; i < cloudDepthList.length; i++) {
                 ThingWispy wispy = new ThingWispy();
-                wispy.meshName = "plane_16x16";
-                wispy.texName = "wispy" + ((i % 3) + 1);
+                wispy.model = models.get("plane_16x16");
+                wispy.texture = textures.get("wispy" + ((i % 3) + 1));
                 wispy.targetName = "wispy";
                 wispy.velocity = new Vector(pref_windSpeed * 1.5f, 0.0f, 0.0f);
                 wispy.scale.set(GlobalRand.floatRange(1.0f, 3.0f), 1.0f, GlobalRand.floatRange(1.0f, 1.5f));
@@ -195,15 +198,15 @@ public class SceneSnow extends SceneBase {
     public void draw(GL10 gl, GlobalTime time) {
         checkAssetReload(gl);
         this.mThingManager.update(time.sTimeDelta);
-        gl.glDisable(16384);
+        gl.glDisable(GL_COLOR_BUFFER_BIT);
         gl.glDisable(16385);
-        gl.glDisable(2896);
+        gl.glDisable(GL_LIGHTING);
         gl.glMatrixMode(5888);
         gl.glLoadIdentity();
         gl.glBlendFunc(1, 771);
         renderBackground(gl, time.sTimeElapsed);
         gl.glTranslatef(0.0f, 0.0f, 40.0f);
-        this.mThingManager.render(gl, this.mTextureManager, this.mMeshManager);
+        this.mThingManager.render(gl, textures, models);
         renderSnow(gl, time.sTimeDelta);
         drawTree(gl, time.sTimeDelta);
     }

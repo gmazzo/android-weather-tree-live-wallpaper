@@ -16,6 +16,9 @@ import gs.weather.engine.ThingManager;
 import gs.weather.engine.Vector;
 import gs.weather.sky_manager.TimeOfDay;
 
+import static javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT;
+import static javax.microedition.khronos.opengles.GL10.GL_LIGHTING;
+
 public class SceneRain extends SceneBase {
     private final String TAG;
     float[] light_diffuse;
@@ -81,8 +84,8 @@ public class SceneRain extends SceneBase {
                 cloud.origin.setY(cloudDepthList[i]);
                 cloud.origin.setZ(GlobalRand.floatRange(-20.0f, -10.0f));
                 int which = (i % 5) + 1;
-                cloud.meshName = "cloud" + which + "m";
-                cloud.texName = "clouddark" + which;
+                cloud.model = models.get("cloud" + which + "m");
+                cloud.texture = textures.get("clouddark" + which);
                 cloud.targetName = "dark_cloud";
                 cloud.velocity = new Vector(pref_windSpeed * 1.5f, 0.0f, 0.0f);
                 this.mThingManager.add(cloud);
@@ -194,8 +197,8 @@ public class SceneRain extends SceneBase {
     public void draw(GL10 gl, GlobalTime time) {
         checkAssetReload(gl);
         this.mThingManager.update(time.sTimeDelta);
-        gl.glEnable(2896);
-        gl.glEnable(16384);
+        gl.glEnable(GL_LIGHTING);
+        gl.glEnable(GL_COLOR_BUFFER_BIT);
         gl.glMatrixMode(5888);
         gl.glLoadIdentity();
         gl.glBlendFunc(1, 771);
@@ -203,14 +206,14 @@ public class SceneRain extends SceneBase {
         this.light_diffuse[1] = this.v_light_diffuse.getG();
         this.light_diffuse[2] = this.v_light_diffuse.getB();
         this.light_diffuse[3] = this.v_light_diffuse.getA();
-        gl.glLightfv(16384, 4609, this.light_diffuse, 0);
-        gl.glLightfv(16384, 4608, this.light_diffuse, 0);
+        gl.glLightfv(GL_COLOR_BUFFER_BIT, 4609, this.light_diffuse, 0);
+        gl.glLightfv(GL_COLOR_BUFFER_BIT, 4608, this.light_diffuse, 0);
         renderBackground(gl, time.sTimeElapsed);
         renderRain(gl, time.sTimeDelta);
         gl.glTranslatef(0.0f, 0.0f, 40.0f);
-        this.mThingManager.render(gl, this.mTextureManager, this.mMeshManager);
-        gl.glDisable(16384);
-        gl.glDisable(2896);
+        this.mThingManager.render(gl, this.textures, this.models);
+        gl.glDisable(GL_COLOR_BUFFER_BIT);
+        gl.glDisable(GL_LIGHTING);
         drawTree(gl, time.sTimeDelta);
     }
 }

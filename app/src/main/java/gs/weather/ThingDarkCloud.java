@@ -3,12 +3,13 @@ package gs.weather;
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
-import gs.weather.engine.GlobalRand;
-import gs.weather.engine.Mesh;
-import gs.weather.engine.MeshManager;
-import gs.weather.engine.TextureManager;
-import gs.weather.engine.Thing;
 import gs.weather.engine.Color;
+import gs.weather.engine.GlobalRand;
+import gs.weather.engine.Thing;
+import gs.weather.wallpaper.Models;
+import gs.weather.wallpaper.Textures;
+
+import static javax.microedition.khronos.opengles.GL10.GL_LIGHTING;
 
 public class ThingDarkCloud extends Thing {
     static Color pref_boltColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
@@ -43,28 +44,29 @@ public class ThingDarkCloud extends Thing {
         this.scale.set(3.5f + GlobalRand.floatRange(0.0f, 2.0f), 3.0f, 3.5f + GlobalRand.floatRange(0.0f, 2.0f));
     }
 
-    public void render(GL10 gl, TextureManager tm, MeshManager mm) {
+    @Override
+    public void render(GL10 gl, Textures textures, Models models) {
         if (this.particleSystem != null) {
-            this.particleSystem.render((GL11) gl, tm, mm, this.origin);
+            this.particleSystem.render((GL11) gl, textures.getManager(), models.getManager(), this.origin);
         }
-        if (this.texName != null && this.meshName != null) {
-            tm.bindTextureID(gl, this.texName);
-            Mesh mesh = mm.getMeshByName(gl, this.meshName);
+        if (this.texture != null && this.model != null) {
+            textures.getManager().bindTextureID(gl, this.texture.getName());
+
             gl.glBlendFunc(1, 771);
             gl.glPushMatrix();
             gl.glTranslatef(this.origin.getX(), this.origin.getY(), this.origin.getZ());
             gl.glScalef(this.scale.getX(), this.scale.getY(), this.scale.getZ());
             gl.glRotatef(this.angles.getA(), this.angles.getR(), this.angles.getG(), this.angles.getB());
             if (!pref_minimalist) {
-                mesh.render(gl);
+                model.render();
             }
             if (this.withFlare && this.flashIntensity > 0.0f) {
-                gl.glDisable(2896);
-                tm.bindTextureID(gl, this.texNameFlare);
+                gl.glDisable(GL_LIGHTING);
+                textures.getManager().bindTextureID(gl, this.texNameFlare);
                 gl.glColor4f(pref_boltColor.getR(), pref_boltColor.getG(), pref_boltColor.getB(), this.flashIntensity);
                 gl.glBlendFunc(770, 1);
-                mesh.render(gl);
-                gl.glEnable(2896);
+                model.render();
+                gl.glEnable(GL_LIGHTING);
             }
             gl.glPopMatrix();
             gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);

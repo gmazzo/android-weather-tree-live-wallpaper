@@ -2,17 +2,18 @@ package gs.weather;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import gs.weather.engine.GlobalRand;
-import gs.weather.engine.MeshManager;
-import gs.weather.engine.TextureManager;
-import gs.weather.engine.Thing;
 import gs.weather.engine.Color;
+import gs.weather.engine.GlobalRand;
+import gs.weather.engine.Thing;
+import gs.weather.wallpaper.Models;
+import gs.weather.wallpaper.Textures;
 
 public class ThingCloud extends Thing {
     static final float CLOUD_FADE_START_X = 25.0f;
     static final float CLOUD_FADE_START_Y = 25.0f;
     static final float CLOUD_RESET_X = 10.0f;
     static final float CLOUD_RESET_Y = 10.0f;
+    public int which;
     float fade;
 
     public ThingCloud() {
@@ -36,9 +37,14 @@ public class ThingCloud extends Thing {
         return ((this.origin.getY() * IsolatedRenderer.horizontalFOV) / 90.0f) + Math.abs(this.scale.getX() * 6.0f);
     }
 
-    public void render(GL10 gl10, TextureManager texMagr, MeshManager meshMagr) {
-        gl10.glBlendFunc(1, 771);
-        super.render(gl10, texMagr, meshMagr);
+    @Override
+    public void render(GL10 gl, Textures textures, Models models) {
+        if (model == null) {
+            model = models.get("cloud" + which + "m");
+            texture = textures.get("cloud" + which);
+        }
+        gl.glBlendFunc(1, 771);
+        super.render(gl, textures, models);
     }
 
     public void update(float timeDelta) {

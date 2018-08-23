@@ -2,18 +2,26 @@ package gs.weather;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import gs.weather.engine.MeshManager;
-import gs.weather.engine.TextureManager;
+import gs.weather.engine.Color;
 import gs.weather.engine.Thing;
 import gs.weather.engine.Vector;
-import gs.weather.engine.Color;
+import gs.weather.wallpaper.Models;
+import gs.weather.wallpaper.Textures;
 
 public class ThingWispy extends Thing {
-    public void render(GL10 gl10, TextureManager texturemanager, MeshManager meshmanager) {
+    public int which;
+
+    @Override
+    public void render(GL10 gl, Textures textures, Models models) {
+        if (model == null) {
+            model = models.get("plane_16x16");
+            texture = textures.get("wispy" + which);
+        }
+
         Color todColor = SceneBase.todColorFinal;
-        gl10.glColor4f(todColor.getR(), todColor.getG(), todColor.getB(), (todColor.getR() + todColor.getG()) + (todColor.getB() / 3.0f));
-        gl10.glBlendFunc(770, 771);
-        super.render(gl10, texturemanager, meshmanager);
+        gl.glColor4f(todColor.getR(), todColor.getG(), todColor.getB(), (todColor.getR() + todColor.getG()) + (todColor.getB() / 3.0f));
+        gl.glBlendFunc(770, 771);
+        super.render(gl, textures, models);
     }
 
     public void update(float f) {

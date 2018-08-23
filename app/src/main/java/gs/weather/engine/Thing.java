@@ -3,6 +3,12 @@ package gs.weather.engine;
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
+import gs.weather.wallpaper.AnimatedModel;
+import gs.weather.wallpaper.Model;
+import gs.weather.wallpaper.Models;
+import gs.weather.wallpaper.Texture;
+import gs.weather.wallpaper.Textures;
+
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
 
 public class Thing {
@@ -11,13 +17,13 @@ public class Thing {
     public boolean animInterpolate = false;
     public Color color = null;
     private boolean deleteMe = false;
-    public String meshName = null;
+    public Model model = null;
     public Vector origin = new Vector(0.0f, 0.0f, 0.0f);
     public ParticleSystem particleSystem;
     public float sTimeElapsed = 0.0f;
     public Vector scale = new Vector(1.0f, 1.0f, 1.0f);
     public String targetName;
-    public String texName = null;
+    public Texture texture = null;
     public Vector velocity = null;
     private Vector visScratch = new Vector(0.0f, 0.0f, 0.0f);
     private boolean vis_isVisible = true;
@@ -45,13 +51,11 @@ public class Thing {
         return this.deleteMe;
     }
 
-    public void render(GL10 gl, TextureManager texturemanager, MeshManager meshmanager) {
+    public void render(GL10 gl, Textures textures, Models models) {
         if (this.particleSystem != null && (gl instanceof GL11)) {
-            this.particleSystem.render((GL11) gl, texturemanager, meshmanager, this.origin);
+            this.particleSystem.render((GL11) gl, textures.getManager(), models.getManager(), this.origin);
         }
-        if (this.texName != null && this.meshName != null) {
-            int textureId = texturemanager.getTextureID(gl, this.texName);
-            Mesh mesh = meshmanager.getMeshByName(gl, this.meshName);
+        if (this.texture != null && this.model != null) {
             gl.glMatrixMode(5888);
             gl.glPushMatrix();
             gl.glTranslatef(this.origin.getX(), this.origin.getY(), this.origin.getZ());
@@ -59,17 +63,16 @@ public class Thing {
             if (this.angles.getA() != 0.0f) {
                 gl.glRotatef(this.angles.getA(), this.angles.getR(), this.angles.getG(), this.angles.getB());
             }
-            gl.glBindTexture(GL_TEXTURE_2D, textureId);
+            gl.glBindTexture(GL_TEXTURE_2D, texture.getId());
             if (this.color != null) {
                 gl.glColor4f(this.color.getR(), this.color.getG(), this.color.getB(), this.color.getA());
             }
-            if (this.anim == null) {
-                mesh.render(gl);
-            } else if (this.animInterpolate) {
-                mesh.renderFrameInterpolated(gl, this.anim.getCurrentFrame(), this.anim.getBlendFrame(), this.anim.getBlendFrameAmount());
-            } else {
-                mesh.renderFrame(gl, this.anim.getCurrentFrame());
+
+            if (model instanceof AnimatedModel) {
+                ((AnimatedModel) model).setAnimator(anim);
             }
+            model.render();
+
             gl.glPopMatrix();
             if (this.color != null) {
                 gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -77,9 +80,9 @@ public class Thing {
         }
     }
 
-    public void renderIfVisible(GL10 gl10, TextureManager textureManager, MeshManager meshManager) {
+    public void renderIfVisible(GL10 gl10, Textures textures, Models models) {
         if (this.vis_isVisible) {
-            render(gl10, textureManager, meshManager);
+            render(gl10, textures, models);
         }
     }
 

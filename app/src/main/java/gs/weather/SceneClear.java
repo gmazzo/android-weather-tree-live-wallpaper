@@ -16,6 +16,8 @@ import gs.weather.engine.ThingManager;
 import gs.weather.engine.Vector;
 import gs.weather.sky_manager.TimeOfDay;
 
+import static javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT;
+import static javax.microedition.khronos.opengles.GL10.GL_LIGHTING;
 import static javax.microedition.khronos.opengles.GL10.GL_MODULATE;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE0;
 
@@ -124,16 +126,6 @@ public class SceneClear extends SceneBase {
         models.loadBMDL("stars", R.raw.stars);
     }
 
-    private void checkSpawnUFO(float timeDelta) {
-        if (this.pref_useUfo && !this.pref_ufoBattery) {
-            this.nextUfoSpawn -= timeDelta;
-            if (this.nextUfoSpawn <= 0.0f) {
-                spawnUFO();
-                this.nextUfoSpawn = GlobalRand.floatRange(CLOUD_X_RANGE, 225.0f);
-            }
-        }
-    }
-
     protected void spawnClouds(boolean force) {
         spawnClouds(this.pref_numClouds, this.pref_numWisps, force);
     }
@@ -196,17 +188,6 @@ public class SceneClear extends SceneBase {
         }
     }
 
-    private void spawnUFO() {
-        if (this.mThingManager.countByTargetname("ufo") <= 0) {
-            ThingUFO ufo = new ThingUFO();
-            float rand_y = (CLOUD_START_DISTANCE * GlobalRand.floatRange(0.0f, 1.0f)) * 0.5f;
-            ufo.origin.setX(GlobalRand.floatRange(0.0f, 0.0f));
-            ufo.origin.setY(87.5f + rand_y);
-            ufo.origin.setZ(UFO_START_ALTITUDE);
-            this.mThingManager.add(ufo);
-        }
-    }
-
     protected void spawnClouds(int num_clouds, int num_wisps, boolean force) {
         boolean cloudsExist = this.mThingManager.countByTargetname("cloud") != 0;
         if (force || !cloudsExist) {
@@ -233,17 +214,14 @@ public class SceneClear extends SceneBase {
                 cloud.origin.setX((((float) i) * (90.0f / ((float) num_clouds))) - 0.099609375f);
                 cloud.origin.setY(cloudDepthList[i]);
                 cloud.origin.setZ(GlobalRand.floatRange(-20.0f, -10.0f));
-                int which = (i % 5) + 1;
-                cloud.meshName = "cloud" + which + "m";
-                cloud.texName = "cloud" + which;
+                cloud.which = (i % 5) + 1;
                 cloud.targetName = "cloud";
                 cloud.velocity = new Vector(pref_windSpeed * 1.5f, 0.0f, 0.0f);
                 this.mThingManager.add(cloud);
             }
             for (i = 0; i < cloudDepthList.length; i++) {
                 ThingWispy wispy = new ThingWispy();
-                wispy.meshName = "plane_16x16";
-                wispy.texName = "wispy" + ((i % 3) + 1);
+                wispy.which = (i % 3) + 1;
                 wispy.targetName = "wispy";
                 wispy.velocity = new Vector(pref_windSpeed * 1.5f, 0.0f, 0.0f);
                 wispy.scale.set(GlobalRand.floatRange(1.0f, 3.0f), 1.0f, GlobalRand.floatRange(1.0f, 1.5f));
@@ -263,15 +241,15 @@ public class SceneClear extends SceneBase {
     public void draw(GL10 gl, GlobalTime time) {
         checkAssetReload(gl);
         this.mThingManager.update(time.sTimeDelta);
-        gl.glDisable(16384);
+        gl.glDisable(GL_COLOR_BUFFER_BIT);
         gl.glDisable(16385);
-        gl.glDisable(2896);
+        gl.glDisable(GL_LIGHTING);
         gl.glMatrixMode(5888);
         gl.glLoadIdentity();
         gl.glBlendFunc(1, 771);
         renderBackground(gl, time.sTimeElapsed);
         gl.glTranslatef(0.0f, 0.0f, 40.0f);
-        this.mThingManager.render(gl, this.mTextureManager, this.mMeshManager);
+        this.mThingManager.render(gl, textures, models);
         drawTree(gl, time.sTimeDelta);
     }
 

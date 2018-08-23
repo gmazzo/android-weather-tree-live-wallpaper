@@ -17,8 +17,10 @@ import kotlin.math.absoluteValue
 class Textures(
         private val resources: Resources,
         private val gl: GL11,
-        private val manager: TextureManager /*TODO remove once done*/) : Closeable {
+        val manager: TextureManager /*TODO remove once done*/) : Closeable {
     private val textures = mutableMapOf<String, Texture>()
+
+    operator fun get(name: String) = textures.getOrElse(name) { throw IllegalArgumentException("Unknown texture: $name") }
 
     private fun createTexture(name: String, loader: () -> Unit) = textures.getOrPut(name) {
         gl.glEnable(GL_TEXTURE_2D)
@@ -34,7 +36,7 @@ class Textures(
         gl.glBindTexture(GL_TEXTURE_2D, id)
         loader.invoke()
 
-        return Texture(id, name).apply(manager::bind)
+        return Texture(gl, id, name).apply(manager::bind)
     }
 
     fun loadBitmap(name: String, @AnyRes resId: Int) = createTexture(name) {
@@ -85,11 +87,17 @@ class Textures(
         }
     }
 
-    override fun close() {
-        val ids = textures.values.map(Texture::id).toIntArray()
-        textures.clear()
+    fun unload(texture: Texture) {
+        if (textures.remove(texture.name) == null) {
+            throw IllegalArgumentException("Texture is not from this container")
+        }
 
-        gl.glDeleteTextures(ids.size, ids, 0)
+        texture.unload()
+    }
+
+    override fun close() {
+        textures.values.forEach(Texture::unload)
+        textures.clear()
     }
 
     private val Byte.unsigned get() = toInt().absoluteValue

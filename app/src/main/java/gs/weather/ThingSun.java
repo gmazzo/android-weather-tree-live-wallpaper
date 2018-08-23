@@ -4,28 +4,36 @@ import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
 import gs.weather.engine.Color;
-import gs.weather.engine.Mesh;
-import gs.weather.engine.MeshManager;
-import gs.weather.engine.TextureManager;
 import gs.weather.engine.Thing;
+import gs.weather.wallpaper.AnimatedModel;
+import gs.weather.wallpaper.Models;
+import gs.weather.wallpaper.Texture;
+import gs.weather.wallpaper.Textures;
 
 import static javax.microedition.khronos.opengles.GL10.GL_MODULATE;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE0;
 
 public class ThingSun extends Thing {
     private static final String TAG = "Sun";
+    private Texture sunBlend;
 
     public ThingSun() {
-        this.texName = "sun";
-        this.meshName = "plane_16x16";
         this.color = new Color(1.0f, 1.0f, 0.95f, 1.0f);
     }
 
-    public void render(GL10 gl, TextureManager texturemanager, MeshManager meshmanager) {
+    @Override
+    public void render(GL10 gl, Textures textures, Models models) {
+        if (texture == null) {
+            texture = textures.get("sun");
+        }
+        if (sunBlend == null) {
+            sunBlend = textures.get("sun_blend");
+        }
+        if (model == null) {
+            model = models.get("plane_16x16");
+        }
+
         gl.glBlendFunc(1, 769);
-        int blendTexId = texturemanager.getTextureID(gl, "sun_blend");
-        int sunTexId = texturemanager.getTextureID(gl, "sun");
-        Mesh mesh = meshmanager.getMeshByName(gl, this.meshName);
         gl.glColor4f(this.color.getR(), this.color.getG(), this.color.getB(), this.color.getA());
         gl.glMatrixMode(5888);
         gl.glPushMatrix();
@@ -40,10 +48,10 @@ public class ThingSun extends Thing {
         gl.glRotatef(f11, 0.0f, 0.0f, 1.0f);
         gl.glTranslatef(-0.5f, -0.5f, 0.0f);
         if (gl instanceof GL11) {
-            mesh.renderFrameMultiTexture((GL11) gl, 0, blendTexId, sunTexId, GL_MODULATE, false);
+            ((AnimatedModel) model).renderFrameMultiTexture(0, sunBlend, texture, GL_MODULATE, false);
         } else {
-            gl.glBindTexture(GL_TEXTURE0, sunTexId);
-            mesh.render(gl);
+            gl.glBindTexture(GL_TEXTURE0, texture.getId());
+            model.render();
         }
         gl.glPopMatrix();
         gl.glMatrixMode(5888);

@@ -1,35 +1,41 @@
 package gs.weather;
 
 import javax.microedition.khronos.opengles.GL10;
-import javax.microedition.khronos.opengles.GL11;
 
-import gs.weather.engine.GlobalRand;
-import gs.weather.engine.Mesh;
-import gs.weather.engine.MeshManager;
-import gs.weather.engine.TextureManager;
-import gs.weather.engine.Thing;
 import gs.weather.engine.Color;
+import gs.weather.engine.GlobalRand;
+import gs.weather.engine.Thing;
+import gs.weather.wallpaper.AnimatedModel;
+import gs.weather.wallpaper.Models;
+import gs.weather.wallpaper.Texture;
+import gs.weather.wallpaper.Textures;
+
+import static javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT;
+import static javax.microedition.khronos.opengles.GL10.GL_LIGHTING;
 
 public class ThingLightning extends Thing {
     static final int NUM_LIGHTNING_MODELS = 3;
+    private Texture lightningGlow;
+    private Texture lightningCore;
 
-    public ThingLightning(float r, float g, float b, boolean isTouch) {
-        if (isTouch) {
-            this.meshName = "lightning" + GlobalRand.intRange(1, 4) + "t";
-        } else {
-            this.meshName = "lightning" + GlobalRand.intRange(1, 4);
-        }
-        this.texName = "lightning_pieces_core";
+    public ThingLightning(float r, float g, float b) {
         this.color = new Color(r, g, b, 1.0f);
     }
 
-    public void render(GL10 gl, TextureManager tm, MeshManager mm) {
-        if (this.texName != null && this.meshName != null) {
-            gl.glEnable(2896);
-            gl.glEnable(16384);
-            int glowId = tm.getTextureID(gl, "lightning_pieces_glow");
-            int coreId = tm.getTextureID(gl, "lightning_pieces_core");
-            Mesh mesh = mm.getMeshByName(gl, this.meshName);
+    @Override
+    public void render(GL10 gl, Textures textures, Models models) {
+        if (texture == null) {
+            textures.get("lightning_pieces_core");
+        }
+        if (model == null) {
+            model = models.get("lightning" + GlobalRand.intRange(1, 4));
+            lightningGlow = textures.loadTGA("lightning_pieces_glow", R.raw.lightning_pieces_glow);
+            lightningCore = textures.loadTGA("lightning_pieces_core", R.raw.lightning_pieces_core);
+        }
+        if (this.texture != null && this.model != null) {
+            gl.glEnable(GL_LIGHTING);
+            gl.glEnable(GL_COLOR_BUFFER_BIT);
+
             gl.glBlendFunc(770, 1);
             gl.glPushMatrix();
             gl.glTranslatef(this.origin.getX(), this.origin.getY(), this.origin.getZ());
@@ -38,11 +44,11 @@ public class ThingLightning extends Thing {
             if (this.color != null) {
                 gl.glColor4f(this.color.getR(), this.color.getG(), this.color.getB(), this.color.getA());
             }
-            mesh.renderFrameMultiTexture((GL11) gl, 0, glowId, coreId, 260, false);
+            ((AnimatedModel) model).renderFrameMultiTexture(0, lightningGlow, lightningCore, 260, false);
             gl.glPopMatrix();
             gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-            gl.glDisable(16384);
-            gl.glDisable(2896);
+            gl.glDisable(GL_COLOR_BUFFER_BIT);
+            gl.glDisable(GL_LIGHTING);
         }
     }
 

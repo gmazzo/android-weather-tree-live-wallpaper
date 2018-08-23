@@ -13,6 +13,9 @@ import gs.weather.engine.TextureManager;
 import gs.weather.engine.ThingManager;
 import gs.weather.sky_manager.TimeOfDay;
 
+import static javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT;
+import static javax.microedition.khronos.opengles.GL10.GL_LIGHTING;
+
 public class SceneFog extends SceneBase {
     private static final String TAG = "Fog";
     static float[] fogColor = new float[]{0.8f, 0.8f, 0.8f, 1.0f};
@@ -102,9 +105,9 @@ public class SceneFog extends SceneBase {
     public void draw(GL10 gl, GlobalTime time) {
         checkAssetReload(gl);
         this.mThingManager.update(time.sTimeDelta);
-        gl.glDisable(16384);
+        gl.glDisable(GL_COLOR_BUFFER_BIT);
         gl.glDisable(16385);
-        gl.glDisable(2896);
+        gl.glDisable(GL_LIGHTING);
         gl.glMatrixMode(5888);
         gl.glLoadIdentity();
         gl.glBlendFunc(1, 771);
@@ -117,7 +120,7 @@ public class SceneFog extends SceneBase {
         gl.glFogf(3156, 4352.0f);
         renderBackground(gl, time.sTimeElapsed);
         gl.glTranslatef(0.0f, 0.0f, 40.0f);
-        this.mThingManager.render(gl, this.mTextureManager, this.mMeshManager);
+        this.mThingManager.render(gl, textures, models);
         drawTree(gl, time.sTimeDelta);
         gl.glDisable(2912);
     }
