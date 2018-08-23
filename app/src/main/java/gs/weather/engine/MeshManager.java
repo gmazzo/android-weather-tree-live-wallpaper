@@ -36,18 +36,8 @@ public class MeshManager {
         this.meshList.put(s, mesh);
     }
 
-    public void createMeshFromArrays(GL10 gl10, String s, float[] vertex, float[] normal, float[] tc, short[] indices, int elements, int frames, boolean willBeInterpolated) {
-        Mesh mesh = new Mesh();
-        mesh.createFromArrays(gl10, vertex, normal, tc, indices, elements, frames, willBeInterpolated);
-        this.meshList.put(s, mesh);
-    }
-
     public void createMeshFromFile(GL10 gl10, String s) {
         createMeshFromFile(gl10, s, false, null);
-    }
-
-    public void createMeshFromFile(GL10 gl10, String s, boolean willBeInterpolated) {
-        createMeshFromFile(gl10, s, willBeInterpolated, null);
     }
 
     public void createMeshFromFile(GL10 gl10, String filename, boolean willBeInterpolated, Mesh container) {
@@ -92,16 +82,6 @@ public class MeshManager {
         } catch (IOException e3) {
         }
         this.meshList.put(filename, container);
-    }
-
-    public boolean fileExistsOrIsLoaded(String s) {
-        if (this.context.getResources().getIdentifier(s, "raw", this.MMPACKAGENAME) != 0) {
-            return true;
-        }
-        if (this.meshList.containsKey(s)) {
-            return true;
-        }
-        return false;
     }
 
     public Mesh getMeshByName(GL10 gl10, String name) {

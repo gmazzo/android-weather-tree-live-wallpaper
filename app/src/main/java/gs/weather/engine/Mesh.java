@@ -85,27 +85,6 @@ public class Mesh {
             vector.setZ(this.normal[(i * 3) + 2]);
         }
 
-        public void getPosition(Vector vector, int i) {
-            if (i * 3 >= this.position.length) {
-                Logger.v(Mesh.TAG, "ERROR: Tried to get tag position on invalid frame " + i);
-                vector.setZ(0.0f);
-                vector.setY(0.0f);
-                vector.setX(0.0f);
-                return;
-            }
-            vector.setX(this.position[i * 3]);
-            vector.setY(this.position[(i * 3) + 1]);
-            vector.setZ(this.position[(i * 3) + 2]);
-        }
-
-        public String toString(int i) {
-            float f = this.position[i * 3];
-            float f1 = this.position[(i * 3) + 1];
-            float f2 = this.position[(i * 3) + 2];
-            float f3 = this.normal[i * 3];
-            float f4 = this.normal[(i * 3) + 1];
-            return "Tag Pos " + f + " " + f1 + " " + f2 + "   Normal: " + f3 + " " + f4 + " " + this.normal[(i * 3) + 2];
-        }
     }
 
     static {
@@ -358,14 +337,6 @@ public class Mesh {
     public void createFromTextFile(GL10 gl, InputStream inputstream, String s, boolean flag) {
     }
 
-    public int getLastFrame() {
-        return this.frames.length - 1;
-    }
-
-    public Tag getTag(String s) {
-        return null;
-    }
-
     public void render(GL10 gl10) {
         renderFrame(gl10, 0);
     }
@@ -382,13 +353,6 @@ public class Mesh {
         gl10.glVertexPointer(3, GL_FLOAT, 0, this.frames[frameNum].bufVertex);
         gl10.glNormalPointer(GL_FLOAT, 0, this.frames[frameNum].bufNormal);
         gl10.glTexCoordPointer(2, GL_FLOAT, 0, this.bufTC);
-        gl10.glDrawElements(GL_TRIANGLES, this.numIndices, GL_UNSIGNED_SHORT, this.bufIndex);
-    }
-
-    public void renderFrameEnvMap(GL10 gl10, int i) {
-        gl10.glVertexPointer(3, GL_FLOAT, 0, this.frames[i].bufVertex);
-        gl10.glNormalPointer(GL_FLOAT, 0, this.frames[i].bufNormal);
-        gl10.glTexCoordPointer(3, GL_FLOAT, 0, this.frames[i].bufNormal);
         gl10.glDrawElements(GL_TRIANGLES, this.numIndices, GL_UNSIGNED_SHORT, this.bufIndex);
     }
 
@@ -451,21 +415,6 @@ public class Mesh {
                 gl.glTexCoordPointer(2, GL_FLOAT, 0, this.bufTC);
                 gl.glDrawElements(GL_TRIANGLES, this.numIndices, GL_UNSIGNED_SHORT, this.bufIndex);
             }
-        }
-    }
-
-    public void renderFrameInterpolatedAgain(GL10 gl10, int i, int j, float f) {
-        if (this.originalVertexArray == null) {
-            renderFrame(gl10, i);
-        } else if (((double) f) < 0.01d) {
-            renderFrame(gl10, i);
-        } else if (((double) f) > 0.99d) {
-            renderFrame(gl10, j);
-        } else {
-            gl10.glVertexPointer(3, GL_FLOAT, 0, this.bufScratch);
-            gl10.glNormalPointer(GL_FLOAT, 0, this.frames[i].bufNormal);
-            gl10.glTexCoordPointer(2, GL_FLOAT, 0, this.bufTC);
-            gl10.glDrawElements(GL_TRIANGLES, this.numIndices, GL_UNSIGNED_SHORT, this.bufIndex);
         }
     }
 

@@ -36,6 +36,12 @@ public abstract class SceneBase extends Scene {
     protected void checkAssetReload(GL10 gl10) {
         if (this.reloadAssets) {
             synchronized (this) {
+                if (models != null) {
+                    this.models.close();
+                }
+                if (textures != null) {
+                    this.textures.close();
+                }
                 this.mMeshManager.unload(gl10);
                 this.mTextureManager.unload(gl10);
                 precacheAssets(gl10);
@@ -45,6 +51,12 @@ public abstract class SceneBase extends Scene {
     }
 
     public void unload(GL10 gl) {
+        if (models != null) {
+            this.models.close();
+        }
+        if (textures != null) {
+            this.textures.close();
+        }
         this.mTextureManager.unload(gl);
         this.mMeshManager.unload(gl);
         this.mThingManager.clear();

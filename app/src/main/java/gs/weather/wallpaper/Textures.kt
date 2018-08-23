@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.opengl.GLUtils
 import android.support.annotation.AnyRes
 import android.support.annotation.RawRes
+import gs.weather.engine.TextureManager
 import java.io.Closeable
 import java.io.IOException
 import java.nio.ByteBuffer
@@ -15,7 +16,8 @@ import kotlin.math.absoluteValue
 
 class Textures(
         private val resources: Resources,
-        private val gl: GL11) : Closeable {
+        private val gl: GL11,
+        private val manager: TextureManager /*TODO remove once done*/) : Closeable {
     private val textures = mutableMapOf<String, Texture>()
 
     private fun createTexture(name: String, loader: () -> Unit) = textures.getOrPut(name) {
@@ -32,7 +34,7 @@ class Textures(
         gl.glBindTexture(GL_TEXTURE_2D, id)
         loader.invoke()
 
-        return Texture(id, name)
+        return Texture(id, name).apply(manager::bind)
     }
 
     fun loadBitmap(name: String, @AnyRes resId: Int) = createTexture(name) {

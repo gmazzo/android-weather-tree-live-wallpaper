@@ -3,6 +3,7 @@ package gs.weather.wallpaper
 import android.content.res.Resources
 import android.support.annotation.RawRes
 import gs.weather.engine.AnimPlayer
+import gs.weather.engine.MeshManager
 import java.io.Closeable
 import java.io.DataInputStream
 import java.io.InputStream
@@ -11,7 +12,8 @@ import javax.microedition.khronos.opengles.GL11
 import javax.microedition.khronos.opengles.GL11.*
 
 class Models(private val resources: Resources,
-             private val gl: GL11) : Closeable {
+             private val gl: GL11,
+             private val manager: MeshManager /*TODO remove once done*/) : Closeable {
     private val models = mutableMapOf<String, Model>()
 
     fun loadBMDL(name: String, @RawRes rawId: Int) = models.getOrPut(name) {
@@ -124,7 +126,7 @@ class Models(private val resources: Resources,
             return AnimatedModel(name, gl, frames, indicesCount, bufTCHandle, bufIndexHandle,
                     animator, elementsCount, vertices, bufScratch)
         }
-        return Model(name, gl, frames, indicesCount, bufTCHandle, bufIndexHandle)
+        return Model(name, gl, frames, indicesCount, bufTCHandle, bufIndexHandle).apply(manager::bind)
     }
 
     override fun close() {

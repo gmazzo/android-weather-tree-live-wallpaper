@@ -15,8 +15,6 @@ import gs.weather.engine.TextureManager;
 import gs.weather.engine.ThingManager;
 import gs.weather.engine.Vector;
 import gs.weather.sky_manager.TimeOfDay;
-import gs.weather.wallpaper.Models;
-import gs.weather.wallpaper.Textures;
 
 public class SceneRain extends SceneBase {
     private final String TAG;
@@ -133,25 +131,25 @@ public class SceneRain extends SceneBase {
     }
 
     public void precacheAssets(GL10 gl10) {
-        Textures txs = new Textures(mContext.getResources(), (GL11) gl10);
-        this.mTextureManager.loadTextureFromPath(gl10, this.pref_background);
-        this.mTextureManager.bind(txs.loadBitmap("trees_overlay", R.drawable.trees_overlay));
-        this.mTextureManager.bind(txs.loadBitmap("clouddark1", R.drawable.clouddark1));
-        this.mTextureManager.bind(txs.loadBitmap("clouddark2", R.drawable.clouddark2));
-        this.mTextureManager.bind(txs.loadBitmap("clouddark3", R.drawable.clouddark3));
-        this.mTextureManager.bind(txs.loadBitmap("clouddark4", R.drawable.clouddark4));
-        this.mTextureManager.bind(txs.loadBitmap("clouddark5", R.drawable.clouddark5));
-        this.mTextureManager.bind(txs.loadBitmap("raindrop", R.drawable.raindrop));
-        Models mlds = new Models(mContext.getResources(), (GL11) gl10);
-        this.mMeshManager.bind(mlds.loadBMDL("plane_16x16", R.raw.plane_16x16));
-        this.mMeshManager.bind(mlds.loadBMDL("cloud1m", R.raw.cloud1m));
-        this.mMeshManager.bind(mlds.loadBMDL("cloud2m", R.raw.cloud2m));
-        this.mMeshManager.bind(mlds.loadBMDL("cloud3m", R.raw.cloud3m));
-        this.mMeshManager.bind(mlds.loadBMDL("cloud4m", R.raw.cloud4m));
-        this.mMeshManager.bind(mlds.loadBMDL("cloud5m", R.raw.cloud5m));
-        this.mMeshManager.bind(mlds.loadBMDL("grass_overlay", R.raw.grass_overlay));
-        this.mMeshManager.bind(mlds.loadBMDL("trees_overlay", R.raw.trees_overlay));
-        this.mMeshManager.bind(mlds.loadBMDL("trees_overlay_terrain", R.raw.trees_overlay_terrain));
+        super.precacheAssets(gl10);
+
+        textures.loadBitmap("storm_bg", R.drawable.storm_bg);
+        textures.loadBitmap("trees_overlay", R.drawable.trees_overlay);
+        textures.loadBitmap("clouddark1", R.drawable.clouddark1);
+        textures.loadBitmap("clouddark2", R.drawable.clouddark2);
+        textures.loadBitmap("clouddark3", R.drawable.clouddark3);
+        textures.loadBitmap("clouddark4", R.drawable.clouddark4);
+        textures.loadBitmap("clouddark5", R.drawable.clouddark5);
+        textures.loadBitmap("raindrop", R.drawable.raindrop);
+        models.loadBMDL("plane_16x16", R.raw.plane_16x16);
+        models.loadBMDL("cloud1m", R.raw.cloud1m);
+        models.loadBMDL("cloud2m", R.raw.cloud2m);
+        models.loadBMDL("cloud3m", R.raw.cloud3m);
+        models.loadBMDL("cloud4m", R.raw.cloud4m);
+        models.loadBMDL("cloud5m", R.raw.cloud5m);
+        models.loadBMDL("grass_overlay", R.raw.grass_overlay);
+        models.loadBMDL("trees_overlay", R.raw.trees_overlay);
+        models.loadBMDL("trees_overlay_terrain", R.raw.trees_overlay_terrain);
     }
 
     public void updateTimeOfDay(TimeOfDay tod) {

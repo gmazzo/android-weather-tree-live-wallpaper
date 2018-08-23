@@ -15,8 +15,6 @@ import gs.weather.engine.TextureManager;
 import gs.weather.engine.ThingManager;
 import gs.weather.engine.Vector;
 import gs.weather.sky_manager.TimeOfDay;
-import gs.weather.wallpaper.Models;
-import gs.weather.wallpaper.Textures;
 
 public class SceneSnow extends SceneBase {
     static final float CLOUD_START_DISTANCE = 175.0f;
@@ -78,30 +76,30 @@ public class SceneSnow extends SceneBase {
     }
 
     public void precacheAssets(GL10 gl10) {
-        Textures txs = new Textures(mContext.getResources(), (GL11) gl10);
-        this.mTextureManager.loadTextureFromPath(gl10, this.pref_background);
-        this.mTextureManager.bind(txs.loadBitmap("trees_overlay", R.drawable.trees_overlay));
-        this.mTextureManager.bind(txs.loadBitmap("cloud1", R.drawable.cloud1));
-        this.mTextureManager.bind(txs.loadBitmap("cloud2", R.drawable.cloud2));
-        this.mTextureManager.bind(txs.loadBitmap("cloud3", R.drawable.cloud3));
-        this.mTextureManager.bind(txs.loadBitmap("cloud4", R.drawable.cloud4));
-        this.mTextureManager.bind(txs.loadBitmap("cloud5", R.drawable.cloud5));
-        this.mTextureManager.bind(txs.loadTGA("wispy1", R.raw.wispy1));
-        this.mTextureManager.bind(txs.loadTGA("wispy2", R.raw.wispy2));
-        this.mTextureManager.bind(txs.loadTGA("wispy3", R.raw.wispy3));
-        this.mTextureManager.bind(txs.loadTGA("p_snow1", R.raw.p_snow1));
-        this.mTextureManager.bind(txs.loadTGA("p_snow2", R.raw.p_snow2));
-        Models mlds = new Models(mContext.getResources(), (GL11) gl10);
-        this.mMeshManager.bind(mlds.loadBMDL("plane_16x16", R.raw.plane_16x16));
-        this.mMeshManager.bind(mlds.loadBMDL("cloud1m", R.raw.cloud1m));
-        this.mMeshManager.bind(mlds.loadBMDL("cloud2m", R.raw.cloud2m));
-        this.mMeshManager.bind(mlds.loadBMDL("cloud3m", R.raw.cloud3m));
-        this.mMeshManager.bind(mlds.loadBMDL("cloud4m", R.raw.cloud4m));
-        this.mMeshManager.bind(mlds.loadBMDL("cloud5m", R.raw.cloud5m));
-        this.mMeshManager.bind(mlds.loadBMDL("grass_overlay", R.raw.grass_overlay));
-        this.mMeshManager.bind(mlds.loadBMDL("trees_overlay", R.raw.trees_overlay));
-        this.mMeshManager.bind(mlds.loadBMDL("trees_overlay_terrain", R.raw.trees_overlay_terrain));
-        this.mMeshManager.bind(mlds.loadBMDL("flakes", R.raw.flakes));
+        super.precacheAssets(gl10);
+
+        textures.loadBitmap("bg2", R.drawable.bg2);
+        textures.loadBitmap("trees_overlay", R.drawable.trees_overlay);
+        textures.loadBitmap("cloud1", R.drawable.cloud1);
+        textures.loadBitmap("cloud2", R.drawable.cloud2);
+        textures.loadBitmap("cloud3", R.drawable.cloud3);
+        textures.loadBitmap("cloud4", R.drawable.cloud4);
+        textures.loadBitmap("cloud5", R.drawable.cloud5);
+        textures.loadTGA("wispy1", R.raw.wispy1);
+        textures.loadTGA("wispy2", R.raw.wispy2);
+        textures.loadTGA("wispy3", R.raw.wispy3);
+        textures.loadTGA("p_snow1", R.raw.p_snow1);
+        textures.loadTGA("p_snow2", R.raw.p_snow2);
+        models.loadBMDL("plane_16x16", R.raw.plane_16x16);
+        models.loadBMDL("cloud1m", R.raw.cloud1m);
+        models.loadBMDL("cloud2m", R.raw.cloud2m);
+        models.loadBMDL("cloud3m", R.raw.cloud3m);
+        models.loadBMDL("cloud4m", R.raw.cloud4m);
+        models.loadBMDL("cloud5m", R.raw.cloud5m);
+        models.loadBMDL("grass_overlay", R.raw.grass_overlay);
+        models.loadBMDL("trees_overlay", R.raw.trees_overlay);
+        models.loadBMDL("trees_overlay_terrain", R.raw.trees_overlay_terrain);
+        models.loadBMDL("flakes", R.raw.flakes);
     }
 
     private void spawnClouds(boolean force) {
