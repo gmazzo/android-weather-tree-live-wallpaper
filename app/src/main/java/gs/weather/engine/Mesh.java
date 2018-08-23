@@ -15,7 +15,13 @@ import javax.microedition.khronos.opengles.GL11;
 import gs.weather.engine.Utility.Logger;
 
 import static javax.microedition.khronos.opengles.GL10.GL_FLOAT;
+import static javax.microedition.khronos.opengles.GL10.GL_MODULATE;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE0;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE1;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_COORD_ARRAY;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_ENV;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_ENV_MODE;
 import static javax.microedition.khronos.opengles.GL10.GL_TRIANGLES;
 import static javax.microedition.khronos.opengles.GL10.GL_UNSIGNED_SHORT;
 import static javax.microedition.khronos.opengles.GL11.GL_ARRAY_BUFFER;
@@ -156,14 +162,14 @@ public class Mesh {
                 int[] handleTemp = new int[1];
                 gl11.glGenBuffers(1, handleTemp, 0);
                 frame.bufVertexHandle = handleTemp[0];
-                gl11.glBindBuffer(34962, frame.bufVertexHandle);
-                gl11.glBufferData(34962, vertexBufferBytes, frame.bufVertex, 35044);
-                gl11.glBindBuffer(34962, 0);
+                gl11.glBindBuffer(GL_ARRAY_BUFFER, frame.bufVertexHandle);
+                gl11.glBufferData(GL_ARRAY_BUFFER, vertexBufferBytes, frame.bufVertex, 35044);
+                gl11.glBindBuffer(GL_ARRAY_BUFFER, 0);
                 gl11.glGenBuffers(1, handleTemp, 0);
                 frame.bufNormalHandle = handleTemp[0];
-                gl11.glBindBuffer(34962, frame.bufNormalHandle);
-                gl11.glBufferData(34962, normalBufferBytes, frame.bufNormal, 35044);
-                gl11.glBindBuffer(34962, 0);
+                gl11.glBindBuffer(GL_ARRAY_BUFFER, frame.bufNormalHandle);
+                gl11.glBufferData(GL_ARRAY_BUFFER, normalBufferBytes, frame.bufNormal, 35044);
+                gl11.glBindBuffer(GL_ARRAY_BUFFER, 0);
             }
         }
         this.bufTCDirect = ByteBuffer.allocateDirect(tcBufferBytes);
@@ -184,14 +190,14 @@ public class Mesh {
             int[] handleTemp = new int[1];
             gl11.glGenBuffers(1, handleTemp, 0);
             this.bufIndexHandle = handleTemp[0];
-            gl11.glBindBuffer(34963, this.bufIndexHandle);
-            gl11.glBufferData(34963, indexBufferBytes, this.bufIndex, 35044);
-            gl11.glBindBuffer(34963, 0);
+            gl11.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this.bufIndexHandle);
+            gl11.glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBufferBytes, this.bufIndex, 35044);
+            gl11.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
             gl11.glGenBuffers(1, handleTemp, 0);
             this.bufTCHandle = handleTemp[0];
-            gl11.glBindBuffer(34962, this.bufTCHandle);
-            gl11.glBufferData(34962, tcBufferBytes, this.bufTC, 35044);
-            gl11.glBindBuffer(34962, 0);
+            gl11.glBindBuffer(GL_ARRAY_BUFFER, this.bufTCHandle);
+            gl11.glBufferData(GL_ARRAY_BUFFER, tcBufferBytes, this.bufTC, 35044);
+            gl11.glBindBuffer(GL_ARRAY_BUFFER, 0);
         }
 
         // this.numElements = 0;
@@ -405,7 +411,7 @@ public class Mesh {
                 gl11.glTexCoordPointer(2, GL_FLOAT, 0, 0);
 
                 gl11.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this.bufIndexHandle);
-                gl11.glDrawElements(4, this.numIndices, GL_UNSIGNED_SHORT, 0);
+                gl11.glDrawElements(GL_TRIANGLES, this.numIndices, GL_UNSIGNED_SHORT, 0);
 
                 gl11.glBindBuffer(GL_ARRAY_BUFFER, 0);
                 gl11.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -419,35 +425,35 @@ public class Mesh {
     }
 
     public void renderFrameMultiTexture(GL11 gl11, int frameNum, int tex1, int tex2, int combine, boolean envMap) {
-        gl11.glActiveTexture(33984);
+        gl11.glActiveTexture(GL_TEXTURE0);
         gl11.glBindTexture(GL_TEXTURE_2D, tex1);
         if (envMap) {
-            gl11.glBindBuffer(34962, this.frames[frameNum].bufNormalHandle);
+            gl11.glBindBuffer(GL_ARRAY_BUFFER, this.frames[frameNum].bufNormalHandle);
             gl11.glTexCoordPointer(3, GL_FLOAT, 0, 0);
         } else {
-            gl11.glBindBuffer(34962, this.bufTCHandle);
+            gl11.glBindBuffer(GL_ARRAY_BUFFER, this.bufTCHandle);
             gl11.glTexCoordPointer(2, GL_FLOAT, 0, 0);
         }
-        gl11.glTexEnvi(8960, 8704, 8448);
-        gl11.glActiveTexture(33985);
+        gl11.glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+        gl11.glActiveTexture(GL_TEXTURE1);
         gl11.glEnable(GL_TEXTURE_2D);
-        gl11.glClientActiveTexture(33985);
-        gl11.glEnableClientState(32888);
+        gl11.glClientActiveTexture(GL_TEXTURE1);
+        gl11.glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         gl11.glBindTexture(GL_TEXTURE_2D, tex2);
-        gl11.glBindBuffer(34962, this.bufTCHandle);
+        gl11.glBindBuffer(GL_ARRAY_BUFFER, this.bufTCHandle);
         gl11.glTexCoordPointer(2, GL_FLOAT, 0, 0);
-        gl11.glTexEnvi(8960, 8704, combine);
-        gl11.glBindBuffer(34962, this.frames[frameNum].bufVertexHandle);
+        gl11.glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, combine);
+        gl11.glBindBuffer(GL_ARRAY_BUFFER, this.frames[frameNum].bufVertexHandle);
         gl11.glVertexPointer(3, GL_FLOAT, 0, 0);
-        gl11.glBindBuffer(34962, this.frames[frameNum].bufNormalHandle);
+        gl11.glBindBuffer(GL_ARRAY_BUFFER, this.frames[frameNum].bufNormalHandle);
         gl11.glNormalPointer(GL_FLOAT, 0, 0);
-        gl11.glBindBuffer(34963, this.bufIndexHandle);
-        gl11.glDrawElements(4, this.numIndices, GL_UNSIGNED_SHORT, 0);
-        gl11.glBindBuffer(34962, 0);
-        gl11.glBindBuffer(34963, 0);
+        gl11.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this.bufIndexHandle);
+        gl11.glDrawElements(GL_TRIANGLES, this.numIndices, GL_UNSIGNED_SHORT, 0);
+        gl11.glBindBuffer(GL_ARRAY_BUFFER, 0);
+        gl11.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
         gl11.glDisable(GL_TEXTURE_2D);
-        gl11.glActiveTexture(33984);
-        gl11.glClientActiveTexture(33984);
+        gl11.glActiveTexture(GL_TEXTURE0);
+        gl11.glClientActiveTexture(GL_TEXTURE0);
     }
 
     public void renderFrame_gl11(GL11 gl11, int frameNum) {
@@ -457,12 +463,12 @@ public class Mesh {
     }
 
     public void renderFrame_gl11_clear(GL11 gl11) {
-        gl11.glBindBuffer(34962, 0);
-        gl11.glBindBuffer(34963, 0);
+        gl11.glBindBuffer(GL_ARRAY_BUFFER, 0);
+        gl11.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
     public void renderFrame_gl11_render(GL11 gl11) {
-        gl11.glDrawElements(4, this.numIndices, GL_UNSIGNED_SHORT, 0);
+        gl11.glDrawElements(GL_TRIANGLES, this.numIndices, GL_UNSIGNED_SHORT, 0);
     }
 
     public void renderFrame_gl11_setup(GL11 gl11, int frameNum) {
@@ -472,13 +478,13 @@ public class Mesh {
             Logger.v(TAG, sb.toString());
             frameNum = this.frames.length - 1;
         }
-        gl11.glBindBuffer(34962, this.frames[frameNum].bufVertexHandle);
+        gl11.glBindBuffer(GL_ARRAY_BUFFER, this.frames[frameNum].bufVertexHandle);
         gl11.glVertexPointer(3, GL_FLOAT, 0, 0);
-        gl11.glBindBuffer(34962, this.frames[frameNum].bufNormalHandle);
+        gl11.glBindBuffer(GL_ARRAY_BUFFER, this.frames[frameNum].bufNormalHandle);
         gl11.glNormalPointer(GL_FLOAT, 0, 0);
-        gl11.glBindBuffer(34962, this.bufTCHandle);
+        gl11.glBindBuffer(GL_ARRAY_BUFFER, this.bufTCHandle);
         gl11.glTexCoordPointer(2, GL_FLOAT, 0, 0);
-        gl11.glBindBuffer(34963, this.bufIndexHandle);
+        gl11.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this.bufIndexHandle);
     }
 
     public void unload(GL10 gl10) {

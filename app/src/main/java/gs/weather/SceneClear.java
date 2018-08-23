@@ -16,6 +16,9 @@ import gs.weather.engine.ThingManager;
 import gs.weather.engine.Vector;
 import gs.weather.sky_manager.TimeOfDay;
 
+import static javax.microedition.khronos.opengles.GL10.GL_MODULATE;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE0;
+
 public class SceneClear extends SceneBase {
     protected static final float BALLOON_START_ALTITUDE = -50.0f;
     protected static final float CLOUD_START_DISTANCE = 175.0f;
@@ -299,10 +302,10 @@ public class SceneClear extends SceneBase {
             int starId = this.mTextureManager.getTextureID(gl, "stars");
             gl.glTranslatef((0.1f * timeDelta) % 1.0f, 300.0f, -100.0f);
             if (gl instanceof GL11) {
-                starMesh.renderFrameMultiTexture((GL11) gl, 0, noiseId, starId, 8448, false);
+                starMesh.renderFrameMultiTexture((GL11) gl, 0, noiseId, starId, GL_MODULATE, false);
                 return;
             }
-            gl.glBindTexture(33984, starId);
+            gl.glBindTexture(GL_TEXTURE0, starId);
             starMesh.render(gl);
         }
     }

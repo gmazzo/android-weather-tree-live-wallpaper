@@ -3,11 +3,14 @@ package gs.weather;
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
+import gs.weather.engine.Color;
 import gs.weather.engine.Mesh;
 import gs.weather.engine.MeshManager;
 import gs.weather.engine.TextureManager;
 import gs.weather.engine.Thing;
-import gs.weather.engine.Color;
+
+import static javax.microedition.khronos.opengles.GL10.GL_MODULATE;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE0;
 
 public class ThingSun extends Thing {
     private static final String TAG = "Sun";
@@ -37,9 +40,9 @@ public class ThingSun extends Thing {
         gl.glRotatef(f11, 0.0f, 0.0f, 1.0f);
         gl.glTranslatef(-0.5f, -0.5f, 0.0f);
         if (gl instanceof GL11) {
-            mesh.renderFrameMultiTexture((GL11) gl, 0, blendTexId, sunTexId, 8448, false);
+            mesh.renderFrameMultiTexture((GL11) gl, 0, blendTexId, sunTexId, GL_MODULATE, false);
         } else {
-            gl.glBindTexture(33984, sunTexId);
+            gl.glBindTexture(GL_TEXTURE0, sunTexId);
             mesh.render(gl);
         }
         gl.glPopMatrix();

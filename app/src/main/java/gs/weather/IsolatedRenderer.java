@@ -19,7 +19,12 @@ import gs.weather.engine.Vector;
 import gs.weather.sky_manager.TimeOfDay;
 import gs.weather.sky_manager.WeatherSettingsUtil;
 
+import static javax.microedition.khronos.opengles.GL10.GL_MODULATE;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE0;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_COORD_ARRAY;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_ENV;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_ENV_MODE;
 
 public class IsolatedRenderer implements OnSharedPreferenceChangeListener {
     static final float BACKGROUND_DISTANCE = 300.0f;
@@ -183,12 +188,12 @@ public class IsolatedRenderer implements OnSharedPreferenceChangeListener {
         gl.glAlphaFunc(518, 0.02f);
         gl.glDepthMask(DBG);
         gl.glDepthFunc(515);
-        gl.glTexEnvx(8960, 8704, 8448);
+        gl.glTexEnvx(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
         gl.glEnableClientState(32884);
-        gl.glEnableClientState(32888);
+        gl.glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         gl.glBlendFunc(1, 771);
         gl.glCullFace(1029);
-        gl.glActiveTexture(33984);
+        gl.glActiveTexture(GL_TEXTURE0);
         gl.glEnable(2903);
         gl.glMatrixMode(5890);
         gl.glPopMatrix();
