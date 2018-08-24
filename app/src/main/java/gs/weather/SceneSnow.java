@@ -18,6 +18,7 @@ import gs.weather.sky_manager.TimeOfDay;
 
 import static javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT;
 import static javax.microedition.khronos.opengles.GL10.GL_LIGHTING;
+import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
 
 public class SceneSnow extends SceneBase {
     static final float CLOUD_START_DISTANCE = 175.0f;
@@ -201,7 +202,7 @@ public class SceneSnow extends SceneBase {
         gl.glDisable(GL_COLOR_BUFFER_BIT);
         gl.glDisable(16385);
         gl.glDisable(GL_LIGHTING);
-        gl.glMatrixMode(5888);
+        gl.glMatrixMode(GL_MODELVIEW);
         gl.glLoadIdentity();
         gl.glBlendFunc(1, 771);
         renderBackground(gl, time.sTimeElapsed);
@@ -229,7 +230,7 @@ public class SceneSnow extends SceneBase {
         Mesh mesh = this.mMeshManager.getMeshByName(gl, "plane_16x16");
         this.mTextureManager.bindTextureID(gl, this.pref_background);
         gl.glColor4f(todColorFinal.getR(), todColorFinal.getG(), todColorFinal.getB(), 1.0f);
-        gl.glMatrixMode(5888);
+        gl.glMatrixMode(GL_MODELVIEW);
         gl.glPushMatrix();
         gl.glTranslatef(0.0f, 250.0f, 35.0f);
         gl.glScalef(this.BG_PADDING * 2.0f, this.BG_PADDING, this.BG_PADDING);
@@ -238,7 +239,7 @@ public class SceneSnow extends SceneBase {
         gl.glTranslatef(((pref_windSpeed * timeDelta) * -0.005f) % 1.0f, 0.0f, 0.0f);
         mesh.render(gl);
         gl.glPopMatrix();
-        gl.glMatrixMode(5888);
+        gl.glMatrixMode(GL_MODELVIEW);
         gl.glPopMatrix();
     }
 }

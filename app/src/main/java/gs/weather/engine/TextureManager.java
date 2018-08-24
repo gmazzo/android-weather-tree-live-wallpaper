@@ -26,6 +26,8 @@ import gs.weather.WallpaperSettings;
 import gs.weather.engine.Utility.Logger;
 import gs.weather.wallpaper.Texture;
 
+import static javax.microedition.khronos.opengles.GL10.GL_LINEAR;
+import static javax.microedition.khronos.opengles.GL10.GL_REPEAT;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
 import static javax.microedition.khronos.opengles.GL11.GL_GENERATE_MIPMAP;
 
@@ -319,17 +321,17 @@ public class TextureManager {
         Logger.v(TAG, "TextureManager reading " + name);
         if (this.pref_useMipMaps && (gl instanceof GL11) && useMipMap) {
             gl.glTexParameterf(GL_TEXTURE_2D, 10241, 9985.0f);
-            gl.glTexParameterf(GL_TEXTURE_2D, 10240, 9729.0f);
+            gl.glTexParameterf(GL_TEXTURE_2D, 10240, GL_LINEAR);
         } else {
-            gl.glTexParameterf(GL_TEXTURE_2D, 10241, 9729.0f);
-            gl.glTexParameterf(GL_TEXTURE_2D, 10240, 9729.0f);
+            gl.glTexParameterf(GL_TEXTURE_2D, 10241, GL_LINEAR);
+            gl.glTexParameterf(GL_TEXTURE_2D, 10240, GL_LINEAR);
         }
         if (useClamp) {
             gl.glTexParameterf(GL_TEXTURE_2D, 10242, 33071.0f);
             gl.glTexParameterf(GL_TEXTURE_2D, 10243, 33071.0f);
         } else {
-            gl.glTexParameterf(GL_TEXTURE_2D, 10242, 10497.0f);
-            gl.glTexParameterf(GL_TEXTURE_2D, 10243, 10497.0f);
+            gl.glTexParameterf(GL_TEXTURE_2D, 10242, GL_REPEAT);
+            gl.glTexParameterf(GL_TEXTURE_2D, 10243, GL_REPEAT);
         }
         boolean loadSuccess = false;
         Resources resources = this.context.getResources();
@@ -374,7 +376,8 @@ public class TextureManager {
     public boolean unload(GL10 gl10, String path) {
         if (this.texIDs.containsKey(path)) {
             Logger.v(TAG, "TextureManager unloading " + path);
-            gl10.glDeleteTextures(1, new int[]{((Integer) this.texIDs.get(path)).intValue()}, 0);
+            // TODO managed by Textures
+            // gl10.glDeleteTextures(1, new int[]{((Integer) this.texIDs.get(path)).intValue()}, 0);
             this.texIDs.remove(path);
             return true;
         }

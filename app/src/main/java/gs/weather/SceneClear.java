@@ -18,6 +18,7 @@ import gs.weather.sky_manager.TimeOfDay;
 
 import static javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT;
 import static javax.microedition.khronos.opengles.GL10.GL_LIGHTING;
+import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
 import static javax.microedition.khronos.opengles.GL10.GL_MODULATE;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE0;
 
@@ -114,6 +115,7 @@ public class SceneClear extends SceneBase {
         textures.loadTGA("wispy3", R.raw.wispy3);
         textures.loadTGA("sun", R.raw.sun);
         textures.loadTGA("sun_blend", R.raw.sun_blend);
+        textures.loadBitmap("moon_0", R.drawable.moon_0);
         models.loadBMDL("plane_16x16", R.raw.plane_16x16);
         models.loadBMDL("cloud1m", R.raw.cloud1m);
         models.loadBMDL("cloud2m", R.raw.cloud2m);
@@ -244,7 +246,7 @@ public class SceneClear extends SceneBase {
         gl.glDisable(GL_COLOR_BUFFER_BIT);
         gl.glDisable(16385);
         gl.glDisable(GL_LIGHTING);
-        gl.glMatrixMode(5888);
+        gl.glMatrixMode(GL_MODELVIEW);
         gl.glLoadIdentity();
         gl.glBlendFunc(1, 771);
         renderBackground(gl, time.sTimeElapsed);
@@ -257,7 +259,7 @@ public class SceneClear extends SceneBase {
         Mesh mesh = this.mMeshManager.getMeshByName(gl, "plane_16x16");
         this.mTextureManager.bindTextureID(gl, this.pref_background);
         gl.glColor4f(todColorFinal.getR(), todColorFinal.getG(), todColorFinal.getB(), 1.0f);
-        gl.glMatrixMode(5888);
+        gl.glMatrixMode(GL_MODELVIEW);
         gl.glPushMatrix();
         gl.glTranslatef(0.0f, 250.0f, 35.0f);
         gl.glScalef(this.BG_PADDING * 2.0f, this.BG_PADDING, this.BG_PADDING);
@@ -267,7 +269,7 @@ public class SceneClear extends SceneBase {
         mesh.render(gl);
         renderStars(gl, timeDelta);
         gl.glPopMatrix();
-        gl.glMatrixMode(5888);
+        gl.glMatrixMode(GL_MODELVIEW);
         gl.glPopMatrix();
     }
 

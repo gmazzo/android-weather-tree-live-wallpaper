@@ -12,6 +12,7 @@ import gs.weather.engine.Mesh;
 import gs.weather.engine.Scene;
 import gs.weather.sky_manager.TimeOfDay;
 
+import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
 
 public abstract class SceneBase extends Scene {
@@ -94,7 +95,7 @@ public abstract class SceneBase extends Scene {
         }
         Mesh tree_terrain = this.mMeshManager.getMeshByName(gl, "trees_overlay_terrain");
         gl.glBindTexture(GL_TEXTURE_2D, this.mTextureManager.getTextureID(gl, "trees_overlay"));
-        gl.glMatrixMode(5888);
+        gl.glMatrixMode(GL_MODELVIEW);
         gl.glPushMatrix();
         if (this.mLandscape) {
             gl.glTranslatef(2.0f, 70.0f, -65.0f);

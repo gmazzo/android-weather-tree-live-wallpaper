@@ -28,8 +28,12 @@ public abstract class Scene {
 
     @CallSuper
     public void precacheAssets(GL10 gl) {
-        textures = new Textures(mContext.getResources(), (GL11) gl, mTextureManager);
-        models = new Models(mContext.getResources(), (GL11) gl, mMeshManager);
+        if (textures == null) {
+            textures = new Textures(mContext.getResources(), (GL11) gl, mTextureManager);
+        }
+        if (models == null) {
+            models = new Models(mContext.getResources(), (GL11) gl, mMeshManager);
+        }
     }
 
     public void setScreenMode(boolean lanscape) {

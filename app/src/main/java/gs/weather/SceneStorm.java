@@ -18,6 +18,7 @@ import gs.weather.sky_manager.TimeOfDay;
 
 import static javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT;
 import static javax.microedition.khronos.opengles.GL10.GL_LIGHTING;
+import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
 
 public class SceneStorm extends SceneBase {
     private static final String TAG = "Storm";
@@ -169,7 +170,7 @@ public class SceneStorm extends SceneBase {
     public void draw(GL10 gl, GlobalTime time) {
         checkAssetReload(gl);
         this.mThingManager.update(time.sTimeDelta);
-        gl.glMatrixMode(5888);
+        gl.glMatrixMode(GL_MODELVIEW);
         gl.glLoadIdentity();
         gl.glBlendFunc(1, 771);
         renderBackground(gl, time.sTimeElapsed);
@@ -185,7 +186,7 @@ public class SceneStorm extends SceneBase {
         Mesh mesh = this.mMeshManager.getMeshByName(gl, "plane_16x16");
         this.mTextureManager.bindTextureID(gl, this.pref_background);
         gl.glColor4f(todColorFinal.getR(), todColorFinal.getG(), todColorFinal.getB(), 1.0f);
-        gl.glMatrixMode(5888);
+        gl.glMatrixMode(GL_MODELVIEW);
         gl.glPushMatrix();
         gl.glTranslatef(0.0f, 250.0f, 35.0f);
         gl.glScalef(this.BG_PADDING * 2.0f, this.BG_PADDING, this.BG_PADDING);
@@ -204,7 +205,7 @@ public class SceneStorm extends SceneBase {
         mesh.render(gl);
         gl.glDisable(16385);
         gl.glPopMatrix();
-        gl.glMatrixMode(5888);
+        gl.glMatrixMode(GL_MODELVIEW);
         gl.glPopMatrix();
     }
 
@@ -212,7 +213,7 @@ public class SceneStorm extends SceneBase {
         if (this.particleRain == null) {
             this.particleRain = new ParticleRain(this.rainDensity);
         }
-        gl.glMatrixMode(5888);
+        gl.glMatrixMode(GL_MODELVIEW);
         gl.glPushMatrix();
         gl.glTranslatef(0.0f, 0.0f, -5.0f);
         gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -251,10 +252,7 @@ public class SceneStorm extends SceneBase {
                 cloud.origin.setX((((float) i) * (90.0f / ((float) num_clouds))) - 0.099609375f);
                 cloud.origin.setY(cloudDepthList[i]);
                 cloud.origin.setZ(GlobalRand.floatRange(-20.0f, -10.0f));
-                int which = (i % 5) + 1;
-                cloud.model = models.get("cloud" + which + "m");
-                cloud.texture = textures.get("clouddark" + which);
-                cloud.texNameFlare = "cloudflare" + which;
+                cloud.which = (i % 5) + 1;
                 cloud.targetName = "dark_cloud";
                 cloud.velocity = new Vector(pref_windSpeed * 1.5f, 0.0f, 0.0f);
                 this.mThingManager.add(cloud);

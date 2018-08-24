@@ -24,19 +24,20 @@ class Textures(
 
     private fun createTexture(name: String, loader: () -> Unit) = textures.getOrPut(name) {
         gl.glEnable(GL_TEXTURE_2D)
-        gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, 9729.0f)
-        gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, 9729.0f)
-        gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, 10497.0f)
-        gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, 10497.0f)
 
         val buffer = IntBuffer.allocate(1)
         gl.glGenTextures(1, buffer)
 
         val id = buffer.get(0)
         gl.glBindTexture(GL_TEXTURE_2D, id)
+        gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+        gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+        gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
+        gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
+
         loader.invoke()
 
-        return Texture(gl, id, name).apply(manager::bind)
+        return@getOrPut Texture(id, name).apply(manager::bind) // TODO remove once done
     }
 
     fun loadBitmap(name: String, @AnyRes resId: Int) = createTexture(name) {
@@ -87,17 +88,11 @@ class Textures(
         }
     }
 
-    fun unload(texture: Texture) {
-        if (textures.remove(texture.name) == null) {
-            throw IllegalArgumentException("Texture is not from this container")
-        }
-
-        texture.unload()
-    }
-
     override fun close() {
-        textures.values.forEach(Texture::unload)
+        val ids = textures.values.map(Texture::id).toIntArray()
         textures.clear()
+
+        gl.glDeleteTextures(ids.size, ids, 0)
     }
 
     private val Byte.unsigned get() = toInt().absoluteValue

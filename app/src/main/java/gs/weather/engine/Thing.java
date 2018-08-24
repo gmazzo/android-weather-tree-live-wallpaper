@@ -9,6 +9,7 @@ import gs.weather.wallpaper.Models;
 import gs.weather.wallpaper.Texture;
 import gs.weather.wallpaper.Textures;
 
+import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
 
 public class Thing {
@@ -56,7 +57,7 @@ public class Thing {
             this.particleSystem.render((GL11) gl, textures.getManager(), models.getManager(), this.origin);
         }
         if (this.texture != null && this.model != null) {
-            gl.glMatrixMode(5888);
+            gl.glMatrixMode(GL_MODELVIEW);
             gl.glPushMatrix();
             gl.glTranslatef(this.origin.getX(), this.origin.getY(), this.origin.getZ());
             gl.glScalef(this.scale.getX(), this.scale.getY(), this.scale.getZ());

@@ -3,6 +3,8 @@ package gs.weather.engine;
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
+import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
+
 public class ParticleSystem {
     private static final String TAG = "GL Engine";
     protected static final int _maxParticles = 64;
@@ -63,7 +65,7 @@ public class ParticleSystem {
         }
 
         public void render(GL11 gl11, Mesh mesh) {
-            gl11.glMatrixMode(5888);
+            gl11.glMatrixMode(GL_MODELVIEW);
             gl11.glPushMatrix();
             gl11.glTranslatef(this._position.getX(), this._position.getY(), this._position.getZ());
             if (ParticleSystem.this._useColor) {
@@ -186,7 +188,7 @@ public class ParticleSystem {
     public void render(GL11 gl, TextureManager tm, MeshManager mm, Vector systemOrigin, Vector direction) {
         tm.bindTextureID(gl, this.texName);
         Mesh mesg = mm.getMeshByName(gl, this.meshName);
-        gl.glMatrixMode(5888);
+        gl.glMatrixMode(GL_MODELVIEW);
         gl.glPushMatrix();
         gl.glTranslatef(systemOrigin.getX(), systemOrigin.getY(), systemOrigin.getZ());
         if (!(direction == null || this.flowDirection == null)) {

@@ -12,7 +12,7 @@ import gs.weather.wallpaper.Textures;
 
 public class ThingMoon extends Thing {
     private static final String TAG = "Moon";
-    private static final int[] phases = {
+    private static final int[] PHASES = {
             R.drawable.moon_0, R.drawable.moon_1, R.drawable.moon_2, R.drawable.moon_3,
             R.drawable.moon_4, R.drawable.moon_5, R.drawable.moon_6, R.drawable.moon_7,
             R.drawable.moon_8, R.drawable.moon_9, R.drawable.moon_10, R.drawable.moon_11};
@@ -32,10 +32,7 @@ public class ThingMoon extends Thing {
             model = models.loadBMDL("plane_16x16", R.raw.plane_16x16);
         }
         if (this.mPhase != this.mOldPhase) {
-            if (texture != null) {
-                textures.unload(texture);
-            }
-            this.texture = textures.loadBitmap("moon_" + mPhase, phases[mPhase]);
+            this.texture = textures.loadBitmap("moon_" + mPhase, PHASES[mPhase]);
             this.mOldPhase = this.mPhase;
         }
         gl.glBlendFunc(770, 771);

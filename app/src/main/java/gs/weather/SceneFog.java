@@ -15,6 +15,8 @@ import gs.weather.sky_manager.TimeOfDay;
 
 import static javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT;
 import static javax.microedition.khronos.opengles.GL10.GL_LIGHTING;
+import static javax.microedition.khronos.opengles.GL10.GL_LINEAR;
+import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
 
 public class SceneFog extends SceneBase {
     private static final String TAG = "Fog";
@@ -108,11 +110,11 @@ public class SceneFog extends SceneBase {
         gl.glDisable(GL_COLOR_BUFFER_BIT);
         gl.glDisable(16385);
         gl.glDisable(GL_LIGHTING);
-        gl.glMatrixMode(5888);
+        gl.glMatrixMode(GL_MODELVIEW);
         gl.glLoadIdentity();
         gl.glBlendFunc(1, 771);
         gl.glEnable(2912);
-        gl.glFogf(2917, 9729.0f);
+        gl.glFogf(2917, GL_LINEAR);
         gl.glFogfv(2918, fogColor, 0);
         gl.glFogf(2914, pref_fog_density);
         gl.glFogf(2915, -10.0f);
@@ -129,7 +131,7 @@ public class SceneFog extends SceneBase {
         Mesh mesh = this.mMeshManager.getMeshByName(gl, "plane_16x16");
         this.mTextureManager.bindTextureID(gl, this.pref_background);
         gl.glColor4f(todColorFinal.getR(), todColorFinal.getG(), todColorFinal.getB(), 1.0f);
-        gl.glMatrixMode(5888);
+        gl.glMatrixMode(GL_MODELVIEW);
         gl.glPushMatrix();
         gl.glTranslatef(0.0f, 250.0f, 35.0f);
         gl.glScalef(this.BG_PADDING * 2.0f, this.BG_PADDING, this.BG_PADDING);
@@ -138,7 +140,7 @@ public class SceneFog extends SceneBase {
         gl.glTranslatef(((pref_windSpeed * timeDelta) * -0.005f) % 1.0f, 0.0f, 0.0f);
         mesh.render(gl);
         gl.glPopMatrix();
-        gl.glMatrixMode(5888);
+        gl.glMatrixMode(GL_MODELVIEW);
         gl.glPopMatrix();
     }
 }

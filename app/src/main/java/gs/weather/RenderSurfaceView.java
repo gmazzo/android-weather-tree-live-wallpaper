@@ -37,13 +37,7 @@ public class RenderSurfaceView extends GLSurfaceView {
 
         public void onDrawFrame(GL10 gl) {
             if (this.wasCreated) {
-                try {
-                    this.renderer.drawFrame(gl);
-                } catch (NullPointerException npe) {
-                    Log.e("Clouds", "draw frame error: " + npe);
-                    npe.printStackTrace();
-                    this.renderer.precacheAssets(gl);
-                }
+                this.renderer.drawFrame(gl);
             }
         }
 

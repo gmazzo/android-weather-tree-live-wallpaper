@@ -18,6 +18,7 @@ import gs.weather.sky_manager.TimeOfDay;
 
 import static javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT;
 import static javax.microedition.khronos.opengles.GL10.GL_LIGHTING;
+import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
 
 public class SceneRain extends SceneBase {
     private final String TAG;
@@ -143,6 +144,11 @@ public class SceneRain extends SceneBase {
         textures.loadBitmap("clouddark3", R.drawable.clouddark3);
         textures.loadBitmap("clouddark4", R.drawable.clouddark4);
         textures.loadBitmap("clouddark5", R.drawable.clouddark5);
+        textures.loadBitmap("cloudflare1", R.drawable.cloudflare1);
+        textures.loadBitmap("cloudflare2", R.drawable.cloudflare2);
+        textures.loadBitmap("cloudflare3", R.drawable.cloudflare3);
+        textures.loadBitmap("cloudflare4", R.drawable.cloudflare4);
+        textures.loadBitmap("cloudflare5", R.drawable.cloudflare5);
         textures.loadBitmap("raindrop", R.drawable.raindrop);
         models.loadBMDL("plane_16x16", R.raw.plane_16x16);
         models.loadBMDL("cloud1m", R.raw.cloud1m);
@@ -167,7 +173,7 @@ public class SceneRain extends SceneBase {
         Mesh mesh = this.mMeshManager.getMeshByName(gl, "plane_16x16");
         this.mTextureManager.bindTextureID(gl, this.pref_background);
         gl.glColor4f(todColorFinal.getR(), todColorFinal.getG(), todColorFinal.getB(), 1.0f);
-        gl.glMatrixMode(5888);
+        gl.glMatrixMode(GL_MODELVIEW);
         gl.glPushMatrix();
         gl.glTranslatef(0.0f, 250.0f, 35.0f);
         gl.glScalef(this.BG_PADDING * 2.0f, this.BG_PADDING, this.BG_PADDING);
@@ -176,7 +182,7 @@ public class SceneRain extends SceneBase {
         gl.glTranslatef(((pref_windSpeed * timeDelta) * -0.005f) % 1.0f, 0.0f, 0.0f);
         mesh.render(gl);
         gl.glPopMatrix();
-        gl.glMatrixMode(5888);
+        gl.glMatrixMode(GL_MODELVIEW);
         gl.glPopMatrix();
     }
 
@@ -184,7 +190,7 @@ public class SceneRain extends SceneBase {
         if (this.particleRain == null) {
             this.particleRain = new ParticleRain(this.rainDensity);
         }
-        gl.glMatrixMode(5888);
+        gl.glMatrixMode(GL_MODELVIEW);
         gl.glPushMatrix();
         gl.glTranslatef(0.0f, 0.0f, -5.0f);
         gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -199,7 +205,7 @@ public class SceneRain extends SceneBase {
         this.mThingManager.update(time.sTimeDelta);
         gl.glEnable(GL_LIGHTING);
         gl.glEnable(GL_COLOR_BUFFER_BIT);
-        gl.glMatrixMode(5888);
+        gl.glMatrixMode(GL_MODELVIEW);
         gl.glLoadIdentity();
         gl.glBlendFunc(1, 771);
         this.light_diffuse[0] = this.v_light_diffuse.getR();

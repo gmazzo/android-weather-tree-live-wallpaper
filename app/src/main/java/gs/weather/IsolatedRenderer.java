@@ -19,6 +19,7 @@ import gs.weather.engine.Vector;
 import gs.weather.sky_manager.TimeOfDay;
 import gs.weather.sky_manager.WeatherSettingsUtil;
 
+import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
 import static javax.microedition.khronos.opengles.GL10.GL_MODULATE;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE0;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
@@ -149,6 +150,7 @@ public class IsolatedRenderer implements OnSharedPreferenceChangeListener {
                     currentSceneId = SCENE_RAIN;
                     break;
             }
+            this.currentScene.precacheAssets(this.oldGL);
             this.currentScene.load(this.oldGL);
         }
         this.currentScene.setScreenMode(this.IS_LANDSCAPE);
@@ -203,7 +205,7 @@ public class IsolatedRenderer implements OnSharedPreferenceChangeListener {
         gl.glPopMatrix();
         gl.glPopMatrix();
         gl.glLoadIdentity();
-        gl.glMatrixMode(5888);
+        gl.glMatrixMode(GL_MODELVIEW);
         gl.glPopMatrix();
         gl.glPopMatrix();
         gl.glLoadIdentity();

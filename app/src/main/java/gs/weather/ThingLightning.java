@@ -5,7 +5,6 @@ import javax.microedition.khronos.opengles.GL10;
 import gs.weather.engine.Color;
 import gs.weather.engine.GlobalRand;
 import gs.weather.engine.Thing;
-import gs.weather.wallpaper.AnimatedModel;
 import gs.weather.wallpaper.Models;
 import gs.weather.wallpaper.Texture;
 import gs.weather.wallpaper.Textures;
@@ -14,7 +13,9 @@ import static javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT;
 import static javax.microedition.khronos.opengles.GL10.GL_LIGHTING;
 
 public class ThingLightning extends Thing {
-    static final int NUM_LIGHTNING_MODELS = 3;
+    private static final int MODELS[] = {
+            R.raw.lightning1, R.raw.lightning2, R.raw.lightning3
+    };
     private Texture lightningGlow;
     private Texture lightningCore;
 
@@ -24,11 +25,9 @@ public class ThingLightning extends Thing {
 
     @Override
     public void render(GL10 gl, Textures textures, Models models) {
-        if (texture == null) {
-            textures.get("lightning_pieces_core");
-        }
         if (model == null) {
-            model = models.get("lightning" + GlobalRand.intRange(1, 4));
+            int number = GlobalRand.intRange(1, 3);
+            model = models.loadBMDL("lightning" + number, MODELS[number]);
             lightningGlow = textures.loadTGA("lightning_pieces_glow", R.raw.lightning_pieces_glow);
             lightningCore = textures.loadTGA("lightning_pieces_core", R.raw.lightning_pieces_core);
         }
@@ -44,7 +43,7 @@ public class ThingLightning extends Thing {
             if (this.color != null) {
                 gl.glColor4f(this.color.getR(), this.color.getG(), this.color.getB(), this.color.getA());
             }
-            ((AnimatedModel) model).renderFrameMultiTexture(0, lightningGlow, lightningCore, 260, false);
+            model.renderFrameMultiTexture(lightningGlow, lightningCore, 260, false);
             gl.glPopMatrix();
             gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
             gl.glDisable(GL_COLOR_BUFFER_BIT);

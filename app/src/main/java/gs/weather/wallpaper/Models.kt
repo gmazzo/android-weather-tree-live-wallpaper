@@ -55,7 +55,7 @@ class Models(private val resources: Resources,
             input.skip(8)
             val normals = FloatArray(normalsCount * 3 * frames, init = normalsMapper)
 
-            return loadWithArrays(name, vertices, normals, texts, indices, elements, frames)
+            return@getOrPut loadWithArrays(name, vertices, normals, texts, indices, elements, frames)
         }
     }
 
@@ -120,21 +120,15 @@ class Models(private val resources: Resources,
         gl.glBufferData(GL_ARRAY_BUFFER, bufTC.sizeInBytes, bufTC, GL_STATIC_DRAW)
         gl.glBindBuffer(GL_ARRAY_BUFFER, 0)
 
-        if (animated) {
+        val model = if (animated) {
             val bufScratch = (elementsCount * 3).asDirectFloatBuffer()
 
-            return AnimatedModel(gl, name, frames, indicesCount, bufTCHandle, bufIndexHandle,
+            AnimatedModel(gl, name, frames, indicesCount, bufTCHandle, bufIndexHandle,
                     null, elementsCount, vertices, bufScratch)
+        } else {
+            Model(gl, name, frames, indicesCount, bufTCHandle, bufIndexHandle)
         }
-        return Model(gl, name, frames, indicesCount, bufTCHandle, bufIndexHandle).apply(manager::bind)
-    }
-
-    fun unload(model: Model) {
-        if (models.remove(model.name) == null) {
-            throw IllegalArgumentException("Model is not from this container")
-        }
-
-        model.unload()
+        return@getOrPut model.apply(manager::bind) // TODO remove once done
     }
 
     override fun close() {
