@@ -27,9 +27,9 @@ public class ThingLightning extends Thing {
     public void render(GL10 gl, Textures textures, Models models) {
         if (model == null) {
             int number = GlobalRand.intRange(1, 4);
-            model = models.loadBMDL("lightning" + number, MODELS[number - 1]);
-            lightningGlow = textures.loadTGA("lightning_pieces_glow", R.raw.lightning_pieces_glow);
-            lightningCore = textures.loadTGA("lightning_pieces_core", R.raw.lightning_pieces_core);
+            model = models.get(MODELS[number - 1]);
+            lightningGlow = textures.get(R.raw.lightning_pieces_glow);
+            lightningCore = textures.get(R.raw.lightning_pieces_core);
         }
 
         gl.glEnable(GL_LIGHTING);

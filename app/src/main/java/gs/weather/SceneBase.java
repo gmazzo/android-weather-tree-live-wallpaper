@@ -89,9 +89,9 @@ public abstract class SceneBase extends Scene {
             }
         }
 
-        Model tree_terrain = models.loadBMDL("trees_overlay_terrain", R.raw.trees_overlay_terrain);
-        Texture trees_overlay = textures.loadBitmap("trees_overlay", R.drawable.trees_overlay);
-        gl.glBindTexture(GL_TEXTURE_2D, trees_overlay.getId());
+        Model tree_terrain = models.get(R.raw.trees_overlay_terrain);
+        Texture trees_overlay = textures.get(R.drawable.trees_overlay);
+        gl.glBindTexture(GL_TEXTURE_2D, trees_overlay.getGlId());
         gl.glMatrixMode(GL_MODELVIEW);
         gl.glPushMatrix();
         if (this.mLandscape) {
@@ -103,8 +103,8 @@ public abstract class SceneBase extends Scene {
         gl.glBlendFunc(770, 771);
         tree_terrain.render();
 
-        AnimatedModel grass = (AnimatedModel) models.loadBMDL("grass_overlay", R.raw.grass_overlay);
-        AnimatedModel tree = (AnimatedModel) models.loadBMDL("trees_overlay", R.raw.trees_overlay);
+        AnimatedModel grass = (AnimatedModel) models.get(R.raw.grass_overlay);
+        AnimatedModel tree = (AnimatedModel) models.get(R.raw.trees_overlay);
         grass.setAnimator(treesAnim);
         tree.setAnimator(treesAnim);
         this.treesAnim.update(timeDelta);

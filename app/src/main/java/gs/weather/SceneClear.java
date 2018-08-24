@@ -41,17 +41,15 @@ public class SceneClear extends SceneBase {
     private boolean pref_useUfo;
     protected long smsLastUnreadCheckTime;
     protected int smsUnreadCount;
-    private final String backgroundName;
     private final @DrawableRes
     int backgroundId;
 
     public SceneClear(Context context, GL11 gl) {
-        this(context, gl, "bg3", R.drawable.bg3);
+        this(context, gl, R.drawable.bg3);
     }
 
-    public SceneClear(Context context, GL11 gl, String backgroundName, @DrawableRes int backgroundId) {
+    public SceneClear(Context context, GL11 gl, @DrawableRes int backgroundId) {
         super(context, gl);
-        this.backgroundName = backgroundName;
         this.backgroundId = backgroundId;
         this.mThingManager = new ThingManager();
         todColorFinal = new Color();
@@ -105,31 +103,31 @@ public class SceneClear extends SceneBase {
     }
 
     public void precacheAssets(GL10 gl10) {
-        textures.loadBitmap(backgroundName, backgroundId);
-        textures.loadBitmap("trees_overlay", R.drawable.trees_overlay);
-        textures.loadBitmap("cloud1", R.drawable.cloud1);
-        textures.loadBitmap("cloud2", R.drawable.cloud2);
-        textures.loadBitmap("cloud3", R.drawable.cloud3);
-        textures.loadBitmap("cloud4", R.drawable.cloud4);
-        textures.loadBitmap("cloud5", R.drawable.cloud5);
-        textures.loadBitmap("stars", R.drawable.stars);
-        textures.loadBitmap("noise", R.drawable.noise);
-        textures.loadTGA("wispy1", R.raw.wispy1);
-        textures.loadTGA("wispy2", R.raw.wispy2);
-        textures.loadTGA("wispy3", R.raw.wispy3);
-        textures.loadTGA("sun", R.raw.sun);
-        textures.loadTGA("sun_blend", R.raw.sun_blend);
-        textures.loadBitmap("moon_0", R.drawable.moon_0);
-        models.loadBMDL("plane_16x16", R.raw.plane_16x16);
-        models.loadBMDL("cloud1m", R.raw.cloud1m);
-        models.loadBMDL("cloud2m", R.raw.cloud2m);
-        models.loadBMDL("cloud3m", R.raw.cloud3m);
-        models.loadBMDL("cloud4m", R.raw.cloud4m);
-        models.loadBMDL("cloud5m", R.raw.cloud5m);
-        models.loadBMDL("grass_overlay", R.raw.grass_overlay);
-        models.loadBMDL("trees_overlay", R.raw.trees_overlay);
-        models.loadBMDL("trees_overlay_terrain", R.raw.trees_overlay_terrain);
-        models.loadBMDL("stars", R.raw.stars);
+        textures.get(backgroundId);
+        textures.get(R.drawable.trees_overlay);
+        textures.get(R.drawable.cloud1);
+        textures.get(R.drawable.cloud2);
+        textures.get(R.drawable.cloud3);
+        textures.get(R.drawable.cloud4);
+        textures.get(R.drawable.cloud5);
+        textures.get(R.drawable.stars);
+        textures.get(R.drawable.noise);
+        textures.get(R.raw.wispy1);
+        textures.get(R.raw.wispy2);
+        textures.get(R.raw.wispy3);
+        textures.get(R.raw.sun);
+        textures.get(R.raw.sun_blend);
+        textures.get(R.drawable.moon_0);
+        models.get(R.raw.plane_16x16);
+        models.get(R.raw.cloud1m);
+        models.get(R.raw.cloud2m);
+        models.get(R.raw.cloud3m);
+        models.get(R.raw.cloud4m);
+        models.get(R.raw.cloud5m);
+        models.get(R.raw.grass_overlay);
+        models.get(R.raw.trees_overlay);
+        models.get(R.raw.trees_overlay_terrain);
+        models.get(R.raw.stars);
     }
 
     protected void spawnClouds(boolean force) {
@@ -255,7 +253,7 @@ public class SceneClear extends SceneBase {
     }
 
     private void renderBackground(GL10 gl, float timeDelta) {
-        gl.glBindTexture(GL_TEXTURE_2D, textures.get(backgroundName).getId());
+        gl.glBindTexture(GL_TEXTURE_2D, textures.get(backgroundId).getGlId());
         gl.glColor4f(todColorFinal.getR(), todColorFinal.getG(), todColorFinal.getB(), 1.0f);
         gl.glMatrixMode(GL_MODELVIEW);
         gl.glPushMatrix();
@@ -264,7 +262,7 @@ public class SceneClear extends SceneBase {
         gl.glMatrixMode(5890);
         gl.glPushMatrix();
         gl.glTranslatef(((pref_windSpeed * timeDelta) * -0.005f) % 1.0f, 0.0f, 0.0f);
-        Model mesh = models.get("plane_16x16");
+        Model mesh = models.get(R.raw.plane_16x16);
         mesh.render();
         renderStars(gl, timeDelta);
         gl.glPopMatrix();
@@ -276,15 +274,15 @@ public class SceneClear extends SceneBase {
         if (pref_useTimeOfDay && todSunPosition <= 0.0f) {
             gl.glColor4f(1.0f, 1.0f, 1.0f, todSunPosition * -2.0f);
             gl.glBlendFunc(770, 1);
-            Model starMesh = models.get("stars");
-            Texture noise = textures.get("noise");
-            Texture star = textures.get("stars");
+            Model starMesh = models.get(R.raw.stars);
+            Texture noise = textures.get(R.drawable.noise);
+            Texture star = textures.get(R.drawable.stars);
             gl.glTranslatef((0.1f * timeDelta) % 1.0f, 300.0f, -100.0f);
             if (gl instanceof GL11) {
                 starMesh.renderFrameMultiTexture(noise, star, GL_MODULATE, false);
                 return;
             }
-            gl.glBindTexture(GL_TEXTURE0, star.getId());
+            gl.glBindTexture(GL_TEXTURE0, star.getGlId());
             starMesh.render();
         }
     }

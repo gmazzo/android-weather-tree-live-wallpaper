@@ -24,9 +24,9 @@ public class ThingSun extends Thing {
     @Override
     public void render(GL10 gl, Textures textures, Models models) {
         if (texture == null) {
-            texture = textures.get("sun");
-            sunBlend = textures.get("sun_blend");
-            model = models.get("plane_16x16");
+            texture = textures.get(R.raw.sun);
+            sunBlend = textures.get(R.raw.sun_blend);
+            model = models.get(R.raw.plane_16x16);
         }
 
         gl.glBlendFunc(1, 769);
@@ -46,7 +46,7 @@ public class ThingSun extends Thing {
         if (gl instanceof GL11) {
             model.renderFrameMultiTexture(sunBlend, texture, GL_MODULATE, false);
         } else {
-            gl.glBindTexture(GL_TEXTURE0, texture.getId());
+            gl.glBindTexture(GL_TEXTURE0, texture.getGlId());
             model.render();
         }
         gl.glPopMatrix();

@@ -58,15 +58,15 @@ public class ThingDarkCloud extends Thing {
     @Override
     public void render(GL10 gl, Textures textures, Models models) {
         if (model == null) {
-            model = models.loadBMDL("cloud" + which + "m", MODELS[which - 1]);
-            texture = textures.loadBitmap("clouddark" + which, TEXTURES[which - 1]);
-            texNameFlare = textures.loadBitmap("cloudflare" + which, FLARES[which - 1]);
+            model = models.get(MODELS[which - 1]);
+            texture = textures.get(TEXTURES[which - 1]);
+            texNameFlare = textures.get(FLARES[which - 1]);
         }
         if (this.particleSystem != null) {
             this.particleSystem.render((GL11) gl, this.origin);
         }
         if (this.texture != null && this.model != null) {
-            gl.glBindTexture(GL_TEXTURE_2D, texture.getId());
+            gl.glBindTexture(GL_TEXTURE_2D, texture.getGlId());
 
             gl.glBlendFunc(1, 771);
             gl.glPushMatrix();
@@ -78,7 +78,7 @@ public class ThingDarkCloud extends Thing {
             }
             if (this.withFlare && this.flashIntensity > 0.0f) {
                 gl.glDisable(GL_LIGHTING);
-                gl.glBindTexture(GL_TEXTURE_2D, texNameFlare.getId());
+                gl.glBindTexture(GL_TEXTURE_2D, texNameFlare.getGlId());
                 gl.glColor4f(pref_boltColor.getR(), pref_boltColor.getG(), pref_boltColor.getB(), this.flashIntensity);
                 gl.glBlendFunc(770, 1);
                 model.render();

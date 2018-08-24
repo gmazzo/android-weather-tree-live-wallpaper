@@ -20,8 +20,8 @@ public class ParticleSnow extends ParticleSystem {
     @Override
     public void render(GL11 gl, Vector systemOrigin) {
         if (model == null) {
-            model = Scene.sModels.loadBMDL("flakes", R.raw.flakes);
-            texture = Scene.sTextures.loadTGA("p_snow1", R.raw.p_snow1);
+            model = Scene.sModels.get(R.raw.flakes);
+            texture = Scene.sTextures.get(R.raw.p_snow1);
         }
         super.render(gl, systemOrigin);
     }

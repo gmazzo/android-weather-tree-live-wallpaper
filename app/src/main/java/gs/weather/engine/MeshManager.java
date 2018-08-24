@@ -11,8 +11,6 @@ import java.util.Map;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import gs.weather.wallpaper.Model;
-
 public class MeshManager {
     private static final String TAG = "GL Engine";
     private String MMPACKAGENAME;
@@ -107,10 +105,6 @@ public class MeshManager {
 
     private void setContext(Context context1) {
         this.context = context1;
-    }
-
-    private void bind(Model model) {
-        this.meshList.put(model.getName(), model.asMesh());
     }
 
     private void unload(GL10 gl10) {

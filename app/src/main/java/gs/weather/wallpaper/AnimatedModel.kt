@@ -1,5 +1,6 @@
 package gs.weather.wallpaper
 
+import android.support.annotation.RawRes
 import gs.weather.engine.AnimPlayer
 import java.nio.FloatBuffer
 import javax.microedition.khronos.opengles.GL10.GL_FLOAT
@@ -7,7 +8,7 @@ import javax.microedition.khronos.opengles.GL11
 
 class AnimatedModel internal constructor(
         gl: GL11,
-        name: String,
+        @RawRes resId: Int,
         frames: Array<Frame>,
         indicesCount: Int,
         bufTCHandle: Int,
@@ -16,7 +17,7 @@ class AnimatedModel internal constructor(
         private val elementsCount: Int,
         private val vertices: FloatArray,
         private val bufScratch: FloatBuffer) :
-        Model(gl, name, frames, indicesCount, bufTCHandle, bufIndexHandle) {
+        Model(gl, resId, frames, indicesCount, bufTCHandle, bufIndexHandle) {
 
     override fun render() {
         val frameNum = animator?.currentFrame ?: 0

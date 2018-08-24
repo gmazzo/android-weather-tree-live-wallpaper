@@ -1,5 +1,6 @@
 package gs.weather.wallpaper
 
+import android.support.annotation.RawRes
 import gs.weather.engine.Mesh
 import javax.microedition.khronos.opengles.GL10.*
 import javax.microedition.khronos.opengles.GL11
@@ -8,11 +9,11 @@ import javax.microedition.khronos.opengles.GL11.GL_ELEMENT_ARRAY_BUFFER
 
 open class Model internal constructor(
         internal val gl: GL11,
-        val name: String,
-        internal val frames: Array<Frame>,
-        internal val indicesCount: Int,
-        internal val bufTCHandle: Int,
-        internal val bufIndexHandle: Int) {
+        @RawRes val resId: Int,
+        private val frames: Array<Frame>,
+        private val indicesCount: Int,
+        private val bufTCHandle: Int,
+        private val bufIndexHandle: Int) {
 
     open fun render() {
         renderFrame(0)
@@ -43,7 +44,7 @@ open class Model internal constructor(
     fun renderFrameMultiTexture(tex1: Texture, tex2: Texture, combine: Int, envMap: Boolean) {
         val frameNum = 0
         gl.glActiveTexture(GL_TEXTURE0)
-        gl.glBindTexture(GL_TEXTURE_2D, tex1.id)
+        gl.glBindTexture(GL_TEXTURE_2D, tex1.glId)
         if (envMap) {
             gl.glBindBuffer(GL_ARRAY_BUFFER, this.frames[frameNum].bufNormalHandle)
             gl.glTexCoordPointer(3, GL_FLOAT, 0, 0)
@@ -56,7 +57,7 @@ open class Model internal constructor(
         gl.glEnable(GL_TEXTURE_2D)
         gl.glClientActiveTexture(GL_TEXTURE1)
         gl.glEnableClientState(GL_TEXTURE_COORD_ARRAY)
-        gl.glBindTexture(GL_TEXTURE_2D, tex2.id)
+        gl.glBindTexture(GL_TEXTURE_2D, tex2.glId)
         gl.glBindBuffer(GL_ARRAY_BUFFER, this.bufTCHandle)
         gl.glTexCoordPointer(2, GL_FLOAT, 0, 0)
         gl.glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, combine)
@@ -85,7 +86,7 @@ open class Model internal constructor(
 
     // TODO delete this once finished
     open fun asMesh() = Mesh().also { mesh ->
-        mesh.meshName = name
+        mesh.meshName = "resource:$resId"
         mesh.numIndices = indicesCount
         mesh.bufIndexHandle = bufIndexHandle
         mesh.bufTCHandle = bufTCHandle

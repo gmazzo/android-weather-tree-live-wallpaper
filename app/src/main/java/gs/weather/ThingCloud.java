@@ -9,6 +9,12 @@ import gs.weather.wallpaper.Models;
 import gs.weather.wallpaper.Textures;
 
 public class ThingCloud extends Thing {
+    private static final int MODELS[] = {
+            R.raw.cloud1m, R.raw.cloud2m, R.raw.cloud3m,
+            R.raw.cloud4m, R.raw.cloud5m};
+    private static final int TEXTURES[] = {
+            R.drawable.cloud1, R.drawable.cloud2, R.drawable.cloud3,
+            R.drawable.cloud4, R.drawable.cloud5};
     static final float CLOUD_FADE_START_X = 25.0f;
     static final float CLOUD_FADE_START_Y = 25.0f;
     static final float CLOUD_RESET_X = 10.0f;
@@ -40,8 +46,8 @@ public class ThingCloud extends Thing {
     @Override
     public void render(GL10 gl, Textures textures, Models models) {
         if (model == null) {
-            model = models.get("cloud" + which + "m");
-            texture = textures.get("cloud" + which);
+            model = models.get(MODELS[which - 1]);
+            texture = textures.get(TEXTURES[which - 1]);
         }
         gl.glBlendFunc(1, 771);
         super.render(gl, textures, models);

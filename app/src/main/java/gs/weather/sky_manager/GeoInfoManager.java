@@ -43,7 +43,7 @@ public class GeoInfoManager {
                 Log.i("Addresses", "-->" + addresses);
                 name = ((Address) addresses.get(0)).toString();
             } catch (IOException ex) {
-                Log.e(GeoInfoManager.TAG, "retrive city name failed: " + ex);
+                Log.e(GeoInfoManager.TAG, "retrive city resId failed: " + ex);
             }
             return name;
         }
@@ -148,7 +148,7 @@ public class GeoInfoManager {
                 name = ((Address) addresses.get(0)).getLocality();
             }
         } catch (IOException ex) {
-            Log.e(TAG, "retrive city name failed: " + ex);
+            Log.e(TAG, "retrive city resId failed: " + ex);
         }
         return name;
     }

@@ -9,13 +9,15 @@ import gs.weather.wallpaper.Models;
 import gs.weather.wallpaper.Textures;
 
 public class ThingWispy extends Thing {
+    private static final int WISPY_TEXTURES[] = {
+            R.raw.wispy1, R.raw.wispy2, R.raw.wispy3};
     public int which;
 
     @Override
     public void render(GL10 gl, Textures textures, Models models) {
         if (model == null) {
-            model = models.get("plane_16x16");
-            texture = textures.get("wispy" + which);
+            model = models.get(R.raw.plane_16x16);
+            texture = textures.get(WISPY_TEXTURES[which - 1]);
         }
 
         Color todColor = SceneBase.todColorFinal;

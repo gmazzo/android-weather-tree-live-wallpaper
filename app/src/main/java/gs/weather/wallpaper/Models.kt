@@ -11,11 +11,9 @@ import javax.microedition.khronos.opengles.GL11.*
 
 class Models(private val resources: Resources,
              private val gl: GL11) : Closeable {
-    private val models = mutableMapOf<String, Model>()
+    private val models = mutableMapOf<Int, Model>()
 
-    operator fun get(name: String) = models.getOrElse(name) { throw IllegalArgumentException("Unknown model: $name") }
-
-    fun loadBMDL(name: String, @RawRes rawId: Int) = models.getOrPut(name) {
+    operator fun get(@RawRes rawId: Int) = models.getOrPut(rawId) {
         DataInputStream(resources.openRawResource(rawId)).use { input ->
             val buffer4 = ByteArray(4)
 
@@ -53,17 +51,17 @@ class Models(private val resources: Resources,
             input.skip(8)
             val normals = FloatArray(normalsCount * 3 * frames, init = normalsMapper)
 
-            return@getOrPut loadWithArrays(name, vertices, normals, texts, indices, elements, frames)
+            return@getOrPut loadWithArrays(rawId, vertices, normals, texts, indices, elements, frames)
         }
     }
 
-    private fun loadWithArrays(name: String,
+    private fun loadWithArrays(@RawRes rawId: Int,
                                vertices: FloatArray,
                                normals: FloatArray,
                                texts: FloatArray,
                                indices: ShortArray,
                                elementsCount: Int,
-                               framesCount: Int) = models.getOrPut(name) {
+                               framesCount: Int) = models.getOrPut(rawId) {
         val animated = framesCount > 0
 
         val frames = Array(framesCount) { i ->
@@ -121,10 +119,10 @@ class Models(private val resources: Resources,
         if (animated) {
             val bufScratch = (elementsCount * 3).asDirectFloatBuffer()
 
-            return@getOrPut AnimatedModel(gl, name, frames, indicesCount, bufTCHandle, bufIndexHandle,
+            return@getOrPut AnimatedModel(gl, rawId, frames, indicesCount, bufTCHandle, bufIndexHandle,
                     null, elementsCount, vertices, bufScratch)
         } else {
-            return@getOrPut Model(gl, name, frames, indicesCount, bufTCHandle, bufIndexHandle)
+            return@getOrPut Model(gl, rawId, frames, indicesCount, bufTCHandle, bufIndexHandle)
         }
     }
 

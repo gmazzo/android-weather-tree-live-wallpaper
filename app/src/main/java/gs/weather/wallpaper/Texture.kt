@@ -1,5 +1,7 @@
 package gs.weather.wallpaper
 
+import android.support.annotation.AnyRes
+
 data class Texture(
-        val id: Int,
-        val name: String)
+        @AnyRes val resId: Int,
+        val glId: Int)

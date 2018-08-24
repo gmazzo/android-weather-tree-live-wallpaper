@@ -23,7 +23,6 @@ import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
 import gs.weather.engine.Utility.Logger;
-import gs.weather.wallpaper.Texture;
 
 import static javax.microedition.khronos.opengles.GL10.GL_LINEAR;
 import static javax.microedition.khronos.opengles.GL10.GL_REPEAT;
@@ -351,16 +350,12 @@ public class TextureManager {
         }
         if (loadSuccess) {
             this.texIDs.put(name, Integer.valueOf(textureBuffer.get(0)));
-            Logger.d(TAG, "load " + name + " successed, id=" + textureBuffer.get(0));
+            Logger.d(TAG, "load " + name + " successed, glId=" + textureBuffer.get(0));
         } else {
             this.texIDs.put(name, Integer.valueOf(0));
             Logger.d(TAG, "load " + name + " failed");
         }
         return textureBuffer.get(0);
-    }
-
-    private void bind(Texture texture) {
-        this.texIDs.put(texture.getName(), texture.getId());
     }
 
     private void unload(GL10 gl10) {

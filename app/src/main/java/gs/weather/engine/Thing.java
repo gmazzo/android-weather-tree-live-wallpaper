@@ -64,7 +64,7 @@ public class Thing {
             if (this.angles.getA() != 0.0f) {
                 gl.glRotatef(this.angles.getA(), this.angles.getR(), this.angles.getG(), this.angles.getB());
             }
-            gl.glBindTexture(GL_TEXTURE_2D, texture.getId());
+            gl.glBindTexture(GL_TEXTURE_2D, texture.getGlId());
             if (this.color != null) {
                 gl.glColor4f(this.color.getR(), this.color.getG(), this.color.getB(), this.color.getA());
             }

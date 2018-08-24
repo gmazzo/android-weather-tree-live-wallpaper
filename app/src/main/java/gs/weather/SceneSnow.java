@@ -83,28 +83,28 @@ public class SceneSnow extends SceneBase {
     }
 
     public void precacheAssets(GL10 gl10) {
-        textures.loadBitmap("bg2", R.drawable.bg2);
-        textures.loadBitmap("trees_overlay", R.drawable.trees_overlay);
-        textures.loadBitmap("cloud1", R.drawable.cloud1);
-        textures.loadBitmap("cloud2", R.drawable.cloud2);
-        textures.loadBitmap("cloud3", R.drawable.cloud3);
-        textures.loadBitmap("cloud4", R.drawable.cloud4);
-        textures.loadBitmap("cloud5", R.drawable.cloud5);
-        textures.loadTGA("wispy1", R.raw.wispy1);
-        textures.loadTGA("wispy2", R.raw.wispy2);
-        textures.loadTGA("wispy3", R.raw.wispy3);
-        textures.loadTGA("p_snow1", R.raw.p_snow1);
-        textures.loadTGA("p_snow2", R.raw.p_snow2);
-        models.loadBMDL("plane_16x16", R.raw.plane_16x16);
-        models.loadBMDL("cloud1m", R.raw.cloud1m);
-        models.loadBMDL("cloud2m", R.raw.cloud2m);
-        models.loadBMDL("cloud3m", R.raw.cloud3m);
-        models.loadBMDL("cloud4m", R.raw.cloud4m);
-        models.loadBMDL("cloud5m", R.raw.cloud5m);
-        models.loadBMDL("grass_overlay", R.raw.grass_overlay);
-        models.loadBMDL("trees_overlay", R.raw.trees_overlay);
-        models.loadBMDL("trees_overlay_terrain", R.raw.trees_overlay_terrain);
-        models.loadBMDL("flakes", R.raw.flakes);
+        textures.get(R.drawable.bg2);
+        textures.get(R.drawable.trees_overlay);
+        textures.get(R.drawable.cloud1);
+        textures.get(R.drawable.cloud2);
+        textures.get(R.drawable.cloud3);
+        textures.get(R.drawable.cloud4);
+        textures.get(R.drawable.cloud5);
+        textures.get(R.raw.wispy1);
+        textures.get(R.raw.wispy2);
+        textures.get(R.raw.wispy3);
+        textures.get(R.raw.p_snow1);
+        textures.get(R.raw.p_snow2);
+        models.get(R.raw.plane_16x16);
+        models.get(R.raw.cloud1m);
+        models.get(R.raw.cloud2m);
+        models.get(R.raw.cloud3m);
+        models.get(R.raw.cloud4m);
+        models.get(R.raw.cloud5m);
+        models.get(R.raw.grass_overlay);
+        models.get(R.raw.trees_overlay);
+        models.get(R.raw.trees_overlay_terrain);
+        models.get(R.raw.flakes);
     }
 
     private void spawnClouds(boolean force) {
@@ -166,8 +166,8 @@ public class SceneSnow extends SceneBase {
                 cloud.origin.setY(cloudDepthList[i]);
                 cloud.origin.setZ(GlobalRand.floatRange(-20.0f, -10.0f));
                 int which = (i % 5) + 1;
-                cloud.model = models.loadBMDL("cloud" + which + "m", CLOUD_MODELS[which - 1]);
-                cloud.texture = textures.loadBitmap("cloud" + which, CLOUD_TEXTURES[which - 1]);
+                cloud.model = models.get(CLOUD_MODELS[which - 1]);
+                cloud.texture = textures.get(CLOUD_TEXTURES[which - 1]);
                 cloud.targetName = "cloud";
                 cloud.velocity = new Vector(pref_windSpeed * 1.5f, 0.0f, 0.0f);
                 this.mThingManager.add(cloud);
@@ -175,8 +175,8 @@ public class SceneSnow extends SceneBase {
             for (i = 0; i < cloudDepthList.length; i++) {
                 int which = ((i % 3) + 1);
                 ThingWispy wispy = new ThingWispy();
-                wispy.model = models.loadBMDL("plane_16x16", R.raw.plane_16x16);
-                wispy.texture = textures.loadTGA("wispy" + which, WISPY_TEXTURES[which - 1]);
+                wispy.model = models.get(R.raw.plane_16x16);
+                wispy.texture = textures.get(WISPY_TEXTURES[which - 1]);
                 wispy.targetName = "wispy";
                 wispy.velocity = new Vector(pref_windSpeed * 1.5f, 0.0f, 0.0f);
                 wispy.scale.set(GlobalRand.floatRange(1.0f, 3.0f), 1.0f, GlobalRand.floatRange(1.0f, 1.5f));
@@ -224,7 +224,7 @@ public class SceneSnow extends SceneBase {
     }
 
     private void renderBackground(GL10 gl, float timeDelta) {
-        gl.glBindTexture(GL_TEXTURE_2D, textures.get("bg2").getId());
+        gl.glBindTexture(GL_TEXTURE_2D, textures.get(R.drawable.bg2).getGlId());
         gl.glColor4f(todColorFinal.getR(), todColorFinal.getG(), todColorFinal.getB(), 1.0f);
         gl.glMatrixMode(GL_MODELVIEW);
         gl.glPushMatrix();
@@ -233,7 +233,7 @@ public class SceneSnow extends SceneBase {
         gl.glMatrixMode(5890);
         gl.glPushMatrix();
         gl.glTranslatef(((pref_windSpeed * timeDelta) * -0.005f) % 1.0f, 0.0f, 0.0f);
-        Model mesh = models.get("plane_16x16");
+        Model mesh = models.get(R.raw.plane_16x16);
         mesh.render();
         gl.glPopMatrix();
         gl.glMatrixMode(GL_MODELVIEW);

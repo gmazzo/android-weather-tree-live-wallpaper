@@ -113,28 +113,28 @@ public class SceneStorm extends SceneBase {
     }
 
     public void precacheAssets(GL10 gl10) {
-        textures.loadBitmap("storm_bg", R.drawable.storm_bg);
-        textures.loadBitmap("trees_overlay", R.drawable.trees_overlay);
-        textures.loadBitmap("clouddark1", R.drawable.clouddark1);
-        textures.loadBitmap("clouddark2", R.drawable.clouddark2);
-        textures.loadBitmap("clouddark3", R.drawable.clouddark3);
-        textures.loadBitmap("clouddark4", R.drawable.clouddark4);
-        textures.loadBitmap("clouddark5", R.drawable.clouddark5);
-        textures.loadBitmap("cloudflare1", R.drawable.cloudflare1);
-        textures.loadBitmap("cloudflare2", R.drawable.cloudflare2);
-        textures.loadBitmap("cloudflare3", R.drawable.cloudflare3);
-        textures.loadBitmap("cloudflare4", R.drawable.cloudflare4);
-        textures.loadBitmap("cloudflare5", R.drawable.cloudflare5);
-        textures.loadBitmap("raindrop", R.drawable.raindrop);
-        models.loadBMDL("plane_16x16", R.raw.plane_16x16);
-        models.loadBMDL("cloud1m", R.raw.cloud1m);
-        models.loadBMDL("cloud2m", R.raw.cloud2m);
-        models.loadBMDL("cloud3m", R.raw.cloud3m);
-        models.loadBMDL("cloud4m", R.raw.cloud4m);
-        models.loadBMDL("cloud5m", R.raw.cloud5m);
-        models.loadBMDL("grass_overlay", R.raw.grass_overlay);
-        models.loadBMDL("trees_overlay", R.raw.trees_overlay);
-        models.loadBMDL("trees_overlay_terrain", R.raw.trees_overlay_terrain);
+        textures.get(R.drawable.storm_bg);
+        textures.get(R.drawable.trees_overlay);
+        textures.get(R.drawable.clouddark1);
+        textures.get(R.drawable.clouddark2);
+        textures.get(R.drawable.clouddark3);
+        textures.get(R.drawable.clouddark4);
+        textures.get(R.drawable.clouddark5);
+        textures.get(R.drawable.cloudflare1);
+        textures.get(R.drawable.cloudflare2);
+        textures.get(R.drawable.cloudflare3);
+        textures.get(R.drawable.cloudflare4);
+        textures.get(R.drawable.cloudflare5);
+        textures.get(R.drawable.raindrop);
+        models.get(R.raw.plane_16x16);
+        models.get(R.raw.cloud1m);
+        models.get(R.raw.cloud2m);
+        models.get(R.raw.cloud3m);
+        models.get(R.raw.cloud4m);
+        models.get(R.raw.cloud5m);
+        models.get(R.raw.grass_overlay);
+        models.get(R.raw.trees_overlay);
+        models.get(R.raw.trees_overlay_terrain);
     }
 
     public void load(GL10 gl) {
@@ -172,8 +172,8 @@ public class SceneStorm extends SceneBase {
     }
 
     private void renderBackground(GL10 gl, float timeDelta) {
-        Texture storm_bg = textures.loadBitmap("storm_bg", R.drawable.storm_bg);
-        gl.glBindTexture(GL_TEXTURE_2D, storm_bg.getId());
+        Texture storm_bg = textures.get(R.drawable.storm_bg);
+        gl.glBindTexture(GL_TEXTURE_2D, storm_bg.getGlId());
         gl.glColor4f(todColorFinal.getR(), todColorFinal.getG(), todColorFinal.getB(), 1.0f);
         gl.glMatrixMode(GL_MODELVIEW);
         gl.glPushMatrix();
@@ -191,7 +191,7 @@ public class SceneStorm extends SceneBase {
             this.light1_ambientLight[3] = this.v_light1_ambientLight.getA();
             gl.glLightfv(16385, 4608, this.light1_ambientLight, 0);
         }
-        Model mesh = models.loadBMDL("plane_16x16", R.raw.plane_16x16);
+        Model mesh = models.get(R.raw.plane_16x16);
         mesh.render();
         gl.glDisable(16385);
         gl.glPopMatrix();

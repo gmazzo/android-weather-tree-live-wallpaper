@@ -54,14 +54,14 @@ public class SceneFog extends SceneBase {
     }
 
     public void precacheAssets(GL10 gl10) {
-        textures.loadBitmap("bg1", R.drawable.bg1);
-        textures.loadBitmap("trees_overlay", R.drawable.trees_overlay);
-        textures.loadTGA("sun", R.raw.sun);
-        textures.loadTGA("sun_blend", R.raw.sun_blend);
-        models.loadBMDL("plane_16x16", R.raw.plane_16x16);
-        models.loadBMDL("grass_overlay", R.raw.grass_overlay);
-        models.loadBMDL("trees_overlay", R.raw.trees_overlay);
-        models.loadBMDL("trees_overlay_terrain", R.raw.trees_overlay_terrain);
+        textures.get(R.drawable.bg1);
+        textures.get(R.drawable.trees_overlay);
+        textures.get(R.raw.sun);
+        textures.get(R.raw.sun_blend);
+        models.get(R.raw.plane_16x16);
+        models.get(R.raw.grass_overlay);
+        models.get(R.raw.trees_overlay);
+        models.get(R.raw.trees_overlay_terrain);
     }
 
     public void backgroundFromPrefs(SharedPreferences prefs) {
@@ -117,7 +117,7 @@ public class SceneFog extends SceneBase {
     }
 
     private void renderBackground(GL10 gl, float timeDelta) {
-        gl.glBindTexture(GL_TEXTURE_2D, textures.loadBitmap("bg1", R.drawable.bg1).getId());
+        gl.glBindTexture(GL_TEXTURE_2D, textures.get(R.drawable.bg1).getGlId());
         gl.glColor4f(todColorFinal.getR(), todColorFinal.getG(), todColorFinal.getB(), 1.0f);
         gl.glMatrixMode(GL_MODELVIEW);
         gl.glPushMatrix();
@@ -126,7 +126,7 @@ public class SceneFog extends SceneBase {
         gl.glMatrixMode(5890);
         gl.glPushMatrix();
         gl.glTranslatef(((pref_windSpeed * timeDelta) * -0.005f) % 1.0f, 0.0f, 0.0f);
-        Model model = models.loadBMDL("plane_16x16", R.raw.plane_16x16);
+        Model model = models.get(R.raw.plane_16x16);
         model.render();
         gl.glPopMatrix();
         gl.glMatrixMode(GL_MODELVIEW);

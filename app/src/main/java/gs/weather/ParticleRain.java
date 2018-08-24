@@ -20,8 +20,8 @@ public class ParticleRain extends ParticleSystem {
     @Override
     public void render(GL11 gl, Vector systemOrigin) {
         if (model == null) {
-            model = Scene.sModels.loadBMDL("rain", R.raw.rain);
-            texture = Scene.sTextures.loadBitmap("raindrop", R.drawable.raindrop);
+            model = Scene.sModels.get(R.raw.rain);
+            texture = Scene.sTextures.get(R.drawable.raindrop);
         }
 
         super.render(gl, systemOrigin);

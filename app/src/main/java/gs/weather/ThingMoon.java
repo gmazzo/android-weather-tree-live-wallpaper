@@ -29,10 +29,10 @@ public class ThingMoon extends Thing {
     @Override
     public void render(GL10 gl, Textures textures, Models models) {
         if (model == null) {
-            model = models.loadBMDL("plane_16x16", R.raw.plane_16x16);
+            model = models.get(R.raw.plane_16x16);
         }
         if (this.mPhase != this.mOldPhase) {
-            this.texture = textures.loadBitmap("moon_" + mPhase, PHASES[mPhase]);
+            this.texture = textures.get(PHASES[mPhase]);
             this.mOldPhase = this.mPhase;
         }
         gl.glBlendFunc(770, 771);

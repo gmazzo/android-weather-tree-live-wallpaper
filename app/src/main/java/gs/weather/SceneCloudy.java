@@ -7,7 +7,7 @@ import javax.microedition.khronos.opengles.GL11;
 public class SceneCloudy extends SceneClear {
 
     public SceneCloudy(Context ctx, GL11 gl) {
-        super(ctx, gl, "bg1", R.drawable.bg1);
+        super(ctx, gl, R.drawable.bg1);
     }
 
 }

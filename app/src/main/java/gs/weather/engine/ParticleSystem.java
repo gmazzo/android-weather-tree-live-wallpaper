@@ -190,7 +190,7 @@ public class ParticleSystem {
     }
 
     public void render(GL11 gl, Vector systemOrigin, Vector direction) {
-        gl.glBindTexture(GL_TEXTURE_2D, texture.getId());
+        gl.glBindTexture(GL_TEXTURE_2D, texture.getGlId());
 
         gl.glMatrixMode(GL_MODELVIEW);
         gl.glPushMatrix();
