@@ -9,11 +9,10 @@ import javax.microedition.khronos.opengles.GL11;
 import gs.weather.engine.Color;
 import gs.weather.engine.GlobalRand;
 import gs.weather.engine.GlobalTime;
-import gs.weather.engine.Mesh;
-import gs.weather.engine.MeshManager;
 import gs.weather.engine.ThingManager;
 import gs.weather.engine.Vector;
 import gs.weather.sky_manager.TimeOfDay;
+import gs.weather.wallpaper.Model;
 
 import static javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT;
 import static javax.microedition.khronos.opengles.GL10.GL_LIGHTING;
@@ -38,7 +37,6 @@ public class SceneSnow extends SceneBase {
 
     public SceneSnow(Context ctx) {
         this.mThingManager = new ThingManager();
-        this.mMeshManager = new MeshManager(ctx);
         this.mContext = ctx;
         todColorFinal = new Color();
         this.pref_todColors = new Color[4];
@@ -209,17 +207,16 @@ public class SceneSnow extends SceneBase {
             this.particleSnow = new ParticleSnow();
         }
         this.particleSnow.update(timeDelta);
-        this.particleSnow.render((GL11) gl, this.mMeshManager, this.snowPos1);
+        this.particleSnow.render((GL11) gl, this.snowPos1);
         if (this.pref_snowDensity > 1) {
-            this.particleSnow.render((GL11) gl, this.mMeshManager, this.snowPos2);
+            this.particleSnow.render((GL11) gl, this.snowPos2);
         }
         if (this.pref_snowDensity > 2) {
-            this.particleSnow.render((GL11) gl, this.mMeshManager, this.snowPos3);
+            this.particleSnow.render((GL11) gl, this.snowPos3);
         }
     }
 
     private void renderBackground(GL10 gl, float timeDelta) {
-        Mesh mesh = this.mMeshManager.getMeshByName(gl, "plane_16x16");
         gl.glBindTexture(GL_TEXTURE_2D, textures.get("bg2").getId());
         gl.glColor4f(todColorFinal.getR(), todColorFinal.getG(), todColorFinal.getB(), 1.0f);
         gl.glMatrixMode(GL_MODELVIEW);
@@ -229,7 +226,8 @@ public class SceneSnow extends SceneBase {
         gl.glMatrixMode(5890);
         gl.glPushMatrix();
         gl.glTranslatef(((pref_windSpeed * timeDelta) * -0.005f) % 1.0f, 0.0f, 0.0f);
-        mesh.render(gl);
+        Model mesh = models.get("plane_16x16");
+        mesh.render();
         gl.glPopMatrix();
         gl.glMatrixMode(GL_MODELVIEW);
         gl.glPopMatrix();

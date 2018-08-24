@@ -2,7 +2,6 @@ package gs.weather.wallpaper
 
 import android.content.res.Resources
 import android.support.annotation.RawRes
-import gs.weather.engine.MeshManager
 import java.io.Closeable
 import java.io.DataInputStream
 import java.io.InputStream
@@ -11,8 +10,7 @@ import javax.microedition.khronos.opengles.GL11
 import javax.microedition.khronos.opengles.GL11.*
 
 class Models(private val resources: Resources,
-             private val gl: GL11,
-             val manager: MeshManager /*TODO remove once done*/) : Closeable {
+             private val gl: GL11) : Closeable {
     private val models = mutableMapOf<String, Model>()
 
     operator fun get(name: String) = models.getOrElse(name) { throw IllegalArgumentException("Unknown model: $name") }
@@ -57,7 +55,7 @@ class Models(private val resources: Resources,
 
             return@getOrPut loadWithArrays(name, vertices, normals, texts, indices, elements, frames)
         }
-    }.apply(manager::bind) // TODO remove once done
+    }
 
     private fun loadWithArrays(name: String,
                                vertices: FloatArray,

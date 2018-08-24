@@ -10,11 +10,11 @@ import javax.microedition.khronos.opengles.GL11;
 import gs.weather.engine.Color;
 import gs.weather.engine.GlobalRand;
 import gs.weather.engine.GlobalTime;
-import gs.weather.engine.Mesh;
-import gs.weather.engine.MeshManager;
 import gs.weather.engine.ThingManager;
 import gs.weather.engine.Vector;
 import gs.weather.sky_manager.TimeOfDay;
+import gs.weather.wallpaper.Model;
+import gs.weather.wallpaper.Texture;
 
 import static javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT;
 import static javax.microedition.khronos.opengles.GL10.GL_LIGHTING;
@@ -53,7 +53,6 @@ public class SceneClear extends SceneBase {
         this.backgroundName = backgroundName;
         this.backgroundId = backgroundId;
         this.mThingManager = new ThingManager();
-        this.mMeshManager = new MeshManager(ctx);
         this.mContext = ctx;
         todColorFinal = new Color();
         this.pref_todColors = new Color[4];
@@ -258,7 +257,6 @@ public class SceneClear extends SceneBase {
     }
 
     private void renderBackground(GL10 gl, float timeDelta) {
-        Mesh mesh = this.mMeshManager.getMeshByName(gl, "plane_16x16");
         gl.glBindTexture(GL_TEXTURE_2D, textures.get(backgroundName).getId());
         gl.glColor4f(todColorFinal.getR(), todColorFinal.getG(), todColorFinal.getB(), 1.0f);
         gl.glMatrixMode(GL_MODELVIEW);
@@ -268,7 +266,8 @@ public class SceneClear extends SceneBase {
         gl.glMatrixMode(5890);
         gl.glPushMatrix();
         gl.glTranslatef(((pref_windSpeed * timeDelta) * -0.005f) % 1.0f, 0.0f, 0.0f);
-        mesh.render(gl);
+        Model mesh = models.get("plane_16x16");
+        mesh.render();
         renderStars(gl, timeDelta);
         gl.glPopMatrix();
         gl.glMatrixMode(GL_MODELVIEW);
@@ -279,16 +278,16 @@ public class SceneClear extends SceneBase {
         if (pref_useTimeOfDay && todSunPosition <= 0.0f) {
             gl.glColor4f(1.0f, 1.0f, 1.0f, todSunPosition * -2.0f);
             gl.glBlendFunc(770, 1);
-            Mesh starMesh = this.mMeshManager.getMeshByName(gl, "stars");
-            int noiseId = textures.get("noise").getId();
-            int starId = textures.get("stars").getId();
+            Model starMesh = models.get("stars");
+            Texture noise = textures.get("noise");
+            Texture star = textures.get("stars");
             gl.glTranslatef((0.1f * timeDelta) % 1.0f, 300.0f, -100.0f);
             if (gl instanceof GL11) {
-                starMesh.renderFrameMultiTexture((GL11) gl, 0, noiseId, starId, GL_MODULATE, false);
+                starMesh.renderFrameMultiTexture(noise, star, GL_MODULATE, false);
                 return;
             }
-            gl.glBindTexture(GL_TEXTURE0, starId);
-            starMesh.render(gl);
+            gl.glBindTexture(GL_TEXTURE0, star.getId());
+            starMesh.render();
         }
     }
 }

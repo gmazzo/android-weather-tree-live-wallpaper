@@ -10,6 +10,7 @@ import java.util.Calendar;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
+import javax.microedition.khronos.opengles.GL11;
 
 import gs.weather.engine.GlobalRand;
 import gs.weather.engine.GlobalTime;
@@ -18,6 +19,8 @@ import gs.weather.engine.Utility;
 import gs.weather.engine.Vector;
 import gs.weather.sky_manager.TimeOfDay;
 import gs.weather.sky_manager.WeatherSettingsUtil;
+import gs.weather.wallpaper.Models;
+import gs.weather.wallpaper.Textures;
 
 import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
 import static javax.microedition.khronos.opengles.GL10.GL_MODULATE;
@@ -77,8 +80,7 @@ public class IsolatedRenderer implements OnSharedPreferenceChangeListener {
         this.globalTime = new GlobalTime();
         this.cameraPos = new Vector(0.0f, 0.0f, 0.0f);
         this.desiredCameraPos = new Vector(0.0f, 0.0f, 0.0f);
-        this.currentScene = new SceneClear(ctx);
-        currentSceneId = SCENE_CLEAR;
+        currentSceneId = -1;
         setContext(ctx);
     }
 
@@ -118,12 +120,16 @@ public class IsolatedRenderer implements OnSharedPreferenceChangeListener {
     public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
         cameraSpeedFromPrefs(prefs);
         todFromPrefs(prefs);
-        this.currentScene.updateSharedPrefs(prefs, key);
+        if (this.currentScene != null) {
+            this.currentScene.updateSharedPrefs(prefs, key);
+        }
     }
 
     public synchronized void onSceneChanged(int newSceneId) {
         if (newSceneId != currentSceneId) {
-            this.currentScene.unload(this.oldGL);
+            if (this.currentScene != null) {
+                this.currentScene.unload(this.oldGL);
+            }
             switch (newSceneId) {
                 case SCENE_CLEAR /*2000*/:
                     this.currentScene = new SceneClear(this.context);
@@ -172,7 +178,17 @@ public class IsolatedRenderer implements OnSharedPreferenceChangeListener {
         gl.glLoadIdentity();
         if (gl != this.oldGL) {
             this.oldGL = gl;
-            this.currentScene.unload(gl);
+            if (this.currentScene == null) {
+                if (Scene.sTextures == null) {
+                    Scene.sTextures = new Textures(context.getResources(), (GL11) gl);
+                }
+                if (Scene.sModels == null) {
+                    Scene.sModels = new Models(context.getResources(), (GL11) gl);
+                }
+                onSceneChanged(SCENE_CLEAR);
+            } else {
+                this.currentScene.unload(gl);
+            }
             this.currentScene.precacheAssets(gl);
         }
         this.currentScene.setScreenMode(this.IS_LANDSCAPE);
@@ -254,9 +270,9 @@ public class IsolatedRenderer implements OnSharedPreferenceChangeListener {
     }
 
     private void calculateTimeOfDay(float timeDelta) {
-        int minutes = (this.calendarInstance.get(11) * 60) + this.calendarInstance.get(12);
+        int minutes = (this.calendarInstance.get(Calendar.HOUR_OF_DAY) * 60) + this.calendarInstance.get(Calendar.MINUTE);
         if (this.pref_superFastDay) {
-            minutes = (int) ((this.globalTime.msTimeCurrent / 36) % 1440);
+            minutes = (int) ((this.globalTime.msTimeCurrent / 10) % 1440);
         }
         this._tod.update(minutes, true);
         this.currentScene.updateTimeOfDay(this._tod);

@@ -9,11 +9,10 @@ import javax.microedition.khronos.opengles.GL11;
 import gs.weather.engine.Color;
 import gs.weather.engine.GlobalRand;
 import gs.weather.engine.GlobalTime;
-import gs.weather.engine.Mesh;
-import gs.weather.engine.MeshManager;
 import gs.weather.engine.ThingManager;
 import gs.weather.engine.Vector;
 import gs.weather.sky_manager.TimeOfDay;
+import gs.weather.wallpaper.Model;
 
 import static javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT;
 import static javax.microedition.khronos.opengles.GL10.GL_LIGHTING;
@@ -32,7 +31,6 @@ public class SceneRain extends SceneBase {
         this.TAG = "Rain";
         this.rainDensity = 10;
         this.mThingManager = new ThingManager();
-        this.mMeshManager = new MeshManager(ctx);
         this.mContext = ctx;
         todColorFinal = new Color();
         this.pref_todColors = new Color[4];
@@ -157,7 +155,6 @@ public class SceneRain extends SceneBase {
     }
 
     private void renderBackground(GL10 gl, float timeDelta) {
-        Mesh mesh = this.mMeshManager.getMeshByName(gl, "plane_16x16");
         gl.glBindTexture(GL_TEXTURE_2D, textures.get("storm_bg").getId());
         gl.glColor4f(todColorFinal.getR(), todColorFinal.getG(), todColorFinal.getB(), 1.0f);
         gl.glMatrixMode(GL_MODELVIEW);
@@ -167,7 +164,8 @@ public class SceneRain extends SceneBase {
         gl.glMatrixMode(5890);
         gl.glPushMatrix();
         gl.glTranslatef(((pref_windSpeed * timeDelta) * -0.005f) % 1.0f, 0.0f, 0.0f);
-        mesh.render(gl);
+        Model mesh = models.get("plane_16x16");
+        mesh.render();
         gl.glPopMatrix();
         gl.glMatrixMode(GL_MODELVIEW);
         gl.glPopMatrix();
@@ -183,7 +181,7 @@ public class SceneRain extends SceneBase {
         gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.particleRain.update(timeDelta);
         gl.glBlendFunc(1, 0);
-        this.particleRain.render((GL11) gl, this.mMeshManager, this.particleRainOrigin);
+        this.particleRain.render((GL11) gl, this.particleRainOrigin);
         gl.glPopMatrix();
     }
 

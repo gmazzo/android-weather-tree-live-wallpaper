@@ -11,7 +11,7 @@ public class ParticleRain extends ParticleSystem {
         this.spawnRate = 1.0f / ((float) density);
         this.spawnRateVariance = 0.05f;
         this.texture = Scene.sTextures.loadBitmap("raindrop", R.drawable.raindrop);
-        this.meshName = "rain";
+        this.model = Scene.sModels.loadBMDL("rain", R.raw.rain);
         this.spawnRangeX = 15.0f;
         this.spawnRangeY = 5.0f;
         this.spawnRangeZ = 0.0f;

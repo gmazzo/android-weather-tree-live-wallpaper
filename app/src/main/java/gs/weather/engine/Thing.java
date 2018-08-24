@@ -54,7 +54,7 @@ public class Thing {
 
     public void render(GL10 gl, Textures textures, Models models) {
         if (this.particleSystem != null && (gl instanceof GL11)) {
-            this.particleSystem.render((GL11) gl, models.getManager(), this.origin);
+            this.particleSystem.render((GL11) gl, this.origin);
         }
         if (this.texture != null && this.model != null) {
             gl.glMatrixMode(GL_MODELVIEW);

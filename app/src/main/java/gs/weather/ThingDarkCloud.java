@@ -57,7 +57,7 @@ public class ThingDarkCloud extends Thing {
             texNameFlare = textures.loadBitmap("cloudflare" + which, FLARES[which - 1]);
         }
         if (this.particleSystem != null) {
-            this.particleSystem.render((GL11) gl, models.getManager(), this.origin);
+            this.particleSystem.render((GL11) gl, this.origin);
         }
         if (this.texture != null && this.model != null) {
             gl.glBindTexture(GL_TEXTURE_2D, texture.getId());

@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.support.annotation.CallSuper;
 
 import javax.microedition.khronos.opengles.GL10;
-import javax.microedition.khronos.opengles.GL11;
 
 import gs.weather.sky_manager.TimeOfDay;
 import gs.weather.wallpaper.Models;
@@ -18,7 +17,6 @@ public abstract class Scene {
     protected boolean mLandscape;
     protected Textures textures;
     protected Models models;
-    protected MeshManager mMeshManager;
     protected ThingManager mThingManager;
 
     public abstract void draw(GL10 gl10, GlobalTime globalTime);
@@ -29,13 +27,8 @@ public abstract class Scene {
 
     @CallSuper
     public void precacheAssets(GL10 gl) {
-        if (sTextures == null) {
-            sTextures = new Textures(mContext.getResources(), (GL11) gl);
-        }
-        if (models == null) {
-            models = new Models(mContext.getResources(), (GL11) gl, mMeshManager);
-        }
         textures = sTextures;
+        models = sModels;
     }
 
     public void setScreenMode(boolean lanscape) {

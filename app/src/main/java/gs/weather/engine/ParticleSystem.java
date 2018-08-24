@@ -3,6 +3,7 @@ package gs.weather.engine;
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
+import gs.weather.wallpaper.Model;
 import gs.weather.wallpaper.Texture;
 
 import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
@@ -24,7 +25,7 @@ public class ParticleSystem {
     protected Color destColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
     public boolean enableSpawning = true;
     protected Vector flowDirection = null;
-    protected String meshName;
+    protected Model model;
     private Vector orientScratch = null;
     protected int spawnBurst = 0;
     protected float spawnRangeX = 0.0f;
@@ -184,13 +185,13 @@ public class ParticleSystem {
         particle.alive = true;
     }
 
-    public void render(GL11 gl, MeshManager mm, Vector systemOrigin) {
-        render(gl, mm, systemOrigin, null);
+    public void render(GL11 gl, Vector systemOrigin) {
+        render(gl, systemOrigin, null);
     }
 
-    public void render(GL11 gl, MeshManager mm, Vector systemOrigin, Vector direction) {
+    public void render(GL11 gl, Vector systemOrigin, Vector direction) {
         gl.glBindTexture(GL_TEXTURE_2D, texture.getId());
-        Mesh mesg = mm.getMeshByName(gl, this.meshName);
+
         gl.glMatrixMode(GL_MODELVIEW);
         gl.glPushMatrix();
         gl.glTranslatef(systemOrigin.getX(), systemOrigin.getY(), systemOrigin.getZ());
@@ -198,6 +199,7 @@ public class ParticleSystem {
             handleOrientation(gl, direction);
         }
         renderStart(gl);
+        Mesh mesg = model.asMesh();
         mesg.renderFrame_gl11_setup(gl, this._animCurrentFrame);
         for (int i = 0; i < this._particles.length; i++) {
             if (this._particles[i].alive) {

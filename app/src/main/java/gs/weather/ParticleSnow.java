@@ -10,7 +10,7 @@ public class ParticleSnow extends ParticleSystem {
     public ParticleSnow() {
         this.spawnRate = 0.25f;
         this.spawnRateVariance = 0.05f;
-        this.meshName = "flakes";
+        this.model = Scene.sModels.loadBMDL("flakes", R.raw.flakes);
         this.texture = Scene.sTextures.loadTGA("p_snow1", R.raw.p_snow1);
         this.startColor.set(1.0f, 1.0f, 1.0f, 3.0f);
         this.destColor.set(1.0f, 1.0f, 1.0f, 0.0f);

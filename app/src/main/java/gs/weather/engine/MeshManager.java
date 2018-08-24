@@ -21,7 +21,7 @@ public class MeshManager {
     private String lastName = null;
     private Map<String, Mesh> meshList = new HashMap<>();
 
-    public MeshManager(Context context1) {
+    private MeshManager(Context context1) {
         this.context = context1;
         this.MMPACKAGENAME = context1.getPackageName();
     }
@@ -36,11 +36,11 @@ public class MeshManager {
         this.meshList.put(s, mesh);
     }
 
-    public void createMeshFromFile(GL10 gl10, String s) {
+    private void createMeshFromFile(GL10 gl10, String s) {
         createMeshFromFile(gl10, s, false, null);
     }
 
-    public void createMeshFromFile(GL10 gl10, String filename, boolean willBeInterpolated, Mesh container) {
+    private void createMeshFromFile(GL10 gl10, String filename, boolean willBeInterpolated, Mesh container) {
         if (isLoaded(filename)) {
             Log.v(TAG, "MeshManager: Already loaded " + filename);
             return;
@@ -84,7 +84,7 @@ public class MeshManager {
         this.meshList.put(filename, container);
     }
 
-    public Mesh getMeshByName(GL10 gl10, String name) {
+    private Mesh getMeshByName(GL10 gl10, String name) {
         if (name.equals(this.lastName)) {
             return this.lastMesh;
         }
@@ -98,22 +98,22 @@ public class MeshManager {
         return mesh;
     }
 
-    public boolean isLoaded(String s) {
+    private boolean isLoaded(String s) {
         if (this.meshList.containsKey(s)) {
             return true;
         }
         return false;
     }
 
-    public void setContext(Context context1) {
+    private void setContext(Context context1) {
         this.context = context1;
     }
 
-    public void bind(Model model) {
+    private void bind(Model model) {
         this.meshList.put(model.getName(), model.asMesh());
     }
 
-    public void unload(GL10 gl10) {
+    private void unload(GL10 gl10) {
         for (Object name : this.meshList.keySet()) {
             ((Mesh) this.meshList.get(name)).unload(gl10);
         }

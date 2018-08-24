@@ -8,9 +8,10 @@ import gs.weather.engine.AnimPlayer;
 import gs.weather.engine.Color;
 import gs.weather.engine.GlobalRand;
 import gs.weather.engine.GlobalTime;
-import gs.weather.engine.Mesh;
 import gs.weather.engine.Scene;
 import gs.weather.sky_manager.TimeOfDay;
+import gs.weather.wallpaper.AnimatedModel;
+import gs.weather.wallpaper.Model;
 
 import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
@@ -36,7 +37,6 @@ public abstract class SceneBase extends Scene {
     protected void checkAssetReload(GL10 gl10) {
         if (this.reloadAssets) {
             synchronized (this) {
-                this.mMeshManager.unload(gl10);
                 precacheAssets(gl10);
                 this.reloadAssets = false;
             }
@@ -44,7 +44,6 @@ public abstract class SceneBase extends Scene {
     }
 
     public void unload(GL10 gl) {
-        this.mMeshManager.unload(gl);
         this.mThingManager.clear();
     }
 
@@ -78,7 +77,8 @@ public abstract class SceneBase extends Scene {
                 this.treesAnim.reset();
             }
         }
-        Mesh tree_terrain = this.mMeshManager.getMeshByName(gl, "trees_overlay_terrain");
+
+        Model tree_terrain = models.get("trees_overlay_terrain");
         gl.glBindTexture(GL_TEXTURE_2D, textures.get("trees_overlay").getId());
         gl.glMatrixMode(GL_MODELVIEW);
         gl.glPushMatrix();
@@ -89,17 +89,16 @@ public abstract class SceneBase extends Scene {
         }
         gl.glScalef(5.0f, 5.0f, 5.0f);
         gl.glBlendFunc(770, 771);
-        tree_terrain.render(gl);
-        Mesh grass = this.mMeshManager.getMeshByName(gl, "grass_overlay");
-        Mesh tree = this.mMeshManager.getMeshByName(gl, "trees_overlay");
-        if (!this.pref_treeAnim || this.treesAnim.getCount() >= 1) {
-            tree.render(gl);
-            grass.render(gl);
-        } else {
-            this.treesAnim.update(timeDelta);
-            tree.renderFrameInterpolated(gl, this.treesAnim.getCurrentFrame(), this.treesAnim.getBlendFrame(), this.treesAnim.getBlendFrameAmount());
-            grass.renderFrameInterpolated(gl, this.treesAnim.getCurrentFrame(), this.treesAnim.getBlendFrame(), this.treesAnim.getBlendFrameAmount());
-        }
+        tree_terrain.render();
+
+        AnimatedModel grass = (AnimatedModel) models.get("grass_overlay");
+        AnimatedModel tree = (AnimatedModel) models.get("trees_overlay");
+        grass.setAnimator(treesAnim);
+        tree.setAnimator(treesAnim);
+        this.treesAnim.update(timeDelta);
+        tree.render();
+        grass.render();
+
         gl.glPopMatrix();
     }
 }
