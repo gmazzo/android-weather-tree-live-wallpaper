@@ -13,6 +13,7 @@ import gs.weather.engine.ThingManager;
 import gs.weather.engine.Vector;
 import gs.weather.sky_manager.TimeOfDay;
 import gs.weather.wallpaper.Model;
+import gs.weather.wallpaper.Texture;
 
 import static javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT;
 import static javax.microedition.khronos.opengles.GL10.GL_LIGHTING;
@@ -40,13 +41,13 @@ public class SceneStorm extends SceneBase {
     int rainDensity;
     Color v_light1_ambientLight;
 
-    public SceneStorm(Context ctx) {
+    public SceneStorm(Context context, GL11 gl) {
+        super(context, gl);
         this.rainDensity = 10;
         this.pref_flashLights = true;
         this.pref_randomBoltColor = false;
         this.pref_boltFrequency = 2.0f;
         this.mThingManager = new ThingManager();
-        this.mContext = ctx;
         this.lastLightningSpawn = 0.0f;
         this.lightFlashTime = 0.0f;
         this.lightFlashX = 0.0f;
@@ -112,8 +113,6 @@ public class SceneStorm extends SceneBase {
     }
 
     public void precacheAssets(GL10 gl10) {
-        super.precacheAssets(gl10);
-
         textures.loadBitmap("storm_bg", R.drawable.storm_bg);
         textures.loadBitmap("trees_overlay", R.drawable.trees_overlay);
         textures.loadBitmap("clouddark1", R.drawable.clouddark1);
@@ -173,7 +172,8 @@ public class SceneStorm extends SceneBase {
     }
 
     private void renderBackground(GL10 gl, float timeDelta) {
-        gl.glBindTexture(GL_TEXTURE_2D, textures.get("storm_bg").getId());
+        Texture storm_bg = textures.loadBitmap("storm_bg", R.drawable.storm_bg);
+        gl.glBindTexture(GL_TEXTURE_2D, storm_bg.getId());
         gl.glColor4f(todColorFinal.getR(), todColorFinal.getG(), todColorFinal.getB(), 1.0f);
         gl.glMatrixMode(GL_MODELVIEW);
         gl.glPushMatrix();
@@ -191,7 +191,7 @@ public class SceneStorm extends SceneBase {
             this.light1_ambientLight[3] = this.v_light1_ambientLight.getA();
             gl.glLightfv(16385, 4608, this.light1_ambientLight, 0);
         }
-        Model mesh = models.get("plane_16x16");
+        Model mesh = models.loadBMDL("plane_16x16", R.raw.plane_16x16);
         mesh.render();
         gl.glDisable(16385);
         gl.glPopMatrix();

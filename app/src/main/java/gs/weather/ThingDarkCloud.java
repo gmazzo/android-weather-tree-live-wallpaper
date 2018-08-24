@@ -16,6 +16,12 @@ import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
 public class ThingDarkCloud extends Thing {
     static Color pref_boltColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
     public static boolean pref_minimalist = false;
+    private static final int MODELS[] = {
+            R.raw.cloud1m, R.raw.cloud2m, R.raw.cloud3m,
+            R.raw.cloud4m, R.raw.cloud5m};
+    private static final int TEXTURES[] = {
+            R.drawable.clouddark1, R.drawable.clouddark2, R.drawable.clouddark3,
+            R.drawable.clouddark4, R.drawable.clouddark5};
     private static final int FLARES[] = {
             R.drawable.cloudflare1, R.drawable.cloudflare2, R.drawable.cloudflare3,
             R.drawable.cloudflare4, R.drawable.cloudflare5};
@@ -52,8 +58,8 @@ public class ThingDarkCloud extends Thing {
     @Override
     public void render(GL10 gl, Textures textures, Models models) {
         if (model == null) {
-            model = models.get("cloud" + which + "m");
-            texture = textures.get("clouddark" + which);
+            model = models.loadBMDL("cloud" + which + "m", MODELS[which - 1]);
+            texture = textures.loadBitmap("clouddark" + which, TEXTURES[which - 1]);
             texNameFlare = textures.loadBitmap("cloudflare" + which, FLARES[which - 1]);
         }
         if (this.particleSystem != null) {

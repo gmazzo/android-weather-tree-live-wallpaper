@@ -1,20 +1,29 @@
 package gs.weather;
 
 import javax.microedition.khronos.opengles.GL10;
+import javax.microedition.khronos.opengles.GL11;
 
 import gs.weather.engine.GlobalRand;
 import gs.weather.engine.ParticleSystem;
 import gs.weather.engine.Scene;
+import gs.weather.engine.Vector;
 
 public class ParticleSnow extends ParticleSystem {
     public ParticleSnow() {
         this.spawnRate = 0.25f;
         this.spawnRateVariance = 0.05f;
-        this.model = Scene.sModels.loadBMDL("flakes", R.raw.flakes);
-        this.texture = Scene.sTextures.loadTGA("p_snow1", R.raw.p_snow1);
         this.startColor.set(1.0f, 1.0f, 1.0f, 3.0f);
         this.destColor.set(1.0f, 1.0f, 1.0f, 0.0f);
         this.spawnRangeX = 20.0f;
+    }
+
+    @Override
+    public void render(GL11 gl, Vector systemOrigin) {
+        if (model == null) {
+            model = Scene.sModels.loadBMDL("flakes", R.raw.flakes);
+            texture = Scene.sTextures.loadTGA("p_snow1", R.raw.p_snow1);
+        }
+        super.render(gl, systemOrigin);
     }
 
     public void particleSetup(Particle particle) {

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import javax.microedition.khronos.opengles.GL10;
+import javax.microedition.khronos.opengles.GL11;
 
 import gs.weather.engine.Color;
 import gs.weather.engine.GlobalTime;
@@ -24,9 +25,9 @@ public class SceneFog extends SceneBase {
     Color fogColorFinal;
     Color[] fog_todColors;
 
-    public SceneFog(Context ctx) {
+    public SceneFog(Context context, GL11 gl) {
+        super(context, gl);
         this.mThingManager = new ThingManager();
-        this.mContext = ctx;
         todColorFinal = new Color();
         this.pref_todColors = new Color[4];
         this.pref_todColors[0] = new Color();
@@ -53,8 +54,6 @@ public class SceneFog extends SceneBase {
     }
 
     public void precacheAssets(GL10 gl10) {
-        super.precacheAssets(gl10);
-
         textures.loadBitmap("bg1", R.drawable.bg1);
         textures.loadBitmap("trees_overlay", R.drawable.trees_overlay);
         textures.loadTGA("sun", R.raw.sun);
@@ -118,7 +117,7 @@ public class SceneFog extends SceneBase {
     }
 
     private void renderBackground(GL10 gl, float timeDelta) {
-        gl.glBindTexture(GL_TEXTURE_2D, textures.get("bg1").getId());
+        gl.glBindTexture(GL_TEXTURE_2D, textures.loadBitmap("bg1", R.drawable.bg1).getId());
         gl.glColor4f(todColorFinal.getR(), todColorFinal.getG(), todColorFinal.getB(), 1.0f);
         gl.glMatrixMode(GL_MODELVIEW);
         gl.glPushMatrix();
@@ -127,7 +126,7 @@ public class SceneFog extends SceneBase {
         gl.glMatrixMode(5890);
         gl.glPushMatrix();
         gl.glTranslatef(((pref_windSpeed * timeDelta) * -0.005f) % 1.0f, 0.0f, 0.0f);
-        Model model = models.get("plane_16x16");
+        Model model = models.loadBMDL("plane_16x16", R.raw.plane_16x16);
         model.render();
         gl.glPopMatrix();
         gl.glMatrixMode(GL_MODELVIEW);

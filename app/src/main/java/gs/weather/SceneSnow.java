@@ -20,6 +20,14 @@ import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
 
 public class SceneSnow extends SceneBase {
+    private static final int CLOUD_MODELS[] = {
+            R.raw.cloud1m, R.raw.cloud2m, R.raw.cloud3m,
+            R.raw.cloud4m, R.raw.cloud5m};
+    private static final int CLOUD_TEXTURES[] = {
+            R.drawable.cloud1, R.drawable.cloud2, R.drawable.cloud3,
+            R.drawable.cloud4, R.drawable.cloud5};
+    private static final int WISPY_TEXTURES[] = {
+            R.raw.wispy1, R.raw.wispy2, R.raw.wispy3};
     static final float CLOUD_START_DISTANCE = 175.0f;
     static final float CLOUD_X_RANGE = 45.0f;
     static final float CLOUD_Z_RANGE = 20.0f;
@@ -35,9 +43,9 @@ public class SceneSnow extends SceneBase {
     Vector snowPos2;
     Vector snowPos3;
 
-    public SceneSnow(Context ctx) {
+    public SceneSnow(Context context, GL11 gl) {
+        super(context, gl);
         this.mThingManager = new ThingManager();
-        this.mContext = ctx;
         todColorFinal = new Color();
         this.pref_todColors = new Color[4];
         this.pref_todColors[0] = new Color();
@@ -75,8 +83,6 @@ public class SceneSnow extends SceneBase {
     }
 
     public void precacheAssets(GL10 gl10) {
-        super.precacheAssets(gl10);
-
         textures.loadBitmap("bg2", R.drawable.bg2);
         textures.loadBitmap("trees_overlay", R.drawable.trees_overlay);
         textures.loadBitmap("cloud1", R.drawable.cloud1);
@@ -160,16 +166,17 @@ public class SceneSnow extends SceneBase {
                 cloud.origin.setY(cloudDepthList[i]);
                 cloud.origin.setZ(GlobalRand.floatRange(-20.0f, -10.0f));
                 int which = (i % 5) + 1;
-                cloud.model = models.get("cloud" + which + "m");
-                cloud.texture = textures.get("cloud" + which);
+                cloud.model = models.loadBMDL("cloud" + which + "m", CLOUD_MODELS[which - 1]);
+                cloud.texture = textures.loadBitmap("cloud" + which, CLOUD_TEXTURES[which - 1]);
                 cloud.targetName = "cloud";
                 cloud.velocity = new Vector(pref_windSpeed * 1.5f, 0.0f, 0.0f);
                 this.mThingManager.add(cloud);
             }
             for (i = 0; i < cloudDepthList.length; i++) {
+                int which = ((i % 3) + 1);
                 ThingWispy wispy = new ThingWispy();
-                wispy.model = models.get("plane_16x16");
-                wispy.texture = textures.get("wispy" + ((i % 3) + 1));
+                wispy.model = models.loadBMDL("plane_16x16", R.raw.plane_16x16);
+                wispy.texture = textures.loadTGA("wispy" + which, WISPY_TEXTURES[which - 1]);
                 wispy.targetName = "wispy";
                 wispy.velocity = new Vector(pref_windSpeed * 1.5f, 0.0f, 0.0f);
                 wispy.scale.set(GlobalRand.floatRange(1.0f, 3.0f), 1.0f, GlobalRand.floatRange(1.0f, 1.5f));

@@ -2,9 +2,9 @@ package gs.weather.engine;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.annotation.CallSuper;
 
 import javax.microedition.khronos.opengles.GL10;
+import javax.microedition.khronos.opengles.GL11;
 
 import gs.weather.sky_manager.TimeOfDay;
 import gs.weather.wallpaper.Models;
@@ -13,11 +13,17 @@ import gs.weather.wallpaper.Textures;
 public abstract class Scene {
     public static Textures sTextures;
     public static Models sModels;
-    protected Context mContext;
+    protected final Context mContext;
     protected boolean mLandscape;
-    protected Textures textures;
-    protected Models models;
+    protected final Textures textures;
+    protected final Models models;
     protected ThingManager mThingManager;
+
+    protected Scene(Context context, GL11 gl) {
+        this.mContext = context;
+        this.textures = new Textures(mContext.getResources(), gl);
+        this.models = new Models(mContext.getResources(), gl);
+    }
 
     public abstract void draw(GL10 gl10, GlobalTime globalTime);
 
@@ -25,10 +31,7 @@ public abstract class Scene {
 
     public abstract void unload(GL10 gl10);
 
-    @CallSuper
     public void precacheAssets(GL10 gl) {
-        textures = sTextures;
-        models = sModels;
     }
 
     public void setScreenMode(boolean lanscape) {

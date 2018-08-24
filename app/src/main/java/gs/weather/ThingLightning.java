@@ -26,29 +26,28 @@ public class ThingLightning extends Thing {
     @Override
     public void render(GL10 gl, Textures textures, Models models) {
         if (model == null) {
-            int number = GlobalRand.intRange(1, 3);
-            model = models.loadBMDL("lightning" + number, MODELS[number]);
+            int number = GlobalRand.intRange(1, 4);
+            model = models.loadBMDL("lightning" + number, MODELS[number - 1]);
             lightningGlow = textures.loadTGA("lightning_pieces_glow", R.raw.lightning_pieces_glow);
             lightningCore = textures.loadTGA("lightning_pieces_core", R.raw.lightning_pieces_core);
         }
-        if (this.texture != null && this.model != null) {
-            gl.glEnable(GL_LIGHTING);
-            gl.glEnable(GL_COLOR_BUFFER_BIT);
 
-            gl.glBlendFunc(770, 1);
-            gl.glPushMatrix();
-            gl.glTranslatef(this.origin.getX(), this.origin.getY(), this.origin.getZ());
-            gl.glScalef(this.scale.getX(), this.scale.getX(), this.scale.getX());
-            gl.glRotatef(this.angles.getA(), this.angles.getR(), this.angles.getG(), this.angles.getB());
-            if (this.color != null) {
-                gl.glColor4f(this.color.getR(), this.color.getG(), this.color.getB(), this.color.getA());
-            }
-            model.renderFrameMultiTexture(lightningGlow, lightningCore, 260, false);
-            gl.glPopMatrix();
-            gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-            gl.glDisable(GL_COLOR_BUFFER_BIT);
-            gl.glDisable(GL_LIGHTING);
+        gl.glEnable(GL_LIGHTING);
+        gl.glEnable(GL_COLOR_BUFFER_BIT);
+
+        gl.glBlendFunc(770, 1);
+        gl.glPushMatrix();
+        gl.glTranslatef(this.origin.getX(), this.origin.getY(), this.origin.getZ());
+        gl.glScalef(this.scale.getX(), this.scale.getX(), this.scale.getX());
+        gl.glRotatef(this.angles.getA(), this.angles.getR(), this.angles.getG(), this.angles.getB());
+        if (this.color != null) {
+            gl.glColor4f(this.color.getR(), this.color.getG(), this.color.getB(), this.color.getA());
         }
+        model.renderFrameMultiTexture(lightningGlow, lightningCore, 260, false);
+        gl.glPopMatrix();
+        gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+        gl.glDisable(GL_COLOR_BUFFER_BIT);
+        gl.glDisable(GL_LIGHTING);
     }
 
     public void update(float timeDelta) {

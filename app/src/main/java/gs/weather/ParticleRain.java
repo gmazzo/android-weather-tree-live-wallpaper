@@ -1,20 +1,30 @@
 package gs.weather;
 
 import javax.microedition.khronos.opengles.GL10;
+import javax.microedition.khronos.opengles.GL11;
 
 import gs.weather.engine.GlobalRand;
 import gs.weather.engine.ParticleSystem;
 import gs.weather.engine.Scene;
+import gs.weather.engine.Vector;
 
 public class ParticleRain extends ParticleSystem {
     public ParticleRain(int density) {
         this.spawnRate = 1.0f / ((float) density);
         this.spawnRateVariance = 0.05f;
-        this.texture = Scene.sTextures.loadBitmap("raindrop", R.drawable.raindrop);
-        this.model = Scene.sModels.loadBMDL("rain", R.raw.rain);
         this.spawnRangeX = 15.0f;
         this.spawnRangeY = 5.0f;
         this.spawnRangeZ = 0.0f;
+    }
+
+    @Override
+    public void render(GL11 gl, Vector systemOrigin) {
+        if (model == null) {
+            model = Scene.sModels.loadBMDL("rain", R.raw.rain);
+            texture = Scene.sTextures.loadBitmap("raindrop", R.drawable.raindrop);
+        }
+
+        super.render(gl, systemOrigin);
     }
 
     public void particleSetup(Particle particle) {

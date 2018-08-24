@@ -45,15 +45,15 @@ public class SceneClear extends SceneBase {
     private final @DrawableRes
     int backgroundId;
 
-    public SceneClear(Context ctx) {
-        this(ctx, "bg3", R.drawable.bg3);
+    public SceneClear(Context context, GL11 gl) {
+        this(context, gl, "bg3", R.drawable.bg3);
     }
 
-    public SceneClear(Context ctx, String backgroundName, @DrawableRes int backgroundId) {
+    public SceneClear(Context context, GL11 gl, String backgroundName, @DrawableRes int backgroundId) {
+        super(context, gl);
         this.backgroundName = backgroundName;
         this.backgroundId = backgroundId;
         this.mThingManager = new ThingManager();
-        this.mContext = ctx;
         todColorFinal = new Color();
         this.pref_todColors = new Color[4];
         this.pref_todColors[0] = new Color();
@@ -105,8 +105,6 @@ public class SceneClear extends SceneBase {
     }
 
     public void precacheAssets(GL10 gl10) {
-        super.precacheAssets(gl10);
-
         textures.loadBitmap(backgroundName, backgroundId);
         textures.loadBitmap("trees_overlay", R.drawable.trees_overlay);
         textures.loadBitmap("cloud1", R.drawable.cloud1);

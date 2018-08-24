@@ -63,7 +63,7 @@ public class IsolatedRenderer implements OnSharedPreferenceChangeListener {
     boolean isPaused;
     private float lastCalendarUpdate;
     private float lastPositionUpdate;
-    private GL10 oldGL = null;
+    private GL11 gl = null;
     float pref_cameraSpeed = 1.0f;
     boolean pref_superFastDay = DBG;
     SharedPreferences prefs;
@@ -80,8 +80,7 @@ public class IsolatedRenderer implements OnSharedPreferenceChangeListener {
         this.globalTime = new GlobalTime();
         this.cameraPos = new Vector(0.0f, 0.0f, 0.0f);
         this.desiredCameraPos = new Vector(0.0f, 0.0f, 0.0f);
-        currentSceneId = -1;
-        setContext(ctx);
+        this.context = ctx;
     }
 
     private void setContext(Context ctx) {
@@ -120,44 +119,39 @@ public class IsolatedRenderer implements OnSharedPreferenceChangeListener {
     public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
         cameraSpeedFromPrefs(prefs);
         todFromPrefs(prefs);
-        if (this.currentScene != null) {
-            this.currentScene.updateSharedPrefs(prefs, key);
-        }
+        this.currentScene.updateSharedPrefs(prefs, key);
     }
 
     public synchronized void onSceneChanged(int newSceneId) {
         if (newSceneId != currentSceneId) {
-            if (this.currentScene != null) {
-                this.currentScene.unload(this.oldGL);
-            }
+            this.currentScene.unload(this.gl);
             switch (newSceneId) {
                 case SCENE_CLEAR /*2000*/:
-                    this.currentScene = new SceneClear(this.context);
+                    this.currentScene = new SceneClear(this.context, this.gl);
                     currentSceneId = SCENE_CLEAR;
                     break;
                 case SCENE_CLOUDY /*2001*/:
-                    this.currentScene = new SceneCloudy(this.context);
+                    this.currentScene = new SceneCloudy(this.context, this.gl);
                     currentSceneId = SCENE_CLOUDY;
                     break;
                 case SCENE_STORM /*2002*/:
-                    this.currentScene = new SceneStorm(this.context);
+                    this.currentScene = new SceneStorm(this.context, this.gl);
                     currentSceneId = SCENE_STORM;
                     break;
                 case SCENE_SNOW /*2003*/:
-                    this.currentScene = new SceneSnow(this.context);
+                    this.currentScene = new SceneSnow(this.context, this.gl);
                     currentSceneId = SCENE_SNOW;
                     break;
                 case SCENE_FOG /*2004*/:
-                    this.currentScene = new SceneFog(this.context);
+                    this.currentScene = new SceneFog(this.context, this.gl);
                     currentSceneId = SCENE_FOG;
                     break;
                 case SCENE_RAIN /*2005*/:
-                    this.currentScene = new SceneRain(this.context);
+                    this.currentScene = new SceneRain(this.context, this.gl);
                     currentSceneId = SCENE_RAIN;
                     break;
             }
-            this.currentScene.precacheAssets(this.oldGL);
-            this.currentScene.load(this.oldGL);
+            this.currentScene.load(this.gl);
         }
         this.currentScene.setScreenMode(this.IS_LANDSCAPE);
         onSharedPreferenceChanged(this.prefs, null);
@@ -176,8 +170,8 @@ public class IsolatedRenderer implements OnSharedPreferenceChangeListener {
         setRenderDefaults(gl);
         gl.glMatrixMode(5889);
         gl.glLoadIdentity();
-        if (gl != this.oldGL) {
-            this.oldGL = gl;
+        if (gl != this.gl) {
+            this.gl = (GL11) gl;
             if (this.currentScene == null) {
                 if (Scene.sTextures == null) {
                     Scene.sTextures = new Textures(context.getResources(), (GL11) gl);
@@ -185,11 +179,15 @@ public class IsolatedRenderer implements OnSharedPreferenceChangeListener {
                 if (Scene.sModels == null) {
                     Scene.sModels = new Models(context.getResources(), (GL11) gl);
                 }
-                onSceneChanged(SCENE_CLEAR);
+
+                currentSceneId = SCENE_CLEAR;
+                currentScene = new SceneClear(context, (GL11) gl);
+                setContext(context);
+
             } else {
                 this.currentScene.unload(gl);
+                this.currentScene.precacheAssets(gl);
             }
-            this.currentScene.precacheAssets(gl);
         }
         this.currentScene.setScreenMode(this.IS_LANDSCAPE);
         this.currentScene.load(gl);

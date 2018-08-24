@@ -1,8 +1,10 @@
 package gs.weather;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 
 import javax.microedition.khronos.opengles.GL10;
+import javax.microedition.khronos.opengles.GL11;
 
 import gs.weather.engine.AnimPlayer;
 import gs.weather.engine.Color;
@@ -12,6 +14,7 @@ import gs.weather.engine.Scene;
 import gs.weather.sky_manager.TimeOfDay;
 import gs.weather.wallpaper.AnimatedModel;
 import gs.weather.wallpaper.Model;
+import gs.weather.wallpaper.Texture;
 
 import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
@@ -34,9 +37,15 @@ public abstract class SceneBase extends Scene {
     protected AnimPlayer treesAnim = new AnimPlayer(0, 19, 5.0f, false);
     protected float treesAnimateDelay = 5.0f;
 
+    public SceneBase(Context context, GL11 gl) {
+        super(context, gl);
+    }
+
     protected void checkAssetReload(GL10 gl10) {
         if (this.reloadAssets) {
             synchronized (this) {
+                this.models.close();
+                this.textures.close();
                 precacheAssets(gl10);
                 this.reloadAssets = false;
             }
@@ -44,6 +53,8 @@ public abstract class SceneBase extends Scene {
     }
 
     public void unload(GL10 gl) {
+        this.models.close();
+        this.textures.close();
         this.mThingManager.clear();
     }
 
@@ -78,8 +89,9 @@ public abstract class SceneBase extends Scene {
             }
         }
 
-        Model tree_terrain = models.get("trees_overlay_terrain");
-        gl.glBindTexture(GL_TEXTURE_2D, textures.get("trees_overlay").getId());
+        Model tree_terrain = models.loadBMDL("trees_overlay_terrain", R.raw.trees_overlay_terrain);
+        Texture trees_overlay = textures.loadBitmap("trees_overlay", R.drawable.trees_overlay);
+        gl.glBindTexture(GL_TEXTURE_2D, trees_overlay.getId());
         gl.glMatrixMode(GL_MODELVIEW);
         gl.glPushMatrix();
         if (this.mLandscape) {
@@ -91,8 +103,8 @@ public abstract class SceneBase extends Scene {
         gl.glBlendFunc(770, 771);
         tree_terrain.render();
 
-        AnimatedModel grass = (AnimatedModel) models.get("grass_overlay");
-        AnimatedModel tree = (AnimatedModel) models.get("trees_overlay");
+        AnimatedModel grass = (AnimatedModel) models.loadBMDL("grass_overlay", R.raw.grass_overlay);
+        AnimatedModel tree = (AnimatedModel) models.loadBMDL("trees_overlay", R.raw.trees_overlay);
         grass.setAnimator(treesAnim);
         tree.setAnimator(treesAnim);
         this.treesAnim.update(timeDelta);

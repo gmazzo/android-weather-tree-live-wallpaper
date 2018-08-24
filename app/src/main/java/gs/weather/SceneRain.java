@@ -13,6 +13,7 @@ import gs.weather.engine.ThingManager;
 import gs.weather.engine.Vector;
 import gs.weather.sky_manager.TimeOfDay;
 import gs.weather.wallpaper.Model;
+import gs.weather.wallpaper.Texture;
 
 import static javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT;
 import static javax.microedition.khronos.opengles.GL10.GL_LIGHTING;
@@ -20,6 +21,12 @@ import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
 
 public class SceneRain extends SceneBase {
+    private static final int CLOUD_MODELS[] = {
+            R.raw.cloud1m, R.raw.cloud2m, R.raw.cloud3m,
+            R.raw.cloud4m, R.raw.cloud5m};
+    private static final int CLOUD_TEXTURES[] = {
+            R.drawable.clouddark1, R.drawable.clouddark2, R.drawable.clouddark3,
+            R.drawable.clouddark4, R.drawable.clouddark5};
     private final String TAG;
     float[] light_diffuse;
     ParticleRain particleRain;
@@ -27,11 +34,11 @@ public class SceneRain extends SceneBase {
     int rainDensity;
     Color v_light_diffuse;
 
-    public SceneRain(Context ctx) {
+    public SceneRain(Context context, GL11 gl) {
+        super(context, gl);
         this.TAG = "Rain";
         this.rainDensity = 10;
         this.mThingManager = new ThingManager();
-        this.mContext = ctx;
         todColorFinal = new Color();
         this.pref_todColors = new Color[4];
         this.pref_todColors[0] = new Color();
@@ -81,8 +88,8 @@ public class SceneRain extends SceneBase {
                 cloud.origin.setY(cloudDepthList[i]);
                 cloud.origin.setZ(GlobalRand.floatRange(-20.0f, -10.0f));
                 int which = (i % 5) + 1;
-                cloud.model = models.get("cloud" + which + "m");
-                cloud.texture = textures.get("clouddark" + which);
+                cloud.model = models.loadBMDL("cloud" + which + "m", CLOUD_MODELS[which - 1]);
+                cloud.texture = textures.loadBitmap("clouddark" + which, CLOUD_TEXTURES[which - 1]);
                 cloud.targetName = "dark_cloud";
                 cloud.velocity = new Vector(pref_windSpeed * 1.5f, 0.0f, 0.0f);
                 this.mThingManager.add(cloud);
@@ -125,8 +132,6 @@ public class SceneRain extends SceneBase {
     }
 
     public void precacheAssets(GL10 gl10) {
-        super.precacheAssets(gl10);
-
         textures.loadBitmap("storm_bg", R.drawable.storm_bg);
         textures.loadBitmap("trees_overlay", R.drawable.trees_overlay);
         textures.loadBitmap("clouddark1", R.drawable.clouddark1);
@@ -155,7 +160,8 @@ public class SceneRain extends SceneBase {
     }
 
     private void renderBackground(GL10 gl, float timeDelta) {
-        gl.glBindTexture(GL_TEXTURE_2D, textures.get("storm_bg").getId());
+        Texture storm_bg = textures.loadBitmap("storm_bg", R.drawable.storm_bg);
+        gl.glBindTexture(GL_TEXTURE_2D, storm_bg.getId());
         gl.glColor4f(todColorFinal.getR(), todColorFinal.getG(), todColorFinal.getB(), 1.0f);
         gl.glMatrixMode(GL_MODELVIEW);
         gl.glPushMatrix();
@@ -164,7 +170,7 @@ public class SceneRain extends SceneBase {
         gl.glMatrixMode(5890);
         gl.glPushMatrix();
         gl.glTranslatef(((pref_windSpeed * timeDelta) * -0.005f) % 1.0f, 0.0f, 0.0f);
-        Model mesh = models.get("plane_16x16");
+        Model mesh = models.loadBMDL("plane_16x16", R.raw.plane_16x16);
         mesh.render();
         gl.glPopMatrix();
         gl.glMatrixMode(GL_MODELVIEW);
