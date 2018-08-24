@@ -11,7 +11,6 @@ import gs.weather.engine.GlobalRand;
 import gs.weather.engine.GlobalTime;
 import gs.weather.engine.Mesh;
 import gs.weather.engine.MeshManager;
-import gs.weather.engine.TextureManager;
 import gs.weather.engine.ThingManager;
 import gs.weather.engine.Vector;
 import gs.weather.sky_manager.TimeOfDay;
@@ -19,6 +18,7 @@ import gs.weather.sky_manager.TimeOfDay;
 import static javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT;
 import static javax.microedition.khronos.opengles.GL10.GL_LIGHTING;
 import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
 
 public class SceneRain extends SceneBase {
     private final String TAG;
@@ -32,10 +32,8 @@ public class SceneRain extends SceneBase {
         this.TAG = "Rain";
         this.rainDensity = 10;
         this.mThingManager = new ThingManager();
-        this.mTextureManager = new TextureManager(ctx);
         this.mMeshManager = new MeshManager(ctx);
         this.mContext = ctx;
-        this.pref_background = "storm_bg";
         todColorFinal = new Color();
         this.pref_todColors = new Color[4];
         this.pref_todColors[0] = new Color();
@@ -110,7 +108,6 @@ public class SceneRain extends SceneBase {
             }
             return;
         }
-        this.mTextureManager.updatePrefs();
         this.reloadAssets = true;
     }
 
@@ -123,11 +120,6 @@ public class SceneRain extends SceneBase {
     }
 
     public void backgroundFromPrefs(SharedPreferences prefs) {
-        String bg = "storm_bg";
-        if (!bg.equals(this.pref_background)) {
-            this.pref_background = bg;
-            this.reloadAssets = true;
-        }
     }
 
     private void rainDensityFromPrefs(SharedPreferences prefs) {
@@ -144,11 +136,6 @@ public class SceneRain extends SceneBase {
         textures.loadBitmap("clouddark3", R.drawable.clouddark3);
         textures.loadBitmap("clouddark4", R.drawable.clouddark4);
         textures.loadBitmap("clouddark5", R.drawable.clouddark5);
-        textures.loadBitmap("cloudflare1", R.drawable.cloudflare1);
-        textures.loadBitmap("cloudflare2", R.drawable.cloudflare2);
-        textures.loadBitmap("cloudflare3", R.drawable.cloudflare3);
-        textures.loadBitmap("cloudflare4", R.drawable.cloudflare4);
-        textures.loadBitmap("cloudflare5", R.drawable.cloudflare5);
         textures.loadBitmap("raindrop", R.drawable.raindrop);
         models.loadBMDL("plane_16x16", R.raw.plane_16x16);
         models.loadBMDL("cloud1m", R.raw.cloud1m);
@@ -171,7 +158,7 @@ public class SceneRain extends SceneBase {
 
     private void renderBackground(GL10 gl, float timeDelta) {
         Mesh mesh = this.mMeshManager.getMeshByName(gl, "plane_16x16");
-        this.mTextureManager.bindTextureID(gl, this.pref_background);
+        gl.glBindTexture(GL_TEXTURE_2D, textures.get("storm_bg").getId());
         gl.glColor4f(todColorFinal.getR(), todColorFinal.getG(), todColorFinal.getB(), 1.0f);
         gl.glMatrixMode(GL_MODELVIEW);
         gl.glPushMatrix();
@@ -196,7 +183,7 @@ public class SceneRain extends SceneBase {
         gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.particleRain.update(timeDelta);
         gl.glBlendFunc(1, 0);
-        this.particleRain.render((GL11) gl, this.mTextureManager, this.mMeshManager, this.particleRainOrigin);
+        this.particleRain.render((GL11) gl, this.mMeshManager, this.particleRainOrigin);
         gl.glPopMatrix();
     }
 

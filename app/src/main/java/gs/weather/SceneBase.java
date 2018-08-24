@@ -25,7 +25,6 @@ public abstract class SceneBase extends Scene {
     protected float TREE_ANIMATE_DELAY_MIN = 3.0f;
     protected float TREE_ANIMATE_DELAY_RANGE = 7.0f;
     protected GlobalTime mGlobalTime;
-    protected String pref_background;
     protected int pref_numClouds;
     protected int pref_numWisps;
     public Color[] pref_todColors;
@@ -37,14 +36,7 @@ public abstract class SceneBase extends Scene {
     protected void checkAssetReload(GL10 gl10) {
         if (this.reloadAssets) {
             synchronized (this) {
-                if (models != null) {
-                    this.models.close();
-                }
-                if (textures != null) {
-                    this.textures.close();
-                }
                 this.mMeshManager.unload(gl10);
-                this.mTextureManager.unload(gl10);
                 precacheAssets(gl10);
                 this.reloadAssets = false;
             }
@@ -52,13 +44,6 @@ public abstract class SceneBase extends Scene {
     }
 
     public void unload(GL10 gl) {
-        if (models != null) {
-            this.models.close();
-        }
-        if (textures != null) {
-            this.textures.close();
-        }
-        this.mTextureManager.unload(gl);
         this.mMeshManager.unload(gl);
         this.mThingManager.clear();
     }
@@ -94,7 +79,7 @@ public abstract class SceneBase extends Scene {
             }
         }
         Mesh tree_terrain = this.mMeshManager.getMeshByName(gl, "trees_overlay_terrain");
-        gl.glBindTexture(GL_TEXTURE_2D, this.mTextureManager.getTextureID(gl, "trees_overlay"));
+        gl.glBindTexture(GL_TEXTURE_2D, textures.get("trees_overlay").getId());
         gl.glMatrixMode(GL_MODELVIEW);
         gl.glPushMatrix();
         if (this.mLandscape) {

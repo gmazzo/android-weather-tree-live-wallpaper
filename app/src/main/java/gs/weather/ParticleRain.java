@@ -4,12 +4,13 @@ import javax.microedition.khronos.opengles.GL10;
 
 import gs.weather.engine.GlobalRand;
 import gs.weather.engine.ParticleSystem;
+import gs.weather.engine.Scene;
 
 public class ParticleRain extends ParticleSystem {
     public ParticleRain(int density) {
         this.spawnRate = 1.0f / ((float) density);
         this.spawnRateVariance = 0.05f;
-        this.texName = "raindrop";
+        this.texture = Scene.sTextures.loadBitmap("raindrop", R.drawable.raindrop);
         this.meshName = "rain";
         this.spawnRangeX = 15.0f;
         this.spawnRangeY = 5.0f;

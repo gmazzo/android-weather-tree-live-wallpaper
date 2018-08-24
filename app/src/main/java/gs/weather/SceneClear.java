@@ -2,6 +2,7 @@ package gs.weather;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.annotation.DrawableRes;
 
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
@@ -11,7 +12,6 @@ import gs.weather.engine.GlobalRand;
 import gs.weather.engine.GlobalTime;
 import gs.weather.engine.Mesh;
 import gs.weather.engine.MeshManager;
-import gs.weather.engine.TextureManager;
 import gs.weather.engine.ThingManager;
 import gs.weather.engine.Vector;
 import gs.weather.sky_manager.TimeOfDay;
@@ -21,6 +21,7 @@ import static javax.microedition.khronos.opengles.GL10.GL_LIGHTING;
 import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
 import static javax.microedition.khronos.opengles.GL10.GL_MODULATE;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE0;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
 
 public class SceneClear extends SceneBase {
     protected static final float BALLOON_START_ALTITUDE = -50.0f;
@@ -40,13 +41,20 @@ public class SceneClear extends SceneBase {
     private boolean pref_useUfo;
     protected long smsLastUnreadCheckTime;
     protected int smsUnreadCount;
+    private final String backgroundName;
+    private final @DrawableRes
+    int backgroundId;
 
     public SceneClear(Context ctx) {
+        this(ctx, "bg3", R.drawable.bg3);
+    }
+
+    public SceneClear(Context ctx, String backgroundName, @DrawableRes int backgroundId) {
+        this.backgroundName = backgroundName;
+        this.backgroundId = backgroundId;
         this.mThingManager = new ThingManager();
-        this.mTextureManager = new TextureManager(ctx);
         this.mMeshManager = new MeshManager(ctx);
         this.mContext = ctx;
-        this.pref_background = "bg3";
         todColorFinal = new Color();
         this.pref_todColors = new Color[4];
         this.pref_todColors[0] = new Color();
@@ -94,14 +102,13 @@ public class SceneClear extends SceneBase {
             }
             return;
         }
-        this.mTextureManager.updatePrefs();
         this.reloadAssets = true;
     }
 
     public void precacheAssets(GL10 gl10) {
         super.precacheAssets(gl10);
 
-        textures.loadBitmap("bg3", R.drawable.bg3);
+        textures.loadBitmap(backgroundName, backgroundId);
         textures.loadBitmap("trees_overlay", R.drawable.trees_overlay);
         textures.loadBitmap("cloud1", R.drawable.cloud1);
         textures.loadBitmap("cloud2", R.drawable.cloud2);
@@ -149,11 +156,6 @@ public class SceneClear extends SceneBase {
     }
 
     public void backgroundFromPrefs(SharedPreferences prefs) {
-        String bg = "bg3";
-        if (!bg.equals(this.pref_background)) {
-            this.pref_background = bg;
-            this.reloadAssets = true;
-        }
     }
 
     private void todFromPrefs(SharedPreferences prefs) {
@@ -257,7 +259,7 @@ public class SceneClear extends SceneBase {
 
     private void renderBackground(GL10 gl, float timeDelta) {
         Mesh mesh = this.mMeshManager.getMeshByName(gl, "plane_16x16");
-        this.mTextureManager.bindTextureID(gl, this.pref_background);
+        gl.glBindTexture(GL_TEXTURE_2D, textures.get(backgroundName).getId());
         gl.glColor4f(todColorFinal.getR(), todColorFinal.getG(), todColorFinal.getB(), 1.0f);
         gl.glMatrixMode(GL_MODELVIEW);
         gl.glPushMatrix();
@@ -278,8 +280,8 @@ public class SceneClear extends SceneBase {
             gl.glColor4f(1.0f, 1.0f, 1.0f, todSunPosition * -2.0f);
             gl.glBlendFunc(770, 1);
             Mesh starMesh = this.mMeshManager.getMeshByName(gl, "stars");
-            int noiseId = this.mTextureManager.getTextureID(gl, "noise");
-            int starId = this.mTextureManager.getTextureID(gl, "stars");
+            int noiseId = textures.get("noise").getId();
+            int starId = textures.get("stars").getId();
             gl.glTranslatef((0.1f * timeDelta) % 1.0f, 300.0f, -100.0f);
             if (gl instanceof GL11) {
                 starMesh.renderFrameMultiTexture((GL11) gl, 0, noiseId, starId, GL_MODULATE, false);

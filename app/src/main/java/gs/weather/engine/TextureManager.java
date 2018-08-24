@@ -22,7 +22,6 @@ import java.util.Iterator;
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
-import gs.weather.WallpaperSettings;
 import gs.weather.engine.Utility.Logger;
 import gs.weather.wallpaper.Texture;
 
@@ -40,7 +39,7 @@ public class TextureManager {
     private boolean pref_useMipMaps = false;
     private HashMap<String, Integer> texIDs = new HashMap();
 
-    public TextureManager(Context context) {
+    private TextureManager(Context context) {
         this.context = context;
     }
 
@@ -69,7 +68,7 @@ public class TextureManager {
         return i;
     }
 
-    public static boolean copyImageToCache(Context context, String from, String to) {
+    private static boolean copyImageToCache(Context context, String from, String to) {
         Logger.v(TAG, "copyImageToCache: " + from + " --> " + to);
         Bitmap bitmap = getSizedAbitraryBitmap(context, from);
         if (bitmap == null) {
@@ -122,7 +121,7 @@ public class TextureManager {
         return result;
     }
 
-    public static Bitmap getSizedAbitraryBitmap(Context context, String pathName) {
+    private static Bitmap getSizedAbitraryBitmap(Context context, String pathName) {
         Options opts = new Options();
         opts.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(pathName, opts);
@@ -236,13 +235,13 @@ public class TextureManager {
         }
     }
 
-    public int bindTextureID(GL10 gl10, String name) {
+    private int bindTextureID(GL10 gl10, String name) {
         int tId = getTextureID(gl10, name);
         gl10.glBindTexture(GL_TEXTURE_2D, tId);
         return tId;
     }
 
-    public boolean fileExistsOrIsLoaded(String filename) {
+    private boolean fileExistsOrIsLoaded(String filename) {
         if (((Integer) this.texIDs.get(filename)).intValue() != 0) {
             return true;
         }
@@ -264,7 +263,7 @@ public class TextureManager {
         }
     }
 
-    public float getImageRatio(String filename) {
+    private float getImageRatio(String filename) {
         try {
             DataInputStream localDataInputStream = new DataInputStream(this.context.openFileInput(filename + SIZE_FILE_SUFFIX));
             int w = localDataInputStream.readInt();
@@ -287,7 +286,7 @@ public class TextureManager {
         }
     }
 
-    public int getTextureID(GL10 gl10, String path) {
+    private int getTextureID(GL10 gl10, String path) {
         if (path.equals(this.lastPath)) {
             return this.lastId;
         }
@@ -301,19 +300,19 @@ public class TextureManager {
         return this.lastId;
     }
 
-    public boolean isLoaded(String path) {
+    private boolean isLoaded(String path) {
         return this.texIDs.containsKey(path);
     }
 
-    public int loadTextureFromPath(GL10 gl10, String path) {
+    private int loadTextureFromPath(GL10 gl10, String path) {
         return loadTextureFromPath(gl10, path, true, false);
     }
 
-    public int loadTextureFromPath(GL10 gl10, String path, boolean useMipMap) {
+    private int loadTextureFromPath(GL10 gl10, String path, boolean useMipMap) {
         return loadTextureFromPath(gl10, path, useMipMap, false);
     }
 
-    public int loadTextureFromPath(GL10 gl, String name, boolean useMipMap, boolean useClamp) {
+    private int loadTextureFromPath(GL10 gl, String name, boolean useMipMap, boolean useClamp) {
         if (isLoaded(name)) {
             Logger.v(TAG, "TextureManager already loaded " + name);
             return getTextureID(gl, name);
@@ -360,11 +359,11 @@ public class TextureManager {
         return textureBuffer.get(0);
     }
 
-    public void bind(Texture texture) {
+    private void bind(Texture texture) {
         this.texIDs.put(texture.getName(), texture.getId());
     }
 
-    public void unload(GL10 gl10) {
+    private void unload(GL10 gl10) {
         Iterator iterator = this.texIDs.keySet().iterator();
         while (iterator.hasNext()) {
             String filename = (String) iterator.next();
@@ -373,7 +372,7 @@ public class TextureManager {
         }
     }
 
-    public boolean unload(GL10 gl10, String path) {
+    private boolean unload(GL10 gl10, String path) {
         if (this.texIDs.containsKey(path)) {
             Logger.v(TAG, "TextureManager unloading " + path);
             // TODO managed by Textures
@@ -385,11 +384,4 @@ public class TextureManager {
         return false;
     }
 
-    public void updatePrefs() {
-        updatePrefs(false);
-    }
-
-    public void updatePrefs(boolean useMipMap) {
-        this.pref_useMipMaps = this.context.getSharedPreferences(WallpaperSettings.PREFS_NAME, 0).getBoolean("pref_usemipmaps", useMipMap);
-    }
 }

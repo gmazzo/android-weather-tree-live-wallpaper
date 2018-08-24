@@ -12,12 +12,13 @@ import gs.weather.wallpaper.Models;
 import gs.weather.wallpaper.Textures;
 
 public abstract class Scene {
+    public static Textures sTextures;
+    public static Models sModels;
     protected Context mContext;
     protected boolean mLandscape;
     protected Textures textures;
     protected Models models;
     protected MeshManager mMeshManager;
-    protected TextureManager mTextureManager;
     protected ThingManager mThingManager;
 
     public abstract void draw(GL10 gl10, GlobalTime globalTime);
@@ -28,12 +29,13 @@ public abstract class Scene {
 
     @CallSuper
     public void precacheAssets(GL10 gl) {
-        if (textures == null) {
-            textures = new Textures(mContext.getResources(), (GL11) gl, mTextureManager);
+        if (sTextures == null) {
+            sTextures = new Textures(mContext.getResources(), (GL11) gl);
         }
         if (models == null) {
             models = new Models(mContext.getResources(), (GL11) gl, mMeshManager);
         }
+        textures = sTextures;
     }
 
     public void setScreenMode(boolean lanscape) {

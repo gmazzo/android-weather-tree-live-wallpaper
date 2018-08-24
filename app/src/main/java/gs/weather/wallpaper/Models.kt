@@ -57,7 +57,7 @@ class Models(private val resources: Resources,
 
             return@getOrPut loadWithArrays(name, vertices, normals, texts, indices, elements, frames)
         }
-    }
+    }.apply(manager::bind) // TODO remove once done
 
     private fun loadWithArrays(name: String,
                                vertices: FloatArray,
@@ -120,15 +120,14 @@ class Models(private val resources: Resources,
         gl.glBufferData(GL_ARRAY_BUFFER, bufTC.sizeInBytes, bufTC, GL_STATIC_DRAW)
         gl.glBindBuffer(GL_ARRAY_BUFFER, 0)
 
-        val model = if (animated) {
+        if (animated) {
             val bufScratch = (elementsCount * 3).asDirectFloatBuffer()
 
-            AnimatedModel(gl, name, frames, indicesCount, bufTCHandle, bufIndexHandle,
+            return@getOrPut AnimatedModel(gl, name, frames, indicesCount, bufTCHandle, bufIndexHandle,
                     null, elementsCount, vertices, bufScratch)
         } else {
-            Model(gl, name, frames, indicesCount, bufTCHandle, bufIndexHandle)
+            return@getOrPut Model(gl, name, frames, indicesCount, bufTCHandle, bufIndexHandle)
         }
-        return@getOrPut model.apply(manager::bind) // TODO remove once done
     }
 
     override fun close() {

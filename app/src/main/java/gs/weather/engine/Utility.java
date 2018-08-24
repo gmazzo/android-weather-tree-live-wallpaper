@@ -3,7 +3,7 @@ package gs.weather.engine;
 import android.util.Log;
 
 public class Utility {
-    static boolean DEBUG = false;
+    static boolean DEBUG = true;
 
     public static class Logger {
         public static void v(String tag, String info) {

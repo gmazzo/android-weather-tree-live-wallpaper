@@ -11,7 +11,6 @@ import gs.weather.engine.GlobalRand;
 import gs.weather.engine.GlobalTime;
 import gs.weather.engine.Mesh;
 import gs.weather.engine.MeshManager;
-import gs.weather.engine.TextureManager;
 import gs.weather.engine.ThingManager;
 import gs.weather.engine.Vector;
 import gs.weather.sky_manager.TimeOfDay;
@@ -19,6 +18,7 @@ import gs.weather.sky_manager.TimeOfDay;
 import static javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT;
 import static javax.microedition.khronos.opengles.GL10.GL_LIGHTING;
 import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
 
 public class SceneStorm extends SceneBase {
     private static final String TAG = "Storm";
@@ -47,7 +47,6 @@ public class SceneStorm extends SceneBase {
         this.pref_randomBoltColor = false;
         this.pref_boltFrequency = 2.0f;
         this.mThingManager = new ThingManager();
-        this.mTextureManager = new TextureManager(ctx);
         this.mMeshManager = new MeshManager(ctx);
         this.mContext = ctx;
         this.lastLightningSpawn = 0.0f;
@@ -61,7 +60,6 @@ public class SceneStorm extends SceneBase {
         this.v_light1_ambientLight = new Color(0.5f, 0.5f, 0.5f, 1.0f);
         this.light1_ambientLight = new float[4];
         this.light1_position = new float[]{0.0f, 0.0f, 0.0f, 1.0f};
-        this.pref_background = "storm_bg";
         this.pref_numClouds = 20;
         todColorFinal = new Color();
         this.pref_todColors = new Color[4];
@@ -89,16 +87,10 @@ public class SceneStorm extends SceneBase {
             boltFrequencyFromPrefs(prefs);
             return;
         }
-        this.mTextureManager.updatePrefs();
         this.reloadAssets = true;
     }
 
     public void backgroundFromPrefs(SharedPreferences prefs) {
-        String bg = "storm_bg";
-        if (!bg.equals(this.pref_background)) {
-            this.pref_background = bg;
-            this.reloadAssets = true;
-        }
     }
 
     private void rainDensityFromPrefs(SharedPreferences prefs) {
@@ -184,7 +176,7 @@ public class SceneStorm extends SceneBase {
 
     private void renderBackground(GL10 gl, float timeDelta) {
         Mesh mesh = this.mMeshManager.getMeshByName(gl, "plane_16x16");
-        this.mTextureManager.bindTextureID(gl, this.pref_background);
+        gl.glBindTexture(GL_TEXTURE_2D, textures.get("storm_bg").getId());
         gl.glColor4f(todColorFinal.getR(), todColorFinal.getG(), todColorFinal.getB(), 1.0f);
         gl.glMatrixMode(GL_MODELVIEW);
         gl.glPushMatrix();
@@ -219,7 +211,7 @@ public class SceneStorm extends SceneBase {
         gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.particleRain.update(timeDelta);
         gl.glBlendFunc(1, 0);
-        this.particleRain.render((GL11) gl, this.mTextureManager, this.mMeshManager, this.particleRainOrigin);
+        this.particleRain.render((GL11) gl, this.mMeshManager, this.particleRainOrigin);
         gl.glPopMatrix();
     }
 
@@ -253,6 +245,9 @@ public class SceneStorm extends SceneBase {
                 cloud.origin.setY(cloudDepthList[i]);
                 cloud.origin.setZ(GlobalRand.floatRange(-20.0f, -10.0f));
                 cloud.which = (i % 5) + 1;
+                cloud.model = null;
+                cloud.texture = null;
+                cloud.texNameFlare = null;
                 cloud.targetName = "dark_cloud";
                 cloud.velocity = new Vector(pref_windSpeed * 1.5f, 0.0f, 0.0f);
                 this.mThingManager.add(cloud);

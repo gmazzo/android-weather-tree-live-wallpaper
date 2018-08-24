@@ -488,6 +488,7 @@ public class Mesh {
     }
 
     public void unload(GL10 gl10) {
+        /* TODO managed by Models
         boolean isGL11 = gl10 instanceof GL11;
         int[] tmpBuffer = new int[2];
         for (int i = 0; i < this.frames.length; i++) {
@@ -513,5 +514,6 @@ public class Mesh {
             gl11.glDeleteBuffers(2, tmpBuffer, 0);
         }
         this.bufScratch = null;
+        */
     }
 }

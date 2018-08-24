@@ -11,7 +11,6 @@ import gs.weather.engine.GlobalRand;
 import gs.weather.engine.GlobalTime;
 import gs.weather.engine.Mesh;
 import gs.weather.engine.MeshManager;
-import gs.weather.engine.TextureManager;
 import gs.weather.engine.ThingManager;
 import gs.weather.engine.Vector;
 import gs.weather.sky_manager.TimeOfDay;
@@ -19,6 +18,7 @@ import gs.weather.sky_manager.TimeOfDay;
 import static javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT;
 import static javax.microedition.khronos.opengles.GL10.GL_LIGHTING;
 import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
 
 public class SceneSnow extends SceneBase {
     static final float CLOUD_START_DISTANCE = 175.0f;
@@ -38,10 +38,8 @@ public class SceneSnow extends SceneBase {
 
     public SceneSnow(Context ctx) {
         this.mThingManager = new ThingManager();
-        this.mTextureManager = new TextureManager(ctx);
         this.mMeshManager = new MeshManager(ctx);
         this.mContext = ctx;
-        this.pref_background = "bg2";
         todColorFinal = new Color();
         this.pref_todColors = new Color[4];
         this.pref_todColors[0] = new Color();
@@ -75,7 +73,6 @@ public class SceneSnow extends SceneBase {
             snowTypeFromPrefs(prefs);
             return;
         }
-        this.mTextureManager.updatePrefs();
         this.reloadAssets = true;
     }
 
@@ -111,11 +108,6 @@ public class SceneSnow extends SceneBase {
     }
 
     public void backgroundFromPrefs(SharedPreferences prefs) {
-        String bg = "bg2";
-        if (!bg.equals(this.pref_background)) {
-            this.pref_background = bg;
-            this.reloadAssets = true;
-        }
     }
 
     private void todFromPrefs(SharedPreferences prefs) {
@@ -217,18 +209,18 @@ public class SceneSnow extends SceneBase {
             this.particleSnow = new ParticleSnow();
         }
         this.particleSnow.update(timeDelta);
-        this.particleSnow.render((GL11) gl, this.mTextureManager, this.mMeshManager, this.snowPos1);
+        this.particleSnow.render((GL11) gl, this.mMeshManager, this.snowPos1);
         if (this.pref_snowDensity > 1) {
-            this.particleSnow.render((GL11) gl, this.mTextureManager, this.mMeshManager, this.snowPos2);
+            this.particleSnow.render((GL11) gl, this.mMeshManager, this.snowPos2);
         }
         if (this.pref_snowDensity > 2) {
-            this.particleSnow.render((GL11) gl, this.mTextureManager, this.mMeshManager, this.snowPos3);
+            this.particleSnow.render((GL11) gl, this.mMeshManager, this.snowPos3);
         }
     }
 
     private void renderBackground(GL10 gl, float timeDelta) {
         Mesh mesh = this.mMeshManager.getMeshByName(gl, "plane_16x16");
-        this.mTextureManager.bindTextureID(gl, this.pref_background);
+        gl.glBindTexture(GL_TEXTURE_2D, textures.get("bg2").getId());
         gl.glColor4f(todColorFinal.getR(), todColorFinal.getG(), todColorFinal.getB(), 1.0f);
         gl.glMatrixMode(GL_MODELVIEW);
         gl.glPushMatrix();

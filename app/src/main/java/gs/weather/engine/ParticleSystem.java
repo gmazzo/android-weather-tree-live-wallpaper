@@ -3,7 +3,10 @@ package gs.weather.engine;
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
+import gs.weather.wallpaper.Texture;
+
 import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
 
 public class ParticleSystem {
     private static final String TAG = "GL Engine";
@@ -30,7 +33,7 @@ public class ParticleSystem {
     protected float spawnRate = 1.0f;
     protected float spawnRateVariance = 0.2f;
     protected Color startColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
-    protected String texName;
+    protected Texture texture;
 
     public class Particle {
         private float _angle;
@@ -181,12 +184,12 @@ public class ParticleSystem {
         particle.alive = true;
     }
 
-    public void render(GL11 gl, TextureManager tm, MeshManager mm, Vector systemOrigin) {
-        render(gl, tm, mm, systemOrigin, null);
+    public void render(GL11 gl, MeshManager mm, Vector systemOrigin) {
+        render(gl, mm, systemOrigin, null);
     }
 
-    public void render(GL11 gl, TextureManager tm, MeshManager mm, Vector systemOrigin, Vector direction) {
-        tm.bindTextureID(gl, this.texName);
+    public void render(GL11 gl, MeshManager mm, Vector systemOrigin, Vector direction) {
+        gl.glBindTexture(GL_TEXTURE_2D, texture.getId());
         Mesh mesg = mm.getMeshByName(gl, this.meshName);
         gl.glMatrixMode(GL_MODELVIEW);
         gl.glPushMatrix();

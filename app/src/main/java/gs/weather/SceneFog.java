@@ -9,7 +9,6 @@ import gs.weather.engine.Color;
 import gs.weather.engine.GlobalTime;
 import gs.weather.engine.Mesh;
 import gs.weather.engine.MeshManager;
-import gs.weather.engine.TextureManager;
 import gs.weather.engine.ThingManager;
 import gs.weather.sky_manager.TimeOfDay;
 
@@ -17,6 +16,7 @@ import static javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT;
 import static javax.microedition.khronos.opengles.GL10.GL_LIGHTING;
 import static javax.microedition.khronos.opengles.GL10.GL_LINEAR;
 import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
 
 public class SceneFog extends SceneBase {
     private static final String TAG = "Fog";
@@ -27,10 +27,8 @@ public class SceneFog extends SceneBase {
 
     public SceneFog(Context ctx) {
         this.mThingManager = new ThingManager();
-        this.mTextureManager = new TextureManager(ctx);
         this.mMeshManager = new MeshManager(ctx);
         this.mContext = ctx;
-        this.pref_background = "bg1";
         todColorFinal = new Color();
         this.pref_todColors = new Color[4];
         this.pref_todColors[0] = new Color();
@@ -53,7 +51,6 @@ public class SceneFog extends SceneBase {
             pref_fog_density = prefs.getFloat("pref_fog_desity", 0.2f);
             return;
         }
-        this.mTextureManager.updatePrefs();
         this.reloadAssets = true;
     }
 
@@ -71,11 +68,6 @@ public class SceneFog extends SceneBase {
     }
 
     public void backgroundFromPrefs(SharedPreferences prefs) {
-        String bg = "bg1";
-        if (!bg.equals(this.pref_background)) {
-            this.pref_background = bg;
-            this.reloadAssets = true;
-        }
     }
 
     private void todFromPrefs(SharedPreferences prefs) {
@@ -129,7 +121,7 @@ public class SceneFog extends SceneBase {
 
     private void renderBackground(GL10 gl, float timeDelta) {
         Mesh mesh = this.mMeshManager.getMeshByName(gl, "plane_16x16");
-        this.mTextureManager.bindTextureID(gl, this.pref_background);
+        gl.glBindTexture(GL_TEXTURE_2D, textures.get("bg1").getId());
         gl.glColor4f(todColorFinal.getR(), todColorFinal.getG(), todColorFinal.getB(), 1.0f);
         gl.glMatrixMode(GL_MODELVIEW);
         gl.glPushMatrix();

@@ -11,10 +11,14 @@ import gs.weather.wallpaper.Texture;
 import gs.weather.wallpaper.Textures;
 
 import static javax.microedition.khronos.opengles.GL10.GL_LIGHTING;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
 
 public class ThingDarkCloud extends Thing {
     static Color pref_boltColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
     public static boolean pref_minimalist = false;
+    private static final int FLARES[] = {
+            R.drawable.cloudflare1, R.drawable.cloudflare2, R.drawable.cloudflare3,
+            R.drawable.cloudflare4, R.drawable.cloudflare5};
     public int which;
     private float flashIntensity;
     public Texture texNameFlare;
@@ -50,13 +54,13 @@ public class ThingDarkCloud extends Thing {
         if (model == null) {
             model = models.get("cloud" + which + "m");
             texture = textures.get("clouddark" + which);
-            texNameFlare = textures.get("cloudflare" + which);
+            texNameFlare = textures.loadBitmap("cloudflare" + which, FLARES[which - 1]);
         }
         if (this.particleSystem != null) {
-            this.particleSystem.render((GL11) gl, textures.getManager(), models.getManager(), this.origin);
+            this.particleSystem.render((GL11) gl, models.getManager(), this.origin);
         }
         if (this.texture != null && this.model != null) {
-            textures.getManager().bindTextureID(gl, this.texture.getName());
+            gl.glBindTexture(GL_TEXTURE_2D, texture.getId());
 
             gl.glBlendFunc(1, 771);
             gl.glPushMatrix();
@@ -68,7 +72,7 @@ public class ThingDarkCloud extends Thing {
             }
             if (this.withFlare && this.flashIntensity > 0.0f) {
                 gl.glDisable(GL_LIGHTING);
-                textures.getManager().bindTextureID(gl, this.texNameFlare.getName());
+                gl.glBindTexture(GL_TEXTURE_2D, texNameFlare.getId());
                 gl.glColor4f(pref_boltColor.getR(), pref_boltColor.getG(), pref_boltColor.getB(), this.flashIntensity);
                 gl.glBlendFunc(770, 1);
                 model.render();
