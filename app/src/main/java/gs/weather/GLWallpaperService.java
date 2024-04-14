@@ -61,7 +61,7 @@ public class GLWallpaperService extends WallpaperService {
 
         @Override
         public void onTouchEvent(MotionEvent event) {
-            if (BuildConfig.DEBUG && event.getAction() == MotionEvent.ACTION_DOWN) {
+            if (BuildConfig.DEMO_MODE && event.getAction() == MotionEvent.ACTION_DOWN) {
                 int scene = currentSceneId + 1;
                 if (scene > SCENE_RAIN) {
                     scene = SCENE_CLEAR;
