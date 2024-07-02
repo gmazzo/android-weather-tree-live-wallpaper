@@ -1,4 +1,4 @@
-# android-weather-tree-wallpaper
+# android-weather-tree-live-wallpaper
 This is a resurrected project of `Weather Wallpaper` (`com.hm.weather`) originally developed by `yitiaocaiHM`, where you can still find its APK over the Internet.
 
 ![image](https://github.com/gmazzo/android-weather-tree-wallpaper/assets/513566/92f40e10-f8d5-4ebc-a576-cbb9412761c0)
