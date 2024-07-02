@@ -13,4 +13,6 @@ dependencyResolutionManagement {
     }
 }
 
+rootProject.name = "android-weather-tree-live-wallpaper"
+
 include("app")
