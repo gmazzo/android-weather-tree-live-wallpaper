@@ -1,7 +1,7 @@
-package com.luckycatlabs.sunrisesunset.calculator;
+package io.github.gmazzo.android.livewallpaper.weather.sunrisesunset.calculator;
 
-import com.luckycatlabs.sunrisesunset.Zenith;
-import com.luckycatlabs.sunrisesunset.dto.Location;
+import io.github.gmazzo.android.livewallpaper.weather.sunrisesunset.Zenith;
+import io.github.gmazzo.android.livewallpaper.weather.sunrisesunset.dto.Location;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

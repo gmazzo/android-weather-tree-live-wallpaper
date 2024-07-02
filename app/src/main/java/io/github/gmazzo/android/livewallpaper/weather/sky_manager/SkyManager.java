@@ -3,7 +3,7 @@ package io.github.gmazzo.android.livewallpaper.weather.sky_manager;
 import android.location.Location;
 import android.util.Log;
 
-import com.luckycatlabs.sunrisesunset.SunriseSunsetCalculator;
+import io.github.gmazzo.android.livewallpaper.weather.sunrisesunset.SunriseSunsetCalculator;
 
 import java.util.Calendar;
 import java.util.TimeZone;

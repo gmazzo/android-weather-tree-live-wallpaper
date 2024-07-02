@@ -1,4 +1,4 @@
-package com.luckycatlabs.sunrisesunset.dto;
+package io.github.gmazzo.android.livewallpaper.weather.sunrisesunset.dto;
 
 import java.math.BigDecimal;
 
