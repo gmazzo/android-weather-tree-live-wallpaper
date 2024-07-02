@@ -1,22 +1,22 @@
 package gs.weather.wallpaper
 
-import android.support.annotation.RawRes
+import androidx.annotation.RawRes
 import gs.weather.engine.AnimPlayer
 import java.nio.FloatBuffer
 import javax.microedition.khronos.opengles.GL10.GL_FLOAT
 import javax.microedition.khronos.opengles.GL11
 
 class AnimatedModel internal constructor(
-        gl: GL11,
-        @RawRes resId: Int,
-        frames: Array<Frame>,
-        indicesCount: Int,
-        bufTCHandle: Int,
-        bufIndexHandle: Int,
-        var animator: AnimPlayer?, // TODO make it private non-null once done
-        private val elementsCount: Int,
-        private val vertices: FloatArray,
-        private val bufScratch: FloatBuffer) :
+    gl: GL11,
+    @RawRes resId: Int,
+    frames: Array<Frame>,
+    indicesCount: Int,
+    bufTCHandle: Int,
+    bufIndexHandle: Int,
+    var animator: AnimPlayer?, // TODO make it private non-null once done
+    private val elementsCount: Int,
+    private val vertices: FloatArray,
+    private val bufScratch: FloatBuffer) :
         Model(gl, resId, frames, indicesCount, bufTCHandle, bufIndexHandle) {
 
     override fun render() {

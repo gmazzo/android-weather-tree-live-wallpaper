@@ -3,9 +3,9 @@ package gs.weather.wallpaper
 import android.content.res.Resources
 import android.graphics.BitmapFactory
 import android.opengl.GLUtils
-import android.support.annotation.AnyRes
-import android.support.annotation.DrawableRes
-import android.support.annotation.RawRes
+import androidx.annotation.AnyRes
+import androidx.annotation.DrawableRes
+import androidx.annotation.RawRes
 import java.io.Closeable
 import java.io.IOException
 import java.nio.ByteBuffer

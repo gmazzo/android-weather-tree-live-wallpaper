@@ -10,7 +10,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        minSdk = 14
+        minSdk = 21
         targetSdk = 33
 
         versionCode = 1
@@ -24,6 +24,4 @@ android {
 
 dependencies {
     implementation(libs.androidx.app)
-    implementation(libs.androidx.constraintLayout)
-    implementation(libs.androidx.core)
 }

@@ -1,7 +1,7 @@
 package gs.weather.wallpaper
 
 import android.content.res.Resources
-import android.support.annotation.RawRes
+import androidx.annotation.RawRes
 import java.io.Closeable
 import java.io.DataInputStream
 import java.io.InputStream

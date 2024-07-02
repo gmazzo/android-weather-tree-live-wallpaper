@@ -1,6 +1,6 @@
 package gs.weather.wallpaper
 
-import android.support.annotation.RawRes
+import androidx.annotation.RawRes
 import gs.weather.engine.Mesh
 import javax.microedition.khronos.opengles.GL10.*
 import javax.microedition.khronos.opengles.GL11
@@ -8,12 +8,12 @@ import javax.microedition.khronos.opengles.GL11.GL_ARRAY_BUFFER
 import javax.microedition.khronos.opengles.GL11.GL_ELEMENT_ARRAY_BUFFER
 
 open class Model internal constructor(
-        internal val gl: GL11,
-        @RawRes val resId: Int,
-        private val frames: Array<Frame>,
-        private val indicesCount: Int,
-        private val bufTCHandle: Int,
-        private val bufIndexHandle: Int) {
+    internal val gl: GL11,
+    @RawRes val resId: Int,
+    private val frames: Array<Frame>,
+    private val indicesCount: Int,
+    private val bufTCHandle: Int,
+    private val bufIndexHandle: Int) {
 
     open fun render() {
         renderFrame(0)

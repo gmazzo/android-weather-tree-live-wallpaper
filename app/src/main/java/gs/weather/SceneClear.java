@@ -2,7 +2,6 @@ package gs.weather;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.annotation.DrawableRes;
 
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
@@ -22,6 +21,8 @@ import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
 import static javax.microedition.khronos.opengles.GL10.GL_MODULATE;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE0;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
+
+import androidx.annotation.DrawableRes;
 
 public class SceneClear extends SceneBase {
     protected static final float BALLOON_START_ALTITUDE = -50.0f;

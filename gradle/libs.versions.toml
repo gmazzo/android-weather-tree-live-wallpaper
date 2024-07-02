@@ -1,8 +1,6 @@
 [libraries]
-androidx-app = { module = "com.android.support:appcompat-v7", version = "27.1.1" }
-androidx-constraintLayout = { module = "com.android.support.constraint:constraint-layout", version = "1.1.2" }
-androidx-core = { module = "androidx.core:core-ktx", version = "0.3" }
+androidx-app = { module = "androidx.appcompat:appcompat", version = "1.7.0" }
 
 [plugins]
-android = { id = "com.android.application", version = "8.3.1" }
+android = { id = "com.android.application", version = "8.5.0" }
 kotlin = { id = "org.jetbrains.kotlin.android", version = "2.0.0" }
