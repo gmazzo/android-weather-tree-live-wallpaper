@@ -1,3 +1,5 @@
+// TODO migrate to https://api.met.no/weatherapi/locationforecast/2.0/documentation#JSON_format_and_variables
+//  https://api.met.no/weatherapi/locationforecast/2.0?lat=59.93&lon=10.72&altitude=90
 package com.luckycatlabs.sunrisesunset;
 
 import com.luckycatlabs.sunrisesunset.calculator.SolarEventCalculator;
