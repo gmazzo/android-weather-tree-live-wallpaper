@@ -5,4 +5,4 @@ androidx-core = { module = "androidx.core:core-ktx", version = "0.3" }
 
 [plugins]
 android = { id = "com.android.application", version = "8.3.1" }
-kotlin = { id = "org.jetbrains.kotlin.android", version = "1.9.22" }
+kotlin = { id = "org.jetbrains.kotlin.android", version = "2.0.0" }
