@@ -1,5 +1,6 @@
 package gs.weather.sky_manager;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
@@ -109,11 +110,11 @@ public class GeoInfoManager {
 
     public static double[] getLastGPS(Context context) {
         double[] axis = new double[]{0.0d, 0.0d};
-        LocationManager localLocationManager = (LocationManager) context.getSystemService("location");
+        LocationManager localLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         List locationProviders = localLocationManager.getProviders(XML_DBG);
         Log.w(TAG, "locationProviders size=" + locationProviders.size());
         for (int i = locationProviders.size() - 1; i >= 0; i--) {
-            Location location = localLocationManager.getLastKnownLocation((String) locationProviders.get(i));
+            @SuppressLint("MissingPermission") Location location = localLocationManager.getLastKnownLocation((String) locationProviders.get(i));
             if (location != null) {
                 axis[0] = location.getLatitude();
                 axis[1] = location.getLongitude();
