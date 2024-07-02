@@ -2,7 +2,16 @@ package io.github.gmazzo.android.livewallpaper.weather.wallpaper
 
 import androidx.annotation.RawRes
 import io.github.gmazzo.android.livewallpaper.weather.engine.Mesh
-import javax.microedition.khronos.opengles.GL10.*
+import javax.microedition.khronos.opengles.GL10.GL_FLOAT
+import javax.microedition.khronos.opengles.GL10.GL_MODULATE
+import javax.microedition.khronos.opengles.GL10.GL_TEXTURE0
+import javax.microedition.khronos.opengles.GL10.GL_TEXTURE1
+import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D
+import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_COORD_ARRAY
+import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_ENV
+import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_ENV_MODE
+import javax.microedition.khronos.opengles.GL10.GL_TRIANGLES
+import javax.microedition.khronos.opengles.GL10.GL_UNSIGNED_SHORT
 import javax.microedition.khronos.opengles.GL11
 import javax.microedition.khronos.opengles.GL11.GL_ARRAY_BUFFER
 import javax.microedition.khronos.opengles.GL11.GL_ELEMENT_ARRAY_BUFFER
@@ -13,7 +22,8 @@ open class Model internal constructor(
     private val frames: Array<Frame>,
     private val indicesCount: Int,
     private val bufTCHandle: Int,
-    private val bufIndexHandle: Int) {
+    private val bufIndexHandle: Int
+) {
 
     open fun render() {
         renderFrame(0)
@@ -75,8 +85,9 @@ open class Model internal constructor(
     }
 
     internal data class Frame(
-            val bufNormalHandle: Int,
-            val bufVertexHandle: Int)
+        val bufNormalHandle: Int,
+        val bufVertexHandle: Int
+    )
 
     internal fun unload() {
         val ids = (frames.flatMap { listOf(it.bufNormalHandle, it.bufVertexHandle) }

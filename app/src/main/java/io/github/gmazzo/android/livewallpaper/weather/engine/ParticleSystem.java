@@ -1,13 +1,13 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine;
 
+import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
+
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Model;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Texture;
-
-import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
-import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
 
 public class ParticleSystem {
     private static final String TAG = "GL Engine";

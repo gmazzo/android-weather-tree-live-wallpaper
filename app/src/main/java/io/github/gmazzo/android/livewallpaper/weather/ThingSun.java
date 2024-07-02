@@ -1,5 +1,9 @@
 package io.github.gmazzo.android.livewallpaper.weather;
 
+import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
+import static javax.microedition.khronos.opengles.GL10.GL_MODULATE;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE0;
+
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
@@ -8,10 +12,6 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.Thing;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Texture;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures;
-
-import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
-import static javax.microedition.khronos.opengles.GL10.GL_MODULATE;
-import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE0;
 
 public class ThingSun extends Thing {
     private static final String TAG = "Sun";

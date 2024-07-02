@@ -16,8 +16,9 @@ class AnimatedModel internal constructor(
     var animator: AnimPlayer?, // TODO make it private non-null once done
     private val elementsCount: Int,
     private val vertices: FloatArray,
-    private val bufScratch: FloatBuffer) :
-        Model(gl, resId, frames, indicesCount, bufTCHandle, bufIndexHandle) {
+    private val bufScratch: FloatBuffer
+) :
+    Model(gl, resId, frames, indicesCount, bufTCHandle, bufIndexHandle) {
 
     override fun render() {
         val frameNum = animator?.currentFrame ?: 0
@@ -39,8 +40,8 @@ class AnimatedModel internal constructor(
         with(bufScratch) {
             for (i in 0 until capacity()) {
                 this[i] =
-                        vertices[firstFrameOffset + i] * blendAmountInverse +
-                        vertices[blendFrameOffset + i] * blendAmount
+                    vertices[firstFrameOffset + i] * blendAmountInverse +
+                            vertices[blendFrameOffset + i] * blendAmount
             }
             position(0)
 

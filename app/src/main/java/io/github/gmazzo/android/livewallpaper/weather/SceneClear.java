@@ -1,7 +1,16 @@
 package io.github.gmazzo.android.livewallpaper.weather;
 
+import static javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT;
+import static javax.microedition.khronos.opengles.GL10.GL_LIGHTING;
+import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
+import static javax.microedition.khronos.opengles.GL10.GL_MODULATE;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE0;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
+
 import android.content.Context;
 import android.content.SharedPreferences;
+
+import androidx.annotation.DrawableRes;
 
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
@@ -14,15 +23,6 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.Vector;
 import io.github.gmazzo.android.livewallpaper.weather.sky_manager.TimeOfDay;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Model;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Texture;
-
-import static javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT;
-import static javax.microedition.khronos.opengles.GL10.GL_LIGHTING;
-import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
-import static javax.microedition.khronos.opengles.GL10.GL_MODULATE;
-import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE0;
-import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
-
-import androidx.annotation.DrawableRes;
 
 public class SceneClear extends SceneBase {
     protected static final float BALLOON_START_ALTITUDE = -50.0f;

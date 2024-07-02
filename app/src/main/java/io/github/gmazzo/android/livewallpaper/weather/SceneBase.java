@@ -1,5 +1,8 @@
 package io.github.gmazzo.android.livewallpaper.weather;
 
+import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -15,9 +18,6 @@ import io.github.gmazzo.android.livewallpaper.weather.sky_manager.TimeOfDay;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.AnimatedModel;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Model;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Texture;
-
-import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
-import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
 
 public abstract class SceneBase extends Scene {
     public static boolean pref_useTimeOfDay;

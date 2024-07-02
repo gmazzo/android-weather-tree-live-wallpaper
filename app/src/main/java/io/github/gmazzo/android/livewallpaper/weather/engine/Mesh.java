@@ -1,5 +1,18 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine;
 
+import static javax.microedition.khronos.opengles.GL10.GL_FLOAT;
+import static javax.microedition.khronos.opengles.GL10.GL_MODULATE;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE0;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE1;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_COORD_ARRAY;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_ENV;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_ENV_MODE;
+import static javax.microedition.khronos.opengles.GL10.GL_TRIANGLES;
+import static javax.microedition.khronos.opengles.GL10.GL_UNSIGNED_SHORT;
+import static javax.microedition.khronos.opengles.GL11.GL_ARRAY_BUFFER;
+import static javax.microedition.khronos.opengles.GL11.GL_ELEMENT_ARRAY_BUFFER;
+
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,19 +26,6 @@ import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
 import io.github.gmazzo.android.livewallpaper.weather.engine.Utility.Logger;
-
-import static javax.microedition.khronos.opengles.GL10.GL_FLOAT;
-import static javax.microedition.khronos.opengles.GL10.GL_MODULATE;
-import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE0;
-import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE1;
-import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
-import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_COORD_ARRAY;
-import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_ENV;
-import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_ENV_MODE;
-import static javax.microedition.khronos.opengles.GL10.GL_TRIANGLES;
-import static javax.microedition.khronos.opengles.GL10.GL_UNSIGNED_SHORT;
-import static javax.microedition.khronos.opengles.GL11.GL_ARRAY_BUFFER;
-import static javax.microedition.khronos.opengles.GL11.GL_ELEMENT_ARRAY_BUFFER;
 
 public class Mesh {
     private static final String TAG = "GL Engine";

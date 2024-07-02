@@ -1,5 +1,8 @@
 package io.github.gmazzo.android.livewallpaper.weather;
 
+import static javax.microedition.khronos.opengles.GL10.GL_LIGHTING;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
+
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
@@ -9,9 +12,6 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.Thing;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Texture;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures;
-
-import static javax.microedition.khronos.opengles.GL10.GL_LIGHTING;
-import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
 
 public class ThingDarkCloud extends Thing {
     static EngineColor pref_boltEngineColor = new EngineColor(1.0f, 1.0f, 1.0f, 1.0f);

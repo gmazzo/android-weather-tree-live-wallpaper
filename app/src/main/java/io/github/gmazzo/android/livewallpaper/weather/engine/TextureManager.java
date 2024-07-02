@@ -1,5 +1,10 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine;
 
+import static javax.microedition.khronos.opengles.GL10.GL_LINEAR;
+import static javax.microedition.khronos.opengles.GL10.GL_REPEAT;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
+import static javax.microedition.khronos.opengles.GL11.GL_GENERATE_MIPMAP;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -23,11 +28,6 @@ import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
 import io.github.gmazzo.android.livewallpaper.weather.engine.Utility.Logger;
-
-import static javax.microedition.khronos.opengles.GL10.GL_LINEAR;
-import static javax.microedition.khronos.opengles.GL10.GL_REPEAT;
-import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
-import static javax.microedition.khronos.opengles.GL11.GL_GENERATE_MIPMAP;
 
 public class TextureManager {
     private static final String SIZE_FILE_SUFFIX = "_size";

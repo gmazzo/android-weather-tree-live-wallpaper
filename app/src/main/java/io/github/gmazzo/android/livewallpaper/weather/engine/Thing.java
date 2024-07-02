@@ -1,5 +1,8 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine;
 
+import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
+
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
@@ -8,9 +11,6 @@ import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Model;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Texture;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures;
-
-import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
-import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
 
 public class Thing {
     public EngineColor angles = new EngineColor(0.0f, 0.0f, 1.0f, 0.0f);

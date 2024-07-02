@@ -10,13 +10,24 @@ import java.io.Closeable
 import java.io.IOException
 import java.nio.ByteBuffer
 import java.nio.IntBuffer
-import javax.microedition.khronos.opengles.GL10.*
+import javax.microedition.khronos.opengles.GL10.GL_LINEAR
+import javax.microedition.khronos.opengles.GL10.GL_LUMINANCE
+import javax.microedition.khronos.opengles.GL10.GL_REPEAT
+import javax.microedition.khronos.opengles.GL10.GL_RGB
+import javax.microedition.khronos.opengles.GL10.GL_RGBA
+import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D
+import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_MAG_FILTER
+import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_MIN_FILTER
+import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_WRAP_S
+import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_WRAP_T
+import javax.microedition.khronos.opengles.GL10.GL_UNSIGNED_BYTE
 import javax.microedition.khronos.opengles.GL11
 import kotlin.math.absoluteValue
 
 class Textures(
-        private val resources: Resources,
-        private val gl: GL11) : Closeable {
+    private val resources: Resources,
+    private val gl: GL11
+) : Closeable {
     private val textures = mutableMapOf<Int, Texture>()
 
     operator fun get(@AnyRes resId: Int) = textures.getOrPut(resId) {
@@ -42,7 +53,7 @@ class Textures(
 
     private fun loadBitmap(@DrawableRes resId: Int) {
         val bitmap = BitmapFactory.decodeResource(resources, resId,
-                BitmapFactory.Options().apply { inDither = false })
+            BitmapFactory.Options().apply { inDither = false })
         try {
             GLUtils.texImage2D(GL_TEXTURE_2D, 0, bitmap, 0)
 
@@ -82,7 +93,17 @@ class Textures(
                 else -> throw IllegalArgumentException("Unknown format for resId=$resId; bpp=$bpp")
             }
 
-            gl.glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, ByteBuffer.wrap(imageData))
+            gl.glTexImage2D(
+                GL_TEXTURE_2D,
+                0,
+                format,
+                width,
+                height,
+                0,
+                format,
+                GL_UNSIGNED_BYTE,
+                ByteBuffer.wrap(imageData)
+            )
         }
     }
 

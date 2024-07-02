@@ -1,12 +1,12 @@
 package io.github.gmazzo.android.livewallpaper.weather;
 
-import android.service.wallpaper.WallpaperService;
-import android.view.MotionEvent;
-import android.view.SurfaceHolder;
-
 import static io.github.gmazzo.android.livewallpaper.weather.IsolatedRenderer.SCENE_CLEAR;
 import static io.github.gmazzo.android.livewallpaper.weather.IsolatedRenderer.SCENE_RAIN;
 import static io.github.gmazzo.android.livewallpaper.weather.IsolatedRenderer.currentSceneId;
+
+import android.service.wallpaper.WallpaperService;
+import android.view.MotionEvent;
+import android.view.SurfaceHolder;
 
 public class GLWallpaperService extends WallpaperService {
 
