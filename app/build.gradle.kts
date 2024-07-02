@@ -6,7 +6,7 @@ plugins {
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 android {
-    namespace = "gs.weather"
+    namespace = "io.github.gmazzo.android.livewallpaper.weather"
     compileSdk = 34
 
     defaultConfig {

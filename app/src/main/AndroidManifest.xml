@@ -34,7 +34,7 @@
             android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <action android:name="gs.weather.action.PICK_CITY_ACTION" />
+                <action android:name="io.github.gmazzo.android.livewallpaper.weather.action.PICK_CITY_ACTION" />
 
                 <category android:name="android.intent.category.DEVELOPMENT_PREFERENCE" />
                 <category android:name="android.intent.category.DEFAULT" />
