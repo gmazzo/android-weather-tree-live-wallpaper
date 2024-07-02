@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android)
-    alias(libs.plugins.kotlin)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.seriazliation)
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
@@ -24,4 +25,5 @@ android {
 
 dependencies {
     implementation(libs.androidx.app)
+    implementation(libs.kotlinx.serialization.json)
 }

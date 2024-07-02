@@ -1,6 +1,12 @@
+[versions]
+kotlin = "2.0.0"
+
 [libraries]
 androidx-app = { module = "androidx.appcompat:appcompat", version = "1.7.0" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version = "2.11.0" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.7.1" }
 
 [plugins]
 android = { id = "com.android.application", version = "8.5.0" }
-kotlin = { id = "org.jetbrains.kotlin.android", version = "2.0.0" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version = "2.0.0" }
+kotlin-seriazliation = { id = "org.jetbrains.kotlin.plugin.serialization", version = "2.0.0" }
