@@ -16,7 +16,6 @@ import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.util.Log;
 
-import io.github.gmazzo.android.livewallpaper.weather.sky_manager.WeatherCondition.CityInfo;
 import io.github.gmazzo.android.livewallpaper.weather.sky_manager.WeatherSettingsUtil;
 
 public class WallpaperSettings extends PreferenceActivity implements OnPreferenceChangeListener, OnPreferenceClickListener, OnSharedPreferenceChangeListener {
@@ -198,11 +197,11 @@ public class WallpaperSettings extends PreferenceActivity implements OnPreferenc
     }
 
     private boolean setCity(CityInfo city) {
-        String cityName = city.mCity;
-        String stateName = city.mState;
-        String cityCode = city.mcityCode;
-        float lat = (float) city.mLatitude;
-        float lng = (float) city.mLongitude;
+        String cityName = city.getCity();
+        String stateName = city.getState();
+        String cityCode = city.getCityCode();
+        float lat = (float) city.getLatitude();
+        float lng = (float) city.getLongitude();
         if (this.mWeatherCityPreference != null) {
             this.mWeatherCityPreference.setTitle(cityName + ", " + stateName);
         } else if (this.mAutoOrManualLocation != null) {

@@ -20,10 +20,6 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import io.github.gmazzo.android.livewallpaper.weather.sky_manager.GeoInfoManager;
-import io.github.gmazzo.android.livewallpaper.weather.sky_manager.WeatherCondition;
-import io.github.gmazzo.android.livewallpaper.weather.sky_manager.WeatherCondition.CityInfo;
-
 public class SearchCity extends ListActivity implements OnCancelListener {
     private static final int ACT_CANCEL = 1;
     public static final String CITY_CODE = "cityCode";
@@ -92,24 +88,6 @@ public class SearchCity extends ListActivity implements OnCancelListener {
         });
         this.mSearchCity = searchString;
         this.progressDialog.show();
-        new Thread() {
-            public void run() {
-                WeatherCondition weather_condition = new WeatherCondition();
-                SearchCity.this.cityList = weather_condition.SearchCity(SearchCity.this.mSearchCity);
-                if (!(SearchCity.this.cityList == null || SearchCity.this.cityList.isEmpty())) {
-                    Iterator i$ = SearchCity.this.cityList.iterator();
-                    while (i$.hasNext()) {
-                        CityInfo city = (CityInfo) i$.next();
-                        if (!(city.mcityCode == null || city.mcityCode.isEmpty())) {
-                            double[] coords = GeoInfoManager.getCoordFromZip(SearchCity.this, city.mcityCode);
-                            city.mLatitude = coords[SearchCity.SEARCH_RESPONSE];
-                            city.mLongitude = coords[1];
-                        }
-                    }
-                }
-                Message.obtain(SearchCity.this.mCityHandler, SearchCity.SEARCH_RESPONSE).sendToTarget();
-            }
-        }.start();
     }
 
     public void initCities(ArrayList<CityInfo> cityList) {
@@ -118,8 +96,8 @@ public class SearchCity extends ListActivity implements OnCancelListener {
         }
         if (cityList.isEmpty()) {
             CityInfo fake_ci = new CityInfo();
-            fake_ci.mCity = getString(R.string.no_result_found);
-            fake_ci.mcityCode = INVALID_CODE;
+            fake_ci.setCity(getString(R.string.no_result_found));
+            fake_ci.setCityCode(INVALID_CODE);
             cityList.add(fake_ci);
         } else {
             Iterator i$ = cityList.iterator();
@@ -132,7 +110,7 @@ public class SearchCity extends ListActivity implements OnCancelListener {
 
     protected void onListItemClick(ListView l, View v, int position, long id) {
         CityInfo city = (CityInfo) l.getItemAtPosition(position);
-        if (city.mcityCode != null && !city.mcityCode.isEmpty()) {
+        if (city.getCityCode() != null && !city.getCityCode().isEmpty()) {
             Intent resultIntent = new Intent();
             resultIntent.putExtra(CITY_INFO, city);
             setResult(-1, resultIntent);

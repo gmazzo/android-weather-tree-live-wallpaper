@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.kotlin.seriazliation)
 }
 
@@ -18,6 +19,7 @@ android {
         versionName = "1.0"
 
         buildConfigField("boolean", "DEMO_MODE", "${false}")
+        buildConfigField("String", "FORECAST_ENDPOINT", "\"https://api.met.no/weatherapi/\"")
     }
 
     buildFeatures.buildConfig = true
@@ -26,4 +28,8 @@ android {
 dependencies {
     implementation(libs.androidx.app)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.okhttp)
+    implementation(libs.retrofit)
+
+    testImplementation(libs.junit)
 }

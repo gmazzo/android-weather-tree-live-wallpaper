@@ -1,12 +1,10 @@
-// TODO migrate to https://api.met.no/weatherapi/locationforecast/2.0/documentation#JSON_format_and_variables
-//  https://api.met.no/weatherapi/locationforecast/2.0?lat=59.93&lon=10.72&altitude=90
 package io.github.gmazzo.android.livewallpaper.weather.sunrisesunset;
-
-import io.github.gmazzo.android.livewallpaper.weather.sunrisesunset.calculator.SolarEventCalculator;
-import io.github.gmazzo.android.livewallpaper.weather.sunrisesunset.dto.Location;
 
 import java.util.Calendar;
 import java.util.TimeZone;
+
+import io.github.gmazzo.android.livewallpaper.weather.sunrisesunset.calculator.SolarEventCalculator;
+import io.github.gmazzo.android.livewallpaper.weather.sunrisesunset.dto.Location;
 
 public class SunriseSunsetCalculator {
     private SolarEventCalculator calculator;
