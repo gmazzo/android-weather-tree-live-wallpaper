@@ -1,5 +1,6 @@
 package gs.weather;
 
+import android.app.Activity;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -59,7 +60,7 @@ public class SearchCity extends ListActivity implements OnCancelListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.searchcity);
-        setDefaultKeyMode(2);
+        setDefaultKeyMode(Activity.DEFAULT_KEYS_SHORTCUT);
         Button searchBtn = (Button) findViewById(R.id.search_city_now);
         if (searchBtn != null) {
             searchBtn.setOnClickListener(new OnClickListener() {
@@ -82,7 +83,7 @@ public class SearchCity extends ListActivity implements OnCancelListener {
         this.progressDialog.setIndeterminate(true);
         this.progressDialog.setCancelable(DEBUG);
         this.progressDialog.setOnCancelListener(this);
-        this.progressDialog.setButton(-2, getText(17039360), new DialogInterface.OnClickListener() {
+        this.progressDialog.setButton(-2, getText(android.R.string.cancel), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 SearchCity.this.actCanceled = true;
                 Log.v(SearchCity.TAG, "send msg ACT_CANCEL to handler");

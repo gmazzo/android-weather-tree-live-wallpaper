@@ -160,12 +160,12 @@ public class WeatherSettingsUtil implements OnCancelListener {
     public WeatherSettingsUtil(Context context) {
         this.mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         this.mContext = context;
-        this.mLocationManager = (LocationManager) context.getSystemService("location");
-        this.mConnectivityManager = (ConnectivityManager) context.getSystemService("connectivity");
+        this.mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        this.mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         this.mProgressDialog = new ProgressDialog(context);
         this.mProgressDialog.setOnCancelListener(this);
         this.mProgressDialog.setCancelable(true);
-        this.mProgressDialog.setButton(-2, this.mContext.getText(17039360), new OnClickListener() {
+        this.mProgressDialog.setButton(-2, this.mContext.getText(android.R.string.cancel), new OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 WeatherSettingsUtil.this.stopListenLoc();
             }
@@ -253,14 +253,14 @@ public class WeatherSettingsUtil implements OnCancelListener {
         Builder b = new Builder(this.mContext);
         b.setTitle(R.string.to_enable_network_title);
         b.setMessage(R.string.to_enable_network_msg);
-        b.setPositiveButton(17039370, new OnClickListener() {
+        b.setPositiveButton(android.R.string.ok, new OnClickListener() {
             public void onClick(DialogInterface v, int x) {
                 Intent goLocationIntent = new Intent();
                 goLocationIntent.setAction("android.settings.LOCATION_SOURCE_SETTINGS");
                 WeatherSettingsUtil.this.mContext.startActivity(goLocationIntent);
             }
         });
-        b.setNegativeButton(17039360, new OnClickListener() {
+        b.setNegativeButton(android.R.string.cancel, new OnClickListener() {
             public void onClick(DialogInterface v, int x) {
             }
         });
@@ -279,14 +279,14 @@ public class WeatherSettingsUtil implements OnCancelListener {
         Builder b = new Builder(this.mContext);
         b.setTitle(R.string.to_enable_wifi_title);
         b.setMessage(R.string.to_enable_wifi_msg);
-        b.setPositiveButton(17039370, new OnClickListener() {
+        b.setPositiveButton(android.R.string.ok, new OnClickListener() {
             public void onClick(DialogInterface v, int x) {
                 Intent goWifiIntent = new Intent();
                 goWifiIntent.setAction("android.settings.WIFI_SETTINGS");
                 WeatherSettingsUtil.this.mContext.startActivity(goWifiIntent);
             }
         });
-        b.setNegativeButton(17039360, new OnClickListener() {
+        b.setNegativeButton(android.R.string.cancel, new OnClickListener() {
             public void onClick(DialogInterface v, int x) {
             }
         });

@@ -481,7 +481,7 @@ public class WeatherInfoManager implements Runnable {
     }
 
     private boolean isConnected() {
-        NetworkInfo info = ((ConnectivityManager) this.mContext.getSystemService("connectivity")).getActiveNetworkInfo();
+        NetworkInfo info = ((ConnectivityManager) this.mContext.getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
         if (info != null) {
             return info.isConnected();
         }
