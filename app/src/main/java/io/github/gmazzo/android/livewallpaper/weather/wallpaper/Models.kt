@@ -7,10 +7,14 @@ import java.io.DataInputStream
 import java.io.InputStream
 import java.nio.charset.Charset
 import javax.microedition.khronos.opengles.GL11
-import javax.microedition.khronos.opengles.GL11.*
+import javax.microedition.khronos.opengles.GL11.GL_ARRAY_BUFFER
+import javax.microedition.khronos.opengles.GL11.GL_ELEMENT_ARRAY_BUFFER
+import javax.microedition.khronos.opengles.GL11.GL_STATIC_DRAW
 
-class Models(private val resources: Resources,
-             private val gl: GL11) : Closeable {
+class Models(
+    private val resources: Resources,
+    private val gl: GL11
+) : Closeable {
     private val models = mutableMapOf<Int, Model>()
 
     operator fun get(@RawRes rawId: Int) = models.getOrPut(rawId) {
@@ -51,17 +55,27 @@ class Models(private val resources: Resources,
             input.skip(8)
             val normals = FloatArray(normalsCount * 3 * frames, init = normalsMapper)
 
-            return@getOrPut loadWithArrays(rawId, vertices, normals, texts, indices, elements, frames)
+            return@getOrPut loadWithArrays(
+                rawId,
+                vertices,
+                normals,
+                texts,
+                indices,
+                elements,
+                frames
+            )
         }
     }
 
-    private fun loadWithArrays(@RawRes rawId: Int,
-                               vertices: FloatArray,
-                               normals: FloatArray,
-                               texts: FloatArray,
-                               indices: ShortArray,
-                               elementsCount: Int,
-                               framesCount: Int) = models.getOrPut(rawId) {
+    private fun loadWithArrays(
+        @RawRes rawId: Int,
+        vertices: FloatArray,
+        normals: FloatArray,
+        texts: FloatArray,
+        indices: ShortArray,
+        elementsCount: Int,
+        framesCount: Int
+    ) = models.getOrPut(rawId) {
         val animated = framesCount > 0
 
         val frames = Array(framesCount) { i ->
@@ -119,8 +133,10 @@ class Models(private val resources: Resources,
         if (animated) {
             val bufScratch = (elementsCount * 3).asDirectFloatBuffer()
 
-            return@getOrPut AnimatedModel(gl, rawId, frames, indicesCount, bufTCHandle, bufIndexHandle,
-                    null, elementsCount, vertices, bufScratch)
+            return@getOrPut AnimatedModel(
+                gl, rawId, frames, indicesCount, bufTCHandle, bufIndexHandle,
+                null, elementsCount, vertices, bufScratch
+            )
         } else {
             return@getOrPut Model(gl, rawId, frames, indicesCount, bufTCHandle, bufIndexHandle)
         }
@@ -136,7 +152,7 @@ class Models(private val resources: Resources,
 
         val value = buffer.toString(Charset.forName("UTF-8"))
         if (header != value) {
-            throw  IllegalArgumentException("Unexpected chunk: $header!=$value")
+            throw IllegalArgumentException("Unexpected chunk: $header!=$value")
         }
     }
 

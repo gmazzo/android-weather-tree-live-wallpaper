@@ -1,8 +1,10 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine
 
-data class Vector(var x: Float = 0f,
-                  var y: Float = 0f,
-                  var z: Float = 0f) {
+data class Vector(
+    var x: Float = 0f,
+    var y: Float = 0f,
+    var z: Float = 0f
+) {
 
     val magnitude: Float
         get() = Math.sqrt(x.toDouble() * x + y.toDouble() * y + z.toDouble() * z).toFloat()
@@ -60,8 +62,9 @@ data class Vector(var x: Float = 0f,
     fun crossProduct(other: Vector) = crossProduct(this, other)
 
     fun crossProduct(a: Vector, b: Vector) = set(
-            a.y * b.z - a.z * b.y,
-            a.z * b.x - a.x * b.z,
-            a.x * b.y - a.y * b.x)
+        a.y * b.z - a.z * b.y,
+        a.z * b.x - a.x * b.z,
+        a.x * b.y - a.y * b.x
+    )
 
 }

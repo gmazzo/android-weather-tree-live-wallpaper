@@ -1,5 +1,13 @@
 package io.github.gmazzo.android.livewallpaper.weather;
 
+import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
+import static javax.microedition.khronos.opengles.GL10.GL_MODULATE;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE0;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_COORD_ARRAY;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_ENV;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_ENV_MODE;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -21,14 +29,6 @@ import io.github.gmazzo.android.livewallpaper.weather.sky_manager.TimeOfDay;
 import io.github.gmazzo.android.livewallpaper.weather.sky_manager.WeatherSettingsUtil;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures;
-
-import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
-import static javax.microedition.khronos.opengles.GL10.GL_MODULATE;
-import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE0;
-import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
-import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_COORD_ARRAY;
-import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_ENV;
-import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_ENV_MODE;
 
 public class IsolatedRenderer implements OnSharedPreferenceChangeListener {
     static final float BACKGROUND_DISTANCE = 300.0f;

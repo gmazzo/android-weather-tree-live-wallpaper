@@ -5,8 +5,8 @@ import java.nio.ByteOrder
 import java.nio.FloatBuffer
 import java.nio.ShortBuffer
 
-fun Int.asDirectBuffer() = ByteBuffer.allocateDirect(this)
-        .order(ByteOrder.nativeOrder())!!
+fun Int.asDirectBuffer(): ByteBuffer = ByteBuffer.allocateDirect(this)
+    .order(ByteOrder.nativeOrder())
 
 fun Int.asDirectShortBuffer() = (this * 2).asDirectBuffer().asShortBuffer()!!
 
