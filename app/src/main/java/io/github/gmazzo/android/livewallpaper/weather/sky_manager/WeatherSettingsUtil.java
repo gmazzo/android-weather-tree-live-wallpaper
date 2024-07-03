@@ -195,7 +195,7 @@ public class WeatherSettingsUtil implements OnCancelListener {
             return this.mSharedPreferences.getString(KEY_CITY_NAME, "Chicago");
         }
         String cityName = getGeoCityName();
-        if (cityName != null || getLatitude() == 360.0f || getLongitude() == 360.0f) {
+        if (cityName != null || getLatitude() == INVALID_COORD || getLongitude() == INVALID_COORD) {
             return cityName;
         }
         return this.mContext.getString(R.string.empty_replacer);
@@ -297,19 +297,19 @@ public class WeatherSettingsUtil implements OnCancelListener {
     }
 
     public float getLatitude() {
-        return this.mSharedPreferences.getFloat(KEY_GEO_LATITUDE, 360.0f);
+        return this.mSharedPreferences.getFloat(KEY_GEO_LATITUDE, INVALID_COORD);
     }
 
     public float getLongitude() {
-        return this.mSharedPreferences.getFloat(KEY_GEO_LONGITUDE, 360.0f);
+        return this.mSharedPreferences.getFloat(KEY_GEO_LONGITUDE, INVALID_COORD);
     }
 
     public static float getLatitude(Context ctx) {
-        return PreferenceManager.getDefaultSharedPreferences(ctx).getFloat(KEY_GEO_LATITUDE, 360.0f);
+        return PreferenceManager.getDefaultSharedPreferences(ctx).getFloat(KEY_GEO_LATITUDE, INVALID_COORD);
     }
 
     public static float getLongitude(Context ctx) {
-        return PreferenceManager.getDefaultSharedPreferences(ctx).getFloat(KEY_GEO_LONGITUDE, 360.0f);
+        return PreferenceManager.getDefaultSharedPreferences(ctx).getFloat(KEY_GEO_LONGITUDE, INVALID_COORD);
     }
 
     public String getGeoCityName() {
@@ -329,7 +329,7 @@ public class WeatherSettingsUtil implements OnCancelListener {
     }
 
     public void invalidLatiAndLongitude() {
-        setLatiAndLongitude(360.0d, 360.0d);
+        setLatiAndLongitude(INVALID_COORD, INVALID_COORD);
     }
 
     public void setLatiAndLongitude(double lati, double longi) {

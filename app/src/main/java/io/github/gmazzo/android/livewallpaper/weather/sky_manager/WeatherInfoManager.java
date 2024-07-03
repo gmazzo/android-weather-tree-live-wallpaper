@@ -23,7 +23,6 @@ import io.github.gmazzo.android.livewallpaper.weather.sky_manager.WeatherSetting
 
 public class WeatherInfoManager implements Runnable {
     private static final int ABNORMALDURATION = 300000;
-    private static final boolean DEBUG = false;
     public static final float INVALID_COORD = 360.0f;
     private static final String KEY_CITY_CODE = "WeatherInfoManager_CityCode";
     private static final String KEY_CITY_NAME = "WeatherInfoManager_CityName";
@@ -71,7 +70,7 @@ public class WeatherInfoManager implements Runnable {
     private static HandlerThread mHandlerThread;
     private String mCityCode = null;
     private Context mContext;
-    private boolean mGetInfoSuccess = DEBUG;
+    private boolean mGetInfoSuccess = false;
     private Handler mHandler = null;
     private float mLatitude = 360.0f;
     private float mLongitude = 360.0f;
@@ -85,7 +84,7 @@ public class WeatherInfoManager implements Runnable {
     private ProgressDialog mProgressDialog = null;
     private boolean mRunning = true;
     public Integer mTempUnit = null;
-    private boolean mUseCuLoc = DEBUG;
+    private boolean mUseCuLoc = false;
     private WeatherStateReceiver mWeatherStateReceiver = null;
 
     public interface WeatherStateReceiver {
@@ -125,11 +124,11 @@ public class WeatherInfoManager implements Runnable {
         this.mContext.registerReceiver(this.mNetworkReceiver, Network_Event_Filter);
         if (prefs.getBoolean(KEY_IS_FIRST_LAUNCH, true)) {
             Editor e = prefs.edit();
-            e.putBoolean(KEY_IS_FIRST_LAUNCH, DEBUG);
+            e.putBoolean(KEY_IS_FIRST_LAUNCH, false);
             e.putString(WeatherSettingsUtil.KEY_TEMP_UNITS, "0");
-            e.commit();
+            e.apply();
             WeatherSettingsUtil weatherSettingUtil = new WeatherSettingsUtil(this.mContext);
-            weatherSettingUtil.refreshGeoLocation(DEBUG);
+            weatherSettingUtil.refreshGeoLocation(false);
             weatherSettingUtil.setOnSettingChangeListener(new OnSettingChangeListener() {
                 public void onGeoPositionChange(double longi, double lati) {
                 }
@@ -181,11 +180,14 @@ public class WeatherInfoManager implements Runnable {
     }
 
     private int getWeatherInformation() {
-        WeatherSettingsUtil settings = new WeatherSettingsUtil(this.mContext);
+        double[] coords = GeoInfoManager.getLastGPS(this.mContext);
+        if (coords[0] == INVALID_COORD || coords[1] == INVALID_COORD) {
+            return -1;
+        }
 
         try {
             LocationForecastAPI.Forecast response = LocationForecast.INSTANCE
-                    .getForecast(settings.getLatitude(), settings.getLongitude(), null)
+                    .getForecast(coords[0], coords[1], null)
                     .execute().body();
 
             List<LocationForecastAPI.Time> series = response.getProperties().getTimeSeries();
@@ -205,7 +207,7 @@ public class WeatherInfoManager implements Runnable {
         if (info != null) {
             return info.isConnected();
         }
-        return DEBUG;
+        return false;
     }
 
     public synchronized void onStop() {
@@ -236,7 +238,7 @@ public class WeatherInfoManager implements Runnable {
                 this.mHandler.post(this);
                 return;
             } else {
-                this.mRunning = DEBUG;
+                this.mRunning = false;
                 return;
             }
         }

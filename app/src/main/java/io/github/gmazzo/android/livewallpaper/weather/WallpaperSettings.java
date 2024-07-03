@@ -1,5 +1,7 @@
 package io.github.gmazzo.android.livewallpaper.weather;
 
+import static io.github.gmazzo.android.livewallpaper.weather.sky_manager.WeatherInfoManager.INVALID_COORD;
+
 import android.app.WallpaperManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -61,7 +63,7 @@ public class WallpaperSettings extends PreferenceActivity implements OnPreferenc
                 float geoLongi = this.mWeatherSettingsUtil.getLongitude();
                 if (geoCityName != null && geoStateName != null) {
                     locTitle = geoCityName + ", " + geoStateName;
-                } else if (!(geoLati == 360.0f || geoLongi == 360.0f)) {
+                } else if (!(geoLati == INVALID_COORD || geoLongi == INVALID_COORD)) {
                     locTitle = getString(R.string.current_location);
                 }
                 if (locTitle != null) {
@@ -152,7 +154,7 @@ public class WallpaperSettings extends PreferenceActivity implements OnPreferenc
             if (WeatherSettingsUtil.KEY_GEO_LONGITUDE.equals(key)) {
                 longiStr = this.mWeatherSettingsUtil.getLongitude();
                 latiStr = this.mWeatherSettingsUtil.getLatitude();
-                if (longiStr == 360.0f || latiStr == 360.0f) {
+                if (longiStr == INVALID_COORD || latiStr == INVALID_COORD) {
                     this.mAutoOrManualLocation.setTitle(getText(R.string.empty_replacer));
                 } else {
                     this.mAutoOrManualLocation.setTitle(latiStr + ", " + longiStr);
@@ -160,7 +162,7 @@ public class WallpaperSettings extends PreferenceActivity implements OnPreferenc
             } else if (WeatherSettingsUtil.KEY_GEO_LATITUDE.equals(key)) {
                 longiStr = this.mWeatherSettingsUtil.getLongitude();
                 latiStr = this.mWeatherSettingsUtil.getLatitude();
-                if (longiStr == 360.0f || latiStr == 360.0f) {
+                if (longiStr == INVALID_COORD || latiStr == INVALID_COORD) {
                     this.mAutoOrManualLocation.setTitle(getText(R.string.empty_replacer));
                 } else {
                     this.mAutoOrManualLocation.setTitle(latiStr + ", " + longiStr);
