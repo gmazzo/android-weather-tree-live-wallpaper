@@ -122,7 +122,7 @@ public class IsolatedRenderer implements OnSharedPreferenceChangeListener {
         this.currentScene.updateSharedPrefs(prefs, key);
     }
 
-    public synchronized void onSceneChanged(int newSceneId) {
+    public synchronized void onSceneChanged(@SceneMode int newSceneId) {
         if (newSceneId != currentSceneId) {
             this.currentScene.unload(this.gl);
             switch (newSceneId) {

@@ -22,7 +22,6 @@ import android.provider.Settings.Secure;
 import java.util.HashMap;
 
 import io.github.gmazzo.android.livewallpaper.weather.R;
-import io.github.gmazzo.android.livewallpaper.weather.sky_manager.WeatherCondition.WeatherResult;
 
 public class WeatherSettingsUtil implements OnCancelListener {
     private static final boolean DEBUG = false;
@@ -401,13 +400,6 @@ public class WeatherSettingsUtil implements OnCancelListener {
     }
 
     public void getLocNameFromGeo(double latitude, double longitude, StringBuffer cityName, StringBuffer stateName) {
-        WeatherCondition weather_condition = new WeatherCondition();
-        weather_condition.getClass();
-        WeatherResult weather = new WeatherResult();
-        if (weather_condition.getWeather(latitude, longitude, Integer.valueOf(LOC_GEO_FEEDBACK), weather).intValue() == 0) {
-            cityName.append(weather.city);
-            stateName.append(weather.state);
-        }
     }
 
     public void onCancel(DialogInterface dialog) {

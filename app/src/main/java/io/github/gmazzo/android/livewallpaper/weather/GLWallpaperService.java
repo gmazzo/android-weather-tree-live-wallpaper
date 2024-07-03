@@ -1,7 +1,5 @@
 package io.github.gmazzo.android.livewallpaper.weather;
 
-import static io.github.gmazzo.android.livewallpaper.weather.IsolatedRenderer.SCENE_CLEAR;
-import static io.github.gmazzo.android.livewallpaper.weather.IsolatedRenderer.SCENE_RAIN;
 import static io.github.gmazzo.android.livewallpaper.weather.IsolatedRenderer.currentSceneId;
 
 import android.service.wallpaper.WallpaperService;
@@ -63,8 +61,8 @@ public class GLWallpaperService extends WallpaperService {
         public void onTouchEvent(MotionEvent event) {
             if (BuildConfig.DEMO_MODE && event.getAction() == MotionEvent.ACTION_DOWN) {
                 int scene = currentSceneId + 1;
-                if (scene > SCENE_RAIN) {
-                    scene = SCENE_CLEAR;
+                if (scene > SceneMode.RAIN) {
+                    scene = SceneMode.CLEAR;
                 }
                 this.renderSurfaceView.changeScene(scene);
             }

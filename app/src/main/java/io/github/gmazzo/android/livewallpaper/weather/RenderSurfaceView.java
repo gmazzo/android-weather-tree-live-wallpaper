@@ -91,7 +91,7 @@ public class RenderSurfaceView extends GLSurfaceView {
         super.onDetachedFromWindow();
     }
 
-    public void changeScene(int sceneId) {
+    public void changeScene(@SceneMode int sceneId) {
         this.mBaseRenderer.renderer.onSceneChanged(sceneId);
     }
 
@@ -104,218 +104,214 @@ public class RenderSurfaceView extends GLSurfaceView {
         return super.onTouchEvent(motionEvent);
     }
 
-    public void updateWeatherType(int type) {
+    public void updateWeatherType(@WeatherType int type) {
         Editor e = PreferenceManager.getDefaultSharedPreferences(getContext()).edit();
-        int ret = 2000;
+        @SceneMode int ret = SceneMode.CLEAR;
         switch (type) {
-            case 1:
+            case WeatherType.SUNNY_DAY:
                 e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 2);
                 e.putInt(WallpaperSettings.PREF_NUM_WISPS, 2);
-                ret = 2000;
+                ret = SceneMode.CLEAR;
                 break;
-            case 2:
+            case WeatherType.MOSTLY_SUNNY_DAY:
                 e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 3);
                 e.putInt(WallpaperSettings.PREF_NUM_WISPS, 3);
-                ret = 2000;
+                ret = SceneMode.CLEAR;
                 break;
-            case 3:
+            case WeatherType.PARTLY_SUNNY_DAY:
                 e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 4);
                 e.putInt(WallpaperSettings.PREF_NUM_WISPS, 4);
-                ret = 2000;
+                ret = SceneMode.CLEAR;
                 break;
-            case 4:
+            case WeatherType.INTERMITTENT_CLOUDS_DAY:
                 e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 10);
                 e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
-                ret = 2000;
+                ret = SceneMode.CLEAR;
                 break;
-            case 5:
+            case WeatherType.HAZY_SUNSHINE_DAY:
                 e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 5);
                 e.putInt(WallpaperSettings.PREF_NUM_WISPS, 10);
-                ret = 2000;
+                ret = SceneMode.CLEAR;
                 break;
-            case 6:
+            case WeatherType.MOSTLY_CLOUDY_DAY:
                 e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 15);
                 e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
-                ret = 2001;
+                ret = SceneMode.CLOUDY;
                 break;
-            case 7:
+            case WeatherType.CLOUDY:
                 e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 20);
                 e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
-                ret = 2001;
+                ret = SceneMode.CLOUDY;
                 break;
-            case 8:
+            case WeatherType.DREARY_OVERCAST:
                 e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 25);
                 e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
-                ret = 2001;
+                ret = SceneMode.CLOUDY;
                 break;
-            case 9:
-            case 10:
-            case 27:
-            case 28:
-            case 30:
-            case 31:
-            case 32:
+            case WeatherType.HOT:
+            case WeatherType.COLD:
+            case WeatherType.WINDY:
                 break;
-            case 11:
+            case WeatherType.FOG:
                 e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 5);
                 e.putInt(WallpaperSettings.PREF_NUM_WISPS, 10);
-                ret = 2004;
+                ret = SceneMode.FOG;
                 break;
-            case 12:
+            case WeatherType.SHOWERS:
                 e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 10);
                 e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
-                ret = 2005;
+                ret = SceneMode.RAIN;
                 break;
-            case 13:
+            case WeatherType.MOSTLY_CLOUDY_WITH_SHOWERS_DAY:
                 e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 20);
                 e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
                 e.putInt(WallpaperSettings.PREF_RAIN_DENSITY, 6);
-                ret = 2005;
+                ret = SceneMode.RAIN;
                 break;
-            case 14:
+            case WeatherType.PARTLY_SUNNY_WITH_SHOWERS_DAY:
                 e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 15);
                 e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
                 e.putInt(WallpaperSettings.PREF_RAIN_DENSITY, 5);
-                ret = 2005;
+                ret = SceneMode.RAIN;
                 break;
-            case 15:
+            case WeatherType.THUNDER_STORMS:
                 e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 20);
                 e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
                 e.putInt(WallpaperSettings.PREF_RAIN_DENSITY, 10);
-                ret = 2002;
+                ret = SceneMode.STORM;
                 break;
-            case 16:
+            case WeatherType.MOSTLY_CLOUDY_WITH_THUNDER_STORMS_DAY:
                 e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 25);
                 e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
                 e.putInt(WallpaperSettings.PREF_RAIN_DENSITY, 7);
-                ret = 2002;
+                ret = SceneMode.STORM;
                 break;
-            case 17:
+            case WeatherType.PARTLY_SUNNY_WITH_THUNDER_STORMS_DAY:
                 e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 15);
                 e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
                 e.putInt(WallpaperSettings.PREF_RAIN_DENSITY, 6);
-                ret = 2002;
+                ret = SceneMode.STORM;
                 break;
-            case 18:
+            case WeatherType.RAIN:
                 e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 20);
                 e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
                 e.putInt(WallpaperSettings.PREF_RAIN_DENSITY, 10);
-                ret = 2005;
+                ret = SceneMode.RAIN;
                 break;
-            case 19:
+            case WeatherType.FLURRIES:
                 e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 20);
                 e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
-                ret = 2003;
+                ret = SceneMode.SNOW;
                 break;
-            case 20:
+            case WeatherType.MOSTLY_CLOUDY_WITH_FLURRIES_DAY:
                 e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 25);
                 e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
-                ret = 2003;
+                ret = SceneMode.SNOW;
                 break;
-            case 21:
+            case WeatherType.PARTLY_SUNNY_WITH_FLURRIES_DAY:
                 e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 15);
                 e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
-                ret = 2003;
+                ret = SceneMode.SNOW;
                 break;
-            case 22:
+            case WeatherType.SNOW:
                 e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 20);
                 e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
-                ret = 2003;
+                ret = SceneMode.SNOW;
                 break;
-            case 23:
+            case WeatherType.MOSTLY_CLOUDY_WITH_SNOW_DAY:
                 e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 25);
                 e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
-                ret = 2003;
+                ret = SceneMode.SNOW;
                 break;
-            case 24:
+            case WeatherType.ICE:
                 e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 20);
                 e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
-                ret = 2003;
+                ret = SceneMode.SNOW;
                 break;
-            case 25:
+            case WeatherType.SLEET:
                 e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 20);
                 e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
-                ret = 2003;
+                ret = SceneMode.SNOW;
                 break;
-            case 26:
+            case WeatherType.FREEZING_RAIN:
                 e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 20);
                 e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
-                ret = 2005;
+                ret = SceneMode.RAIN;
                 break;
-            case 29:
+            case WeatherType.RAIN_AND_SNOW:
                 e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 20);
                 e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
-                ret = 2005;
+                ret = SceneMode.RAIN;
                 break;
-            case 33:
+            case WeatherType.CLEAR_NIGHT:
                 e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 2);
                 e.putInt(WallpaperSettings.PREF_NUM_WISPS, 2);
-                ret = 2000;
+                ret = SceneMode.CLEAR;
                 break;
-            case 34:
+            case WeatherType.MOSTLY_CLEAR_NIGHT:
                 e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 4);
                 e.putInt(WallpaperSettings.PREF_NUM_WISPS, 4);
-                ret = 2000;
+                ret = SceneMode.CLEAR;
                 break;
-            case 35:
+            case WeatherType.PARTLY_CLOUDY_NIGHT:
                 e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 8);
                 e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
-                ret = 2001;
+                ret = SceneMode.CLOUDY;
                 break;
-            case 36:
+            case WeatherType.INTERMITTENT_CLOUDS_NIGHT:
                 e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 15);
                 e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
-                ret = 2001;
+                ret = SceneMode.CLOUDY;
                 break;
-            case 37:
+            case WeatherType.HAZY_MOONLIGHT_NIGHT:
                 e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 2);
                 e.putInt(WallpaperSettings.PREF_NUM_WISPS, 20);
-                ret = 2001;
+                ret = SceneMode.CLOUDY;
                 break;
-            case 38:
+            case WeatherType.MOSTLY_CLOUDY_NIGHT:
                 e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 15);
                 e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
-                ret = 2001;
+                ret = SceneMode.CLOUDY;
                 break;
-            case 39:
-                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 15);
-                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
-                e.putInt(WallpaperSettings.PREF_RAIN_DENSITY, 6);
-                ret = 2005;
-                break;
-            case 40:
-                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 25);
-                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
-                e.putInt(WallpaperSettings.PREF_RAIN_DENSITY, 7);
-                ret = 2005;
-                break;
-            case 41:
+            case WeatherType.PARTLY_CLOUDY_WITH_SHOWERS_NIGHT:
                 e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 15);
                 e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
                 e.putInt(WallpaperSettings.PREF_RAIN_DENSITY, 6);
-                ret = 2002;
+                ret = SceneMode.RAIN;
                 break;
-            case 42:
+            case WeatherType.MOSTLY_CLOUDY_WITH_SHOWERS_NIGHT:
                 e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 25);
                 e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
                 e.putInt(WallpaperSettings.PREF_RAIN_DENSITY, 7);
-                ret = 2002;
+                ret = SceneMode.RAIN;
                 break;
-            case 43:
+            case WeatherType.PARTLY_CLOUDY_WITH_THUNDER_STORMS_NIGHT:
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 15);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
+                e.putInt(WallpaperSettings.PREF_RAIN_DENSITY, 6);
+                ret = SceneMode.STORM;
+                break;
+            case WeatherType.MOSTLY_CLOUDY_WITH_THUNDER_STORMS_NIGHT:
+                e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 25);
+                e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
+                e.putInt(WallpaperSettings.PREF_RAIN_DENSITY, 7);
+                ret = SceneMode.STORM;
+                break;
+            case WeatherType.MOSTLY_CLOUDY_WITH_FLURRIES_NIGHT:
                 e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 20);
                 e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
-                ret = 2003;
+                ret = SceneMode.SNOW;
                 break;
-            case 44:
+            case WeatherType.MOSTLY_CLOUDY_WITH_SNOW_NIGHT:
                 e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 20);
                 e.putInt(WallpaperSettings.PREF_NUM_WISPS, 5);
-                ret = 2003;
+                ret = SceneMode.SNOW;
                 break;
             default:
                 Log.w("Renderer", "drawWeather unknown type came here!! type = " + type);
                 return;
         }
-        e.commit();
+        e.apply();
         changeScene(ret);
     }
 }
