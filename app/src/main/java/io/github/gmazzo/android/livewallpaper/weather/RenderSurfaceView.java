@@ -1,7 +1,6 @@
 package io.github.gmazzo.android.livewallpaper.weather;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.opengl.GLSurfaceView;
 import android.preference.PreferenceManager;
@@ -15,11 +14,11 @@ import javax.microedition.khronos.opengles.GL10;
 
 public class RenderSurfaceView extends GLSurfaceView {
     protected boolean isPaused;
+    protected boolean isDemoMode;
     protected BaseRenderer mBaseRenderer;
     protected SurfaceHolder mServiceSurfaceHolder;
 
     class BaseRenderer implements Renderer {
-        private SharedPreferences prefs;
         private IsolatedRenderer renderer;
         private boolean wasCreated = false;
 
@@ -32,6 +31,7 @@ public class RenderSurfaceView extends GLSurfaceView {
         }
 
         public void onResume() {
+            this.renderer.isDemoMode = isDemoMode;
             this.renderer.onResume();
         }
 
@@ -91,7 +91,7 @@ public class RenderSurfaceView extends GLSurfaceView {
         super.onDetachedFromWindow();
     }
 
-    public void changeScene(@SceneMode int sceneId) {
+    public void changeScene(SceneMode sceneId) {
         this.mBaseRenderer.renderer.onSceneChanged(sceneId);
     }
 
@@ -106,7 +106,7 @@ public class RenderSurfaceView extends GLSurfaceView {
 
     public void updateWeatherType(@WeatherType int type) {
         Editor e = PreferenceManager.getDefaultSharedPreferences(getContext()).edit();
-        @SceneMode int ret = SceneMode.CLEAR;
+        SceneMode ret = SceneMode.CLEAR;
         switch (type) {
             case WeatherType.SUNNY_DAY:
                 e.putInt(WallpaperSettings.PREF_NUM_CLOUDS, 2);

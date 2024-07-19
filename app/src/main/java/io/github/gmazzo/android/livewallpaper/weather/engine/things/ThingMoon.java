@@ -32,7 +32,7 @@ public class ThingMoon extends Thing {
         if (model == null) {
             model = models.get(R.raw.plane_16x16);
         }
-        if (this.mPhase != this.mOldPhase) {
+        if (this.texture == null || this.mPhase != this.mOldPhase) {
             this.texture = textures.get(PHASES[mPhase]);
             this.mOldPhase = this.mPhase;
         }

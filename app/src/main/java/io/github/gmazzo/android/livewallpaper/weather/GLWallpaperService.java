@@ -6,6 +6,9 @@ import android.service.wallpaper.WallpaperService;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class GLWallpaperService extends WallpaperService {
 
     public class GLEngine extends Engine {
@@ -15,6 +18,7 @@ public class GLWallpaperService extends WallpaperService {
         @Override
         public void onCreate(SurfaceHolder surfaceHolder) {
             super.onCreate(surfaceHolder);
+
             this.renderSurfaceView = new RenderSurfaceView(GLWallpaperService.this);
         }
 
@@ -22,6 +26,7 @@ public class GLWallpaperService extends WallpaperService {
         public void onVisibilityChanged(boolean visible) {
             super.onVisibilityChanged(visible);
             if (visible) {
+                this.renderSurfaceView.isDemoMode =  BuildConfig.DEMO_MODE || isPreview();
                 this.renderSurfaceView.onResume();
                 if (isPreview()) {
                     this.renderSurfaceView.scrollOffset(0.5f);
@@ -59,12 +64,11 @@ public class GLWallpaperService extends WallpaperService {
 
         @Override
         public void onTouchEvent(MotionEvent event) {
-            if (BuildConfig.DEMO_MODE && event.getAction() == MotionEvent.ACTION_DOWN) {
-                int scene = currentSceneId + 1;
-                if (scene > SceneMode.RAIN) {
-                    scene = SceneMode.CLEAR;
-                }
-                this.renderSurfaceView.changeScene(scene);
+            if (renderSurfaceView.isDemoMode && event.getAction() == MotionEvent.ACTION_DOWN) {
+                List<SceneMode> scenes = Arrays.asList(SceneMode.values());
+                SceneMode next = scenes.get((scenes.indexOf(currentSceneId) + 1) % scenes.size());
+
+                this.renderSurfaceView.changeScene(next);
             }
             super.onTouchEvent(event);
         }

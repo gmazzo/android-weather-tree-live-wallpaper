@@ -88,20 +88,15 @@ public class SceneClear extends SceneBase {
             windSpeedFromPrefs(prefs);
             numCloudsFromPrefs(prefs);
             todFromPrefs(prefs);
-            this.pref_useSun = prefs.getBoolean("pref_usesun", true);
-            this.pref_useMoon = prefs.getBoolean("pref_usemoon", true);
+            this.pref_useSun = true; // prefs.getBoolean("pref_usesun", true);
+            this.pref_useMoon = true; //prefs.getBoolean("pref_usemoon", true);
             this.pref_useUfo = prefs.getBoolean("pref_useufo", false);
             this.pref_ufoBattery = prefs.getBoolean("pref_ufobattery", true);
             if (key != null && (key.contains("numclouds") || key.contains("windspeed") || key.contains("numwisps"))) {
                 spawnClouds(true);
             }
-            if (key != null && key.contains("usesun")) {
-                spawnSun();
-            }
-            if (key != null && key.contains("usemoon")) {
-                spawnMoon();
-                return;
-            }
+            checkSun();
+            checkMoon();
             return;
         }
         this.reloadAssets = true;

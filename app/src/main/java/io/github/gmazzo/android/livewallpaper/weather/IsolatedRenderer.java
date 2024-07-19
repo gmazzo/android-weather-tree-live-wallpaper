@@ -13,6 +13,8 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.opengl.GLU;
 import android.preference.PreferenceManager;
+import android.util.Log;
+import android.widget.Toast;
 
 import java.util.Calendar;
 
@@ -38,19 +40,12 @@ public class IsolatedRenderer implements OnSharedPreferenceChangeListener {
     static final float CAMERA_Y_POSITION = 0.0f;
     static final float CAMERA_Z_POSITION = 0.0f;
     static final float CAMERA_Z_RANGE = 10.0f;
-    private static final boolean DBG = false;
     static final float POSITION_UPDATE_INTERVAL = 300.0f;
-    static final int SCENE_CLEAR = 2000;
-    static final int SCENE_CLOUDY = 2001;
-    static final int SCENE_FOG = 2004;
-    static final int SCENE_RAIN = 2005;
-    static final int SCENE_SNOW = 2003;
-    static final int SCENE_STORM = 2002;
     private static final String TAG = "IsolatedRenderer";
-    public static int currentSceneId;
+    public static SceneMode currentSceneId;
     public static float homeOffsetPercentage = 0.5f;
     public static float horizontalFOV = 45.0f;
-    boolean IS_LANDSCAPE = DBG;
+    boolean IS_LANDSCAPE = false;
     private TimeOfDay _tod = new TimeOfDay();
     private Calendar calendarInstance;
     private Vector cameraDir = new Vector();
@@ -65,7 +60,7 @@ public class IsolatedRenderer implements OnSharedPreferenceChangeListener {
     private float lastPositionUpdate;
     private GL11 gl = null;
     float pref_cameraSpeed = 1.0f;
-    boolean pref_superFastDay = DBG;
+    boolean isDemoMode = false;
     SharedPreferences prefs;
     private float screenHeight;
     private float screenRatio = 1.0f;
@@ -73,7 +68,7 @@ public class IsolatedRenderer implements OnSharedPreferenceChangeListener {
 
     public IsolatedRenderer(Context ctx) {
         homeOffsetPercentage = 0.5f;
-        this.isPaused = DBG;
+        this.isPaused = false;
         this.calendarInstance = null;
         this.lastCalendarUpdate = 10.0f;
         this.lastPositionUpdate = 300.0f;
@@ -101,7 +96,7 @@ public class IsolatedRenderer implements OnSharedPreferenceChangeListener {
     public synchronized void onResume() {
         this.lastCalendarUpdate = 10.0f;
         this.lastPositionUpdate = 300.0f;
-        this.isPaused = DBG;
+        this.isPaused = false;
     }
 
     public void precacheAssets(GL10 gl10) {
@@ -112,49 +107,49 @@ public class IsolatedRenderer implements OnSharedPreferenceChangeListener {
         this.pref_cameraSpeed = (Float.valueOf(prefs.getString("pref_cameraspeed", "1")).floatValue() * 0.5f) + 0.5f;
     }
 
-    private void todFromPrefs(SharedPreferences prefs) {
-        this.pref_superFastDay = prefs.getBoolean("pref_superfastday", DBG);
-    }
-
     public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
         cameraSpeedFromPrefs(prefs);
-        todFromPrefs(prefs);
         this.currentScene.updateSharedPrefs(prefs, key);
     }
 
-    public synchronized void onSceneChanged(@SceneMode int newSceneId) {
+    public synchronized void onSceneChanged(SceneMode newSceneId) {
         if (newSceneId != currentSceneId) {
             this.currentScene.unload(this.gl);
             switch (newSceneId) {
-                case SCENE_CLEAR /*2000*/:
+                case CLEAR:
                     this.currentScene = new SceneClear(this.context, this.gl);
-                    currentSceneId = SCENE_CLEAR;
+                    currentSceneId = SceneMode.CLEAR;
                     break;
-                case SCENE_CLOUDY /*2001*/:
+                case CLOUDY:
                     this.currentScene = new SceneCloudy(this.context, this.gl);
-                    currentSceneId = SCENE_CLOUDY;
+                    currentSceneId = SceneMode.CLOUDY;
                     break;
-                case SCENE_STORM /*2002*/:
+                case STORM:
                     this.currentScene = new SceneStorm(this.context, this.gl);
-                    currentSceneId = SCENE_STORM;
+                    currentSceneId = SceneMode.STORM;
                     break;
-                case SCENE_SNOW /*2003*/:
+                case SNOW:
                     this.currentScene = new SceneSnow(this.context, this.gl);
-                    currentSceneId = SCENE_SNOW;
+                    currentSceneId = SceneMode.SNOW;
                     break;
-                case SCENE_FOG /*2004*/:
+                case FOG:
                     this.currentScene = new SceneFog(this.context, this.gl);
-                    currentSceneId = SCENE_FOG;
+                    currentSceneId = SceneMode.FOG;
                     break;
-                case SCENE_RAIN /*2005*/:
+                case RAIN:
                     this.currentScene = new SceneRain(this.context, this.gl);
-                    currentSceneId = SCENE_RAIN;
+                    currentSceneId = SceneMode.RAIN;
                     break;
             }
             this.currentScene.load(this.gl);
         }
         this.currentScene.setScreenMode(this.IS_LANDSCAPE);
         onSharedPreferenceChanged(this.prefs, null);
+
+        if (isDemoMode) {
+            Toast.makeText(context, newSceneId.name(), Toast.LENGTH_SHORT).show();
+        }
+        Log.i(TAG, "Scene changed to " + newSceneId.name() + ", isDemoMode=" + isDemoMode);
     }
 
     public void onSurfaceChanged(GL10 gl, int w, int h) {
@@ -165,7 +160,7 @@ public class IsolatedRenderer implements OnSharedPreferenceChangeListener {
         if (this.screenRatio > 1.0f) {
             this.IS_LANDSCAPE = true;
         } else {
-            this.IS_LANDSCAPE = DBG;
+            this.IS_LANDSCAPE = false;
         }
         setRenderDefaults(gl);
         gl.glMatrixMode(5889);
@@ -180,7 +175,7 @@ public class IsolatedRenderer implements OnSharedPreferenceChangeListener {
                     Scene.sModels = new Models(context.getResources(), (GL11) gl);
                 }
 
-                currentSceneId = SCENE_CLEAR;
+                currentSceneId = SceneMode.CLEAR;
                 currentScene = new SceneClear(context, (GL11) gl);
                 setContext(context);
 
@@ -202,7 +197,7 @@ public class IsolatedRenderer implements OnSharedPreferenceChangeListener {
         gl.glEnable(GL_TEXTURE_2D);
         gl.glEnable(3042);
         gl.glAlphaFunc(518, 0.02f);
-        gl.glDepthMask(DBG);
+        gl.glDepthMask(false);
         gl.glDepthFunc(515);
         gl.glTexEnvx(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
         gl.glEnableClientState(32884);
@@ -269,7 +264,7 @@ public class IsolatedRenderer implements OnSharedPreferenceChangeListener {
 
     private void calculateTimeOfDay(float timeDelta) {
         int minutes = (this.calendarInstance.get(Calendar.HOUR_OF_DAY) * 60) + this.calendarInstance.get(Calendar.MINUTE);
-        if (this.pref_superFastDay) {
+        if (this.isDemoMode) {
             minutes = (int) ((this.globalTime.msTimeCurrent / 10) % 1440);
         }
         this._tod.update(minutes, true);

@@ -88,7 +88,7 @@ public class WallpaperSettings extends PreferenceActivity implements OnPreferenc
         }
         this.mSharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
-        if (!LocationProvider.INSTANCE.getHasLocationPermission(this)) {
+        if (BuildConfig.DEMO_MODE || !LocationProvider.INSTANCE.getHasLocationPermission(this)) {
             startActivity(new Intent(this, RequestPermissionsActivity.class));
         }
     }
