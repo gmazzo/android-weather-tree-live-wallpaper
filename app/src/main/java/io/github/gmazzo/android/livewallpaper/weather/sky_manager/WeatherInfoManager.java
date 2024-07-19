@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
@@ -180,15 +181,16 @@ public class WeatherInfoManager implements Runnable {
     }
 
     private int getWeatherInformation() {
-        double[] coords = GeoInfoManager.getLastGPS(this.mContext);
-        if (coords[0] == INVALID_COORD || coords[1] == INVALID_COORD) {
+        Location location = LocationProvider.INSTANCE.getLastKnownLocation(this.mContext);
+        if (location == null) {
             return -1;
         }
 
         try {
             LocationForecastAPI.Forecast response = LocationForecast.INSTANCE
-                    .getForecast(coords[0], coords[1], null)
-                    .execute().body();
+                    .getForecast(location.getLatitude(), location.getLongitude(), null)
+                    .execute()
+                    .body();
 
             List<LocationForecastAPI.Time> series = response.getProperties().getTimeSeries();
             if (!series.isEmpty()) {
