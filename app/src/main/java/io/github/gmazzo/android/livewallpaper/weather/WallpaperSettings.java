@@ -2,7 +2,6 @@ package io.github.gmazzo.android.livewallpaper.weather;
 
 import static io.github.gmazzo.android.livewallpaper.weather.sky_manager.WeatherInfoManager.INVALID_COORD;
 
-import android.app.WallpaperManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -18,6 +17,7 @@ import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.util.Log;
 
+import io.github.gmazzo.android.livewallpaper.weather.sky_manager.LocationProvider;
 import io.github.gmazzo.android.livewallpaper.weather.sky_manager.WeatherSettingsUtil;
 
 public class WallpaperSettings extends PreferenceActivity implements OnPreferenceChangeListener, OnPreferenceClickListener, OnSharedPreferenceChangeListener {
@@ -88,8 +88,8 @@ public class WallpaperSettings extends PreferenceActivity implements OnPreferenc
         }
         this.mSharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
-        if (BuildConfig.DEBUG && bundle == null) {
-            startActivity(new Intent(WallpaperManager.ACTION_LIVE_WALLPAPER_CHOOSER));
+        if (!LocationProvider.INSTANCE.getHasLocationPermission(this)) {
+            startActivity(new Intent(this, RequestPermissionsActivity.class));
         }
     }
 

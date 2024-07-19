@@ -26,7 +26,7 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.app)
+    implementation(libs.androidx.appCompat)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.okhttp)
     implementation(libs.retrofit)
