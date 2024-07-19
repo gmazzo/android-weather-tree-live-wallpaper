@@ -93,26 +93,6 @@ public class WallpaperSettings extends PreferenceActivity implements OnPreferenc
         }
     }
 
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case 0:
-                if (resultCode == -1) {
-                    Bundle resultExtras = data.getExtras();
-                    if (resultExtras == null) {
-                        Log.v(TAG, "the resultExtras == null ");
-                        break;
-                    }
-                    CityInfo ci = resultExtras.getParcelable(SearchCity.CITY_INFO);
-                    if (ci != null) {
-                        setCity(ci);
-                        break;
-                    }
-                }
-                break;
-        }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         if (WeatherSettingsUtil.KEY_USE_GPS.equals(preference.getKey())) {
             Boolean newValue2 = (Boolean) newValue;

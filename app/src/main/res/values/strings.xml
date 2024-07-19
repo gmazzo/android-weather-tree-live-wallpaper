@@ -18,8 +18,6 @@
     <string name="use_curr_loc_summary">Use current location for weather</string>
     <string name="specify_loc">Specify location</string>
     <string name="specify_loc_summary">Will show city that user chose</string>
-    <string name="enter_city_or_zip">Enter name or zip code</string>
-    <string name="search_city">Search</string>
     <string name="live_weather">Live Weather</string>
     <string name="no_result_found">No result found</string>
     <string name="current_location">Current Location</string>

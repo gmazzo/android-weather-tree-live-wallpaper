@@ -26,22 +26,6 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".SearchCity"
-            android:configChanges="keyboard|keyboardHidden|orientation"
-            android:excludeFromRecents="true"
-            android:exported="true"
-            android:label="@string/search_for_location"
-            android:noHistory="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <action android:name="io.github.gmazzo.android.livewallpaper.weather.action.PICK_CITY_ACTION" />
-
-                <category android:name="android.intent.category.DEVELOPMENT_PREFERENCE" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-
         <service
             android:name=".WeatherWallpaperService"
             android:exported="true"
