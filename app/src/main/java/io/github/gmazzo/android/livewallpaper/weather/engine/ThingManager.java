@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.microedition.khronos.opengles.GL10;
 
+import io.github.gmazzo.android.livewallpaper.weather.engine.things.Thing;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures;
 

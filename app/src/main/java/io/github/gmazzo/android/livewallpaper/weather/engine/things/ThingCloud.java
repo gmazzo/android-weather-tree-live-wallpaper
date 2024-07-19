@@ -1,10 +1,13 @@
-package io.github.gmazzo.android.livewallpaper.weather;
+package io.github.gmazzo.android.livewallpaper.weather.engine.things;
+
+import static io.github.gmazzo.android.livewallpaper.weather.SceneClear.CLOUD_X_RANGE;
 
 import javax.microedition.khronos.opengles.GL10;
 
+import io.github.gmazzo.android.livewallpaper.weather.R;
+import io.github.gmazzo.android.livewallpaper.weather.SceneBase;
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor;
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand;
-import io.github.gmazzo.android.livewallpaper.weather.engine.Thing;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures;
 
@@ -40,7 +43,7 @@ public class ThingCloud extends Thing {
     }
 
     private float calculateCloudRangeX() {
-        return ((this.origin.getY() * IsolatedRenderer.horizontalFOV) / 90.0f) + Math.abs(this.scale.getX() * 6.0f);
+        return ((this.origin.getY() * CLOUD_X_RANGE) / 90.0f) + Math.abs(this.scale.getX() * 6.0f);
     }
 
     @Override

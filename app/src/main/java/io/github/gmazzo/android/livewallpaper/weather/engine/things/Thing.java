@@ -1,4 +1,4 @@
-package io.github.gmazzo.android.livewallpaper.weather.engine;
+package io.github.gmazzo.android.livewallpaper.weather.engine.things;
 
 import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
@@ -6,6 +6,10 @@ import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
+import io.github.gmazzo.android.livewallpaper.weather.engine.AnimPlayer;
+import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor;
+import io.github.gmazzo.android.livewallpaper.weather.engine.ParticleSystem;
+import io.github.gmazzo.android.livewallpaper.weather.engine.Vector;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.AnimatedModel;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Model;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models;

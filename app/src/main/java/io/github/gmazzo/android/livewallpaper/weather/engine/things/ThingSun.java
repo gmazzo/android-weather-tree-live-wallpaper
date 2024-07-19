@@ -1,4 +1,4 @@
-package io.github.gmazzo.android.livewallpaper.weather;
+package io.github.gmazzo.android.livewallpaper.weather.engine.things;
 
 import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
 import static javax.microedition.khronos.opengles.GL10.GL_MODULATE;
@@ -7,8 +7,9 @@ import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE0;
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
+import io.github.gmazzo.android.livewallpaper.weather.R;
+import io.github.gmazzo.android.livewallpaper.weather.SceneBase;
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor;
-import io.github.gmazzo.android.livewallpaper.weather.engine.Thing;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Texture;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures;

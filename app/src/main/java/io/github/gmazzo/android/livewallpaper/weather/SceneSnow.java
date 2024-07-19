@@ -16,6 +16,8 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand;
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime;
 import io.github.gmazzo.android.livewallpaper.weather.engine.ThingManager;
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector;
+import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingCloud;
+import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingWispy;
 import io.github.gmazzo.android.livewallpaper.weather.sky_manager.TimeOfDay;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Model;
 

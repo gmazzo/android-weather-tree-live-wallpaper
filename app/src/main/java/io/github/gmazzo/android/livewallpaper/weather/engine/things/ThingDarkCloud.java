@@ -1,14 +1,16 @@
-package io.github.gmazzo.android.livewallpaper.weather;
+package io.github.gmazzo.android.livewallpaper.weather.engine.things;
 
 import static javax.microedition.khronos.opengles.GL10.GL_LIGHTING;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
+import static io.github.gmazzo.android.livewallpaper.weather.SceneClear.CLOUD_X_RANGE;
 
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
+import io.github.gmazzo.android.livewallpaper.weather.R;
+import io.github.gmazzo.android.livewallpaper.weather.SceneBase;
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor;
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand;
-import io.github.gmazzo.android.livewallpaper.weather.engine.Thing;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Texture;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures;
@@ -43,7 +45,7 @@ public class ThingDarkCloud extends Thing {
     }
 
     private float calculateCloudRangeX() {
-        return ((this.origin.getY() * IsolatedRenderer.horizontalFOV) / 90.0f) + Math.abs(this.scale.getX() * 1.0f);
+        return ((this.origin.getY() * CLOUD_X_RANGE) / 90.0f) + Math.abs(this.scale.getX() * 1.0f);
     }
 
     public float randomWithinRangeX() {
