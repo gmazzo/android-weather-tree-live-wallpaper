@@ -4,6 +4,10 @@ import android.service.wallpaper.WallpaperService;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 
+import java.util.List;
+
+import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode;
+
 public class GLWallpaperService extends WallpaperService {
 
     public class GLEngine extends Engine {
@@ -23,10 +27,6 @@ public class GLWallpaperService extends WallpaperService {
             if (visible) {
                 this.renderSurfaceView.isDemoMode =  BuildConfig.DEMO_MODE || isPreview();
                 this.renderSurfaceView.onResume();
-                if (isPreview()) {
-                    this.renderSurfaceView.scrollOffset(0.5f);
-                    return;
-                }
                 return;
             }
             this.renderSurfaceView.onPause();
@@ -60,24 +60,25 @@ public class GLWallpaperService extends WallpaperService {
         @Override
         public void onTouchEvent(MotionEvent event) {
             if (renderSurfaceView.isDemoMode && event.getAction() == MotionEvent.ACTION_DOWN) {
-                WeatherType current = SettingsUtils.getWeatherConditions(GLWallpaperService.this);
-                WeatherType next = WeatherType.getEntries().get(0);
-                for (WeatherType weatherType : WeatherType.getEntries()) {
-                    if (weatherType.getScene().ordinal() > current.ordinal()) {
-                        next = weatherType;
+                SceneMode current = SettingsUtils.getWeatherConditions(GLWallpaperService.this).getScene();
+                List<SceneMode> scenes = SceneMode.getEntries();
+                SceneMode next = scenes.get((scenes.indexOf(current) + 1) % scenes.size());
+                WeatherType nextWeather = WeatherType.SUNNY_DAY;
+                for (WeatherType weather : WeatherType.getEntries()) {
+                    if (weather.getScene() == next) {
+                        nextWeather = weather;
                         break;
                     }
                 }
-
-                SettingsUtils.setWeatherConditions(GLWallpaperService.this, next);
-                this.renderSurfaceView.changeScene(next);
+                SettingsUtils.setWeatherConditions(GLWallpaperService.this, nextWeather);
+                this.renderSurfaceView.changeScene(nextWeather);
             }
             super.onTouchEvent(event);
         }
 
         @Override
         public void onOffsetsChanged(float xOffset, float yOffset, float xOffsetStep, float yOffsetStep, int xPixelOffset, int yPixelOffset) {
-            this.renderSurfaceView.scrollOffset(xOffset);
+            this.renderSurfaceView.scrollOffset(isPreview() ? 0.5f : xOffset);
         }
 
         protected void setEGLContextClientVersion(int version) {
