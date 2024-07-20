@@ -140,15 +140,15 @@ public class WeatherInfoManager implements Runnable {
         }
     }
 
-    private synchronized void saveWeather(@WeatherType int weatherType) {
+    private synchronized void saveWeather(WeatherType weatherType) {
         PreferenceManager.getDefaultSharedPreferences(this.mContext).edit()
-                .putInt(KEY_WEATHER_TYPE, weatherType)
+                .putString(KEY_WEATHER_TYPE, weatherType.name())
                 .apply();
     }
 
-    public synchronized @WeatherType int getWeather() {
-        return PreferenceManager.getDefaultSharedPreferences(this.mContext)
-                .getInt(KEY_WEATHER_TYPE, WeatherType.CLOUDY);
+    public synchronized WeatherType getWeather() {
+        return WeatherType.valueOf(PreferenceManager.getDefaultSharedPreferences(this.mContext)
+                .getString(KEY_WEATHER_TYPE, WeatherType.CLOUDY.name()));
     }
 
     public void run() {

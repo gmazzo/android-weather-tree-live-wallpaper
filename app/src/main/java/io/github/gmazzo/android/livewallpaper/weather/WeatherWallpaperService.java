@@ -36,7 +36,7 @@ public class WeatherWallpaperService extends GLWallpaperService {
 
         public synchronized void updateWeatherState() {
             Log.i("HM", "updateWeatherState");
-            @WeatherType int weaTypeFrmWeb = WeatherWallpaperService.this.mWeatherInfo.getWeather();
+            WeatherType weaTypeFrmWeb = WeatherWallpaperService.this.mWeatherInfo.getWeather();
 
             this.renderSurfaceView.updateWeatherType(weaTypeFrmWeb);
         }

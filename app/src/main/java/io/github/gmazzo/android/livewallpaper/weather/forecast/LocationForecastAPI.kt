@@ -50,7 +50,6 @@ interface LocationForecastAPI {
         val summary: Summary,
     ) {
 
-        @get:WeatherType
         val weatherType = when (summary.symbolCode) {
             "clearsky_day" -> WeatherType.SUNNY_DAY
             "clearsky_night" -> WeatherType.CLEAR_NIGHT
