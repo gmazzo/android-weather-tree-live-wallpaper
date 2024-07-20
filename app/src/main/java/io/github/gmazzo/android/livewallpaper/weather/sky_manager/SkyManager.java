@@ -3,10 +3,10 @@ package io.github.gmazzo.android.livewallpaper.weather.sky_manager;
 import android.location.Location;
 import android.util.Log;
 
-import io.github.gmazzo.android.livewallpaper.weather.sunrisesunset.SunriseSunsetCalculator;
-
 import java.util.Calendar;
 import java.util.TimeZone;
+
+import io.github.gmazzo.android.livewallpaper.weather.sunrisesunset.SunriseSunsetCalculator;
 
 public class SkyManager {
     private static final int MILLISECONDS_PER_DAY = 86400000;
@@ -47,7 +47,7 @@ public class SkyManager {
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DATE);
-        double transformedYear = ((double) year) - Math.floor((double) ((12 - month) / 10));
+        double transformedYear = ((double) year) - Math.floor((12 - month) / 10);
         int transformedMonth = month + 9;
         if (transformedMonth >= 12) {
             transformedMonth -= 12;

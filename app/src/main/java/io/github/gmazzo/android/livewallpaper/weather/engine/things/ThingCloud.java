@@ -14,10 +14,10 @@ import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures;
 
 public class ThingCloud extends Thing {
-    private static final int MODELS[] = {
+    private static final int[] MODELS = {
             R.raw.cloud1m, R.raw.cloud2m, R.raw.cloud3m,
             R.raw.cloud4m, R.raw.cloud5m};
-    private static final int TEXTURES[] = {
+    private static final int[] TEXTURES = {
             R.drawable.cloud1, R.drawable.cloud2, R.drawable.cloud3,
             R.drawable.cloud4, R.drawable.cloud5};
     static final float CLOUD_FADE_START_X = 25.0f;

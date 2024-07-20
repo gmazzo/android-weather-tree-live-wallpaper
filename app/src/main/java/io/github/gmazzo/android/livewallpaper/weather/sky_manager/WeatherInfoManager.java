@@ -32,7 +32,7 @@ public class WeatherInfoManager implements Runnable {
     private final Context mContext;
     private boolean mGetInfoSuccess = false;
     private Handler mHandler = null;
-    private BroadcastReceiver mNetworkReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver mNetworkReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             if (!WeatherInfoManager.this.getResult() && WeatherInfoManager.this.isConnected() && WeatherInfoManager.this.mHandler != null) {
                 WeatherInfoManager.this.mHandler.post(WeatherInfoManager.instance);
@@ -86,7 +86,7 @@ public class WeatherInfoManager implements Runnable {
             synchronized (this) {
                 if (this.mHandler != null) {
                     this.mWeatherStateReceiver.updateWeatherState();
-                    this.mHandler.postDelayed(this, (long) delay);
+                    this.mHandler.postDelayed(this, delay);
                 }
             }
             return;

@@ -13,7 +13,7 @@ import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures;
 
 public class ThingWispy extends Thing {
-    private static final int WISPY_TEXTURES[] = {
+    private static final int[] WISPY_TEXTURES = {
             R.raw.wispy1, R.raw.wispy2, R.raw.wispy3};
     public int which;
 

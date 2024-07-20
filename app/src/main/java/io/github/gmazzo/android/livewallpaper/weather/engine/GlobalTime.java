@@ -33,7 +33,7 @@ public class GlobalTime {
     }
 
     public static float waveCos(float base, float amplitude, float phase, float frequency) {
-        return (float) (((double) base) + (((double) amplitude) * Math.cos((double) ((static_sTimeElapsed * frequency) + phase))));
+        return (float) (((double) base) + (((double) amplitude) * Math.cos((static_sTimeElapsed * frequency) + phase)));
     }
 
     public static float waveSin(float base, float amplitude, float phase, float frequency) {
@@ -41,7 +41,7 @@ public class GlobalTime {
     }
 
     public static float waveSin(float inputTime, float base, float amplitude, float phase, float frequency) {
-        return (float) (((double) base) + (((double) amplitude) * Math.sin((double) ((inputTime * frequency) + phase))));
+        return (float) (((double) base) + (((double) amplitude) * Math.sin((inputTime * frequency) + phase)));
     }
 
     public void reset() {

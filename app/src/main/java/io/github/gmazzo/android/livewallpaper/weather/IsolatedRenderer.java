@@ -64,15 +64,15 @@ public class IsolatedRenderer {
     public static float homeOffsetPercentage = 0.5f;
     public static float horizontalFOV = 45.0f;
     boolean IS_LANDSCAPE = false;
-    private TimeOfDay _tod = new TimeOfDay();
+    private final TimeOfDay _tod = new TimeOfDay();
     private Calendar calendarInstance;
-    private Vector cameraDir = new Vector();
+    private final Vector cameraDir = new Vector();
     private float cameraFOV = 65.0f;
-    private Vector cameraPos;
+    private final Vector cameraPos;
     Context context;
     private Scene currentScene;
-    private Vector desiredCameraPos;
-    private GlobalTime globalTime;
+    private final Vector desiredCameraPos;
+    private final GlobalTime globalTime;
     boolean isPaused;
     private float lastCalendarUpdate;
     private float lastPositionUpdate;
@@ -159,11 +159,7 @@ public class IsolatedRenderer {
         this.screenWidth = (float) w;
         this.screenHeight = (float) h;
         this.screenRatio = this.screenWidth / this.screenHeight;
-        if (this.screenRatio > 1.0f) {
-            this.IS_LANDSCAPE = true;
-        } else {
-            this.IS_LANDSCAPE = false;
-        }
+        this.IS_LANDSCAPE = this.screenRatio > 1.0f;
         setRenderDefaults(gl);
         gl.glMatrixMode(GL_PROJECTION);
         gl.glLoadIdentity();

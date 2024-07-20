@@ -15,7 +15,7 @@ import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Texture;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures;
 
 public class ThingLightning extends Thing {
-    private static final int MODELS[] = {
+    private static final int[] MODELS = {
             R.raw.lightning1, R.raw.lightning2, R.raw.lightning3
     };
     private Texture lightningGlow;

@@ -17,7 +17,7 @@ import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures;
 public class ThingManager {
     private static final int MAX_THINGS = 64;
     private static final String TAG = "GL Engine";
-    private volatile List<Thing> thingList = new ArrayList<>();
+    private final List<Thing> thingList = new ArrayList<>();
 
     public synchronized boolean add(Thing thing) {
         return thingList.add(thing);

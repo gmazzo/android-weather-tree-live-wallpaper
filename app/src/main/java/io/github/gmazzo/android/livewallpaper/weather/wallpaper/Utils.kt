@@ -8,9 +8,9 @@ import java.nio.ShortBuffer
 fun Int.asDirectBuffer(): ByteBuffer = ByteBuffer.allocateDirect(this)
     .order(ByteOrder.nativeOrder())
 
-fun Int.asDirectShortBuffer() = (this * 2).asDirectBuffer().asShortBuffer()!!
+fun Int.asDirectShortBuffer() = (this * 2).asDirectBuffer().asShortBuffer()
 
-fun Int.asDirectFloatBuffer() = (this * 4).asDirectBuffer().asFloatBuffer()!!
+fun Int.asDirectFloatBuffer() = (this * 4).asDirectBuffer().asFloatBuffer()
 
 val ByteBuffer.sizeInBytes get() = capacity()
 
@@ -18,7 +18,7 @@ val ShortBuffer.sizeInBytes get() = capacity() * 2
 
 val FloatBuffer.sizeInBytes get() = capacity() * 4
 
-operator fun ByteBuffer.set(index: Int, value: Byte) = put(index, value)!!
+operator fun ByteBuffer.set(index: Int, value: Byte) = put(index, value)
 
 operator fun ShortBuffer.set(index: Int, value: Short) = put(index, value)!!
 

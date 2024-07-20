@@ -32,11 +32,11 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.Utility.Logger;
 public class TextureManager {
     private static final String SIZE_FILE_SUFFIX = "_size";
     private static final String TAG = "GL Engine";
-    private Context context;
+    private final Context context;
     private int lastId = 0;
     private String lastPath = null;
-    private boolean pref_useMipMaps = false;
-    private HashMap<String, Integer> texIDs = new HashMap();
+    private final boolean pref_useMipMaps = false;
+    private final HashMap<String, Integer> texIDs = new HashMap();
 
     private TextureManager(Context context) {
         this.context = context;
@@ -241,7 +241,7 @@ public class TextureManager {
     }
 
     private boolean fileExistsOrIsLoaded(String filename) {
-        if (((Integer) this.texIDs.get(filename)).intValue() != 0) {
+        if (this.texIDs.get(filename).intValue() != 0) {
             return true;
         }
         Resources res = this.context.getResources();
@@ -290,7 +290,7 @@ public class TextureManager {
             return this.lastId;
         }
         try {
-            this.lastId = ((Integer) this.texIDs.get(path)).intValue();
+            this.lastId = this.texIDs.get(path).intValue();
         } catch (Exception e) {
             Logger.w(TAG, "ERROR: couldn't find texture: " + path + ", attempting to load...");
             this.lastId = loadTextureFromPath(gl10, path);
@@ -344,7 +344,7 @@ public class TextureManager {
                 loadSuccess = true;
             }
         } else if (raw_id == 0) {
-            loadSuccess = loadCachedPath(gl, name, useMipMap) ? true : loadRawPath(gl, name, useMipMap);
+            loadSuccess = loadCachedPath(gl, name, useMipMap) || loadRawPath(gl, name, useMipMap);
         } else if (loadTGA(gl, raw_id, useMipMap)) {
             loadSuccess = true;
         }

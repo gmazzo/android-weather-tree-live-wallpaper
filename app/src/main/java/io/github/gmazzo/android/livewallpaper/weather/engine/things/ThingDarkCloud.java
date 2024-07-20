@@ -21,13 +21,13 @@ import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures;
 public class ThingDarkCloud extends Thing {
     static EngineColor pref_boltEngineColor = new EngineColor(1.0f, 1.0f, 1.0f, 1.0f);
     public static boolean pref_minimalist = false;
-    private static final int MODELS[] = {
+    private static final int[] MODELS = {
             R.raw.cloud1m, R.raw.cloud2m, R.raw.cloud3m,
             R.raw.cloud4m, R.raw.cloud5m};
-    private static final int TEXTURES[] = {
+    private static final int[] TEXTURES = {
             R.drawable.clouddark1, R.drawable.clouddark2, R.drawable.clouddark3,
             R.drawable.clouddark4, R.drawable.clouddark5};
-    private static final int FLARES[] = {
+    private static final int[] FLARES = {
             R.drawable.cloudflare1, R.drawable.cloudflare2, R.drawable.cloudflare3,
             R.drawable.cloudflare4, R.drawable.cloudflare5};
     public int which;
@@ -48,7 +48,7 @@ public class ThingDarkCloud extends Thing {
     }
 
     private float calculateCloudRangeX() {
-        return ((this.origin.getY() * CLOUD_X_RANGE) / 90.0f) + Math.abs(this.scale.getX() * 1.0f);
+        return ((this.origin.getY() * CLOUD_X_RANGE) / 90.0f) + Math.abs(this.scale.getX());
     }
 
     public float randomWithinRangeX() {

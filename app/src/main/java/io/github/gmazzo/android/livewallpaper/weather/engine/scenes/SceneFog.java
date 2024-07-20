@@ -90,7 +90,7 @@ public class SceneFog extends SceneBase {
         int iMain = tod.getMainIndex();
         int iBlend = tod.getBlendIndex();
         float blendAmount = tod.getBlendAmount();
-        this.todEngineColorFinal.blend(this.pref_todEngineColors[iMain], this.pref_todEngineColors[iBlend], blendAmount);
+        todEngineColorFinal.blend(this.pref_todEngineColors[iMain], this.pref_todEngineColors[iBlend], blendAmount);
         this.fogEngineColorFinal.blend(this.fog_todEngineColors[iMain], this.fog_todEngineColors[iBlend], blendAmount);
         this.fogEngineColorFinal.setToArray(fogColor);
     }

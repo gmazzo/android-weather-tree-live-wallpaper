@@ -6,10 +6,7 @@ public class GlobalRand {
     public static Random rand = new Random();
 
     public static boolean flipCoin() {
-        if (rand.nextFloat() < 0.5f) {
-            return true;
-        }
-        return false;
+        return rand.nextFloat() < 0.5f;
     }
 
     public static float floatRange(float min, float max) {

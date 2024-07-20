@@ -28,10 +28,10 @@ import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Model;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Texture;
 
 public class SceneRain extends SceneBase {
-    private static final int CLOUD_MODELS[] = {
+    private static final int[] CLOUD_MODELS = {
             R.raw.cloud1m, R.raw.cloud2m, R.raw.cloud3m,
             R.raw.cloud4m, R.raw.cloud5m};
-    private static final int CLOUD_TEXTURES[] = {
+    private static final int[] CLOUD_TEXTURES = {
             R.drawable.clouddark1, R.drawable.clouddark2, R.drawable.clouddark3,
             R.drawable.clouddark4, R.drawable.clouddark5};
     private final String TAG;

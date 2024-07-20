@@ -13,11 +13,11 @@ import javax.microedition.khronos.opengles.GL10;
 
 public class MeshManager {
     private static final String TAG = "GL Engine";
-    private String MMPACKAGENAME;
+    private final String MMPACKAGENAME;
     private Context context;
     private Mesh lastMesh = null;
     private String lastName = null;
-    private Map<String, Mesh> meshList = new HashMap<>();
+    private final Map<String, Mesh> meshList = new HashMap<>();
 
     private MeshManager(Context context1) {
         this.context = context1;
@@ -86,10 +86,10 @@ public class MeshManager {
         if (name.equals(this.lastName)) {
             return this.lastMesh;
         }
-        Mesh mesh = (Mesh) this.meshList.get(name);
+        Mesh mesh = this.meshList.get(name);
         if (mesh == null) {
             createMeshFromFile(gl10, name);
-            mesh = (Mesh) this.meshList.get(name);
+            mesh = this.meshList.get(name);
         }
         this.lastName = name;
         this.lastMesh = mesh;
@@ -97,10 +97,7 @@ public class MeshManager {
     }
 
     private boolean isLoaded(String s) {
-        if (this.meshList.containsKey(s)) {
-            return true;
-        }
-        return false;
+        return this.meshList.containsKey(s);
     }
 
     private void setContext(Context context1) {
@@ -109,7 +106,7 @@ public class MeshManager {
 
     private void unload(GL10 gl10) {
         for (Object name : this.meshList.keySet()) {
-            ((Mesh) this.meshList.get(name)).unload(gl10);
+            this.meshList.get(name).unload(gl10);
         }
         this.meshList.clear();
         this.lastName = null;

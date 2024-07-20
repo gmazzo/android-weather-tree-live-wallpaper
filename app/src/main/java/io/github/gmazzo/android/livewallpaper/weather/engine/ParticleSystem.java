@@ -16,7 +16,7 @@ public class ParticleSystem {
     private float _animTimeElapsed = 0.0f;
     private float _nextSpawnRateVariance = 0.0f;
     private int _numParticles;
-    private Particle[] _particles = new Particle[_maxParticles];
+    private final Particle[] _particles = new Particle[_maxParticles];
     private float _timeSinceLastSpawn = 0.0f;
     private boolean _useColor = true;
     protected int animFrameOffset = 0;
@@ -38,9 +38,9 @@ public class ParticleSystem {
 
     public class Particle {
         private float _angle;
-        private EngineColor _Engine_color = new EngineColor();
-        private Vector _position = new Vector();
-        private Vector _scale = new Vector();
+        private final EngineColor _Engine_color = new EngineColor();
+        private final Vector _position = new Vector();
+        private final Vector _scale = new Vector();
         private float _timeElapsed;
         private boolean _useAngles;
         private boolean _useScale;
@@ -98,16 +98,8 @@ public class ParticleSystem {
         }
 
         public void setUsageFlags() {
-            if (this.startAngle == 0.0f && this.destAngle == 0.0f) {
-                this._useAngles = false;
-            } else {
-                this._useAngles = true;
-            }
-            if (this.startScale.getX() == 1.0f && this.startScale.getY() == 1.0f && this.startScale.getZ() == 1.0f && this.destScale.getX() == 1.0f && this.destScale.getY() == 1.0f && this.destScale.getZ() == 1.0f) {
-                this._useScale = false;
-            } else {
-                this._useScale = true;
-            }
+            this._useAngles = this.startAngle != 0.0f || this.destAngle != 0.0f;
+            this._useScale = this.startScale.getX() != 1.0f || this.startScale.getY() != 1.0f || this.startScale.getZ() != 1.0f || this.destScale.getX() != 1.0f || this.destScale.getY() != 1.0f || this.destScale.getZ() != 1.0f;
         }
 
         public boolean update(int id, float timeDelta) {
@@ -148,7 +140,7 @@ public class ParticleSystem {
             this.orientScratch = new Vector();
         }
         this.orientScratch.crossProduct(this.flowDirection, newDirection).normalize();
-        gl11.glRotatef(((float) Math.acos((double) newDirection.times(this.flowDirection))) * 57.295776f, this.orientScratch.getX(), this.orientScratch.getY(), this.orientScratch.getZ());
+        gl11.glRotatef(((float) Math.acos(newDirection.times(this.flowDirection))) * 57.295776f, this.orientScratch.getX(), this.orientScratch.getY(), this.orientScratch.getZ());
     }
 
     protected float getSpawnRangeX() {
@@ -219,11 +211,7 @@ public class ParticleSystem {
     }
 
     protected void setUsageFlags() {
-        if (this.startEngineColor.getR() == 1.0f && this.startEngineColor.getG() == 1.0f && this.startEngineColor.getB() == 1.0f && this.startEngineColor.getA() == 1.0f && this.destEngineColor.getR() == 1.0f && this.destEngineColor.getG() == 1.0f && this.destEngineColor.getB() == 1.0f && this.destEngineColor.getA() == 1.0f) {
-            this._useColor = false;
-        } else {
-            this._useColor = true;
-        }
+        this._useColor = this.startEngineColor.getR() != 1.0f || this.startEngineColor.getG() != 1.0f || this.startEngineColor.getB() != 1.0f || this.startEngineColor.getA() != 1.0f || this.destEngineColor.getR() != 1.0f || this.destEngineColor.getG() != 1.0f || this.destEngineColor.getB() != 1.0f || this.destEngineColor.getA() != 1.0f;
     }
 
     public void update(float timeDelta) {

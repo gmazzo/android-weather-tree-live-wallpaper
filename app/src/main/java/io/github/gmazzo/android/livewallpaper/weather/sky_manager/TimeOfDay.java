@@ -10,13 +10,13 @@ public class TimeOfDay {
     private static final String TAG = "GL Engine";
     private float _blendAmount = 0.0f;
     private int _blendIndex = 1;
-    private float[] _fakeSunArray = new float[]{-1.0f, 0.0f, 1.0f, 0.0f};
+    private final float[] _fakeSunArray = new float[]{-1.0f, 0.0f, 1.0f, 0.0f};
     private boolean _fakeSunPosition = true;
     private float _latitude = 0.0f;
     private float _longitude = 0.0f;
     private int _mainIndex = 0;
     private float _sunPosition = 0.0f;
-    private int[] _todTime = new int[4];
+    private final int[] _todTime = new int[4];
 
     private int deriveMidpoint(int a, int b) {
         int l;
@@ -54,8 +54,8 @@ public class TimeOfDay {
         if (latitude == 0.0f || longitude == 0.0f) {
             this._fakeSunPosition = true;
         } else {
-            Calendar sunrise_time = SkyManager.GetSunrise((double) latitude, (double) longitude);
-            Calendar sunset_time = SkyManager.GetSunset((double) latitude, (double) longitude);
+            Calendar sunrise_time = SkyManager.GetSunrise(latitude, longitude);
+            Calendar sunset_time = SkyManager.GetSunset(latitude, longitude);
             if (sunrise_time != null) {
                 minOfSunrise = (sunrise_time.get(11) * 60) + sunrise_time.get(12);
                 Log.v(TAG, "sunrise minutes of day is " + minOfSunrise);

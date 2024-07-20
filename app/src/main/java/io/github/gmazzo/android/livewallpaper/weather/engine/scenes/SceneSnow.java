@@ -28,13 +28,13 @@ import io.github.gmazzo.android.livewallpaper.weather.sky_manager.TimeOfDay;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Model;
 
 public class SceneSnow extends SceneBase {
-    private static final int CLOUD_MODELS[] = {
+    private static final int[] CLOUD_MODELS = {
             R.raw.cloud1m, R.raw.cloud2m, R.raw.cloud3m,
             R.raw.cloud4m, R.raw.cloud5m};
-    private static final int CLOUD_TEXTURES[] = {
+    private static final int[] CLOUD_TEXTURES = {
             R.drawable.cloud1, R.drawable.cloud2, R.drawable.cloud3,
             R.drawable.cloud4, R.drawable.cloud5};
-    private static final int WISPY_TEXTURES[] = {
+    private static final int[] WISPY_TEXTURES = {
             R.raw.wispy1, R.raw.wispy2, R.raw.wispy3};
     static final float CLOUD_START_DISTANCE = 175.0f;
     static final float CLOUD_X_RANGE = 45.0f;

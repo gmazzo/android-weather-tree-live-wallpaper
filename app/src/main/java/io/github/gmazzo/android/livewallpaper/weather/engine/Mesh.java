@@ -58,8 +58,8 @@ public class Mesh {
     }
 
     class Tag {
-        private float[] normal;
-        private float[] position;
+        private final float[] normal;
+        private final float[] position;
 
         public Tag(int i) {
             this.position = new float[(i * 3)];
@@ -94,11 +94,7 @@ public class Mesh {
     }
 
     static {
-        if (desiredAssertionStatus()) {
-            assertionsDisabled = false;
-        } else {
-            assertionsDisabled = true;
-        }
+        assertionsDisabled = !desiredAssertionStatus();
     }
 
     private static boolean desiredAssertionStatus() {
@@ -402,8 +398,7 @@ public class Mesh {
             this.bufScratch.position(0);
 
             gl.glVertexPointer(3, GL_FLOAT, 0, this.bufScratch);
-            if (gl instanceof GL11) {
-                GL11 gl11 = (GL11) gl;
+            if (gl instanceof GL11 gl11) {
                 gl11.glBindBuffer(GL_ARRAY_BUFFER, this.frames[frameNum].bufNormalHandle);
                 gl11.glNormalPointer(GL_FLOAT, 0, 0);
 
@@ -473,9 +468,7 @@ public class Mesh {
 
     public void renderFrame_gl11_setup(GL11 gl11, int frameNum) {
         if (frameNum >= this.frames.length || frameNum < 0) {
-            StringBuilder sb = new StringBuilder("ERROR: Mesh.renderFrame (");
-            sb.append(this.meshName).append(") given a frame outside of frames.length: ").append(frameNum);
-            Logger.v(TAG, sb.toString());
+            Logger.v(TAG, "ERROR: Mesh.renderFrame (" + this.meshName + ") given a frame outside of frames.length: " + frameNum);
             frameNum = this.frames.length - 1;
         }
         gl11.glBindBuffer(GL_ARRAY_BUFFER, this.frames[frameNum].bufVertexHandle);

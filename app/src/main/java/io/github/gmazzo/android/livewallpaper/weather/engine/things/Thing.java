@@ -30,7 +30,7 @@ public class Thing {
     public String targetName;
     public Texture texture = null;
     public Vector velocity = null;
-    private Vector visScratch = new Vector(0.0f, 0.0f, 0.0f);
+    private final Vector visScratch = new Vector(0.0f, 0.0f, 0.0f);
     private boolean vis_isVisible = true;
     public float vis_width = 3.0f;
 
@@ -41,11 +41,7 @@ public class Thing {
         }
         this.visScratch.set(this.origin.getX() - cameraPos.getX(), this.origin.getY() - cameraPos.getY(), this.origin.getZ() - cameraPos.getZ());
         this.visScratch.rotateAroundZ(cameraAngleZ);
-        if (Math.abs(this.visScratch.getX()) < this.vis_width + ((this.visScratch.getY() * 0.01111111f) * fov)) {
-            this.vis_isVisible = true;
-        } else {
-            this.vis_isVisible = false;
-        }
+        this.vis_isVisible = Math.abs(this.visScratch.getX()) < this.vis_width + ((this.visScratch.getY() * 0.01111111f) * fov);
     }
 
     public void delete() {
