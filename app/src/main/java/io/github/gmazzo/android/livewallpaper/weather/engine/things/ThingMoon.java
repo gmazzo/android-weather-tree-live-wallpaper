@@ -1,5 +1,8 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.things;
 
+import static javax.microedition.khronos.opengles.GL10.GL_ONE_MINUS_SRC_ALPHA;
+import static javax.microedition.khronos.opengles.GL10.GL_SRC_ALPHA;
+
 import android.util.Log;
 
 import javax.microedition.khronos.opengles.GL10;
@@ -36,7 +39,7 @@ public class ThingMoon extends Thing {
             this.texture = textures.get(PHASES[mPhase]);
             this.mOldPhase = this.mPhase;
         }
-        gl.glBlendFunc(770, 771);
+        gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         super.render(gl, textures, models);
     }
 

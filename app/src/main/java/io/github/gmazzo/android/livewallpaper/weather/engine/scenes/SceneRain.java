@@ -3,7 +3,11 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.scenes;
 import static javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT;
 import static javax.microedition.khronos.opengles.GL10.GL_LIGHTING;
 import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
+import static javax.microedition.khronos.opengles.GL10.GL_ONE;
+import static javax.microedition.khronos.opengles.GL10.GL_ONE_MINUS_SRC_ALPHA;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
+import static javax.microedition.khronos.opengles.GL10.GL_ZERO;
 
 import android.content.Context;
 
@@ -151,7 +155,7 @@ public class SceneRain extends SceneBase {
         gl.glPushMatrix();
         gl.glTranslatef(0.0f, 250.0f, 35.0f);
         gl.glScalef(this.BG_PADDING * 2.0f, this.BG_PADDING, this.BG_PADDING);
-        gl.glMatrixMode(5890);
+        gl.glMatrixMode(GL_TEXTURE);
         gl.glPushMatrix();
         gl.glTranslatef(((pref_windSpeed * timeDelta) * -0.005f) % 1.0f, 0.0f, 0.0f);
         Model mesh = models.get(R.raw.plane_16x16);
@@ -170,7 +174,7 @@ public class SceneRain extends SceneBase {
         gl.glTranslatef(0.0f, 0.0f, -5.0f);
         gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.particleRain.update(timeDelta);
-        gl.glBlendFunc(1, 0);
+        gl.glBlendFunc(GL_ONE, GL_ZERO);
         this.particleRain.render((GL11) gl, this.particleRainOrigin);
         gl.glPopMatrix();
     }
@@ -183,7 +187,7 @@ public class SceneRain extends SceneBase {
         gl.glEnable(GL_COLOR_BUFFER_BIT);
         gl.glMatrixMode(GL_MODELVIEW);
         gl.glLoadIdentity();
-        gl.glBlendFunc(1, 771);
+        gl.glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         this.light_diffuse[0] = this.v_light_diffuse.getR();
         this.light_diffuse[1] = this.v_light_diffuse.getG();
         this.light_diffuse[2] = this.v_light_diffuse.getB();

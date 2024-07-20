@@ -1,9 +1,14 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.scenes;
 
 import static javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT;
+import static javax.microedition.khronos.opengles.GL10.GL_LIGHT1;
 import static javax.microedition.khronos.opengles.GL10.GL_LIGHTING;
 import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
 import static javax.microedition.khronos.opengles.GL10.GL_MODULATE;
+import static javax.microedition.khronos.opengles.GL10.GL_ONE;
+import static javax.microedition.khronos.opengles.GL10.GL_ONE_MINUS_SRC_ALPHA;
+import static javax.microedition.khronos.opengles.GL10.GL_SRC_ALPHA;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE0;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
 
@@ -215,11 +220,11 @@ public class SceneClear extends SceneBase {
         checkAssetReload(gl);
         this.mThingManager.update(time.sTimeDelta);
         gl.glDisable(GL_COLOR_BUFFER_BIT);
-        gl.glDisable(16385);
+        gl.glDisable(GL_LIGHT1);
         gl.glDisable(GL_LIGHTING);
         gl.glMatrixMode(GL_MODELVIEW);
         gl.glLoadIdentity();
-        gl.glBlendFunc(1, 771);
+        gl.glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         renderBackground(gl, time.sTimeElapsed);
         gl.glTranslatef(0.0f, 0.0f, 40.0f);
         this.mThingManager.render(gl, textures, models);
@@ -233,7 +238,7 @@ public class SceneClear extends SceneBase {
         gl.glPushMatrix();
         gl.glTranslatef(0.0f, 250.0f, 35.0f);
         gl.glScalef(this.BG_PADDING * 2.0f, this.BG_PADDING, this.BG_PADDING);
-        gl.glMatrixMode(5890);
+        gl.glMatrixMode(GL_TEXTURE);
         gl.glPushMatrix();
         gl.glTranslatef(((pref_windSpeed * timeDelta) * -0.005f) % 1.0f, 0.0f, 0.0f);
         Model mesh = models.get(R.raw.plane_16x16);
@@ -247,7 +252,7 @@ public class SceneClear extends SceneBase {
     private void renderStars(GL10 gl, float timeDelta) {
         if (todSunPosition <= 0.0f) {
             gl.glColor4f(1.0f, 1.0f, 1.0f, todSunPosition * -2.0f);
-            gl.glBlendFunc(770, 1);
+            gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE);
             Model starMesh = models.get(R.raw.stars);
             Texture noise = textures.get(R.drawable.noise);
             Texture star = textures.get(R.drawable.stars);

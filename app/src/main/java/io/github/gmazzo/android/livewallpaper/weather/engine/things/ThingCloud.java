@@ -1,5 +1,7 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.things;
 
+import static javax.microedition.khronos.opengles.GL10.GL_ONE;
+import static javax.microedition.khronos.opengles.GL10.GL_ONE_MINUS_SRC_ALPHA;
 import static io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneClear.CLOUD_X_RANGE;
 
 import javax.microedition.khronos.opengles.GL10;
@@ -52,7 +54,7 @@ public class ThingCloud extends Thing {
             model = models.get(MODELS[which - 1]);
             texture = textures.get(TEXTURES[which - 1]);
         }
-        gl.glBlendFunc(1, 771);
+        gl.glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         super.render(gl, textures, models);
     }
 

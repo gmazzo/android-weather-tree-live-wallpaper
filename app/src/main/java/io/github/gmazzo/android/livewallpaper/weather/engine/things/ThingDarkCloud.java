@@ -1,6 +1,9 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.things;
 
 import static javax.microedition.khronos.opengles.GL10.GL_LIGHTING;
+import static javax.microedition.khronos.opengles.GL10.GL_ONE;
+import static javax.microedition.khronos.opengles.GL10.GL_ONE_MINUS_SRC_ALPHA;
+import static javax.microedition.khronos.opengles.GL10.GL_SRC_ALPHA;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
 import static io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneClear.CLOUD_X_RANGE;
 
@@ -70,7 +73,7 @@ public class ThingDarkCloud extends Thing {
         if (this.texture != null && this.model != null) {
             gl.glBindTexture(GL_TEXTURE_2D, texture.getGlId());
 
-            gl.glBlendFunc(1, 771);
+            gl.glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
             gl.glPushMatrix();
             gl.glTranslatef(this.origin.getX(), this.origin.getY(), this.origin.getZ());
             gl.glScalef(this.scale.getX(), this.scale.getY(), this.scale.getZ());
@@ -82,7 +85,7 @@ public class ThingDarkCloud extends Thing {
                 gl.glDisable(GL_LIGHTING);
                 gl.glBindTexture(GL_TEXTURE_2D, texNameFlare.getGlId());
                 gl.glColor4f(pref_boltEngineColor.getR(), pref_boltEngineColor.getG(), pref_boltEngineColor.getB(), this.flashIntensity);
-                gl.glBlendFunc(770, 1);
+                gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE);
                 model.render();
                 gl.glEnable(GL_LIGHTING);
             }

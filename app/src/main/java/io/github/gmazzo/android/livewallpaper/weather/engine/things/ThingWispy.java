@@ -1,5 +1,8 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.things;
 
+import static javax.microedition.khronos.opengles.GL10.GL_ONE_MINUS_SRC_ALPHA;
+import static javax.microedition.khronos.opengles.GL10.GL_SRC_ALPHA;
+
 import javax.microedition.khronos.opengles.GL10;
 
 import io.github.gmazzo.android.livewallpaper.weather.R;
@@ -23,7 +26,7 @@ public class ThingWispy extends Thing {
 
         EngineColor todEngineColor = SceneBase.todEngineColorFinal;
         gl.glColor4f(todEngineColor.getR(), todEngineColor.getG(), todEngineColor.getB(), (todEngineColor.getR() + todEngineColor.getG()) + (todEngineColor.getB() / 3.0f));
-        gl.glBlendFunc(770, 771);
+        gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         super.render(gl, textures, models);
     }
 

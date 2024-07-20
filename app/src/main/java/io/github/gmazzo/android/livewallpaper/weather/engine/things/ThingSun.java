@@ -2,6 +2,9 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.things;
 
 import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
 import static javax.microedition.khronos.opengles.GL10.GL_MODULATE;
+import static javax.microedition.khronos.opengles.GL10.GL_ONE;
+import static javax.microedition.khronos.opengles.GL10.GL_ONE_MINUS_SRC_COLOR;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE0;
 
 import javax.microedition.khronos.opengles.GL10;
@@ -30,7 +33,7 @@ public class ThingSun extends Thing {
             model = models.get(R.raw.plane_16x16);
         }
 
-        gl.glBlendFunc(1, 769);
+        gl.glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
         gl.glColor4f(this.engineColor.getR(), this.engineColor.getG(), this.engineColor.getB(), this.engineColor.getA());
         gl.glMatrixMode(GL_MODELVIEW);
         gl.glPushMatrix();
@@ -38,7 +41,7 @@ public class ThingSun extends Thing {
         gl.glTranslatef(this.origin.getX(), this.origin.getY(), this.origin.getZ());
         gl.glScalef(this.scale.getX(), this.scale.getY(), this.scale.getZ());
         gl.glRotatef((this.sTimeElapsed * 12.0f) % 360.0f, 0.0f, 1.0f, 0.0f);
-        gl.glMatrixMode(5890);
+        gl.glMatrixMode(GL_TEXTURE);
         gl.glPushMatrix();
         float f11 = (this.sTimeElapsed * 18.0f) % 360.0f;
         gl.glTranslatef(0.5f, 0.5f, 0.0f);

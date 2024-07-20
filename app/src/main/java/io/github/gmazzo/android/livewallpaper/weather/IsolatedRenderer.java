@@ -1,12 +1,26 @@
 package io.github.gmazzo.android.livewallpaper.weather;
 
+import static javax.microedition.khronos.opengles.GL10.GL_BACK;
+import static javax.microedition.khronos.opengles.GL10.GL_BLEND;
+import static javax.microedition.khronos.opengles.GL10.GL_COLOR_MATERIAL;
+import static javax.microedition.khronos.opengles.GL10.GL_DEPTH_BUFFER_BIT;
+import static javax.microedition.khronos.opengles.GL10.GL_FASTEST;
+import static javax.microedition.khronos.opengles.GL10.GL_GEQUAL;
+import static javax.microedition.khronos.opengles.GL10.GL_LEQUAL;
 import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
 import static javax.microedition.khronos.opengles.GL10.GL_MODULATE;
+import static javax.microedition.khronos.opengles.GL10.GL_ONE;
+import static javax.microedition.khronos.opengles.GL10.GL_ONE_MINUS_SRC_ALPHA;
+import static javax.microedition.khronos.opengles.GL10.GL_PERSPECTIVE_CORRECTION_HINT;
+import static javax.microedition.khronos.opengles.GL10.GL_PROJECTION;
+import static javax.microedition.khronos.opengles.GL10.GL_SMOOTH;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE0;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_COORD_ARRAY;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_ENV;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_ENV_MODE;
+import static javax.microedition.khronos.opengles.GL10.GL_VERTEX_ARRAY;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -151,7 +165,7 @@ public class IsolatedRenderer {
             this.IS_LANDSCAPE = false;
         }
         setRenderDefaults(gl);
-        gl.glMatrixMode(5889);
+        gl.glMatrixMode(GL_PROJECTION);
         gl.glLoadIdentity();
         if (gl != this.gl) {
             this.gl = (GL11) gl;
@@ -180,25 +194,25 @@ public class IsolatedRenderer {
     }
 
     public void setRenderDefaults(GL10 gl) {
-        gl.glHint(3152, 4353);
-        gl.glShadeModel(7425);
+        gl.glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
+        gl.glShadeModel(GL_SMOOTH);
         gl.glEnable(GL_TEXTURE_2D);
-        gl.glEnable(3042);
-        gl.glAlphaFunc(518, 0.02f);
+        gl.glEnable(GL_BLEND);
+        gl.glAlphaFunc(GL_GEQUAL, 0.02f);
         gl.glDepthMask(false);
-        gl.glDepthFunc(515);
+        gl.glDepthFunc(GL_LEQUAL);
         gl.glTexEnvx(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-        gl.glEnableClientState(32884);
+        gl.glEnableClientState(GL_VERTEX_ARRAY);
         gl.glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-        gl.glBlendFunc(1, 771);
-        gl.glCullFace(1029);
+        gl.glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+        gl.glCullFace(GL_BACK);
         gl.glActiveTexture(GL_TEXTURE0);
-        gl.glEnable(2903);
-        gl.glMatrixMode(5890);
+        gl.glEnable(GL_COLOR_MATERIAL);
+        gl.glMatrixMode(GL_TEXTURE);
         gl.glPopMatrix();
         gl.glPopMatrix();
         gl.glLoadIdentity();
-        gl.glMatrixMode(5889);
+        gl.glMatrixMode(GL_PROJECTION);
         gl.glPopMatrix();
         gl.glPopMatrix();
         gl.glLoadIdentity();
@@ -213,8 +227,8 @@ public class IsolatedRenderer {
             this.globalTime.updateTime();
             updateCalendar(this.globalTime.sTimeDelta);
             updateCameraPosition(gl, this.globalTime.sTimeDelta);
-            gl.glClear(256);
-            gl.glMatrixMode(5889);
+            gl.glClear(GL_DEPTH_BUFFER_BIT);
+            gl.glMatrixMode(GL_PROJECTION);
             gl.glLoadIdentity();
             if (this.IS_LANDSCAPE) {
                 GLU.gluPerspective(gl, this.cameraFOV, this.screenRatio, 1.0f, 400.0f);

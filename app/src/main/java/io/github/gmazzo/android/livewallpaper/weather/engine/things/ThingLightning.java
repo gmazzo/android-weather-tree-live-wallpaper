@@ -2,6 +2,8 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.things;
 
 import static javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT;
 import static javax.microedition.khronos.opengles.GL10.GL_LIGHTING;
+import static javax.microedition.khronos.opengles.GL10.GL_ONE;
+import static javax.microedition.khronos.opengles.GL10.GL_SRC_ALPHA;
 
 import javax.microedition.khronos.opengles.GL10;
 
@@ -35,7 +37,7 @@ public class ThingLightning extends Thing {
         gl.glEnable(GL_LIGHTING);
         gl.glEnable(GL_COLOR_BUFFER_BIT);
 
-        gl.glBlendFunc(770, 1);
+        gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE);
         gl.glPushMatrix();
         gl.glTranslatef(this.origin.getX(), this.origin.getY(), this.origin.getZ());
         gl.glScalef(this.scale.getX(), this.scale.getX(), this.scale.getX());

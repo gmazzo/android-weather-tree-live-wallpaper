@@ -1,6 +1,8 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.scenes;
 
 import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
+import static javax.microedition.khronos.opengles.GL10.GL_ONE_MINUS_SRC_ALPHA;
+import static javax.microedition.khronos.opengles.GL10.GL_SRC_ALPHA;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
 
 import android.content.Context;
@@ -98,7 +100,7 @@ public abstract class SceneBase extends Scene {
             gl.glTranslatef(-8.0f, 70.0f, -70.0f);
         }
         gl.glScalef(5.0f, 5.0f, 5.0f);
-        gl.glBlendFunc(770, 771);
+        gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         tree_terrain.render();
 
         AnimatedModel grass = (AnimatedModel) models.get(R.raw.grass_overlay);

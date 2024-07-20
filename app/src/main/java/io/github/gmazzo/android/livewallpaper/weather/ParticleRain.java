@@ -1,5 +1,8 @@
 package io.github.gmazzo.android.livewallpaper.weather;
 
+import static javax.microedition.khronos.opengles.GL10.GL_ONE;
+import static javax.microedition.khronos.opengles.GL10.GL_ONE_MINUS_SRC_ALPHA;
+
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
@@ -42,6 +45,6 @@ public class ParticleRain extends ParticleSystem {
     }
 
     public void renderStart(GL10 gl) {
-        gl.glBlendFunc(1, 771);
+        gl.glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     }
 }
