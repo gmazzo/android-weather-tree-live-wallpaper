@@ -9,6 +9,8 @@ import android.view.SurfaceHolder;
 import java.util.Arrays;
 import java.util.List;
 
+import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode;
+
 public class GLWallpaperService extends WallpaperService {
 
     public class GLEngine extends Engine {

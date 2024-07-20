@@ -1,52 +1,63 @@
-package io.github.gmazzo.android.livewallpaper.weather;
+package io.github.gmazzo.android.livewallpaper.weather.engine.scenes;
 
 import static javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT;
 import static javax.microedition.khronos.opengles.GL10.GL_LIGHTING;
 import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
+import static javax.microedition.khronos.opengles.GL10.GL_MODULATE;
+import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE0;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.annotation.DrawableRes;
+
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
+import io.github.gmazzo.android.livewallpaper.weather.R;
+import io.github.gmazzo.android.livewallpaper.weather.WallpaperSettings;
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor;
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand;
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime;
 import io.github.gmazzo.android.livewallpaper.weather.engine.ThingManager;
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector;
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingCloud;
+import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingMoon;
+import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingSun;
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingWispy;
 import io.github.gmazzo.android.livewallpaper.weather.sky_manager.TimeOfDay;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Model;
+import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Texture;
 
-public class SceneSnow extends SceneBase {
-    private static final int CLOUD_MODELS[] = {
-            R.raw.cloud1m, R.raw.cloud2m, R.raw.cloud3m,
-            R.raw.cloud4m, R.raw.cloud5m};
-    private static final int CLOUD_TEXTURES[] = {
-            R.drawable.cloud1, R.drawable.cloud2, R.drawable.cloud3,
-            R.drawable.cloud4, R.drawable.cloud5};
-    private static final int WISPY_TEXTURES[] = {
-            R.raw.wispy1, R.raw.wispy2, R.raw.wispy3};
-    static final float CLOUD_START_DISTANCE = 175.0f;
-    static final float CLOUD_X_RANGE = 45.0f;
-    static final float CLOUD_Z_RANGE = 20.0f;
-    private static final String TAG = "Snow";
-    static final float WISPY_X_RANGE = 60.0f;
-    static final float WISPY_Z_RANGE = 30.0f;
-    public static float pref_snowGravity;
-    public static String pref_snowImage;
-    public static float pref_snowNoise;
-    ParticleSnow particleSnow;
-    int pref_snowDensity;
-    Vector snowPos1;
-    Vector snowPos2;
-    Vector snowPos3;
+public class SceneClear extends SceneBase {
+    protected static final float BALLOON_START_ALTITUDE = -50.0f;
+    protected static final float CLOUD_START_DISTANCE = 175.0f;
+    public static final float CLOUD_X_RANGE = 45.0f;
+    protected static final float CLOUD_Z_RANGE = 20.0f;
+    private static final String TAG = "Clear";
+    protected static final float UFO_START_ALTITUDE = 65.0f;
+    protected static final float WISPY_X_RANGE = 60.0f;
+    protected static final float WISPY_Z_RANGE = 30.0f;
+    protected static String[] validBalloonTextures = new String[]{"bal_red", "bal_blue", "bal_yellow", "bal_green"};
+    protected int batteryLevel;
+    protected float nextUfoSpawn;
+    private boolean pref_ufoBattery;
+    private boolean pref_useMoon;
+    private boolean pref_useSun;
+    private boolean pref_useUfo;
+    protected long smsLastUnreadCheckTime;
+    protected int smsUnreadCount;
+    private final @DrawableRes
+    int backgroundId;
 
-    public SceneSnow(Context context, GL11 gl) {
+    public SceneClear(Context context, GL11 gl) {
+        this(context, gl, R.drawable.bg3);
+    }
+
+    public SceneClear(Context context, GL11 gl, @DrawableRes int backgroundId) {
         super(context, gl);
+        this.backgroundId = backgroundId;
         this.mThingManager = new ThingManager();
         todEngineColorFinal = new EngineColor();
         this.pref_todEngineColors = new EngineColor[4];
@@ -54,15 +65,22 @@ public class SceneSnow extends SceneBase {
         this.pref_todEngineColors[1] = new EngineColor();
         this.pref_todEngineColors[2] = new EngineColor();
         this.pref_todEngineColors[3] = new EngineColor();
-        this.reloadAssets = false;
+        this.reloadAssets = true;
+        this.batteryLevel = 100;
         this.pref_numClouds = 20;
         this.pref_numWisps = 6;
-        this.snowPos1 = new Vector(0.0f, CLOUD_Z_RANGE, -20.0f);
-        this.snowPos2 = new Vector(8.0f, 15.0f, -20.0f);
-        this.snowPos3 = new Vector(-8.0f, 10.0f, -20.0f);
+        this.pref_useUfo = true;
+        this.pref_ufoBattery = true;
+        this.pref_useSun = true;
+        this.pref_useMoon = true;
+        this.nextUfoSpawn = WISPY_X_RANGE;
+        this.smsUnreadCount = 0;
+        this.smsLastUnreadCheckTime = 0;
     }
 
     public void load(GL10 gl) {
+        checkSun();
+        checkMoon();
         spawnClouds(false);
     }
 
@@ -72,31 +90,36 @@ public class SceneSnow extends SceneBase {
             windSpeedFromPrefs(prefs);
             numCloudsFromPrefs(prefs);
             todFromPrefs(prefs);
+            this.pref_useSun = true; // prefs.getBoolean("pref_usesun", true);
+            this.pref_useMoon = true; //prefs.getBoolean("pref_usemoon", true);
+            this.pref_useUfo = prefs.getBoolean("pref_useufo", false);
+            this.pref_ufoBattery = prefs.getBoolean("pref_ufobattery", true);
             if (key != null && (key.contains("numclouds") || key.contains("windspeed") || key.contains("numwisps"))) {
                 spawnClouds(true);
             }
-            snowDensityFromPrefs(prefs);
-            snowGravityFromPrefs(prefs);
-            snowNoiseFromPrefs(prefs);
-            snowTypeFromPrefs(prefs);
+            checkSun();
+            checkMoon();
             return;
         }
         this.reloadAssets = true;
     }
 
     public void precacheAssets(GL10 gl10) {
-        textures.get(R.drawable.bg2);
+        textures.get(backgroundId);
         textures.get(R.drawable.trees_overlay);
         textures.get(R.drawable.cloud1);
         textures.get(R.drawable.cloud2);
         textures.get(R.drawable.cloud3);
         textures.get(R.drawable.cloud4);
         textures.get(R.drawable.cloud5);
+        textures.get(R.drawable.stars);
+        textures.get(R.drawable.noise);
         textures.get(R.raw.wispy1);
         textures.get(R.raw.wispy2);
         textures.get(R.raw.wispy3);
-        textures.get(R.raw.p_snow1);
-        textures.get(R.raw.p_snow2);
+        textures.get(R.raw.sun);
+        textures.get(R.raw.sun_blend);
+        textures.get(R.drawable.moon_0);
         models.get(R.raw.plane_16x16);
         models.get(R.raw.cloud1m);
         models.get(R.raw.cloud2m);
@@ -106,11 +129,27 @@ public class SceneSnow extends SceneBase {
         models.get(R.raw.grass_overlay);
         models.get(R.raw.trees_overlay);
         models.get(R.raw.trees_overlay_terrain);
-        models.get(R.raw.flakes);
+        models.get(R.raw.stars);
     }
 
-    private void spawnClouds(boolean force) {
+    protected void spawnClouds(boolean force) {
         spawnClouds(this.pref_numClouds, this.pref_numWisps, force);
+    }
+
+    private void checkMoon() {
+        if (this.pref_useMoon) {
+            spawnMoon();
+        } else {
+            removeMoon();
+        }
+    }
+
+    private void checkSun() {
+        if (this.pref_useSun) {
+            spawnSun();
+        } else {
+            removeSun();
+        }
     }
 
     public void backgroundFromPrefs(SharedPreferences prefs) {
@@ -124,24 +163,33 @@ public class SceneSnow extends SceneBase {
         this.pref_todEngineColors[3].set(prefs.getString(WallpaperSettings.PREF_LIGHT_COLOR4, "1 0.85 0.75 1"), 0.0f, 1.0f);
     }
 
-    private void snowDensityFromPrefs(SharedPreferences prefs) {
-        this.pref_snowDensity = Integer.parseInt(prefs.getString("pref_snowdensity", "2"));
+    private void removeMoon() {
+        this.mThingManager.clearByTargetname("moon");
     }
 
-    private void snowGravityFromPrefs(SharedPreferences prefs) {
-        pref_snowGravity = Float.parseFloat(prefs.getString("pref_snowgravity", "2")) * 0.5f;
+    private void removeSun() {
+        this.mThingManager.clearByTargetname("sun");
     }
 
-    private void snowNoiseFromPrefs(SharedPreferences prefs) {
-        pref_snowNoise = Float.parseFloat(prefs.getString("pref_snownoise", "7")) * 0.1f;
+    private void spawnMoon() {
+        if (this.mThingManager.countByTargetname("moon") == 0) {
+            ThingMoon moon = new ThingMoon();
+            moon.origin.set(-30.0f, 100.0f, -100.0f);
+            moon.targetName = "moon";
+            this.mThingManager.add(moon);
+        }
     }
 
-    private void snowTypeFromPrefs(SharedPreferences prefs) {
-        pref_snowImage = prefs.getString("pref_snowtype", "p_snow1");
-        this.reloadAssets = true;
+    private void spawnSun() {
+        if (this.mThingManager.countByTargetname("sun") == 0) {
+            ThingSun sun = new ThingSun();
+            sun.origin.set(WISPY_Z_RANGE, 100.0f, 0.0f);
+            sun.targetName = "sun";
+            this.mThingManager.add(sun);
+        }
     }
 
-    private void spawnClouds(int num_clouds, int num_wisps, boolean force) {
+    protected void spawnClouds(int num_clouds, int num_wisps, boolean force) {
         boolean cloudsExist = this.mThingManager.countByTargetname("cloud") != 0;
         if (force || !cloudsExist) {
             int i;
@@ -167,18 +215,14 @@ public class SceneSnow extends SceneBase {
                 cloud.origin.setX((((float) i) * (90.0f / ((float) num_clouds))) - 0.099609375f);
                 cloud.origin.setY(cloudDepthList[i]);
                 cloud.origin.setZ(GlobalRand.floatRange(-20.0f, -10.0f));
-                int which = (i % 5) + 1;
-                cloud.model = models.get(CLOUD_MODELS[which - 1]);
-                cloud.texture = textures.get(CLOUD_TEXTURES[which - 1]);
+                cloud.which = (i % 5) + 1;
                 cloud.targetName = "cloud";
                 cloud.velocity = new Vector(pref_windSpeed * 1.5f, 0.0f, 0.0f);
                 this.mThingManager.add(cloud);
             }
             for (i = 0; i < cloudDepthList.length; i++) {
-                int which = ((i % 3) + 1);
                 ThingWispy wispy = new ThingWispy();
-                wispy.model = models.get(R.raw.plane_16x16);
-                wispy.texture = textures.get(WISPY_TEXTURES[which - 1]);
+                wispy.which = (i % 3) + 1;
                 wispy.targetName = "wispy";
                 wispy.velocity = new Vector(pref_windSpeed * 1.5f, 0.0f, 0.0f);
                 wispy.scale.set(GlobalRand.floatRange(1.0f, 3.0f), 1.0f, GlobalRand.floatRange(1.0f, 1.5f));
@@ -207,26 +251,11 @@ public class SceneSnow extends SceneBase {
         renderBackground(gl, time.sTimeElapsed);
         gl.glTranslatef(0.0f, 0.0f, 40.0f);
         this.mThingManager.render(gl, textures, models);
-        renderSnow(gl, time.sTimeDelta);
         drawTree(gl, time.sTimeDelta);
     }
 
-    private void renderSnow(GL10 gl, float timeDelta) {
-        if (this.particleSnow == null) {
-            this.particleSnow = new ParticleSnow();
-        }
-        this.particleSnow.update(timeDelta);
-        this.particleSnow.render((GL11) gl, this.snowPos1);
-        if (this.pref_snowDensity > 1) {
-            this.particleSnow.render((GL11) gl, this.snowPos2);
-        }
-        if (this.pref_snowDensity > 2) {
-            this.particleSnow.render((GL11) gl, this.snowPos3);
-        }
-    }
-
     private void renderBackground(GL10 gl, float timeDelta) {
-        gl.glBindTexture(GL_TEXTURE_2D, textures.get(R.drawable.bg2).getGlId());
+        gl.glBindTexture(GL_TEXTURE_2D, textures.get(backgroundId).getGlId());
         gl.glColor4f(todEngineColorFinal.getR(), todEngineColorFinal.getG(), todEngineColorFinal.getB(), 1.0f);
         gl.glMatrixMode(GL_MODELVIEW);
         gl.glPushMatrix();
@@ -237,8 +266,26 @@ public class SceneSnow extends SceneBase {
         gl.glTranslatef(((pref_windSpeed * timeDelta) * -0.005f) % 1.0f, 0.0f, 0.0f);
         Model mesh = models.get(R.raw.plane_16x16);
         mesh.render();
+        renderStars(gl, timeDelta);
         gl.glPopMatrix();
         gl.glMatrixMode(GL_MODELVIEW);
         gl.glPopMatrix();
+    }
+
+    private void renderStars(GL10 gl, float timeDelta) {
+        if (pref_useTimeOfDay && todSunPosition <= 0.0f) {
+            gl.glColor4f(1.0f, 1.0f, 1.0f, todSunPosition * -2.0f);
+            gl.glBlendFunc(770, 1);
+            Model starMesh = models.get(R.raw.stars);
+            Texture noise = textures.get(R.drawable.noise);
+            Texture star = textures.get(R.drawable.stars);
+            gl.glTranslatef((0.1f * timeDelta) % 1.0f, 300.0f, -100.0f);
+            if (gl instanceof GL11) {
+                starMesh.renderFrameMultiTexture(noise, star, GL_MODULATE, false);
+                return;
+            }
+            gl.glBindTexture(GL_TEXTURE0, star.getGlId());
+            starMesh.render();
+        }
     }
 }

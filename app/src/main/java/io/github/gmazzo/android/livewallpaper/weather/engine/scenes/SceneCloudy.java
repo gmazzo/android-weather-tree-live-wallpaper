@@ -1,8 +1,10 @@
-package io.github.gmazzo.android.livewallpaper.weather;
+package io.github.gmazzo.android.livewallpaper.weather.engine.scenes;
 
 import android.content.Context;
 
 import javax.microedition.khronos.opengles.GL11;
+
+import io.github.gmazzo.android.livewallpaper.weather.R;
 
 public class SceneCloudy extends SceneClear {
 

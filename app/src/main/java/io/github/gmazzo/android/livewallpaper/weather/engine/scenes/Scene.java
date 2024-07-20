@@ -1,4 +1,4 @@
-package io.github.gmazzo.android.livewallpaper.weather.engine;
+package io.github.gmazzo.android.livewallpaper.weather.engine.scenes;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
+import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime;
+import io.github.gmazzo.android.livewallpaper.weather.engine.ThingManager;
 import io.github.gmazzo.android.livewallpaper.weather.sky_manager.TimeOfDay;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures;

@@ -5,8 +5,8 @@ import javax.microedition.khronos.opengles.GL11;
 
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand;
 import io.github.gmazzo.android.livewallpaper.weather.engine.ParticleSystem;
-import io.github.gmazzo.android.livewallpaper.weather.engine.Scene;
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector;
+import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.Scene;
 
 public class ParticleRain extends ParticleSystem {
     public ParticleRain(int density) {

@@ -1,4 +1,4 @@
-package io.github.gmazzo.android.livewallpaper.weather;
+package io.github.gmazzo.android.livewallpaper.weather.engine.scenes;
 
 import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
@@ -9,11 +9,12 @@ import android.content.SharedPreferences;
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
+import io.github.gmazzo.android.livewallpaper.weather.R;
+import io.github.gmazzo.android.livewallpaper.weather.WallpaperSettings;
 import io.github.gmazzo.android.livewallpaper.weather.engine.AnimPlayer;
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor;
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand;
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime;
-import io.github.gmazzo.android.livewallpaper.weather.engine.Scene;
 import io.github.gmazzo.android.livewallpaper.weather.sky_manager.TimeOfDay;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.AnimatedModel;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Model;
