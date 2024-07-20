@@ -6,14 +6,13 @@ import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
 import io.github.gmazzo.android.livewallpaper.weather.ParticleSnow;
 import io.github.gmazzo.android.livewallpaper.weather.R;
-import io.github.gmazzo.android.livewallpaper.weather.WallpaperSettings;
+import io.github.gmazzo.android.livewallpaper.weather.WeatherType;
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor;
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand;
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime;
@@ -65,28 +64,23 @@ public class SceneSnow extends SceneBase {
         this.snowPos3 = new Vector(-8.0f, 10.0f, -20.0f);
     }
 
+    @Override
     public void load(GL10 gl) {
         spawnClouds(false);
     }
 
-    public void updateSharedPrefs(SharedPreferences prefs, String key) {
-        if (key == null || !key.equals("pref_usemipmaps")) {
-            backgroundFromPrefs(prefs);
-            windSpeedFromPrefs(prefs);
-            numCloudsFromPrefs(prefs);
-            todFromPrefs(prefs);
-            if (key != null && (key.contains("numclouds") || key.contains("windspeed") || key.contains("numwisps"))) {
-                spawnClouds(true);
-            }
-            snowDensityFromPrefs(prefs);
-            snowGravityFromPrefs(prefs);
-            snowNoiseFromPrefs(prefs);
-            snowTypeFromPrefs(prefs);
-            return;
-        }
-        this.reloadAssets = true;
+    @Override
+    public void updateWeather(WeatherType weather) {
+            windSpeedFromPrefs();
+            numCloudsFromPrefs(weather);
+            todFromPrefs();
+            snowDensityFromPrefs();
+            snowGravityFromPrefs();
+            snowNoiseFromPrefs();
+            snowTypeFromPrefs();
     }
 
+    @Override
     public void precacheAssets(GL10 gl10) {
         textures.get(R.drawable.bg2);
         textures.get(R.drawable.trees_overlay);
@@ -116,31 +110,27 @@ public class SceneSnow extends SceneBase {
         spawnClouds(this.pref_numClouds, this.pref_numWisps, force);
     }
 
-    public void backgroundFromPrefs(SharedPreferences prefs) {
+    private void todFromPrefs() {
+        this.pref_todEngineColors[0].set("0.5 0.5 0.75 1", 0.0f, 1.0f);
+        this.pref_todEngineColors[1].set("1 0.73 0.58 1", 0.0f, 1.0f);
+        this.pref_todEngineColors[2].set("1 1 1 1", 0.0f, 1.0f);
+        this.pref_todEngineColors[3].set("1 0.85 0.75 1", 0.0f, 1.0f);
     }
 
-    private void todFromPrefs(SharedPreferences prefs) {
-        pref_useTimeOfDay = prefs.getBoolean(WallpaperSettings.PREF_USE_TOD, false);
-        this.pref_todEngineColors[0].set(prefs.getString(WallpaperSettings.PREF_LIGHT_COLOR1, "0.5 0.5 0.75 1"), 0.0f, 1.0f);
-        this.pref_todEngineColors[1].set(prefs.getString(WallpaperSettings.PREF_LIGHT_COLOR2, "1 0.73 0.58 1"), 0.0f, 1.0f);
-        this.pref_todEngineColors[2].set(prefs.getString(WallpaperSettings.PREF_LIGHT_COLOR3, "1 1 1 1"), 0.0f, 1.0f);
-        this.pref_todEngineColors[3].set(prefs.getString(WallpaperSettings.PREF_LIGHT_COLOR4, "1 0.85 0.75 1"), 0.0f, 1.0f);
+    private void snowDensityFromPrefs() {
+        this.pref_snowDensity = 2;
     }
 
-    private void snowDensityFromPrefs(SharedPreferences prefs) {
-        this.pref_snowDensity = Integer.parseInt(prefs.getString("pref_snowdensity", "2"));
+    private void snowGravityFromPrefs() {
+        pref_snowGravity = 2 * 0.5f;
     }
 
-    private void snowGravityFromPrefs(SharedPreferences prefs) {
-        pref_snowGravity = Float.parseFloat(prefs.getString("pref_snowgravity", "2")) * 0.5f;
+    private void snowNoiseFromPrefs() {
+        pref_snowNoise = 7 * 0.1f;
     }
 
-    private void snowNoiseFromPrefs(SharedPreferences prefs) {
-        pref_snowNoise = Float.parseFloat(prefs.getString("pref_snownoise", "7")) * 0.1f;
-    }
-
-    private void snowTypeFromPrefs(SharedPreferences prefs) {
-        pref_snowImage = prefs.getString("pref_snowtype", "p_snow1");
+    private void snowTypeFromPrefs() {
+        pref_snowImage = "p_snow1";
         this.reloadAssets = true;
     }
 
@@ -193,11 +183,13 @@ public class SceneSnow extends SceneBase {
         }
     }
 
+    @Override
     public void updateTimeOfDay(TimeOfDay tod) {
         todSunPosition = tod.getSunPosition();
         super.updateTimeOfDay(tod);
     }
 
+    @Override
     public void draw(GL10 gl, GlobalTime time) {
         checkAssetReload(gl);
         this.mThingManager.update(time.sTimeDelta);

@@ -2,15 +2,12 @@ package io.github.gmazzo.android.livewallpaper.weather;
 
 import android.content.Context;
 import android.opengl.GLSurfaceView;
-import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
-
-import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode;
 
 public class RenderSurfaceView extends GLSurfaceView {
     protected boolean isPaused;
@@ -73,10 +70,6 @@ public class RenderSurfaceView extends GLSurfaceView {
         this.mServiceSurfaceHolder = holder;
     }
 
-    public SurfaceHolder getSurfaceHolder() {
-        return this.mServiceSurfaceHolder;
-    }
-
     public void onPause() {
         this.mBaseRenderer.onPause();
         setRenderMode(0);
@@ -91,8 +84,8 @@ public class RenderSurfaceView extends GLSurfaceView {
         super.onDetachedFromWindow();
     }
 
-    public void changeScene(SceneMode sceneId) {
-        this.mBaseRenderer.renderer.onSceneChanged(sceneId);
+    public void changeScene(WeatherType weather) {
+        this.mBaseRenderer.renderer.onSceneChanged(weather);
     }
 
     public void scrollOffset(float offset) {
@@ -105,11 +98,6 @@ public class RenderSurfaceView extends GLSurfaceView {
     }
 
     public void updateWeatherType(WeatherType type) {
-        PreferenceManager.getDefaultSharedPreferences(getContext()).edit()
-                .putInt(WallpaperSettings.PREF_NUM_CLOUDS, type.getClouds())
-                .putInt(WallpaperSettings.PREF_NUM_WISPS, type.getWisps())
-                .apply();
-
-        changeScene(type.getScene());
+        changeScene(type);
     }
 }

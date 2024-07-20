@@ -1,4 +1,4 @@
-package io.github.gmazzo.android.livewallpaper.weather.sky_manager
+package io.github.gmazzo.android.livewallpaper.weather
 
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.content.Context

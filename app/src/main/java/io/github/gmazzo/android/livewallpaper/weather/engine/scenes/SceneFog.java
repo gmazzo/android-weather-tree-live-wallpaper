@@ -7,13 +7,12 @@ import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
 import io.github.gmazzo.android.livewallpaper.weather.R;
-import io.github.gmazzo.android.livewallpaper.weather.WallpaperSettings;
+import io.github.gmazzo.android.livewallpaper.weather.WeatherType;
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor;
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime;
 import io.github.gmazzo.android.livewallpaper.weather.engine.ThingManager;
@@ -41,20 +40,18 @@ public class SceneFog extends SceneBase {
         this.reloadAssets = false;
     }
 
+    @Override
     public void load(GL10 gl) {
     }
 
-    public void updateSharedPrefs(SharedPreferences prefs, String key) {
-        if (key == null || !key.equals("pref_usemipmaps")) {
-            backgroundFromPrefs(prefs);
-            windSpeedFromPrefs(prefs);
-            todFromPrefs(prefs);
-            pref_fog_density = prefs.getFloat("pref_fog_desity", 0.2f);
-            return;
-        }
-        this.reloadAssets = true;
+    @Override
+    public void updateWeather(WeatherType weather) {
+            windSpeedFromPrefs();
+            todFromPrefs();
+            pref_fog_density = 0.2f;
     }
 
+    @Override
     public void precacheAssets(GL10 gl10) {
         textures.get(R.drawable.bg1);
         textures.get(R.drawable.trees_overlay);
@@ -66,35 +63,28 @@ public class SceneFog extends SceneBase {
         models.get(R.raw.trees_overlay_terrain);
     }
 
-    public void backgroundFromPrefs(SharedPreferences prefs) {
-    }
-
-    private void todFromPrefs(SharedPreferences prefs) {
-        pref_useTimeOfDay = prefs.getBoolean(WallpaperSettings.PREF_USE_TOD, false);
-        this.pref_todEngineColors[0].set(prefs.getString(WallpaperSettings.PREF_LIGHT_COLOR1, "0.5 0.5 0.75 1"), 0.0f, 1.0f);
-        this.pref_todEngineColors[1].set(prefs.getString(WallpaperSettings.PREF_LIGHT_COLOR2, "1 0.73 0.58 1"), 0.0f, 1.0f);
-        this.pref_todEngineColors[2].set(prefs.getString(WallpaperSettings.PREF_LIGHT_COLOR3, "1 1 1 1"), 0.0f, 1.0f);
-        this.pref_todEngineColors[3].set(prefs.getString(WallpaperSettings.PREF_LIGHT_COLOR4, "1 0.85 0.75 1"), 0.0f, 1.0f);
+    private void todFromPrefs() {
+        this.pref_todEngineColors[0].set("0.5 0.5 0.75 1", 0.0f, 1.0f);
+        this.pref_todEngineColors[1].set("1 0.73 0.58 1", 0.0f, 1.0f);
+        this.pref_todEngineColors[2].set("1 1 1 1", 0.0f, 1.0f);
+        this.pref_todEngineColors[3].set("1 0.85 0.75 1", 0.0f, 1.0f);
         this.fog_todEngineColors[0] = new EngineColor(0.2f, 0.2f, 0.2f, 1.0f);
         this.fog_todEngineColors[1] = new EngineColor(0.5f, 0.5f, 0.5f, 1.0f);
         this.fog_todEngineColors[2] = new EngineColor(0.8f, 0.8f, 0.8f, 1.0f);
         this.fog_todEngineColors[3] = new EngineColor(0.5f, 0.5f, 0.5f, 1.0f);
     }
 
+    @Override
     public void updateTimeOfDay(TimeOfDay tod) {
-        if (pref_useTimeOfDay) {
-            int iMain = tod.getMainIndex();
-            int iBlend = tod.getBlendIndex();
-            float blendAmount = tod.getBlendAmount();
-            this.todEngineColorFinal.blend(this.pref_todEngineColors[iMain], this.pref_todEngineColors[iBlend], blendAmount);
-            this.fogEngineColorFinal.blend(this.fog_todEngineColors[iMain], this.fog_todEngineColors[iBlend], blendAmount);
-        } else {
-            todEngineColorFinal.set(1.0f, 1.0f, 1.0f, 1.0f);
-            this.fogEngineColorFinal.set(0.8f, 0.8f, 0.8f, 1.0f);
-        }
+        int iMain = tod.getMainIndex();
+        int iBlend = tod.getBlendIndex();
+        float blendAmount = tod.getBlendAmount();
+        this.todEngineColorFinal.blend(this.pref_todEngineColors[iMain], this.pref_todEngineColors[iBlend], blendAmount);
+        this.fogEngineColorFinal.blend(this.fog_todEngineColors[iMain], this.fog_todEngineColors[iBlend], blendAmount);
         this.fogEngineColorFinal.setToArray(fogColor);
     }
 
+    @Override
     public void draw(GL10 gl, GlobalTime time) {
         checkAssetReload(gl);
         this.mThingManager.update(time.sTimeDelta);

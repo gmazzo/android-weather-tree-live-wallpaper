@@ -6,14 +6,13 @@ import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
 import io.github.gmazzo.android.livewallpaper.weather.ParticleRain;
 import io.github.gmazzo.android.livewallpaper.weather.R;
-import io.github.gmazzo.android.livewallpaper.weather.WallpaperSettings;
+import io.github.gmazzo.android.livewallpaper.weather.WeatherType;
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor;
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand;
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime;
@@ -43,7 +42,7 @@ public class SceneStorm extends SceneBase {
     float[] pref_diffuseLight;
     boolean pref_flashLights;
     boolean pref_randomBoltColor;
-    int rainDensity;
+    final int rainDensity;
     EngineColor v_light1_ambientLight;
 
     public SceneStorm(Context context, GL11 gl) {
@@ -76,45 +75,29 @@ public class SceneStorm extends SceneBase {
         this.reloadAssets = false;
     }
 
-    public void updateSharedPrefs(SharedPreferences prefs, String key) {
-        if (key == null || !key.equals("pref_usemipmaps")) {
-            backgroundFromPrefs(prefs);
-            windSpeedFromPrefs(prefs);
-            numCloudsFromPrefs(prefs);
-            rainDensityFromPrefs(prefs);
-            todFromPrefs(prefs);
-            if (key != null && (key.contains("numclouds") || key.contains("windspeed") || key.contains("numwisps"))) {
-                spawnClouds(true);
-            }
-            this.pref_randomBoltColor = prefs.getBoolean("pref_randomboltcolor", false);
-            boltColorFromPrefs(prefs);
-            boltFrequencyFromPrefs(prefs);
-            return;
-        }
-        this.reloadAssets = true;
+    @Override
+    public void updateWeather(WeatherType weatherType) {
+        windSpeedFromPrefs();
+        numCloudsFromPrefs(weatherType);
+        todFromPrefs();
+        this.pref_randomBoltColor = false;
+        boltColorFromPrefs();
+        boltFrequencyFromPrefs();
     }
 
-    public void backgroundFromPrefs(SharedPreferences prefs) {
-    }
-
-    private void rainDensityFromPrefs(SharedPreferences prefs) {
-        this.rainDensity = prefs.getInt(WallpaperSettings.PREF_RAIN_DENSITY, 10);
-    }
-
-    private void todFromPrefs(SharedPreferences prefs) {
-        pref_useTimeOfDay = prefs.getBoolean(WallpaperSettings.PREF_USE_TOD, false);
+    private void todFromPrefs() {
         this.pref_todEngineColors[0].set("0.25 0.2 0.2 1", 0.0f, 1.0f);
         this.pref_todEngineColors[1].set("0.6 0.6 0.6 1", 0.0f, 1.0f);
         this.pref_todEngineColors[2].set("0.9 0.9 0.9 1", 0.0f, 1.0f);
         this.pref_todEngineColors[3].set("0.65 0.6 0.6 1", 0.0f, 1.0f);
     }
 
-    public void boltColorFromPrefs(SharedPreferences prefs) {
-        pref_boltEngineColor.set(prefs.getString("pref_boltcolor", "1 1 1 1"), 0.0f, 1.0f);
+    public void boltColorFromPrefs() {
+        pref_boltEngineColor.set("1 1 1 1", 0.0f, 1.0f);
     }
 
-    public void boltFrequencyFromPrefs(SharedPreferences prefs) {
-        this.pref_boltFrequency = Float.parseFloat(prefs.getString("pref_boltfrequency", "5"));
+    public void boltFrequencyFromPrefs() {
+        this.pref_boltFrequency = 5;
     }
 
     public void precacheAssets(GL10 gl10) {
@@ -153,14 +136,14 @@ public class SceneStorm extends SceneBase {
         gl.glDisable(GL_LIGHTING);
     }
 
+    @Override
     public void updateTimeOfDay(TimeOfDay tod) {
-        if (pref_useTimeOfDay) {
-            int iMain = tod.getMainIndex();
-            int iBlend = tod.getBlendIndex();
-            this.v_light1_ambientLight.blend(this.pref_todEngineColors[iMain], this.pref_todEngineColors[iBlend], tod.getBlendAmount());
-        }
+        int iMain = tod.getMainIndex();
+        int iBlend = tod.getBlendIndex();
+        this.v_light1_ambientLight.blend(this.pref_todEngineColors[iMain], this.pref_todEngineColors[iBlend], tod.getBlendAmount());
     }
 
+    @Override
     public void draw(GL10 gl, GlobalTime time) {
         checkAssetReload(gl);
         this.mThingManager.update(time.sTimeDelta);

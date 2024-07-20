@@ -1,11 +1,11 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.scenes;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
+import io.github.gmazzo.android.livewallpaper.weather.WeatherType;
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime;
 import io.github.gmazzo.android.livewallpaper.weather.engine.ThingManager;
 import io.github.gmazzo.android.livewallpaper.weather.sky_manager.TimeOfDay;
@@ -40,7 +40,7 @@ public abstract class Scene {
         this.mLandscape = lanscape;
     }
 
-    public void updateSharedPrefs(SharedPreferences prefs, String key) {
+    public void updateWeather(WeatherType weather) {
     }
 
     public void update(GlobalTime globalTime) {

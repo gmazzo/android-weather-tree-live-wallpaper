@@ -6,14 +6,13 @@ import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
 import io.github.gmazzo.android.livewallpaper.weather.ParticleRain;
 import io.github.gmazzo.android.livewallpaper.weather.R;
-import io.github.gmazzo.android.livewallpaper.weather.WallpaperSettings;
+import io.github.gmazzo.android.livewallpaper.weather.WeatherType;
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor;
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand;
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime;
@@ -35,7 +34,7 @@ public class SceneRain extends SceneBase {
     float[] light_diffuse;
     ParticleRain particleRain;
     Vector particleRainOrigin;
-    int rainDensity;
+    final int rainDensity;
     EngineColor v_light_diffuse;
 
     public SceneRain(Context context, GL11 gl) {
@@ -58,6 +57,7 @@ public class SceneRain extends SceneBase {
         this.particleRainOrigin = new Vector(0.0f, 25.0f, 10.0f);
     }
 
+    @Override
     public void load(GL10 gl) {
         spawnClouds(false);
     }
@@ -101,40 +101,21 @@ public class SceneRain extends SceneBase {
         }
     }
 
-    public void updateSharedPrefs(SharedPreferences prefs, String key) {
-        if (key == null || !key.equals("pref_usemipmaps")) {
-            backgroundFromPrefs(prefs);
-            windSpeedFromPrefs(prefs);
-            numCloudsFromPrefs(prefs);
-            rainDensityFromPrefs(prefs);
-            todFromPrefs(prefs);
-            if (key == null) {
-                return;
-            }
-            if (key.contains("numclouds") || key.contains("windspeed") || key.contains("numwisps")) {
-                spawnClouds(true);
-                return;
-            }
-            return;
-        }
-        this.reloadAssets = true;
+    @Override
+    public void updateWeather(WeatherType weather) {
+        windSpeedFromPrefs();
+        numCloudsFromPrefs(weather);
+        todFromPrefs();
     }
 
-    private void todFromPrefs(SharedPreferences prefs) {
-        pref_useTimeOfDay = prefs.getBoolean(WallpaperSettings.PREF_USE_TOD, false);
+    private void todFromPrefs() {
         this.pref_todEngineColors[0].set("0.25 0.2 0.2 1", 0.0f, 1.0f);
         this.pref_todEngineColors[1].set("0.6 0.6 0.6 1", 0.0f, 1.0f);
         this.pref_todEngineColors[2].set("0.9 0.9 0.9 1", 0.0f, 1.0f);
         this.pref_todEngineColors[3].set("0.65 0.6 0.6 1", 0.0f, 1.0f);
     }
 
-    public void backgroundFromPrefs(SharedPreferences prefs) {
-    }
-
-    private void rainDensityFromPrefs(SharedPreferences prefs) {
-        this.rainDensity = prefs.getInt(WallpaperSettings.PREF_RAIN_DENSITY, 10);
-    }
-
+    @Override
     public void precacheAssets(GL10 gl10) {
         textures.get(R.drawable.storm_bg);
         textures.get(R.drawable.trees_overlay);
@@ -155,12 +136,11 @@ public class SceneRain extends SceneBase {
         models.get(R.raw.trees_overlay_terrain);
     }
 
+    @Override
     public void updateTimeOfDay(TimeOfDay tod) {
-        if (pref_useTimeOfDay) {
-            int iMain = tod.getMainIndex();
-            int iBlend = tod.getBlendIndex();
-            this.v_light_diffuse.blend(this.pref_todEngineColors[iMain], this.pref_todEngineColors[iBlend], tod.getBlendAmount());
-        }
+        int iMain = tod.getMainIndex();
+        int iBlend = tod.getBlendIndex();
+        this.v_light_diffuse.blend(this.pref_todEngineColors[iMain], this.pref_todEngineColors[iBlend], tod.getBlendAmount());
     }
 
     private void renderBackground(GL10 gl, float timeDelta) {
@@ -195,6 +175,7 @@ public class SceneRain extends SceneBase {
         gl.glPopMatrix();
     }
 
+    @Override
     public void draw(GL10 gl, GlobalTime time) {
         checkAssetReload(gl);
         this.mThingManager.update(time.sTimeDelta);

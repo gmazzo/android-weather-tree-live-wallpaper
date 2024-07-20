@@ -43,7 +43,7 @@ public class ThingMoon extends Thing {
     public void update(float timeDelta) {
         super.update(timeDelta);
         float position = SceneBase.todSunPosition;
-        if (position >= 0.0f || !SceneBase.pref_useTimeOfDay) {
+        if (position >= 0.0f) {
             this.scale.set(0.0f);
         } else {
             this.scale.set(2.0f);

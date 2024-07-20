@@ -32,7 +32,7 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.appCompat)
+    implementation(libs.androidx.appcompat)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.okhttp)
     implementation(libs.retrofit)

@@ -10,9 +10,7 @@ import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_ENV_MODE;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.opengl.GLU;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -35,11 +33,10 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneRain;
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneSnow;
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneStorm;
 import io.github.gmazzo.android.livewallpaper.weather.sky_manager.TimeOfDay;
-import io.github.gmazzo.android.livewallpaper.weather.sky_manager.WeatherSettingsUtil;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures;
 
-public class IsolatedRenderer implements OnSharedPreferenceChangeListener {
+public class IsolatedRenderer {
     static final float BACKGROUND_DISTANCE = 300.0f;
     static final float CALENDAR_UPDATE_INTERVAL = 10.0f;
     static final float CAMERA_X_POSITION = 0.0f;
@@ -87,9 +84,6 @@ public class IsolatedRenderer implements OnSharedPreferenceChangeListener {
 
     private void setContext(Context ctx) {
         this.context = ctx;
-        this.prefs = PreferenceManager.getDefaultSharedPreferences(this.context);
-        onSharedPreferenceChanged(this.prefs, null);
-        this.prefs.registerOnSharedPreferenceChangeListener(this);
     }
 
     public Context getContext() {
@@ -106,23 +100,10 @@ public class IsolatedRenderer implements OnSharedPreferenceChangeListener {
         this.isPaused = false;
     }
 
-    public void precacheAssets(GL10 gl10) {
-        this.currentScene.precacheAssets(gl10);
-    }
-
-    public void cameraSpeedFromPrefs(SharedPreferences prefs) {
-        this.pref_cameraSpeed = (Float.valueOf(prefs.getString("pref_cameraspeed", "1")).floatValue() * 0.5f) + 0.5f;
-    }
-
-    public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-        cameraSpeedFromPrefs(prefs);
-        this.currentScene.updateSharedPrefs(prefs, key);
-    }
-
-    public synchronized void onSceneChanged(SceneMode newSceneId) {
-        if (newSceneId != currentSceneId) {
+    public synchronized void onSceneChanged(WeatherType weather) {
+        if (weather.getScene() != currentSceneId) {
             this.currentScene.unload(this.gl);
-            switch (newSceneId) {
+            switch (weather.getScene()) {
                 case CLEAR:
                     this.currentScene = new SceneClear(this.context, this.gl);
                     currentSceneId = SceneMode.CLEAR;
@@ -151,12 +132,12 @@ public class IsolatedRenderer implements OnSharedPreferenceChangeListener {
             this.currentScene.load(this.gl);
         }
         this.currentScene.setScreenMode(this.IS_LANDSCAPE);
-        onSharedPreferenceChanged(this.prefs, null);
+        this.currentScene.updateWeather(weather);
 
         if (isDemoMode) {
-            Toast.makeText(context, newSceneId.name(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, weather.getScene().name(), Toast.LENGTH_SHORT).show();
         }
-        Log.i(TAG, "Scene changed to " + newSceneId.name() + ", isDemoMode=" + isDemoMode);
+        Log.i(TAG, "Weather changed to " + weather.name() + ", isDemoMode=" + isDemoMode);
     }
 
     public void onSurfaceChanged(GL10 gl, int w, int h) {
@@ -262,8 +243,11 @@ public class IsolatedRenderer implements OnSharedPreferenceChangeListener {
             this.lastCalendarUpdate = 0.0f;
         }
         if (this.lastPositionUpdate >= 300.0f) {
-            float longitude = WeatherSettingsUtil.getLongitude(this.context);
-            this._tod.calculateTimeTable(WeatherSettingsUtil.getLatitude(this.context), longitude);
+            Float longitude = SettingsUtils.getLongitude(this.context);
+            Float latitude = SettingsUtils.getLatitude(this.context);
+            this._tod.calculateTimeTable(
+                    latitude != null ? latitude : 0,
+                    longitude != null ? longitude : 0);
             this.lastPositionUpdate = 0.0f;
         }
         calculateTimeOfDay(timeDelta);

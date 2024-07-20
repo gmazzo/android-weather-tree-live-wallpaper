@@ -8,7 +8,6 @@ import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE0;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import androidx.annotation.DrawableRes;
 
@@ -16,7 +15,7 @@ import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
 import io.github.gmazzo.android.livewallpaper.weather.R;
-import io.github.gmazzo.android.livewallpaper.weather.WallpaperSettings;
+import io.github.gmazzo.android.livewallpaper.weather.WeatherType;
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor;
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand;
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime;
@@ -42,10 +41,6 @@ public class SceneClear extends SceneBase {
     protected static String[] validBalloonTextures = new String[]{"bal_red", "bal_blue", "bal_yellow", "bal_green"};
     protected int batteryLevel;
     protected float nextUfoSpawn;
-    private boolean pref_ufoBattery;
-    private boolean pref_useMoon;
-    private boolean pref_useSun;
-    private boolean pref_useUfo;
     protected long smsLastUnreadCheckTime;
     protected int smsUnreadCount;
     private final @DrawableRes
@@ -69,41 +64,28 @@ public class SceneClear extends SceneBase {
         this.batteryLevel = 100;
         this.pref_numClouds = 20;
         this.pref_numWisps = 6;
-        this.pref_useUfo = true;
-        this.pref_ufoBattery = true;
-        this.pref_useSun = true;
-        this.pref_useMoon = true;
         this.nextUfoSpawn = WISPY_X_RANGE;
         this.smsUnreadCount = 0;
         this.smsLastUnreadCheckTime = 0;
     }
 
+    @Override
     public void load(GL10 gl) {
         checkSun();
         checkMoon();
         spawnClouds(false);
     }
 
-    public void updateSharedPrefs(SharedPreferences prefs, String key) {
-        if (key == null || !key.equals("pref_usemipmaps")) {
-            backgroundFromPrefs(prefs);
-            windSpeedFromPrefs(prefs);
-            numCloudsFromPrefs(prefs);
-            todFromPrefs(prefs);
-            this.pref_useSun = true; // prefs.getBoolean("pref_usesun", true);
-            this.pref_useMoon = true; //prefs.getBoolean("pref_usemoon", true);
-            this.pref_useUfo = prefs.getBoolean("pref_useufo", false);
-            this.pref_ufoBattery = prefs.getBoolean("pref_ufobattery", true);
-            if (key != null && (key.contains("numclouds") || key.contains("windspeed") || key.contains("numwisps"))) {
-                spawnClouds(true);
-            }
-            checkSun();
-            checkMoon();
-            return;
-        }
-        this.reloadAssets = true;
+    @Override
+    public void updateWeather(WeatherType weather) {
+        windSpeedFromPrefs();
+        numCloudsFromPrefs(weather);
+        todFromPrefs();
+        checkSun();
+        checkMoon();
     }
 
+    @Override
     public void precacheAssets(GL10 gl10) {
         textures.get(backgroundId);
         textures.get(R.drawable.trees_overlay);
@@ -137,30 +119,18 @@ public class SceneClear extends SceneBase {
     }
 
     private void checkMoon() {
-        if (this.pref_useMoon) {
-            spawnMoon();
-        } else {
-            removeMoon();
-        }
+        spawnMoon();
     }
 
     private void checkSun() {
-        if (this.pref_useSun) {
-            spawnSun();
-        } else {
-            removeSun();
-        }
+        spawnSun();
     }
 
-    public void backgroundFromPrefs(SharedPreferences prefs) {
-    }
-
-    private void todFromPrefs(SharedPreferences prefs) {
-        pref_useTimeOfDay = prefs.getBoolean(WallpaperSettings.PREF_USE_TOD, false);
-        this.pref_todEngineColors[0].set(prefs.getString(WallpaperSettings.PREF_LIGHT_COLOR1, "0.5 0.5 0.75 1"), 0.0f, 1.0f);
-        this.pref_todEngineColors[1].set(prefs.getString(WallpaperSettings.PREF_LIGHT_COLOR2, "1 0.73 0.58 1"), 0.0f, 1.0f);
-        this.pref_todEngineColors[2].set(prefs.getString(WallpaperSettings.PREF_LIGHT_COLOR3, "1 1 1 1"), 0.0f, 1.0f);
-        this.pref_todEngineColors[3].set(prefs.getString(WallpaperSettings.PREF_LIGHT_COLOR4, "1 0.85 0.75 1"), 0.0f, 1.0f);
+    private void todFromPrefs() {
+        this.pref_todEngineColors[0].set("0.5 0.5 0.75 1", 0.0f, 1.0f);
+        this.pref_todEngineColors[1].set("1 0.73 0.58 1", 0.0f, 1.0f);
+        this.pref_todEngineColors[2].set("1 1 1 1", 0.0f, 1.0f);
+        this.pref_todEngineColors[3].set("1 0.85 0.75 1", 0.0f, 1.0f);
     }
 
     private void removeMoon() {
@@ -234,11 +204,13 @@ public class SceneClear extends SceneBase {
         }
     }
 
+    @Override
     public void updateTimeOfDay(TimeOfDay tod) {
         todSunPosition = tod.getSunPosition();
         super.updateTimeOfDay(tod);
     }
 
+    @Override
     public void draw(GL10 gl, GlobalTime time) {
         checkAssetReload(gl);
         this.mThingManager.update(time.sTimeDelta);
@@ -273,7 +245,7 @@ public class SceneClear extends SceneBase {
     }
 
     private void renderStars(GL10 gl, float timeDelta) {
-        if (pref_useTimeOfDay && todSunPosition <= 0.0f) {
+        if (todSunPosition <= 0.0f) {
             gl.glColor4f(1.0f, 1.0f, 1.0f, todSunPosition * -2.0f);
             gl.glBlendFunc(770, 1);
             Model starMesh = models.get(R.raw.stars);

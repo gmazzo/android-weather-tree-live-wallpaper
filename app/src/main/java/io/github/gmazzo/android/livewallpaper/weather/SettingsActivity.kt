@@ -5,9 +5,9 @@ import android.app.WallpaperManager
 import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
-import io.github.gmazzo.android.livewallpaper.weather.sky_manager.LocationProvider.hasLocationPermission
+import io.github.gmazzo.android.livewallpaper.weather.LocationProvider.hasLocationPermission
 
-class RequestPermissionsActivity : ComponentActivity() {
+class SettingsActivity : ComponentActivity() {
 
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
@@ -27,7 +27,8 @@ class RequestPermissionsActivity : ComponentActivity() {
         finish()
 
         if (BuildConfig.DEBUG) {
-            startActivity(Intent(WallpaperManager.ACTION_LIVE_WALLPAPER_CHOOSER))
+            startActivity(Intent(WallpaperManager.ACTION_LIVE_WALLPAPER_CHOOSER)
+                .putExtra(WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT, Intent(this, WallpaperService::class.java).component))
         }
     }
 

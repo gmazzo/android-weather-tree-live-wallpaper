@@ -4,13 +4,12 @@ import static javax.microedition.khronos.opengles.GL10.GL_MODELVIEW;
 import static javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
 import io.github.gmazzo.android.livewallpaper.weather.R;
-import io.github.gmazzo.android.livewallpaper.weather.WallpaperSettings;
+import io.github.gmazzo.android.livewallpaper.weather.WeatherType;
 import io.github.gmazzo.android.livewallpaper.weather.engine.AnimPlayer;
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor;
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand;
@@ -21,7 +20,6 @@ import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Model;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Texture;
 
 public abstract class SceneBase extends Scene {
-    public static boolean pref_useTimeOfDay;
     public static float pref_windSpeed = 3.0f;
     public static EngineColor todEngineColorFinal;
     public static float todSunPosition = 0.0f;
@@ -53,32 +51,31 @@ public abstract class SceneBase extends Scene {
         }
     }
 
+    @Override
     public void unload(GL10 gl) {
         this.models.close();
         this.textures.close();
         this.mThingManager.clear();
     }
 
-    public void numCloudsFromPrefs(SharedPreferences prefs) {
-        this.pref_numClouds = prefs.getInt(WallpaperSettings.PREF_NUM_CLOUDS, 10);
+    public void numCloudsFromPrefs(WeatherType weather) {
+        this.pref_numClouds = weather.getClouds();
     }
 
-    public void windSpeedFromPrefs(SharedPreferences prefs) {
-        pref_windSpeed = Float.valueOf(prefs.getString(WallpaperSettings.PREF_WIND_SPEED, "3")) * 0.5f;
+    public void windSpeedFromPrefs() {
+        pref_windSpeed = 3 * 0.5f;
     }
 
+    @Override
     public void update(GlobalTime globalTime) {
         this.mGlobalTime = globalTime;
     }
 
+    @Override
     public void updateTimeOfDay(TimeOfDay tod) {
-        if (pref_useTimeOfDay) {
-            int iMain = tod.getMainIndex();
-            int iBlend = tod.getBlendIndex();
-            todEngineColorFinal.blend(this.pref_todEngineColors[iMain], this.pref_todEngineColors[iBlend], tod.getBlendAmount());
-            return;
-        }
-        todEngineColorFinal.set(1.0f, 1.0f, 1.0f, 1.0f);
+        int iMain = tod.getMainIndex();
+        int iBlend = tod.getBlendIndex();
+        todEngineColorFinal.blend(this.pref_todEngineColors[iMain], this.pref_todEngineColors[iBlend], tod.getBlendAmount());
     }
 
     protected void drawTree(GL10 gl, float timeDelta) {
