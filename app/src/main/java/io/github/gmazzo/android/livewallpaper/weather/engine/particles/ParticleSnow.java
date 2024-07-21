@@ -1,4 +1,4 @@
-package io.github.gmazzo.android.livewallpaper.weather;
+package io.github.gmazzo.android.livewallpaper.weather.engine.particles;
 
 import static javax.microedition.khronos.opengles.GL10.GL_ONE_MINUS_SRC_ALPHA;
 import static javax.microedition.khronos.opengles.GL10.GL_SRC_ALPHA;
@@ -6,8 +6,9 @@ import static javax.microedition.khronos.opengles.GL10.GL_SRC_ALPHA;
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
+import io.github.gmazzo.android.livewallpaper.weather.IsolatedRenderer;
+import io.github.gmazzo.android.livewallpaper.weather.R;
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand;
-import io.github.gmazzo.android.livewallpaper.weather.engine.ParticleSystem;
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector;
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.Scene;
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneBase;

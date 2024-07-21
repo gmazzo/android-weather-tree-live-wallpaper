@@ -8,8 +8,8 @@ import javax.microedition.khronos.opengles.GL11;
 
 import io.github.gmazzo.android.livewallpaper.weather.engine.AnimPlayer;
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor;
-import io.github.gmazzo.android.livewallpaper.weather.engine.ParticleSystem;
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector;
+import io.github.gmazzo.android.livewallpaper.weather.engine.particles.ParticleSystem;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.AnimatedModel;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Model;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models;

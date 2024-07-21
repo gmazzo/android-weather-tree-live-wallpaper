@@ -14,7 +14,6 @@ import android.content.Context;
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
-import io.github.gmazzo.android.livewallpaper.weather.ParticleRain;
 import io.github.gmazzo.android.livewallpaper.weather.R;
 import io.github.gmazzo.android.livewallpaper.weather.WeatherType;
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor;
@@ -22,6 +21,7 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand;
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime;
 import io.github.gmazzo.android.livewallpaper.weather.engine.ThingManager;
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector;
+import io.github.gmazzo.android.livewallpaper.weather.engine.particles.ParticleRain;
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingDarkCloud;
 import io.github.gmazzo.android.livewallpaper.weather.sky_manager.TimeOfDay;
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Model;
