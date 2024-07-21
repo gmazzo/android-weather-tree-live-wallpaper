@@ -1,4 +1,4 @@
-package io.github.gmazzo.android.livewallpaper.weather
+package io.github.gmazzo.android.livewallpaper.weather.api
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind

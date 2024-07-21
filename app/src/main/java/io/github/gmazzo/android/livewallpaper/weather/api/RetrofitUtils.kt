@@ -1,5 +1,6 @@
-package io.github.gmazzo.android.livewallpaper.weather
+package io.github.gmazzo.android.livewallpaper.weather.api
 
+import io.github.gmazzo.android.livewallpaper.weather.BuildConfig
 import kotlinx.serialization.json.Json
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType

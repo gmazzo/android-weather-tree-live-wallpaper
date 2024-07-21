@@ -17,8 +17,8 @@ import java.util.List;
 
 import io.github.gmazzo.android.livewallpaper.weather.LocationProvider;
 import io.github.gmazzo.android.livewallpaper.weather.SettingsUtils;
-import io.github.gmazzo.android.livewallpaper.weather.forecast.LocationForecast;
-import io.github.gmazzo.android.livewallpaper.weather.forecast.LocationForecastAPI;
+import io.github.gmazzo.android.livewallpaper.weather.api.forecast.LocationForecast;
+import io.github.gmazzo.android.livewallpaper.weather.api.forecast.LocationForecastAPI;
 
 public class WeatherInfoManager implements Runnable {
     private static final int ABNORMALDURATION = 300000;

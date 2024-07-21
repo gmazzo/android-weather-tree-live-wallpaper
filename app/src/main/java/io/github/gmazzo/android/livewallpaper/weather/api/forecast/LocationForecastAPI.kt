@@ -2,10 +2,10 @@
 // https://api.met.no/weatherapi/locationforecast/2.0/documentation#JSON_format_and_variables
 // Example API:
 //  https://api.met.no/weatherapi/locationforecast/2.0?lat=59.93&lon=10.72&altitude=90
-package io.github.gmazzo.android.livewallpaper.weather.forecast
+package io.github.gmazzo.android.livewallpaper.weather.api.forecast
 
-import io.github.gmazzo.android.livewallpaper.weather.DateSerializer
 import io.github.gmazzo.android.livewallpaper.weather.WeatherType
+import io.github.gmazzo.android.livewallpaper.weather.api.DateSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import retrofit2.Call

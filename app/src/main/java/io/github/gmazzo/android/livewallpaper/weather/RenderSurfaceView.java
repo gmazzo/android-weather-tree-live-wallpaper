@@ -9,6 +9,8 @@ import android.view.SurfaceHolder;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import io.github.gmazzo.android.livewallpaper.weather.engine.IsolatedRenderer;
+
 public class RenderSurfaceView extends GLSurfaceView {
     protected boolean isPaused;
     protected boolean isDemoMode;

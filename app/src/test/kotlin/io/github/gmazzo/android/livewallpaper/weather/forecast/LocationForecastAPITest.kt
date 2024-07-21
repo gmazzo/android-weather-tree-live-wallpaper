@@ -1,6 +1,7 @@
 package io.github.gmazzo.android.livewallpaper.weather.forecast
 
-import io.github.gmazzo.android.livewallpaper.weather.retrofit
+import io.github.gmazzo.android.livewallpaper.weather.api.forecast.LocationForecastAPI
+import io.github.gmazzo.android.livewallpaper.weather.api.retrofit
 import org.junit.Assert.assertNotNull
 import org.junit.Test
 import retrofit2.create

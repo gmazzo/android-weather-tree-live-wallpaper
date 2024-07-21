@@ -1,4 +1,4 @@
-package io.github.gmazzo.android.livewallpaper.weather;
+package io.github.gmazzo.android.livewallpaper.weather.engine;
 
 import static javax.microedition.khronos.opengles.GL10.GL_BACK;
 import static javax.microedition.khronos.opengles.GL10.GL_BLEND;
@@ -34,10 +34,8 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
-import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand;
-import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime;
-import io.github.gmazzo.android.livewallpaper.weather.engine.Utility;
-import io.github.gmazzo.android.livewallpaper.weather.engine.Vector;
+import io.github.gmazzo.android.livewallpaper.weather.SettingsUtils;
+import io.github.gmazzo.android.livewallpaper.weather.WeatherType;
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.Scene;
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneClear;
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneCloudy;
@@ -78,7 +76,7 @@ public class IsolatedRenderer {
     private float lastPositionUpdate;
     private GL11 gl = null;
     float pref_cameraSpeed = 1.0f;
-    boolean isDemoMode = false;
+    public boolean isDemoMode = false;
     SharedPreferences prefs;
     private float screenHeight;
     private float screenRatio = 1.0f;
