@@ -1,9 +1,11 @@
 package io.github.gmazzo.android.livewallpaper.weather
 
 import android.util.Log
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.gmazzo.android.livewallpaper.weather.sky_manager.WeatherInfoManager
 import io.github.gmazzo.android.livewallpaper.weather.sky_manager.WeatherInfoManager.WeatherStateReceiver
 
+@AndroidEntryPoint
 class WallpaperService : GLWallpaperService() {
     var mWeatherInfo: WeatherInfoManager? = null
 
@@ -12,7 +14,7 @@ class WallpaperService : GLWallpaperService() {
     inner class WeatherWallpaperEngine : GLEngine(), WeatherStateReceiver {
         override fun onVisibilityChanged(visible: Boolean) {
             if (visible) {
-                this@WallpaperService.mWeatherInfo = WeatherInfoManager.Companion.getWeatherInfo(
+                this@WallpaperService.mWeatherInfo = WeatherInfoManager.getWeatherInfo(
                     this@WallpaperService, this
                 )
                 mWeatherInfo!!.update(1000)

@@ -3,11 +3,13 @@ package io.github.gmazzo.android.livewallpaper.weather
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.app.WallpaperManager
 import android.content.Intent
-import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.gmazzo.android.livewallpaper.weather.LocationProvider.hasLocationPermission
 
-class SettingsActivity : ComponentActivity() {
+@AndroidEntryPoint
+class SettingsActivity : AppCompatActivity() {
 
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
