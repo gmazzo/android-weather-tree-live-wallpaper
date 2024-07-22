@@ -1,6 +1,7 @@
 package io.github.gmazzo.android.livewallpaper.weather.work
 
 import android.content.Context
+import android.location.Location
 import androidx.hilt.work.HiltWorker
 import androidx.work.Worker
 import androidx.work.WorkerParameters
@@ -10,26 +11,31 @@ import io.github.gmazzo.android.livewallpaper.weather.WeatherState
 import io.github.gmazzo.android.livewallpaper.weather.api.LocationForecastAPI
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import javax.inject.Provider
 
 @HiltWorker
 class WeatherConditionsUpdateWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
     private val weatherState: MutableStateFlow<WeatherState>,
+    private val location: Provider<Location>,
     private val forecastAPI: LocationForecastAPI,
 ) : Worker(context, workerParams) {
 
     override fun doWork(): Result {
-        val state = weatherState.value
-        if (state.latitude.isNaN() || state.longitude.isNaN()) return Result.retry()
+        val location = location.get() ?: return Result.retry()
 
         val response = forecastAPI
-            .getForecast(state.latitude, state.longitude, null)
+            .getForecast(location.latitude.toFloat(), location.longitude.toFloat(), null)
             .execute().body() ?: return Result.retry()
 
         val series = response.properties.timeSeries.firstOrNull() ?: return Result.failure()
         weatherState.update {
-            it.copy(weatherCondition = series.data.nextHour.weatherType)
+            it.copy(
+                latitude = location.latitude.toFloat(),
+                longitude = location.longitude.toFloat(),
+                weatherCondition = series.data.nextHour.weatherType
+            )
         }
         return Result.success()
     }
