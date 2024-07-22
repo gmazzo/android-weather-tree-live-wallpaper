@@ -4,23 +4,29 @@ hilt = "2.51.1"
 kotlin = "2.0.0"
 
 [libraries]
-androidx-appCompat = { module = "androidx.appcompat:appcompat", version = "1.7.0" }
-androidx-hilt-workManager = { module = "androidx.hilt:hilt-work", version.ref = "androidx-hilt" }
+androidx-compose = { module = "androidx.compose:compose-bom", version = "2024.06.00" }
+androidx-compose-activity = { module = "androidx.activity:activity-compose", version = "1.9.0" }
+androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
+androidx-compose-preferences = { module = "me.zhanghai.compose.preference:library", version = "1.0.0" }
+androidx-compose-uiTooling = { module = "androidx.compose.ui:ui-tooling" }
+androidx-compose-uiToolingPreview = { module = "androidx.compose.ui:ui-tooling-preview" }
 androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "androidx-hilt" }
+androidx-hilt-workManager = { module = "androidx.hilt:hilt-work", version.ref = "androidx-hilt" }
 androidx-startUp = { module = "androidx.startup:startup-runtime", version = "1.1.1" }
 androidx-workManager = { module = "androidx.work:work-runtime-ktx", version = "2.9.0" }
 hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
 hilt-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt" }
-okhttp = { module = "com.squareup.okhttp3:logging-interceptor", version = "4.12.0" }
-retrofit = { module = "com.squareup.retrofit2:converter-kotlinx-serialization", version = "2.11.0" }
 junit = { module = "junit:junit", version = "4.13.2" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.7.1" }
+okhttp = { module = "com.squareup.okhttp3:logging-interceptor", version = "4.12.0" }
+retrofit = { module = "com.squareup.retrofit2:converter-kotlinx-serialization", version = "2.11.0" }
 
 [plugins]
 android = { id = "com.android.application", version = "8.5.1" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlin-seriazliation = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

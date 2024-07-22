@@ -6,6 +6,7 @@ import android.opengl.GLU
 import android.util.Log
 import android.widget.Toast
 import io.github.gmazzo.android.livewallpaper.weather.BuildConfig
+import io.github.gmazzo.android.livewallpaper.weather.WeatherConditions
 import io.github.gmazzo.android.livewallpaper.weather.WeatherType
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.Scene
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneClear
@@ -18,7 +19,7 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneStorm
 import io.github.gmazzo.android.livewallpaper.weather.sky_manager.TimeOfDay
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures
-import io.github.gmazzo.android.livewallpaper.weather.weatherState
+import kotlinx.coroutines.flow.StateFlow
 import java.util.Calendar
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
@@ -46,6 +47,7 @@ class IsolatedRenderer(ctx: Context) {
     private var screenHeight = 0f
     private var screenRatio = 1.0f
     private var screenWidth = 0f
+    lateinit var weatherConditions: StateFlow<WeatherConditions>
 
     init {
         homeOffsetPercentage = 0.5f
@@ -231,7 +233,7 @@ class IsolatedRenderer(ctx: Context) {
             this.lastCalendarUpdate = 0.0f
         }
         if (this.lastPositionUpdate >= 300.0f) {
-            val state = context.weatherState
+            val state = weatherConditions.value
 
             _tod.calculateTimeTable(
                 state.latitude.takeUnless(Float::isNaN) ?: 0f,

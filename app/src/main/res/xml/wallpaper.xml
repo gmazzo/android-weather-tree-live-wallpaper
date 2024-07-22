@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <wallpaper xmlns:android="http://schemas.android.com/apk/res/android"
     android:description="@string/description"
-    android:settingsActivity="io.github.gmazzo.android.livewallpaper.weather.SettingsActivity"
+    android:settingsActivity="io.github.gmazzo.android.livewallpaper.weather.settings.SettingsActivity"
     android:thumbnail="@drawable/thumbnail" />

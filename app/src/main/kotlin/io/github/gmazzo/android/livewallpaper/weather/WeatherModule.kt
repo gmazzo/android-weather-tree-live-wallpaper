@@ -17,13 +17,9 @@ import dagger.Reusable
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import javax.inject.Singleton
 
 @Module
@@ -33,16 +29,12 @@ object WeatherModule {
 
     @Provides
     @Reusable
-    fun provideWeatherMutableState(@ApplicationContext context: Context): MutableStateFlow<WeatherState> =
-        MutableStateFlow(context.weatherState).also { flow ->
-            CoroutineScope(Dispatchers.IO).launch {
-                flow.collectLatest { context.weatherState = it }
-            }
-        }
+    fun provideWeatherConditions(): MutableStateFlow<WeatherConditions> =
+        MutableStateFlow(WeatherConditions())
 
     @Provides
     @Reusable
-    fun provideWeatherState(state: MutableStateFlow<WeatherState>): StateFlow<WeatherState> =
+    fun provideWeatherState(state: MutableStateFlow<WeatherConditions>): StateFlow<WeatherConditions> =
         state.asStateFlow()
 
     @Provides

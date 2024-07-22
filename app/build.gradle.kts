@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.kotlin.seriazliation)
@@ -30,7 +31,10 @@ android {
         }
     }
 
-    buildFeatures.buildConfig = true
+    buildFeatures {
+        buildConfig = true
+        compose = true
+    }
 }
 
 kapt.correctErrorTypes = true
@@ -40,7 +44,12 @@ dependencies {
     kapt(libs.hilt.compiler)
     kaptTest(libs.hilt.compiler)
 
-    implementation(libs.androidx.appCompat)
+    implementation(platform(libs.androidx.compose))
+    implementation(libs.androidx.compose.activity)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.preferences)
+    implementation(libs.androidx.compose.uiToolingPreview)
+    debugImplementation(libs.androidx.compose.uiTooling)
     implementation(libs.androidx.hilt.workManager)
     implementation(libs.androidx.startUp)
     implementation(libs.androidx.workManager)

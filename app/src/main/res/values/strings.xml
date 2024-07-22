@@ -2,4 +2,10 @@
 <resources>
     <string name="app_name">Weather Live Wallpaper</string>
     <string name="description">A beautiful landscape with trees that adapts by day time and weather conditions</string>
+
+    <string name="settings_dynamic_scenes">Dynamic scenes</string>
+    <string name="settings_dynamic_scenes_summary">Changes the scene based on current weather conditions: clear sky, rain, storm, fog or snow</string>
+    <string name="settings_use_location">Use device location</string>
+    <string name="settings_use_location_summary">Fetch weather conditions based on the device location</string>
+    <string name="settings_use_location_current">Current: %.3f lat %.3f lng</string>
 </resources>

@@ -2,6 +2,7 @@ package io.github.gmazzo.android.livewallpaper.weather
 
 import android.util.Log
 import android.view.MotionEvent
+import android.view.SurfaceHolder
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode
 import kotlinx.coroutines.Job
@@ -16,7 +17,7 @@ import javax.inject.Inject
 class WallpaperService : GLWallpaperService() {
 
     @Inject
-    internal lateinit var weatherState: MutableStateFlow<WeatherState>
+    internal lateinit var weatherConditions: MutableStateFlow<WeatherConditions>
 
     override fun onCreateEngine() = WeatherWallpaperEngine()
 
@@ -35,20 +36,26 @@ class WallpaperService : GLWallpaperService() {
 
             } else if (job == null) {
                 job = MainScope().launch {
-                    weatherState.collectLatest(::updateWeatherState)
+                    weatherConditions.collectLatest(::updateWeatherState)
                 }
             }
         }
 
-        private fun updateWeatherState(state: WeatherState) {
+        override fun onCreate(surfaceHolder: SurfaceHolder) {
+            super.onCreate(surfaceHolder)
+
+            renderSurfaceView!!.mBaseRenderer.renderer.weatherConditions = weatherConditions
+        }
+
+        private fun updateWeatherState(state: WeatherConditions) {
             Log.i("WeatherWallpaperEngine", "updateWeatherState")
 
-            renderSurfaceView!!.updateWeatherType(state.weatherCondition)
+            renderSurfaceView!!.updateWeatherType(state.weatherType)
         }
 
         override fun onTouchEvent(event: MotionEvent) {
             if (renderSurfaceView!!.isDemoMode && event.action == MotionEvent.ACTION_DOWN) {
-                val current = weatherState.value.weatherCondition.scene
+                val current = weatherConditions.value.weatherType.scene
                 val scenes: List<SceneMode> = SceneMode.entries
                 val next = scenes[(scenes.indexOf(current) + 1) % scenes.size]
                 var nextWeather = WeatherType.SUNNY_DAY
@@ -59,8 +66,8 @@ class WallpaperService : GLWallpaperService() {
                     }
                 }
 
-                weatherState.update {
-                    it.copy(weatherCondition = nextWeather)
+                weatherConditions.update {
+                    it.copy(weatherType = nextWeather)
                 }
             }
             super.onTouchEvent(event)

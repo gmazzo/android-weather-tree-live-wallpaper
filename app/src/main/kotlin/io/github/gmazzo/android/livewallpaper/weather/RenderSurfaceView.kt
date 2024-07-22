@@ -15,10 +15,10 @@ class RenderSurfaceView @JvmOverloads constructor(
 ) : GLSurfaceView(context, attributeset) {
     protected var isPaused: Boolean = false
     var isDemoMode: Boolean = false
-    protected var mBaseRenderer: BaseRenderer
+    var mBaseRenderer: BaseRenderer
     protected var mServiceSurfaceHolder: SurfaceHolder? = null
 
-    protected inner class BaseRenderer : Renderer {
+    inner class BaseRenderer : Renderer {
         val renderer: IsolatedRenderer =
             IsolatedRenderer(this@RenderSurfaceView.context)
         private var wasCreated = false
