@@ -6,16 +6,9 @@ import android.content.Intent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
-import javax.inject.Named
-import javax.inject.Provider
 
 @AndroidEntryPoint
 class SettingsActivity : AppCompatActivity() {
-
-    @Inject
-    @Named("hasLocationPermission")
-    lateinit var hasLocationPermission: Provider<Boolean>
 
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
@@ -26,7 +19,7 @@ class SettingsActivity : AppCompatActivity() {
         super.onResume()
 
         when {
-            hasLocationPermission.get() -> afterPermissionDialog()
+            hasLocationPermission -> afterPermissionDialog()
             else -> requestPermissionLauncher.launch(ACCESS_FINE_LOCATION)
         }
     }

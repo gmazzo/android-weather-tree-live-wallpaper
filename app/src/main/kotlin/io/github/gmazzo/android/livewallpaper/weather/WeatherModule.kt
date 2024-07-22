@@ -1,6 +1,11 @@
 package io.github.gmazzo.android.livewallpaper.weather
 
+import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.content.Context
+import android.location.Location
+import android.location.LocationManager
+import android.util.Log
+import androidx.core.content.getSystemService
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import androidx.work.WorkManager
@@ -22,6 +27,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object WeatherModule {
+    private const val TAG = "WeatherModule"
 
     @Provides
     @Reusable
@@ -50,6 +56,20 @@ object WeatherModule {
                 .build()
         )
         return WorkManager.getInstance(context)
+    }
+
+    @Provides
+    fun provideLocation(@ApplicationContext context: Context): Location? {
+        if (!context.hasLocationPermission) {
+            Log.e(TAG, "Missing $ACCESS_COARSE_LOCATION to access location")
+            return null
+        }
+
+        val manager: LocationManager = context.getSystemService() ?: return null
+        return manager.allProviders.asSequence()
+            .mapNotNull(manager::getLastKnownLocation)
+            .firstOrNull()
+            ?.also { Log.i(TAG, "LastKnownLocation: lat=${it.latitude}, lng=${it.longitude}") }
     }
 
 }
