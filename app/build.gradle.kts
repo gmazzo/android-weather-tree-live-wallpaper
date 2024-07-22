@@ -42,6 +42,7 @@ dependencies {
 
     implementation(libs.androidx.appCompat)
     implementation(libs.androidx.hilt.workManager)
+    implementation(libs.androidx.startUp)
     implementation(libs.androidx.workManager)
     implementation(libs.hilt)
     implementation(libs.kotlinx.serialization.json)

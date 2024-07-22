@@ -6,14 +6,16 @@ import android.content.Context
 private val Context.prefs
     get() = getSharedPreferences("settings", Context.MODE_PRIVATE)
 
-var Context.latitude: Float?
-    get() = prefs.getFloat("latitude", Float.NaN).takeUnless { it.isNaN() }
-    set(value) = prefs.edit().putFloat("latitude", value ?: Float.NaN).apply()
-
-var Context.longitude: Float?
-    get() = prefs.getFloat("longitude", Float.NaN).takeUnless { it.isNaN() }
-    set(value) = prefs.edit().putFloat("longitude", value ?: Float.NaN).apply()
-
-var Context.weatherConditions: WeatherType
-    get() = prefs.getString("weather", null)?.let(WeatherType::valueOf) ?: WeatherType.SUNNY_DAY
-    set(value) = prefs.edit().putString("weather", value.name).apply()
+var Context.weatherState: WeatherState
+    get() = prefs.let { prefs ->
+        WeatherState(
+            latitude = prefs.getFloat("latitude", Float.NaN),
+            longitude = prefs.getFloat("longitude", Float.NaN),
+            weatherCondition = prefs.getString("weather", null)?.let(WeatherType::valueOf) ?: WeatherType.SUNNY_DAY
+        )
+    }
+    set(value) = prefs.edit()
+        .putFloat("latitude", value.latitude)
+        .putFloat("longitude", value.longitude)
+        .putString("weather", value.weatherCondition.name)
+        .apply()

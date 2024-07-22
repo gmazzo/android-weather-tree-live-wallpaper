@@ -14,11 +14,10 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneRain
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneSnow
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneStorm
-import io.github.gmazzo.android.livewallpaper.weather.latitude
-import io.github.gmazzo.android.livewallpaper.weather.longitude
 import io.github.gmazzo.android.livewallpaper.weather.sky_manager.TimeOfDay
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures
+import io.github.gmazzo.android.livewallpaper.weather.weatherState
 import java.util.Calendar
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
@@ -231,11 +230,11 @@ class IsolatedRenderer(ctx: Context) {
             this.lastCalendarUpdate = 0.0f
         }
         if (this.lastPositionUpdate >= 300.0f) {
-            val longitude = context.longitude
-            val latitude = context.latitude
+            val state = context.weatherState
+
             _tod.calculateTimeTable(
-                latitude ?: 0f,
-                longitude ?: 0f
+                state.latitude.takeUnless(Float::isNaN) ?: 0f,
+                state.longitude.takeUnless(Float::isNaN) ?: 0f
             )
             this.lastPositionUpdate = 0.0f
         }

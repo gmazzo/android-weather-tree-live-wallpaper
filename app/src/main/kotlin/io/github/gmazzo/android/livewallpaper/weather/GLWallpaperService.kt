@@ -1,9 +1,7 @@
 package io.github.gmazzo.android.livewallpaper.weather
 
 import android.service.wallpaper.WallpaperService
-import android.view.MotionEvent
 import android.view.SurfaceHolder
-import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode
 
 open class GLWallpaperService : WallpaperService() {
 
@@ -47,24 +45,6 @@ open class GLWallpaperService : WallpaperService() {
         override fun onSurfaceDestroyed(holder: SurfaceHolder) {
             super.onSurfaceDestroyed(holder)
             renderSurfaceView!!.surfaceDestroyed(holder)
-        }
-
-        override fun onTouchEvent(event: MotionEvent) {
-            if (renderSurfaceView!!.isDemoMode && event.action == MotionEvent.ACTION_DOWN) {
-                val current = this@GLWallpaperService.weatherConditions.scene
-                val scenes: List<SceneMode> = SceneMode.entries
-                val next = scenes[(scenes.indexOf(current) + 1) % scenes.size]
-                var nextWeather = WeatherType.SUNNY_DAY
-                for (weather in WeatherType.entries) {
-                    if (weather.scene == next) {
-                        nextWeather = weather
-                        break
-                    }
-                }
-                this@GLWallpaperService.weatherConditions = nextWeather
-                renderSurfaceView!!.changeScene(nextWeather)
-            }
-            super.onTouchEvent(event)
         }
 
         override fun onOffsetsChanged(

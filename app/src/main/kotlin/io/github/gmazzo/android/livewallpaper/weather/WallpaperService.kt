@@ -1,11 +1,14 @@
 package io.github.gmazzo.android.livewallpaper.weather
 
 import android.util.Log
+import android.view.MotionEvent
 import dagger.hilt.android.AndroidEntryPoint
+import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -13,7 +16,7 @@ import javax.inject.Inject
 class WallpaperService : GLWallpaperService() {
 
     @Inject
-    internal lateinit var weatherState: StateFlow<WeatherState>
+    internal lateinit var weatherState: MutableStateFlow<WeatherState>
 
     override fun onCreateEngine() = WeatherWallpaperEngine()
 
@@ -41,6 +44,26 @@ class WallpaperService : GLWallpaperService() {
             Log.i("WeatherWallpaperEngine", "updateWeatherState")
 
             renderSurfaceView!!.updateWeatherType(state.weatherCondition)
+        }
+
+        override fun onTouchEvent(event: MotionEvent) {
+            if (renderSurfaceView!!.isDemoMode && event.action == MotionEvent.ACTION_DOWN) {
+                val current = weatherState.value.weatherCondition.scene
+                val scenes: List<SceneMode> = SceneMode.entries
+                val next = scenes[(scenes.indexOf(current) + 1) % scenes.size]
+                var nextWeather = WeatherType.SUNNY_DAY
+                for (weather in WeatherType.entries) {
+                    if (weather.scene == next) {
+                        nextWeather = weather
+                        break
+                    }
+                }
+
+                weatherState.update {
+                    it.copy(weatherCondition = nextWeather)
+                }
+            }
+            super.onTouchEvent(event)
         }
 
     }
