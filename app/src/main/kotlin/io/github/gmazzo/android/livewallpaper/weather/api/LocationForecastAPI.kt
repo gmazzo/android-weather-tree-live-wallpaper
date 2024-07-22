@@ -2,10 +2,9 @@
 // https://api.met.no/weatherapi/locationforecast/2.0/documentation#JSON_format_and_variables
 // Example API:
 //  https://api.met.no/weatherapi/locationforecast/2.0?lat=59.93&lon=10.72&altitude=90
-package io.github.gmazzo.android.livewallpaper.weather.api.forecast
+package io.github.gmazzo.android.livewallpaper.weather.api
 
 import io.github.gmazzo.android.livewallpaper.weather.WeatherType
-import io.github.gmazzo.android.livewallpaper.weather.api.DateSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import retrofit2.Call
@@ -17,8 +16,8 @@ interface LocationForecastAPI {
 
     @GET("locationforecast/2.0/mini")
     fun getForecast(
-        @Query("lat") lat: Double,
-        @Query("lon") lon: Double,
+        @Query("lat") lat: Float,
+        @Query("lon") lon: Float,
         @Query("altitude") altitude: Int? = null,
     ): Call<Forecast>
 

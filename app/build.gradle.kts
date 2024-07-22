@@ -36,13 +36,18 @@ android {
 kapt.correctErrorTypes = true
 
 dependencies {
+    kapt(libs.androidx.hilt.compiler)
     kapt(libs.hilt.compiler)
+    kaptTest(libs.hilt.compiler)
 
-    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.appCompat)
+    implementation(libs.androidx.hilt.workManager)
+    implementation(libs.androidx.workManager)
     implementation(libs.hilt)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.okhttp)
     implementation(libs.retrofit)
 
+    testImplementation(libs.hilt.testing)
     testImplementation(libs.junit)
 }

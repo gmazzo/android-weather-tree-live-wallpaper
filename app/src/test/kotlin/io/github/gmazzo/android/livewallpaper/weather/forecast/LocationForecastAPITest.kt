@@ -1,18 +1,21 @@
 package io.github.gmazzo.android.livewallpaper.weather.forecast
 
-import io.github.gmazzo.android.livewallpaper.weather.api.forecast.LocationForecastAPI
-import io.github.gmazzo.android.livewallpaper.weather.api.retrofit
+import io.github.gmazzo.android.livewallpaper.weather.api.HttpModule
 import org.junit.Assert.assertNotNull
 import org.junit.Test
-import retrofit2.create
 
 class LocationForecastAPITest {
 
-    private val api: LocationForecastAPI = retrofit.create()
+    private val api by lazy { HttpModule.provideLocationForecast(
+        HttpModule.provideRetrofit(
+            HttpModule.provideOkHttpClient(),
+            HttpModule.provideJson()
+        )
+    ) }
 
     @Test
     fun `api call returns expected forecast`() {
-        val response = api.getForecast(59.93, 10.72, 90).execute().body()!!
+        val response = api.getForecast(59.93f, 10.72f, 90).execute().body()!!
         val data = response.properties.timeSeries.first().data
 
         assertNotNull(data.nextHour.summary.symbolCode)
