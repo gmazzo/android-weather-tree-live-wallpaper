@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.opengl.GLU
 import android.util.Log
 import android.widget.Toast
+import io.github.gmazzo.android.livewallpaper.weather.BuildConfig
 import io.github.gmazzo.android.livewallpaper.weather.WeatherType
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.Scene
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneClear
@@ -110,7 +111,7 @@ class IsolatedRenderer(ctx: Context) {
         currentScene!!.setScreenMode(this.IS_LANDSCAPE)
         currentScene!!.updateWeather(weather)
 
-        if (isDemoMode) {
+        if (BuildConfig.DEBUG) {
             Toast.makeText(context, weather.scene.name, Toast.LENGTH_SHORT).show()
         }
         Log.i(TAG, "Weather changed to " + weather.name + ", isDemoMode=" + isDemoMode)
