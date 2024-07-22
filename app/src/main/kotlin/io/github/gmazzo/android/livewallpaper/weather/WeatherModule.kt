@@ -2,9 +2,11 @@ package io.github.gmazzo.android.livewallpaper.weather
 
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.content.Context
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.location.Location
 import android.location.LocationManager
 import android.util.Log
+import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.core.content.getSystemService
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
@@ -60,7 +62,7 @@ object WeatherModule {
 
     @Provides
     fun provideLocation(@ApplicationContext context: Context): Location? {
-        if (!context.hasLocationPermission) {
+        if (checkSelfPermission(context, ACCESS_COARSE_LOCATION) != PERMISSION_GRANTED) {
             Log.e(TAG, "Missing $ACCESS_COARSE_LOCATION to access location")
             return null
         }

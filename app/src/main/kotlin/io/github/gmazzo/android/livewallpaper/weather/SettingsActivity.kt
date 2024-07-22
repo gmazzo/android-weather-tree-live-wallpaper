@@ -1,6 +1,8 @@
 package io.github.gmazzo.android.livewallpaper.weather
 
-import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
+import android.Manifest.permission.ACCESS_COARSE_LOCATION
+import android.annotation.SuppressLint
 import android.app.WallpaperManager
 import android.content.Intent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -11,16 +13,22 @@ import dagger.hilt.android.AndroidEntryPoint
 class SettingsActivity : AppCompatActivity() {
 
     private val requestPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-            afterPermissionDialog()
-        }
+        registerForActivityResult(ActivityResultContracts.RequestPermission(), ::checkPermissions)
 
     override fun onResume() {
         super.onResume()
 
+        checkPermissions(null)
+
+    }
+
+    @SuppressLint("InlinedApi")
+    private fun checkPermissions(granted: Boolean?) {
         when {
-            hasLocationPermission -> afterPermissionDialog()
-            else -> requestPermissionLauncher.launch(ACCESS_FINE_LOCATION)
+            granted == false -> afterPermissionDialog()
+            !hasLocationPermission -> requestPermissionLauncher.launch(ACCESS_COARSE_LOCATION)
+            !hasBackgroundLocationPermission -> requestPermissionLauncher.launch(ACCESS_BACKGROUND_LOCATION)
+            else -> afterPermissionDialog()
         }
     }
 
@@ -28,8 +36,13 @@ class SettingsActivity : AppCompatActivity() {
         finish()
 
         if (BuildConfig.DEBUG) {
-            startActivity(Intent(WallpaperManager.ACTION_LIVE_WALLPAPER_CHOOSER)
-                .putExtra(WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT, Intent(this, WallpaperService::class.java).component))
+            startActivity(
+                Intent(WallpaperManager.ACTION_LIVE_WALLPAPER_CHOOSER)
+                    .putExtra(
+                        WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT,
+                        Intent(this, WallpaperService::class.java).component
+                    )
+            )
         }
     }
 
