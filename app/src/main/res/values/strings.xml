@@ -3,7 +3,6 @@
     <string name="app_name">Weather Live Wallpaper</string>
     <string name="description">A beautiful landscape with trees that adapts by day time and weather conditions</string>
 
-    <string name="settings_scenes">Scenes</string>
     <string name="settings_use_location">Use device location</string>
     <string name="settings_use_location_summary">Changes the scene based on weather conditions at the device location</string>
     <string name="settings_use_location_current">Current: %1$.3f lat %2%.3f lng</string>

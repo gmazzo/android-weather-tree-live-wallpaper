@@ -1,13 +1,9 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.opengl.GLU
 import android.util.Log
-import android.widget.Toast
-import io.github.gmazzo.android.livewallpaper.weather.BuildConfig
 import io.github.gmazzo.android.livewallpaper.weather.WeatherConditions
-import io.github.gmazzo.android.livewallpaper.weather.WeatherType
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.Scene
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneClear
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneCloudy
@@ -19,21 +15,18 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneStorm
 import io.github.gmazzo.android.livewallpaper.weather.sky_manager.TimeOfDay
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures
-import kotlinx.coroutines.flow.StateFlow
 import java.util.Calendar
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 
-class IsolatedRenderer(ctx: Context) {
+class IsolatedRenderer(private val context: Context) {
     var IS_LANDSCAPE: Boolean = false
     private val _tod = TimeOfDay()
     private var calendarInstance: Calendar?
     private val cameraDir = Vector()
     private var cameraFOV = 65.0f
     private val cameraPos: Vector
-    var context: Context
-        private set
     private var currentScene: Scene? = null
     private val desiredCameraPos: Vector
     private val globalTime: GlobalTime
@@ -43,11 +36,10 @@ class IsolatedRenderer(ctx: Context) {
     private var gl: GL11? = null
     var pref_cameraSpeed: Float = 1.0f
     var isDemoMode: Boolean = false
-    var prefs: SharedPreferences? = null
     private var screenHeight = 0f
     private var screenRatio = 1.0f
     private var screenWidth = 0f
-    lateinit var weatherConditions: StateFlow<WeatherConditions>
+    private var weatherConditions = WeatherConditions()
 
     init {
         homeOffsetPercentage = 0.5f
@@ -58,7 +50,6 @@ class IsolatedRenderer(ctx: Context) {
         this.globalTime = GlobalTime()
         this.cameraPos = Vector(0.0f, 0.0f, 0.0f)
         this.desiredCameraPos = Vector(0.0f, 0.0f, 0.0f)
-        this.context = ctx
     }
 
     @Synchronized
@@ -74,49 +65,49 @@ class IsolatedRenderer(ctx: Context) {
     }
 
     @Synchronized
-    fun onSceneChanged(weather: WeatherType) {
-        if (weather.scene != currentSceneId) {
-            currentScene!!.unload(this.gl)
-            when (weather.scene) {
+    fun onSceneChanged(weather: WeatherConditions) {
+        val gl = this.gl ?: return
+
+        weatherConditions = weather
+        if (weather.weatherType.scene != currentSceneId) {
+            currentScene?.unload(this.gl)
+            when (weather.weatherType.scene) {
                 SceneMode.CLEAR -> {
-                    this.currentScene = SceneClear(this.context, this.gl)
+                    this.currentScene = SceneClear(this.context, gl)
                     currentSceneId = SceneMode.CLEAR
                 }
 
                 SceneMode.CLOUDY -> {
-                    this.currentScene = SceneCloudy(this.context, this.gl)
+                    this.currentScene = SceneCloudy(this.context, gl)
                     currentSceneId = SceneMode.CLOUDY
                 }
 
                 SceneMode.STORM -> {
-                    this.currentScene = SceneStorm(this.context, this.gl)
+                    this.currentScene = SceneStorm(this.context, gl)
                     currentSceneId = SceneMode.STORM
                 }
 
                 SceneMode.SNOW -> {
-                    this.currentScene = SceneSnow(this.context, this.gl)
+                    this.currentScene = SceneSnow(this.context, gl)
                     currentSceneId = SceneMode.SNOW
                 }
 
                 SceneMode.FOG -> {
-                    this.currentScene = SceneFog(this.context, this.gl)
+                    this.currentScene = SceneFog(this.context, gl)
                     currentSceneId = SceneMode.FOG
                 }
 
                 SceneMode.RAIN -> {
-                    this.currentScene = SceneRain(this.context, this.gl)
+                    this.currentScene = SceneRain(this.context, gl)
                     currentSceneId = SceneMode.RAIN
                 }
             }
-            currentScene!!.load(this.gl)
+            currentScene!!.load(gl)
         }
         currentScene!!.setScreenMode(this.IS_LANDSCAPE)
-        currentScene!!.updateWeather(weather)
+        currentScene!!.updateWeather(weather.weatherType)
 
-        if (BuildConfig.DEBUG) {
-            Toast.makeText(context, weather.scene.name, Toast.LENGTH_SHORT).show()
-        }
-        Log.i(TAG, "Weather changed to " + weather.name + ", isDemoMode=" + isDemoMode)
+        Log.i(TAG, "Weather changed to $weather, isDemoMode=$isDemoMode")
     }
 
     fun onSurfaceChanged(gl: GL10, w: Int, h: Int) {
@@ -131,16 +122,16 @@ class IsolatedRenderer(ctx: Context) {
         if (gl !== this.gl) {
             this.gl = gl as GL11
             if (this.currentScene == null) {
-                if (Scene.Companion.sTextures == null) {
-                    Scene.Companion.sTextures = Textures(context.resources, gl)
+                if (Scene.sTextures == null) {
+                    Scene.sTextures = Textures(context.resources, gl)
                 }
-                if (Scene.Companion.sModels == null) {
-                    Scene.Companion.sModels = Models(context.resources, gl)
+                if (Scene.sModels == null) {
+                    Scene.sModels = Models(context.resources, gl)
                 }
 
                 currentSceneId = SceneMode.CLEAR
                 currentScene = SceneClear(context, gl)
-                context = context
+
             } else {
                 currentScene!!.unload(gl)
                 currentScene!!.precacheAssets(gl)
@@ -233,11 +224,11 @@ class IsolatedRenderer(ctx: Context) {
             this.lastCalendarUpdate = 0.0f
         }
         if (this.lastPositionUpdate >= 300.0f) {
-            val state = weatherConditions.value
+            val (latitude, longitude) = weatherConditions
 
             _tod.calculateTimeTable(
-                state.latitude.takeUnless(Float::isNaN) ?: 0f,
-                state.longitude.takeUnless(Float::isNaN) ?: 0f
+                latitude.takeUnless(Float::isNaN) ?: 0f,
+                longitude.takeUnless(Float::isNaN) ?: 0f
             )
             this.lastPositionUpdate = 0.0f
         }

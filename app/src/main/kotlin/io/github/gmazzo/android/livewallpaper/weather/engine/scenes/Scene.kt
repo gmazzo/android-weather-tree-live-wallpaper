@@ -10,10 +10,10 @@ import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 
-abstract class Scene protected constructor(protected val mContext: Context, gl: GL11?) {
+abstract class Scene protected constructor(mContext: Context, gl: GL11) {
     protected var mLandscape: Boolean = false
-    protected val textures: Textures = Textures(mContext.resources, gl!!)
-    protected val models: Models = Models(mContext.resources, gl!!)
+    protected val textures: Textures = Textures(mContext.resources, gl)
+    protected val models: Models = Models(mContext.resources, gl)
     protected var mThingManager: ThingManager? = null
 
     abstract fun draw(gl10: GL10, globalTime: GlobalTime)

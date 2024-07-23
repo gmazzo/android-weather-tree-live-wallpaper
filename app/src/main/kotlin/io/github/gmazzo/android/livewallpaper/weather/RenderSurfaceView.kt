@@ -2,25 +2,21 @@ package io.github.gmazzo.android.livewallpaper.weather
 
 import android.content.Context
 import android.opengl.GLSurfaceView
-import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import io.github.gmazzo.android.livewallpaper.weather.engine.IsolatedRenderer
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
-class RenderSurfaceView @JvmOverloads constructor(
-    context: Context?,
-    attributeset: AttributeSet? = null
-) : GLSurfaceView(context, attributeset) {
-    protected var isPaused: Boolean = false
+class RenderSurfaceView(context: Context) : GLSurfaceView(context) {
     var isDemoMode: Boolean = false
-    var mBaseRenderer: BaseRenderer
+    private val mBaseRenderer = BaseRenderer().also(::setRenderer)
     protected var mServiceSurfaceHolder: SurfaceHolder? = null
 
     inner class BaseRenderer : Renderer {
-        val renderer: IsolatedRenderer =
-            IsolatedRenderer(this@RenderSurfaceView.context)
+
+        val renderer = IsolatedRenderer(context)
+
         private var wasCreated = false
 
         fun onPause() {
@@ -28,7 +24,6 @@ class RenderSurfaceView @JvmOverloads constructor(
         }
 
         fun onResume() {
-            renderer.isDemoMode = isDemoMode
             renderer.onResume()
         }
 
@@ -39,18 +34,16 @@ class RenderSurfaceView @JvmOverloads constructor(
         }
 
         override fun onSurfaceChanged(gl: GL10, w: Int, h: Int) {
+            renderer.isDemoMode = isDemoMode
             renderer.onSurfaceChanged(gl, w, h)
         }
 
         override fun onSurfaceCreated(gl: GL10, eglconfig: EGLConfig) {
             renderer.onSurfaceCreated(gl, eglconfig)
+
+            renderer.isDemoMode = isDemoMode
             this.wasCreated = true
         }
-    }
-
-    init {
-        this.mBaseRenderer = BaseRenderer()
-        setRenderer(this.mBaseRenderer)
     }
 
     override fun getHolder(): SurfaceHolder {
@@ -78,10 +71,6 @@ class RenderSurfaceView @JvmOverloads constructor(
         super.onDetachedFromWindow()
     }
 
-    fun changeScene(weather: WeatherType) {
-        mBaseRenderer.renderer.onSceneChanged(weather)
-    }
-
     fun scrollOffset(offset: Float) {
         mBaseRenderer.renderer.updateOffset(offset)
     }
@@ -91,7 +80,7 @@ class RenderSurfaceView @JvmOverloads constructor(
         return super.onTouchEvent(motionEvent)
     }
 
-    fun updateWeatherType(type: WeatherType) {
-        changeScene(type)
+    fun updateWeather(weather: WeatherConditions) {
+        mBaseRenderer.renderer.onSceneChanged(weather)
     }
 }

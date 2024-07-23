@@ -14,7 +14,7 @@ import io.github.gmazzo.android.livewallpaper.weather.sky_manager.TimeOfDay
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 
-class SceneRain(context: Context, gl: GL11?) : SceneBase(context, gl) {
+class SceneRain(context: Context, gl: GL11) : SceneBase(context, gl) {
     var light_diffuse: FloatArray
     var particleRain: ParticleRain?
     var particleRainOrigin: Vector

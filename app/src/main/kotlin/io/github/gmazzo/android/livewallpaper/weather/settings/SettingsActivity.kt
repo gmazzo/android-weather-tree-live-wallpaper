@@ -34,14 +34,14 @@ class SettingsActivity : ComponentActivity() {
 
         setContent {
             SettingsScreen(
-                modal = true,
                 updateLocationEnabled = viewModel.updateLocationEnabled.collectAsState().value,
                 weatherConditions = viewModel.weatherConditions.collectAsState().value,
                 missingLocationPermission = viewModel.missingLocationPermission.collectAsState().value,
                 updateLocationEnabledChange = viewModel::updateLocationEnabled,
+                onSceneSelected = viewModel::updateSelectedScene,
                 onRequestLocationPermission = { checkPermissions(null) },
                 onSetAsWallpaper = ::openWallpaperChooser,
-                onNavigateBack = ::finish
+                onNavigateBack = ::finish,
             )
         }
     }
@@ -73,11 +73,14 @@ class SettingsActivity : ComponentActivity() {
         }
     }
 
-    private fun openWallpaperChooser() = startActivity(
-        Intent(WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER).putExtra(
-            WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT,
-            ComponentName(this, WallpaperService::class.java)
+    private fun openWallpaperChooser() {
+        startActivity(
+            Intent(WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER).putExtra(
+                WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT,
+                ComponentName(this, WallpaperService::class.java)
+            )
         )
-    )
+        finish()
+    }
 
 }

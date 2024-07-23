@@ -10,7 +10,7 @@ import io.github.gmazzo.android.livewallpaper.weather.sky_manager.TimeOfDay
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 
-class SceneFog(context: Context, gl: GL11?) : SceneBase(context, gl) {
+class SceneFog(context: Context, gl: GL11) : SceneBase(context, gl) {
     var fogEngineColorFinal: EngineColor
     var fog_todEngineColors: Array<EngineColor?>
 

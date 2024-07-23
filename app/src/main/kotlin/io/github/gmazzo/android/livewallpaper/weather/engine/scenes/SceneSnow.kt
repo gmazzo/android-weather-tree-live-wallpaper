@@ -15,7 +15,7 @@ import io.github.gmazzo.android.livewallpaper.weather.sky_manager.TimeOfDay
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 
-class SceneSnow(context: Context, gl: GL11?) : SceneBase(context, gl) {
+class SceneSnow(context: Context, gl: GL11) : SceneBase(context, gl) {
     var particleSnow: ParticleSnow? = null
     var pref_snowDensity: Int = 0
     var snowPos1: Vector

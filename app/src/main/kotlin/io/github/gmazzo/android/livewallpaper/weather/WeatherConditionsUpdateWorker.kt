@@ -51,7 +51,7 @@ class WeatherConditionsUpdateWorker @AssistedInject constructor(
         fun WorkManager.enableWeatherConditionsUpdate() {
             enqueueUniquePeriodicWork(
                 TAG,
-                if (BuildConfig.DEBUG) ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE else ExistingPeriodicWorkPolicy.KEEP,
+                ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
                 PeriodicWorkRequestBuilder<WeatherConditionsUpdateWorker>(
                     1,
                     TimeUnit.HOURS,

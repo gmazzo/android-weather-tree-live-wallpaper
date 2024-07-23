@@ -19,7 +19,7 @@ open class GLWallpaperService : WallpaperService() {
         override fun onVisibilityChanged(visible: Boolean) {
             super.onVisibilityChanged(visible)
             if (visible) {
-                renderSurfaceView!!.isDemoMode = BuildConfig.DEMO_MODE || isPreview
+                renderSurfaceView!!. isDemoMode = BuildConfig.DEMO_MODE || isPreview
                 renderSurfaceView!!.onResume()
                 return
             }

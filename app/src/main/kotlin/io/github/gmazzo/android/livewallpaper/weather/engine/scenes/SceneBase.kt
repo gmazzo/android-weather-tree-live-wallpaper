@@ -12,7 +12,7 @@ import io.github.gmazzo.android.livewallpaper.weather.wallpaper.AnimatedModel
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 
-abstract class SceneBase(context: Context, gl: GL11?) : Scene(context, gl) {
+abstract class SceneBase(context: Context, gl: GL11) : Scene(context, gl) {
     protected var BG_PADDING: Float = 20.0f
     protected val DBG: Boolean = false
     protected var TREE_ANIMATE_DELAY_MIN: Float = 3.0f

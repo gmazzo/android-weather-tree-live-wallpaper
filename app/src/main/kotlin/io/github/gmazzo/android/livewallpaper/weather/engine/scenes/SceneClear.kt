@@ -19,7 +19,7 @@ import javax.microedition.khronos.opengles.GL11
 
 open class SceneClear @JvmOverloads constructor(
     context: Context,
-    gl: GL11?,
+    gl: GL11,
     @field:DrawableRes @param:DrawableRes private val backgroundId: Int = R.drawable.bg3
 ) : SceneBase(context, gl) {
     protected var batteryLevel: Int

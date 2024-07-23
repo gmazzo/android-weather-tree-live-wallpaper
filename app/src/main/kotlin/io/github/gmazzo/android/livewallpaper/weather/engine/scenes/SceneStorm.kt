@@ -15,7 +15,7 @@ import io.github.gmazzo.android.livewallpaper.weather.sky_manager.TimeOfDay
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 
-class SceneStorm(context: Context, gl: GL11?) : SceneBase(context, gl) {
+class SceneStorm(context: Context, gl: GL11) : SceneBase(context, gl) {
     var lastLightningSpawn: Float
     var light1_ambientLight: FloatArray
     var light1_position: FloatArray
