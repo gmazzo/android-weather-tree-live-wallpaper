@@ -25,7 +25,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,7 +32,6 @@ import com.example.compose.AppTheme
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.WeatherConditions
 import io.github.gmazzo.android.livewallpaper.weather.WeatherType
-import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import me.zhanghai.compose.preference.LocalPreferenceTheme
@@ -125,17 +123,8 @@ internal fun SettingsScreen(
                                         )
                                     )
                                 }, icon = {
-                                    val iconId = when (weather.weatherType.scene) {
-                                        SceneMode.CLEAR -> R.drawable.ic_weather_clear
-                                        SceneMode.CLOUDY -> R.drawable.ic_weather_cloudy
-                                        SceneMode.FOG -> R.drawable.ic_weather_fog
-                                        SceneMode.RAIN -> R.drawable.ic_weather_rain
-                                        SceneMode.SNOW -> R.drawable.ic_weather_snow
-                                        SceneMode.STORM -> R.drawable.ic_weather_storm
-                                    }
-
                                     Icon(
-                                        painter = painterResource(iconId),
+                                        imageVector = weather.weatherType.scene.icon,
                                         contentDescription = weather.weatherType.name
                                     )
                                 }, onClick = {})
