@@ -10,4 +10,5 @@
     <string name="settings_use_location_current">Current: %1$.3f lat %2%.3f lng</string>
     <string name="settings_location_permission_required">The wallpaper does not have permission to access your device location</string>
     <string name="settings_location_permission_grant">Grant</string>
+    <string name="settings_set_as_wallpaper">Set as device wallpaper</string>
 </resources>

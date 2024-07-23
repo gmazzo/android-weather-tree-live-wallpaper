@@ -2,6 +2,7 @@ package io.github.gmazzo.android.livewallpaper.weather.settings
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -50,13 +51,12 @@ internal fun SettingsScreen(
     preferences: MutableStateFlow<Preferences> = defaultPreferenceFlow(),
     weatherConditions: StateFlow<WeatherConditions> = MutableStateFlow(
         WeatherConditions(
-            latitude = 37f,
-            longitude = -2f,
-            weatherType = WeatherType.RAIN
+            latitude = 37f, longitude = -2f, weatherType = WeatherType.RAIN
         )
     ),
     missingLocationPermission: MutableStateFlow<Boolean> = MutableStateFlow(true),
     onRequestLocationPermission: () -> Unit = {},
+    onSetAsWallpaper: () -> Unit = {},
 ) {
     val weather by weatherConditions.collectAsState()
     val missingPermission by missingLocationPermission.collectAsState()
@@ -65,24 +65,29 @@ internal fun SettingsScreen(
         ProvidePreferenceLocals(preferences) {
             Scaffold(
                 topBar = { TopAppBar(title = { Text(stringResource(id = R.string.app_name)) }) },
-            ) { innerPadding ->
+                bottomBar = {
+                    val theme = LocalPreferenceTheme.current
+
+                    Button(
+                        modifier = Modifier.padding(theme.padding).fillMaxWidth(),
+                        onClick = onSetAsWallpaper,) {
+                        Text(text = stringResource(id = R.string.settings_set_as_wallpaper))
+                    }
+                }) { innerPadding ->
                 LazyColumn(
                     modifier = Modifier
                         .padding(innerPadding)
                         .fillMaxSize()
                 ) {
-                    preferenceCategory(
-                        key = "dynamic_scenes",
-                        title = {
-                            Column {
-                                Text(text = stringResource(id = R.string.settings_dynamic_scenes))
-                                Text(
-                                    text = stringResource(id = R.string.settings_dynamic_scenes_summary),
-                                    fontWeight = FontWeight.Light
-                                )
-                            }
+                    preferenceCategory(key = "dynamic_scenes", title = {
+                        Column {
+                            Text(text = stringResource(id = R.string.settings_dynamic_scenes))
+                            Text(
+                                text = stringResource(id = R.string.settings_dynamic_scenes_summary),
+                                fontWeight = FontWeight.Light
+                            )
                         }
-                    )
+                    })
                     switchPreference(
                         key = SETTING_LOCATION_ON,
                         defaultValue = false,
@@ -93,33 +98,29 @@ internal fun SettingsScreen(
                         summary = {
                             Text(text = stringResource(id = R.string.settings_use_location_summary))
                             if (weather.isValid) {
-                                SuggestionChip(
-                                    label = {
-                                        Text(
-                                            text = stringResource(
-                                                R.string.settings_use_location_current,
-                                                weather.latitude,
-                                                weather.longitude
-                                            )
+                                SuggestionChip(label = {
+                                    Text(
+                                        text = stringResource(
+                                            R.string.settings_use_location_current,
+                                            weather.latitude,
+                                            weather.longitude
                                         )
-                                    },
-                                    icon = {
-                                        val iconId = when (weather.weatherType.scene) {
-                                            SceneMode.CLEAR -> R.drawable.ic_weather_clear
-                                            SceneMode.CLOUDY -> R.drawable.ic_weather_cloudy
-                                            SceneMode.FOG -> R.drawable.ic_weather_fog
-                                            SceneMode.RAIN -> R.drawable.ic_weather_rain
-                                            SceneMode.SNOW -> R.drawable.ic_weather_snow
-                                            SceneMode.STORM -> R.drawable.ic_weather_storm
-                                        }
+                                    )
+                                }, icon = {
+                                    val iconId = when (weather.weatherType.scene) {
+                                        SceneMode.CLEAR -> R.drawable.ic_weather_clear
+                                        SceneMode.CLOUDY -> R.drawable.ic_weather_cloudy
+                                        SceneMode.FOG -> R.drawable.ic_weather_fog
+                                        SceneMode.RAIN -> R.drawable.ic_weather_rain
+                                        SceneMode.SNOW -> R.drawable.ic_weather_snow
+                                        SceneMode.STORM -> R.drawable.ic_weather_storm
+                                    }
 
-                                        Icon(
-                                            painter = painterResource(iconId),
-                                            contentDescription = weather.weatherType.name
-                                        )
-                                    },
-                                    onClick = {}
-                                )
+                                    Icon(
+                                        painter = painterResource(iconId),
+                                        contentDescription = weather.weatherType.name
+                                    )
+                                }, onClick = {})
                             }
                         },
                     )
@@ -142,8 +143,12 @@ private fun LazyListScope.missingLocationPermission(onRequestLocationPermission:
             ),
             modifier = Modifier.padding(theme.padding),
         ) {
-            Preference(
-                icon = { Icon(imageVector = Icons.Outlined.Warning, contentDescription = null) },
+            Preference(icon = {
+                Icon(
+                    imageVector = Icons.Outlined.Warning,
+                    contentDescription = null
+                )
+            },
                 title = { Text(stringResource(R.string.settings_location_permission_required)) },
                 widgetContainer = {
                     Button(
@@ -152,7 +157,6 @@ private fun LazyListScope.missingLocationPermission(onRequestLocationPermission:
                     ) {
                         Text(text = stringResource(R.string.settings_location_permission_grant))
                     }
-                }
-            )
+                })
         }
     }

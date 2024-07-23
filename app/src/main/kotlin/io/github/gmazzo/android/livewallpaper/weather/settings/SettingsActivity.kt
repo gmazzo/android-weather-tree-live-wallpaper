@@ -4,6 +4,7 @@ import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.annotation.SuppressLint
 import android.app.WallpaperManager
+import android.content.ComponentName
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -12,7 +13,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
-import io.github.gmazzo.android.livewallpaper.weather.BuildConfig
 import io.github.gmazzo.android.livewallpaper.weather.WallpaperService
 import io.github.gmazzo.android.livewallpaper.weather.hasBackgroundLocationPermission
 import io.github.gmazzo.android.livewallpaper.weather.hasLocationPermission
@@ -36,7 +36,8 @@ class SettingsActivity : ComponentActivity() {
                 preferences = viewModel.preferences,
                 weatherConditions = viewModel.weatherConditions,
                 missingLocationPermission = viewModel.missingLocationPermission,
-                onRequestLocationPermission = { checkPermissions(null) }
+                onRequestLocationPermission = { checkPermissions(null) },
+                onSetAsWallpaper = ::openWallpaperChooser
             )
         }
     }
@@ -68,19 +69,11 @@ class SettingsActivity : ComponentActivity() {
         }
     }
 
-    // TODO what to do with this?
-    private fun openWallpaperChooser() {
-        finish()
-
-        if (BuildConfig.DEBUG) {
-            startActivity(
-                Intent(WallpaperManager.ACTION_LIVE_WALLPAPER_CHOOSER)
-                    .putExtra(
-                        WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT,
-                        Intent(this, WallpaperService::class.java).component
-                    )
-            )
-        }
-    }
+    private fun openWallpaperChooser() = startActivity(
+        Intent(WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER).putExtra(
+            WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT,
+            ComponentName(this, WallpaperService::class.java)
+        )
+    )
 
 }
