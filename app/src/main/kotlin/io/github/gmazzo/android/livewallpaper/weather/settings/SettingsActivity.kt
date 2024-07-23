@@ -17,6 +17,7 @@ import io.github.gmazzo.android.livewallpaper.weather.WallpaperService
 import io.github.gmazzo.android.livewallpaper.weather.hasBackgroundLocationPermission
 import io.github.gmazzo.android.livewallpaper.weather.hasLocationPermission
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -38,18 +39,22 @@ class SettingsActivity : ComponentActivity() {
                 onRequestLocationPermission = { checkPermissions(null) }
             )
         }
-
-        lifecycleScope.launch {
-            viewModel.updateLocationEnabled.collectLatest { enabled ->
-                if (enabled) checkPermissions(null)
-            }
-        }
     }
 
     override fun onResume() {
         super.onResume()
 
         viewModel.checkLocationPermission()
+    }
+
+    override fun onPostResume() {
+        super.onPostResume()
+
+        lifecycleScope.launch {
+            viewModel.updateLocationEnabled.drop(1).collectLatest { enabled ->
+                if (enabled) checkPermissions(null)
+            }
+        }
     }
 
     @SuppressLint("InlinedApi")

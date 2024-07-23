@@ -40,6 +40,8 @@ class SettingsViewModel @Inject constructor(
                 updateLocationEnabled.value = locationOn
                 if (locationOn) workManager.enableWeatherConditionsUpdate()
                 else workManager.disableWeatherConditionsUpdate()
+
+                checkLocationPermission()
             }
         }
     }
