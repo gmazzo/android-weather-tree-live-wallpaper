@@ -1,16 +1,21 @@
-package io.github.gmazzo.android.livewallpaper.weather.work
+package io.github.gmazzo.android.livewallpaper.weather
 
 import android.content.Context
 import android.location.Location
 import androidx.hilt.work.HiltWorker
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import io.github.gmazzo.android.livewallpaper.weather.WeatherConditions
 import io.github.gmazzo.android.livewallpaper.weather.api.LocationForecastAPI
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import java.util.concurrent.TimeUnit
 import javax.inject.Provider
 
 @HiltWorker
@@ -38,6 +43,33 @@ class WeatherConditionsUpdateWorker @AssistedInject constructor(
             )
         }
         return Result.success()
+    }
+
+    companion object {
+        private const val TAG = "weatherUpdate"
+
+        fun WorkManager.enableWeatherConditionsUpdate() {
+            enqueueUniquePeriodicWork(
+                TAG,
+                if (BuildConfig.DEBUG) ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE else ExistingPeriodicWorkPolicy.KEEP,
+                PeriodicWorkRequestBuilder<WeatherConditionsUpdateWorker>(
+                    1,
+                    TimeUnit.HOURS,
+                    8,
+                    TimeUnit.HOURS
+                ).setConstraints(
+                    Constraints.Builder()
+                        .setRequiredNetworkType(NetworkType.CONNECTED)
+                        .setRequiresBatteryNotLow(true)
+                        .build()
+                ).build()
+            )
+        }
+
+        fun WorkManager.disableWeatherConditionsUpdate() {
+            cancelAllWorkByTag(TAG)
+        }
+
     }
 
 }

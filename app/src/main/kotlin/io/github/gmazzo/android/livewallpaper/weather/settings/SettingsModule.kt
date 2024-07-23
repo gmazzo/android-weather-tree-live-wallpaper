@@ -18,7 +18,7 @@ internal object SettingsModule {
 
     @Provides
     @Singleton
-    fun provideSettingsPreferences(@ApplicationContext context: Context): SharedPreferences =
+    fun providePreferences(@ApplicationContext context: Context): SharedPreferences =
         context.getSharedPreferences("settings", Context.MODE_PRIVATE)
 
     @Provides

@@ -48,9 +48,6 @@
                 android:name="androidx.work.WorkManagerInitializer"
                 android:value="androidx.startup"
                 tools:node="remove" />
-            <meta-data
-                android:name="io.github.gmazzo.android.livewallpaper.weather.work.ScheduleWorkInitializer"
-                android:value="androidx.startup" />
         </provider>
 
     </application>

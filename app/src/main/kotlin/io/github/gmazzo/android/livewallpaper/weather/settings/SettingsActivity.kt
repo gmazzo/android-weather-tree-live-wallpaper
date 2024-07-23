@@ -9,38 +9,47 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
+import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.gmazzo.android.livewallpaper.weather.BuildConfig
 import io.github.gmazzo.android.livewallpaper.weather.WallpaperService
-import io.github.gmazzo.android.livewallpaper.weather.WeatherConditions
 import io.github.gmazzo.android.livewallpaper.weather.hasBackgroundLocationPermission
 import io.github.gmazzo.android.livewallpaper.weather.hasLocationPermission
-import kotlinx.coroutines.flow.MutableStateFlow
-import me.zhanghai.compose.preference.Preferences
-import javax.inject.Inject
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class SettingsActivity : ComponentActivity() {
 
+    private val viewModel: SettingsViewModel by viewModels()
+
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission(), ::checkPermissions)
-
-    @Inject
-    lateinit var preferences: MutableStateFlow<Preferences>
-
-    @Inject
-    lateinit var weatherConditions: MutableStateFlow<WeatherConditions>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContent { SettingsScreen(preferences, weatherConditions) }
+        setContent {
+            SettingsScreen(
+                preferences = viewModel.preferences,
+                weatherConditions = viewModel.weatherConditions,
+                missingLocationPermission = viewModel.missingLocationPermission,
+                onRequestLocationPermission = { checkPermissions(null) }
+            )
+        }
+
+        lifecycleScope.launch {
+            viewModel.updateLocationEnabled.collectLatest { enabled ->
+                if (enabled) checkPermissions(null)
+            }
+        }
     }
 
     override fun onResume() {
         super.onResume()
 
-        checkPermissions(null)
+        viewModel.checkLocationPermission()
     }
 
     @SuppressLint("InlinedApi")
@@ -48,10 +57,13 @@ class SettingsActivity : ComponentActivity() {
         when {
             granted == false -> {}
             !hasLocationPermission -> requestPermissionLauncher.launch(ACCESS_COARSE_LOCATION)
-            !hasBackgroundLocationPermission -> requestPermissionLauncher.launch(ACCESS_BACKGROUND_LOCATION)
+            !hasBackgroundLocationPermission -> requestPermissionLauncher.launch(
+                ACCESS_BACKGROUND_LOCATION
+            )
         }
     }
 
+    // TODO what to do with this?
     private fun openWallpaperChooser() {
         finish()
 
