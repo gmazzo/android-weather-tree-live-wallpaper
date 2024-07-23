@@ -1,11 +1,12 @@
 package io.github.gmazzo.android.livewallpaper.weather.settings
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.LocationOn
@@ -16,154 +17,161 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SuggestionChip
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.example.compose.AppTheme
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.WeatherConditions
 import io.github.gmazzo.android.livewallpaper.weather.WeatherType
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import me.zhanghai.compose.preference.LocalPreferenceTheme
-import me.zhanghai.compose.preference.Preference
-import me.zhanghai.compose.preference.Preferences
-import me.zhanghai.compose.preference.ProvidePreferenceLocals
-import me.zhanghai.compose.preference.defaultPreferenceFlow
-import me.zhanghai.compose.preference.preferenceCategory
-import me.zhanghai.compose.preference.switchPreference
-
-const val SETTING_LOCATION_ON = "location_on"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Preview
-internal fun SettingsScreen(
-    preferences: MutableStateFlow<Preferences> = defaultPreferenceFlow(),
-    weatherConditions: StateFlow<WeatherConditions> = MutableStateFlow(
-        WeatherConditions(
-            latitude = 37f, longitude = -2f, weatherType = WeatherType.RAIN
-        )
+fun SettingsScreen(
+    updateLocationEnabled: Boolean = true,
+    weatherConditions: WeatherConditions = WeatherConditions(
+        latitude = 37f,
+        longitude = -2f,
+        weatherType = WeatherType.RAIN
     ),
-    missingLocationPermission: MutableStateFlow<Boolean> = MutableStateFlow(true),
+    missingLocationPermission: Boolean = true,
+    updateLocationEnabledChange: (Boolean) -> Unit = {},
     onRequestLocationPermission: () -> Unit = {},
     onSetAsWallpaper: () -> Unit = {},
     onNavigateBack: () -> Unit = {},
 ) {
-    val weather by weatherConditions.collectAsState()
-    val missingPermission by missingLocationPermission.collectAsState()
-
     AppTheme {
-        ProvidePreferenceLocals(preferences) {
-            Scaffold(
-                topBar = {
-                    TopAppBar(
-                        title = { Text(stringResource(id = R.string.app_name)) },
-                        navigationIcon = {
-                            IconButton(onClick = onNavigateBack) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                                    contentDescription = null,
-                                )
-                            }
-                        },
-                    )
+        Scaffold(topBar = {
+            TopAppBar(
+                title = { },
+                navigationIcon = {
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                            contentDescription = null,
+                        )
+                    }
                 },
-                bottomBar = {
-                    val theme = LocalPreferenceTheme.current
-
-                    Button(
-                        modifier = Modifier
-                            .padding(theme.padding)
-                            .fillMaxWidth(),
-                        onClick = onSetAsWallpaper,
-                    ) {
-                        Text(text = stringResource(id = R.string.settings_set_as_wallpaper))
-                    }
-                }) { innerPadding ->
-                LazyColumn(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .fillMaxSize()
+            )
+        }, bottomBar = {
+            Button(
+                modifier = Modifier.fillMaxWidth().padding(8.dp),
+                onClick = onSetAsWallpaper,
+            ) {
+                Text(text = stringResource(id = R.string.settings_set_as_wallpaper))
+            }
+        }) { innerPadding ->
+            Column(
+                modifier = Modifier.padding(innerPadding).padding(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                if (missingLocationPermission) {
+                    MissingLocationPermissionPanel(onRequestLocationPermission)
+                }
+                SettingsCategory(
+                    title = { Text(text = stringResource(R.string.settings_scenes)) },
+                )
+                SettingsItem(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Outlined.LocationOn,
+                            contentDescription = null,
+                        )
+                    },
+                    title = { Text(text = stringResource(id = R.string.settings_use_location)) },
+                    summary = { Text(text = stringResource(id = R.string.settings_use_location_summary)) },
                 ) {
-                    preferenceCategory(key = "dynamic_scenes", title = {
-                        Column {
-                            Text(text = stringResource(id = R.string.settings_dynamic_scenes))
-                            Text(
-                                text = stringResource(id = R.string.settings_dynamic_scenes_summary),
-                                fontWeight = FontWeight.Light
-                            )
-                        }
-                    })
-                    switchPreference(
-                        key = SETTING_LOCATION_ON,
-                        defaultValue = false,
-                        icon = {
-                            Icon(imageVector = Icons.Outlined.LocationOn, contentDescription = null)
-                        },
-                        title = { Text(text = stringResource(id = R.string.settings_use_location)) },
-                        summary = {
-                            Text(text = stringResource(id = R.string.settings_use_location_summary))
-                            if (weather.isValid) {
-                                SuggestionChip(label = {
-                                    Text(
-                                        text = stringResource(
-                                            R.string.settings_use_location_current,
-                                            weather.latitude,
-                                            weather.longitude
-                                        )
-                                    )
-                                }, icon = {
-                                    Icon(
-                                        imageVector = weather.weatherType.scene.icon,
-                                        contentDescription = weather.weatherType.name
-                                    )
-                                }, onClick = {})
-                            }
-                        },
+                    Switch(
+                        checked = updateLocationEnabled,
+                        onCheckedChange = updateLocationEnabledChange
                     )
-                    if (missingPermission) {
-                        missingLocationPermission(onRequestLocationPermission)
-                    }
                 }
             }
         }
     }
 }
 
-private fun LazyListScope.missingLocationPermission(onRequestLocationPermission: () -> Unit) =
-    item {
-        val theme = LocalPreferenceTheme.current
+@Composable
+private fun SettingsCategory(
+    title: @Composable () -> Unit = {},
+    summary: @Composable () -> Unit = {},
+) = Surface(color = Color.Transparent) {
+    Column(modifier = Modifier.padding(8.dp)) {
+        CompositionLocalProvider(
+            LocalContentColor provides MaterialTheme.colorScheme.secondary,
+            LocalTextStyle provides MaterialTheme.typography.labelLarge,
+            content = title
+        )
+        CompositionLocalProvider(
+            LocalContentColor provides MaterialTheme.colorScheme.tertiary,
+            LocalTextStyle provides MaterialTheme.typography.labelMedium,
+            content = summary
+        )
+    }
+}
 
-        Card(
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.errorContainer,
-            ),
-            modifier = Modifier.padding(theme.padding),
-        ) {
-            Preference(icon = {
-                Icon(
-                    imageVector = Icons.Outlined.Warning,
-                    contentDescription = null
-                )
-            },
-                title = { Text(stringResource(R.string.settings_location_permission_required)) },
-                widgetContainer = {
-                    Button(
-                        modifier = Modifier.padding(theme.horizontalSpacing),
-                        onClick = onRequestLocationPermission,
-                    ) {
-                        Text(text = stringResource(R.string.settings_location_permission_grant))
-                    }
-                })
+@Composable
+private fun SettingsItem(
+    icon: @Composable (() -> Unit)? = null,
+    title: @Composable () -> Unit = {},
+    summary: @Composable () -> Unit = {},
+    onClick: () -> Unit = {},
+    widget: @Composable (() -> Unit)? = null,
+) = Surface(color = Color.Transparent, onClick = onClick) {
+    Row(
+        modifier = Modifier.padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        if (icon != null) {
+            CompositionLocalProvider(
+                LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant,
+                content = icon
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+        }
+        Column(modifier = Modifier
+            .weight(1f)
+            .padding(end = (if (widget != null) 8 else 0).dp)) {
+            CompositionLocalProvider(
+                LocalContentColor provides MaterialTheme.colorScheme.onSurface,
+                LocalTextStyle provides MaterialTheme.typography.bodyLarge,
+                content = title
+            )
+            CompositionLocalProvider(
+                LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant,
+                LocalTextStyle provides MaterialTheme.typography.bodyMedium,
+                content = summary
+            )
+        }
+        widget?.invoke()
+    }
+}
+
+@Composable
+private fun MissingLocationPermissionPanel(onRequestLocationPermission: () -> Unit) = Card(
+    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
+) {
+    SettingsItem(
+        icon = { Icon(imageVector = Icons.Outlined.Warning, contentDescription = null) },
+        summary = { Text(stringResource(R.string.settings_location_permission_required)) },
+    ) {
+        Button(onClick = onRequestLocationPermission) {
+            Text(text = stringResource(R.string.settings_location_permission_grant))
         }
     }
+}

@@ -7,9 +7,9 @@ kotlin = "2.0.0"
 androidx-compose = { module = "androidx.compose:compose-bom", version = "2024.06.00" }
 androidx-compose-activity = { module = "androidx.activity:activity-compose", version = "1.9.0" }
 androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
-androidx-compose-preferences = { module = "me.zhanghai.compose.preference:library", version = "1.0.0" }
 androidx-compose-uiTooling = { module = "androidx.compose.ui:ui-tooling" }
 androidx-compose-uiToolingPreview = { module = "androidx.compose.ui:ui-tooling-preview" }
+androidx-datastore = { module = "androidx.datastore:datastore-preferences", version = "1.1.1" }
 androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "androidx-hilt" }
 androidx-hilt-workManager = { module = "androidx.hilt:hilt-work", version.ref = "androidx-hilt" }
 androidx-startUp = { module = "androidx.startup:startup-runtime", version = "1.1.1" }

@@ -11,6 +11,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.gmazzo.android.livewallpaper.weather.WallpaperService
@@ -33,9 +34,10 @@ class SettingsActivity : ComponentActivity() {
 
         setContent {
             SettingsScreen(
-                preferences = viewModel.preferences,
-                weatherConditions = viewModel.weatherConditions,
-                missingLocationPermission = viewModel.missingLocationPermission,
+                updateLocationEnabled = viewModel.updateLocationEnabled.collectAsState().value,
+                weatherConditions = viewModel.weatherConditions.collectAsState().value,
+                missingLocationPermission = viewModel.missingLocationPermission.collectAsState().value,
+                updateLocationEnabledChange = viewModel::updateLocationEnabled,
                 onRequestLocationPermission = { checkPermissions(null) },
                 onSetAsWallpaper = ::openWallpaperChooser,
                 onNavigateBack = ::finish
@@ -46,7 +48,7 @@ class SettingsActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
 
-        viewModel.checkLocationPermission()
+        viewModel.onResume()
     }
 
     override fun onPostResume() {

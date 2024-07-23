@@ -1,6 +1,11 @@
 package io.github.gmazzo.android.livewallpaper.weather.settings
 
 import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkManager
@@ -15,40 +20,47 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import me.zhanghai.compose.preference.Preferences
 import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val workManager: WorkManager,
-    val preferences: MutableStateFlow<Preferences>,
-    val weatherConditions: StateFlow<WeatherConditions>,
     @ApplicationContext private val context: Context,
-) : ViewModel() {
+    private val preferences: DataStore<Preferences>,
+    val weatherConditions: StateFlow<WeatherConditions>,
+    private val workManager: WorkManager,
+) : ViewModel(), DefaultLifecycleObserver {
+
+    private val settingLocationOn = booleanPreferencesKey("location_on")
 
     val updateLocationEnabled = MutableStateFlow(false)
 
     val missingLocationPermission = MutableStateFlow(false)
 
     init {
-        checkLocationPermission()
-
         viewModelScope.launch {
-            preferences.collectLatest {
-                val locationOn = it.get<Boolean>(SETTING_LOCATION_ON) ?: false
+            preferences.data.collectLatest {
+                val locationOn = it[settingLocationOn] ?: false
 
                 updateLocationEnabled.value = locationOn
+                computeMissingLocationPermission(locationOn)
+
                 if (locationOn) workManager.enableWeatherConditionsUpdate()
                 else workManager.disableWeatherConditionsUpdate()
-
-                checkLocationPermission()
             }
         }
     }
 
-    fun checkLocationPermission() {
-        missingLocationPermission.value = updateLocationEnabled.value &&
+    fun onResume() {
+        computeMissingLocationPermission(updateLocationEnabled.value)
+    }
+
+    private fun computeMissingLocationPermission(locationOn: Boolean) {
+        missingLocationPermission.value = locationOn &&
                 !(context.hasLocationPermission && context.hasBackgroundLocationPermission)
+    }
+
+    fun updateLocationEnabled(enabled: Boolean) = viewModelScope.launch {
+        preferences.edit { it[settingLocationOn] = enabled }
     }
 
 }
