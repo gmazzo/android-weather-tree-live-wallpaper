@@ -37,7 +37,8 @@ class SettingsActivity : ComponentActivity() {
                 weatherConditions = viewModel.weatherConditions,
                 missingLocationPermission = viewModel.missingLocationPermission,
                 onRequestLocationPermission = { checkPermissions(null) },
-                onSetAsWallpaper = ::openWallpaperChooser
+                onSetAsWallpaper = ::openWallpaperChooser,
+                onNavigateBack = ::finish
             )
         }
     }
