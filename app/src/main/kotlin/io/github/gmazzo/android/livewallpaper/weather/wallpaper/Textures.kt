@@ -3,7 +3,6 @@ package io.github.gmazzo.android.livewallpaper.weather.wallpaper
 import android.content.res.Resources
 import android.graphics.BitmapFactory
 import android.opengl.GLUtils
-import androidx.annotation.AnyRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.RawRes
 import java.io.Closeable
@@ -30,22 +29,28 @@ class Textures(
 ) : Closeable {
     private val textures = mutableMapOf<Int, Texture>()
 
-    operator fun get(@AnyRes resId: Int) = textures.getOrPut(resId) {
+    @Synchronized
+    operator fun get(@DrawableRes @RawRes resId: Int) = textures.getOrPut(resId) {
         gl.glEnable(GL_TEXTURE_2D)
 
         val buffer = IntBuffer.allocate(1)
         gl.glGenTextures(1, buffer)
 
         val glId = buffer.get(0)
+        check(glId > 0) {
+            "Failed to load texture ${resources.getResourceName(resId)} (resId=$resId)"
+        }
+
         gl.glBindTexture(GL_TEXTURE_2D, glId)
         gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
         gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
         gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
         gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
 
-        when (resources.getResourceTypeName(resId)) {
+        when (val type = resources.getResourceTypeName(resId)) {
             "drawable" -> loadBitmap(resId)
-            else -> loadTGA(resId)
+            "raw" -> loadTGA(resId)
+            else -> error("Unsupported resource '$type' for resId=$resId")
         }
 
         return@getOrPut Texture(resId, glId)
@@ -107,6 +112,7 @@ class Textures(
         }
     }
 
+    @Synchronized
     override fun close() {
         val ids = textures.values.map(Texture::glId).toIntArray()
         textures.clear()

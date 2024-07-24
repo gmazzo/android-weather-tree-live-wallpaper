@@ -10,7 +10,10 @@ import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 import kotlin.math.acos
 
-open class ParticleSystem {
+open class ParticleSystem(
+    protected val model: Model,
+    protected val texture: Texture,
+) {
     private var _animCurrentFrame = 0
     private var _animTimeElapsed = 0.0f
     private var _nextSpawnRateVariance = 0.0f
@@ -24,7 +27,6 @@ open class ParticleSystem {
     protected var destEngineColor: EngineColor = EngineColor(1.0f, 1.0f, 1.0f, 1.0f)
     var enableSpawning: Boolean = true
     protected var flowDirection: Vector? = null
-    protected var model: Model? = null
     private var orientScratch: Vector? = null
     protected var spawnBurst: Int = 0
     protected var spawnRangeX: Float = 0.0f
@@ -33,7 +35,6 @@ open class ParticleSystem {
     protected var spawnRate: Float = 1.0f
     protected var spawnRateVariance: Float = 0.2f
     protected var startEngineColor: EngineColor = EngineColor(1.0f, 1.0f, 1.0f, 1.0f)
-    protected var texture: Texture? = null
 
     inner class Particle {
         private var _angle: Float
@@ -206,7 +207,7 @@ open class ParticleSystem {
     }
 
     fun render(gl: GL11, systemOrigin: Vector?, direction: Vector?) {
-        gl.glBindTexture(GL10.GL_TEXTURE_2D, texture!!.glId)
+        gl.glBindTexture(GL10.GL_TEXTURE_2D, texture.glId)
 
         gl.glMatrixMode(GL10.GL_MODELVIEW)
         gl.glPushMatrix()

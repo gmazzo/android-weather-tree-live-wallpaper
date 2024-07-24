@@ -1,30 +1,34 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 
-import android.content.Context
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.WeatherType
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
-import io.github.gmazzo.android.livewallpaper.weather.engine.ThingManager
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.particles.ParticleSnow
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingCloud
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingWispy
 import io.github.gmazzo.android.livewallpaper.weather.sky_manager.TimeOfDay
+import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models
+import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 
-class SceneSnow(context: Context, gl: GL11) : SceneBase(context, gl) {
-    var particleSnow: ParticleSnow? = null
+class SceneSnow(
+    models: Models,
+    textures: Textures,
+) : SceneBase(models, textures) {
+    
+    private val particleSnow by lazy { ParticleSnow(models, textures) }
+    
     var pref_snowDensity: Int = 0
     var snowPos1: Vector
     var snowPos2: Vector
     var snowPos3: Vector
 
     init {
-        this.mThingManager = ThingManager()
-        SceneBase.todEngineColorFinal = EngineColor()
+        todEngineColorFinal = EngineColor()
         this.pref_todEngineColors = arrayOf(EngineColor(), EngineColor(), EngineColor(), EngineColor())
         this.reloadAssets = false
         this.pref_numClouds = 20
@@ -34,13 +38,13 @@ class SceneSnow(context: Context, gl: GL11) : SceneBase(context, gl) {
         this.snowPos3 = Vector(-8.0f, 10.0f, -20.0f)
     }
 
-    override fun load(gl: GL10?) {
+    override fun load(gl: GL10) {
         spawnClouds(false)
     }
 
-    override fun updateWeather(weather: WeatherType?) {
+    override fun updateWeather(weather: WeatherType) {
         windSpeedFromPrefs()
-        numCloudsFromPrefs(weather!!)
+        numCloudsFromPrefs(weather)
         todFromPrefs()
         snowDensityFromPrefs()
         snowGravityFromPrefs()
@@ -48,7 +52,7 @@ class SceneSnow(context: Context, gl: GL11) : SceneBase(context, gl) {
         snowTypeFromPrefs()
     }
 
-    override fun precacheAssets(gl10: GL10?) {
+    override fun precacheAssets(gl: GL10) {
         textures[R.drawable.bg2]
         textures[R.drawable.trees_overlay]
         textures[R.drawable.cloud1]
@@ -102,10 +106,10 @@ class SceneSnow(context: Context, gl: GL11) : SceneBase(context, gl) {
     }
 
     private fun spawnClouds(num_clouds: Int, num_wisps: Int, force: Boolean) {
-        val cloudsExist = mThingManager!!.countByTargetname("cloud") != 0
+        val cloudsExist = thingManager.countByTargetname("cloud") != 0
         if (force || !cloudsExist) {
-            mThingManager!!.clearByTargetname("cloud")
-            mThingManager!!.clearByTargetname("wispy")
+            thingManager.clearByTargetname("cloud")
+            thingManager.clearByTargetname("wispy")
             val cloudDepthList = FloatArray(num_clouds)
             val cloudDepthStep = 131.25f / (num_clouds.toFloat())
             var i = 0
@@ -123,30 +127,24 @@ class SceneSnow(context: Context, gl: GL11) : SceneBase(context, gl) {
             }
             i = 0
             while (i < cloudDepthList.size) {
-                val cloud = ThingCloud()
+                val cloud = ThingCloud(models, textures, i)
                 cloud.randomizeScale()
                 if (GlobalRand.intRange(0, 2) == 0) {
-                    cloud.scale.x = cloud.scale.x * -1.0f
+                    cloud.scale.x *= -1.0f
                 }
                 cloud.origin.x = ((i.toFloat()) * (90.0f / (num_clouds.toFloat()))) - 0.099609375f
                 cloud.origin.y = cloudDepthList[i]
                 cloud.origin.z = GlobalRand.floatRange(-20.0f, -10.0f)
-                val which = (i % 5) + 1
-                cloud.model = models[CLOUD_MODELS[which - 1]]
-                cloud.texture = textures[CLOUD_TEXTURES[which - 1]]
                 cloud.targetName = "cloud"
-                cloud.velocity = Vector(SceneBase.Companion.pref_windSpeed * 1.5f, 0.0f, 0.0f)
-                mThingManager!!.add(cloud)
+                cloud.velocity = Vector(pref_windSpeed * 1.5f, 0.0f, 0.0f)
+                thingManager.add(cloud)
                 i++
             }
             i = 0
             while (i < cloudDepthList.size) {
-                val which = ((i % 3) + 1)
-                val wispy = ThingWispy()
-                wispy.model = models[R.raw.plane_16x16]
-                wispy.texture = textures[WISPY_TEXTURES[which - 1]]
+                val wispy = ThingWispy(models, textures, i)
                 wispy.targetName = "wispy"
-                wispy.velocity = Vector(SceneBase.Companion.pref_windSpeed * 1.5f, 0.0f, 0.0f)
+                wispy.velocity = Vector(pref_windSpeed * 1.5f, 0.0f, 0.0f)
                 wispy.scale.set(
                     GlobalRand.floatRange(1.0f, 3.0f),
                     1.0f,
@@ -155,20 +153,19 @@ class SceneSnow(context: Context, gl: GL11) : SceneBase(context, gl) {
                 wispy.origin.x = ((i.toFloat()) * (120.0f / (num_wisps.toFloat()))) - 0.0703125f
                 wispy.origin.y = GlobalRand.floatRange(87.5f, CLOUD_START_DISTANCE)
                 wispy.origin.z = GlobalRand.floatRange(-40.0f, -20.0f)
-                mThingManager!!.add(wispy)
+                thingManager.add(wispy)
                 i++
             }
         }
     }
 
     override fun updateTimeOfDay(tod: TimeOfDay) {
-        SceneBase.Companion.todSunPosition = tod.sunPosition
+        todSunPosition = tod.sunPosition
         super.updateTimeOfDay(tod)
     }
 
     override fun draw(gl: GL10, time: GlobalTime) {
-        checkAssetReload(gl)
-        mThingManager!!.update(time.sTimeDelta)
+        thingManager.update(time.sTimeDelta)
         gl.glDisable(GL10.GL_COLOR_BUFFER_BIT)
         gl.glDisable(GL10.GL_LIGHT1)
         gl.glDisable(GL10.GL_LIGHTING)
@@ -177,31 +174,28 @@ class SceneSnow(context: Context, gl: GL11) : SceneBase(context, gl) {
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA)
         renderBackground(gl, time.sTimeElapsed)
         gl.glTranslatef(0.0f, 0.0f, 40.0f)
-        mThingManager!!.render(gl, textures, models)
+        thingManager.render(gl)
         renderSnow(gl, time.sTimeDelta)
         drawTree(gl, time.sTimeDelta)
     }
 
     private fun renderSnow(gl: GL10, timeDelta: Float) {
-        if (this.particleSnow == null) {
-            this.particleSnow = ParticleSnow()
-        }
-        particleSnow!!.update(timeDelta)
-        particleSnow!!.render(gl as GL11, this.snowPos1)
+        particleSnow.update(timeDelta)
+        particleSnow.render(gl as GL11, this.snowPos1)
         if (this.pref_snowDensity > 1) {
-            particleSnow!!.render(gl, this.snowPos2)
+            particleSnow.render(gl, this.snowPos2)
         }
         if (this.pref_snowDensity > 2) {
-            particleSnow!!.render(gl, this.snowPos3)
+            particleSnow.render(gl, this.snowPos3)
         }
     }
 
     private fun renderBackground(gl: GL10, timeDelta: Float) {
         gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[R.drawable.bg2].glId)
         gl.glColor4f(
-            SceneBase.Companion.todEngineColorFinal!!.r,
-            SceneBase.Companion.todEngineColorFinal!!.g,
-            SceneBase.Companion.todEngineColorFinal!!.b,
+            todEngineColorFinal!!.r,
+            todEngineColorFinal!!.g,
+            todEngineColorFinal!!.b,
             1.0f
         )
         gl.glMatrixMode(GL10.GL_MODELVIEW)
@@ -211,7 +205,7 @@ class SceneSnow(context: Context, gl: GL11) : SceneBase(context, gl) {
         gl.glMatrixMode(GL10.GL_TEXTURE)
         gl.glPushMatrix()
         gl.glTranslatef(
-            ((SceneBase.Companion.pref_windSpeed * timeDelta) * -0.005f) % 1.0f,
+            ((pref_windSpeed * timeDelta) * -0.005f) % 1.0f,
             0.0f,
             0.0f
         )

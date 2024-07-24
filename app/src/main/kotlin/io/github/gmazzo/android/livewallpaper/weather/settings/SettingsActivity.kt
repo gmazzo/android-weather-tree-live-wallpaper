@@ -14,7 +14,7 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
-import io.github.gmazzo.android.livewallpaper.weather.WallpaperService
+import io.github.gmazzo.android.livewallpaper.weather.WeatherWallpaperService
 import io.github.gmazzo.android.livewallpaper.weather.hasBackgroundLocationPermission
 import io.github.gmazzo.android.livewallpaper.weather.hasLocationPermission
 import kotlinx.coroutines.flow.collectLatest
@@ -77,7 +77,7 @@ class SettingsActivity : ComponentActivity() {
         startActivity(
             Intent(WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER).putExtra(
                 WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT,
-                ComponentName(this, WallpaperService::class.java)
+                ComponentName(this, WeatherWallpaperService::class.java)
             )
         )
         finish()

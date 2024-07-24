@@ -1,7 +1,10 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 
-import android.content.Context
 import io.github.gmazzo.android.livewallpaper.weather.R
-import javax.microedition.khronos.opengles.GL11
+import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models
+import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures
 
-class SceneCloudy(ctx: Context, gl: GL11) : SceneClear(ctx, gl, R.drawable.bg1)
+class SceneCloudy(
+    models: Models,
+    textures: Textures,
+) : SceneClear(models, textures, R.drawable.bg1)

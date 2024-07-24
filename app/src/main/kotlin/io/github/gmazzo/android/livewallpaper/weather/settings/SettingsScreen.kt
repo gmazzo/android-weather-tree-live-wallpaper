@@ -42,22 +42,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.example.compose.AppTheme
 import io.github.gmazzo.android.livewallpaper.weather.R
-import io.github.gmazzo.android.livewallpaper.weather.RenderSurfaceView
 import io.github.gmazzo.android.livewallpaper.weather.WeatherConditions
-import io.github.gmazzo.android.livewallpaper.weather.WeatherType
+import io.github.gmazzo.android.livewallpaper.weather.WeatherSurfaceView
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode
+import kotlinx.coroutines.flow.MutableStateFlow
 
+private const val opacity = .6f
 private val margin = 8.dp
-private val opacity = .6f
+private val sampleConditions = MutableStateFlow(WeatherConditions())
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Preview
 fun SettingsScreen(
     updateLocationEnabled: Boolean = true,
-    weatherConditions: WeatherConditions = WeatherConditions(
-        latitude = 37f, longitude = -2f, weatherType = WeatherType.RAIN
-    ),
+    weatherConditions: WeatherConditions = sampleConditions.value,
     missingLocationPermission: Boolean = true,
     updateLocationEnabledChange: (Boolean) -> Unit = {},
     onSceneSelected: (SceneMode) -> Unit = {},
@@ -67,13 +66,7 @@ fun SettingsScreen(
 ) {
     AndroidView(
         modifier = Modifier.fillMaxSize(),
-        factory = { context ->
-            RenderSurfaceView(context).apply {
-                isDemoMode = true
-                updateWeather(weatherConditions)
-            }
-        },
-        update = { it.updateWeather(weatherConditions) }
+        factory = { context -> WeatherSurfaceView(context).also { it.isDemoMode = true } },
     )
 
     AppTheme {

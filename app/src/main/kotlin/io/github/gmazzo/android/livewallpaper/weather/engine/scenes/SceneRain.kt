@@ -1,28 +1,32 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 
-import android.content.Context
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.WeatherType
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
-import io.github.gmazzo.android.livewallpaper.weather.engine.ThingManager
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.particles.ParticleRain
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingDarkCloud
 import io.github.gmazzo.android.livewallpaper.weather.sky_manager.TimeOfDay
+import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models
+import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 
-class SceneRain(context: Context, gl: GL11) : SceneBase(context, gl) {
+class SceneRain(
+    models: Models,
+    textures: Textures,
+) : SceneBase(models, textures) {
+    
+    private val particleRain by lazy { ParticleRain(models, textures, rainDensity) }
+    
     var light_diffuse: FloatArray
-    var particleRain: ParticleRain?
     var particleRainOrigin: Vector
     val rainDensity: Int = 10
     var v_light_diffuse: EngineColor
 
     init {
-        this.mThingManager = ThingManager()
         todEngineColorFinal = EngineColor()
         this.pref_todEngineColors = arrayOf(EngineColor(), EngineColor(), EngineColor(), EngineColor())
         this.reloadAssets = false
@@ -30,11 +34,10 @@ class SceneRain(context: Context, gl: GL11) : SceneBase(context, gl) {
         this.pref_numWisps = 6
         this.v_light_diffuse = EngineColor(0.5f, 0.5f, 0.5f, 1.0f)
         this.light_diffuse = floatArrayOf(0.1f, 0.1f, 0.1f, 1.0f)
-        this.particleRain = ParticleRain(this.rainDensity)
         this.particleRainOrigin = Vector(0.0f, 25.0f, 10.0f)
     }
 
-    override fun load(gl: GL10?) {
+    override fun load(gl: GL10) {
         spawnClouds(false)
     }
 
@@ -43,9 +46,9 @@ class SceneRain(context: Context, gl: GL11) : SceneBase(context, gl) {
     }
 
     private fun spawnClouds(num_clouds: Int, force: Boolean) {
-        val cloudsExist = mThingManager!!.countByTargetname("dark_cloud") != 0
+        val cloudsExist = thingManager.countByTargetname("dark_cloud") != 0
         if (force || !cloudsExist) {
-            mThingManager!!.clearByTargetname("dark_cloud")
+            thingManager.clearByTargetname("dark_cloud")
             val cloudDepthList = FloatArray(num_clouds)
             val cloudDepthStep = 131.25f / (num_clouds.toFloat())
             var i = 0
@@ -63,28 +66,25 @@ class SceneRain(context: Context, gl: GL11) : SceneBase(context, gl) {
             }
             i = 0
             while (i < cloudDepthList.size) {
-                val cloud = ThingDarkCloud(false)
+                val cloud = ThingDarkCloud(models,textures, i, false)
                 cloud.randomizeScale()
                 if (GlobalRand.intRange(0, 2) == 0) {
-                    cloud.scale.x = cloud.scale.x * -1.0f
+                    cloud.scale.x *= -1.0f
                 }
                 cloud.origin.x = ((i.toFloat()) * (90.0f / (num_clouds.toFloat()))) - 0.099609375f
                 cloud.origin.y = cloudDepthList[i]
                 cloud.origin.z = GlobalRand.floatRange(-20.0f, -10.0f)
-                val which = (i % 5) + 1
-                cloud.model = models[CLOUD_MODELS[which - 1]]
-                cloud.texture = textures[CLOUD_TEXTURES[which - 1]]
                 cloud.targetName = "dark_cloud"
-                cloud.velocity = Vector(SceneBase.Companion.pref_windSpeed * 1.5f, 0.0f, 0.0f)
-                mThingManager!!.add(cloud)
+                cloud.velocity = Vector(pref_windSpeed * 1.5f, 0.0f, 0.0f)
+                thingManager.add(cloud)
                 i++
             }
         }
     }
 
-    override fun updateWeather(weather: WeatherType?) {
+    override fun updateWeather(weather: WeatherType) {
         windSpeedFromPrefs()
-        numCloudsFromPrefs(weather!!)
+        numCloudsFromPrefs(weather)
         todFromPrefs()
     }
 
@@ -95,7 +95,7 @@ class SceneRain(context: Context, gl: GL11) : SceneBase(context, gl) {
         pref_todEngineColors[3].set("0.65 0.6 0.6 1", 0.0f, 1.0f)
     }
 
-    override fun precacheAssets(gl10: GL10?) {
+    override fun precacheAssets(gl: GL10) {
         textures[R.drawable.storm_bg]
         textures[R.drawable.trees_overlay]
         textures[R.drawable.clouddark1]
@@ -128,9 +128,9 @@ class SceneRain(context: Context, gl: GL11) : SceneBase(context, gl) {
         val storm_bg = textures[R.drawable.storm_bg]
         gl.glBindTexture(GL10.GL_TEXTURE_2D, storm_bg.glId)
         gl.glColor4f(
-            SceneBase.Companion.todEngineColorFinal!!.r,
-            SceneBase.Companion.todEngineColorFinal!!.g,
-            SceneBase.Companion.todEngineColorFinal!!.b,
+            todEngineColorFinal!!.r,
+            todEngineColorFinal!!.g,
+            todEngineColorFinal!!.b,
             1.0f
         )
         gl.glMatrixMode(GL10.GL_MODELVIEW)
@@ -140,7 +140,7 @@ class SceneRain(context: Context, gl: GL11) : SceneBase(context, gl) {
         gl.glMatrixMode(GL10.GL_TEXTURE)
         gl.glPushMatrix()
         gl.glTranslatef(
-            ((SceneBase.Companion.pref_windSpeed * timeDelta) * -0.005f) % 1.0f,
+            ((pref_windSpeed * timeDelta) * -0.005f) % 1.0f,
             0.0f,
             0.0f
         )
@@ -152,22 +152,18 @@ class SceneRain(context: Context, gl: GL11) : SceneBase(context, gl) {
     }
 
     private fun renderRain(gl: GL10, timeDelta: Float) {
-        if (this.particleRain == null) {
-            this.particleRain = ParticleRain(this.rainDensity)
-        }
         gl.glMatrixMode(GL10.GL_MODELVIEW)
         gl.glPushMatrix()
         gl.glTranslatef(0.0f, 0.0f, -5.0f)
         gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
-        particleRain!!.update(timeDelta)
+        particleRain.update(timeDelta)
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ZERO)
-        particleRain!!.render(gl as GL11, this.particleRainOrigin)
+        particleRain.render(gl as GL11, this.particleRainOrigin)
         gl.glPopMatrix()
     }
 
     override fun draw(gl: GL10, time: GlobalTime) {
-        checkAssetReload(gl)
-        mThingManager!!.update(time.sTimeDelta)
+        thingManager.update(time.sTimeDelta)
         gl.glEnable(GL10.GL_LIGHTING)
         gl.glEnable(GL10.GL_COLOR_BUFFER_BIT)
         gl.glMatrixMode(GL10.GL_MODELVIEW)
@@ -182,7 +178,7 @@ class SceneRain(context: Context, gl: GL11) : SceneBase(context, gl) {
         renderBackground(gl, time.sTimeElapsed)
         renderRain(gl, time.sTimeDelta)
         gl.glTranslatef(0.0f, 0.0f, 40.0f)
-        mThingManager!!.render(gl, this.textures, this.models)
+        thingManager.render(gl)
         gl.glDisable(GL10.GL_COLOR_BUFFER_BIT)
         gl.glDisable(GL10.GL_LIGHTING)
         drawTree(gl, time.sTimeDelta)

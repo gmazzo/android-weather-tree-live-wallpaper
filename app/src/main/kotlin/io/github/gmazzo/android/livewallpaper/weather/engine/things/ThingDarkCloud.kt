@@ -3,33 +3,33 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.things
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand
-import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneClear
+import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneClear.Companion.CLOUD_X_RANGE
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models
-import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Texture
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 import kotlin.math.abs
 
-class ThingDarkCloud(flare: Boolean) : Thing() {
-    var which: Int = 0
-    private var flashIntensity: Float
-    var texNameFlare: Texture? = null
-    private var withFlare = false
+class ThingDarkCloud(
+    models: Models,
+    textures: Textures,
+    which: Int,
+    private val withFlare: Boolean
+) : SimpleThing(models, textures, MODELS[which % MODELS.size], TEXTURES[which % TEXTURES.size]) {
 
-    init {
-        this.engineColor = EngineColor(1.0f, 1.0f, 1.0f, 1.0f)
-        this.withFlare = flare
-        this.flashIntensity = 0.0f
-    }
+    override val engineColor = EngineColor(1.0f, 1.0f, 1.0f, 1.0f)
+
+    private val texNameFlare by lazy { textures[FLARES[which % MODELS.size]] }
+
+    private var flashIntensity = 0.0f
 
     private fun setFade(alpha: Float) {
-        engineColor!!.times(alpha)
-        engineColor!!.a = alpha
+        engineColor.times(alpha)
+        engineColor.a = alpha
     }
 
     private fun calculateCloudRangeX(): Float {
-        return ((origin.y * SceneClear.Companion.CLOUD_X_RANGE) / 90.0f + abs(
+        return ((origin.y * CLOUD_X_RANGE) / 90.0f + abs(
             scale.x.toDouble()
         )).toFloat()
     }
@@ -47,47 +47,38 @@ class ThingDarkCloud(flare: Boolean) : Thing() {
         )
     }
 
-    override fun render(gl: GL10, textures: Textures?, models: Models?) {
-        if (model == null) {
-            model = models!![MODELS[which - 1]]
-            texture = textures!![TEXTURES[which - 1]]
-            texNameFlare = textures[FLARES[which - 1]]
-        }
-        if (this.particleSystem != null) {
-            particleSystem!!.render(gl as GL11, this.origin)
-        }
-        if (this.texture != null && this.model != null) {
-            gl.glBindTexture(GL10.GL_TEXTURE_2D, texture!!.glId)
+    override fun render(gl: GL10) {
+        particleSystem?.render(gl as GL11, this.origin)
+        gl.glBindTexture(GL10.GL_TEXTURE_2D, texture.glId)
 
-            gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA)
-            gl.glPushMatrix()
-            gl.glTranslatef(origin.x, origin.y, origin.z)
-            gl.glScalef(scale.x, scale.y, scale.z)
-            gl.glRotatef(
-                angles.a,
-                angles.r,
-                angles.g,
-                angles.b
-            )
-            if (!pref_minimalist) {
-                model!!.render()
-            }
-            if (this.withFlare && this.flashIntensity > 0.0f) {
-                gl.glDisable(GL10.GL_LIGHTING)
-                gl.glBindTexture(GL10.GL_TEXTURE_2D, texNameFlare!!.glId)
-                gl.glColor4f(
-                    pref_boltEngineColor.r,
-                    pref_boltEngineColor.g,
-                    pref_boltEngineColor.b,
-                    this.flashIntensity
-                )
-                gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE)
-                model!!.render()
-                gl.glEnable(GL10.GL_LIGHTING)
-            }
-            gl.glPopMatrix()
-            gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
+        gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA)
+        gl.glPushMatrix()
+        gl.glTranslatef(origin.x, origin.y, origin.z)
+        gl.glScalef(scale.x, scale.y, scale.z)
+        gl.glRotatef(
+            angles.a,
+            angles.r,
+            angles.g,
+            angles.b
+        )
+        if (!pref_minimalist) {
+            model.render()
         }
+        if (this.withFlare && this.flashIntensity > 0.0f) {
+            gl.glDisable(GL10.GL_LIGHTING)
+            gl.glBindTexture(GL10.GL_TEXTURE_2D, texNameFlare.glId)
+            gl.glColor4f(
+                pref_boltEngineColor.r,
+                pref_boltEngineColor.g,
+                pref_boltEngineColor.b,
+                this.flashIntensity
+            )
+            gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE)
+            model.render()
+            gl.glEnable(GL10.GL_LIGHTING)
+        }
+        gl.glPopMatrix()
+        gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
     }
 
     override fun update(timeDelta: Float) {
@@ -98,9 +89,9 @@ class ThingDarkCloud(flare: Boolean) : Thing() {
         } else if (origin.x < (-rangX)) {
             origin.x = rangX
         }
-        engineColor!!.r = 0.2f
-        engineColor!!.g = 0.2f
-        engineColor!!.b = 0.2f
+        engineColor.r = 0.2f
+        engineColor.g = 0.2f
+        engineColor.b = 0.2f
         if (this.sTimeElapsed < 2.0f) {
             setFade(this.sTimeElapsed * 0.5f)
         }

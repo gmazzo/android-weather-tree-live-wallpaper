@@ -2,27 +2,23 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.particles
 
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand
-import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
-import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.Scene
+import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models
+import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures
+import javax.inject.Inject
 import javax.microedition.khronos.opengles.GL10
-import javax.microedition.khronos.opengles.GL11
 
-class ParticleRain(density: Int) : ParticleSystem() {
+class ParticleRain @Inject constructor(
+    models: Models,
+    textures: Textures,
+    density: Int
+) : ParticleSystem(models[R.raw.rain], textures[R.drawable.raindrop]) {
+
     init {
         this.spawnRate = 1.0f / (density.toFloat())
         this.spawnRateVariance = 0.05f
         this.spawnRangeX = 15.0f
         this.spawnRangeY = 5.0f
         this.spawnRangeZ = 0.0f
-    }
-
-    override fun render(gl: GL11, systemOrigin: Vector?) {
-        if (model == null) {
-            model = Scene.Companion.sModels!!.get(R.raw.rain)
-            texture = Scene.Companion.sTextures!!.get(R.drawable.raindrop)
-        }
-
-        super.render(gl, systemOrigin)
     }
 
     override fun particleSetup(particle: Particle?) {

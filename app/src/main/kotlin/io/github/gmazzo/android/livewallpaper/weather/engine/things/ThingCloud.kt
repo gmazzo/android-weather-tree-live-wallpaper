@@ -4,18 +4,23 @@ import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneBase.Companion.todEngineColorFinal
-import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneClear
+import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneClear.Companion.CLOUD_X_RANGE
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures
 import javax.microedition.khronos.opengles.GL10
 import kotlin.math.abs
 
-class ThingCloud : Thing() {
-    var which: Int = 0
-    var fade: Float = 0f
+class ThingCloud(
+    models: Models,
+    textures: Textures,
+    which: Int,
+) : SimpleThing(models, textures, MODELS[which % MODELS.size], TEXTURES[which % TEXTURES.size]) {
+
+    override val engineColor = EngineColor(1.0f, 1.0f, 1.0f, 1.0f)
+
+    private var fade: Float = 0f
 
     init {
-        this.engineColor = EngineColor(1.0f, 1.0f, 1.0f, 1.0f)
         this.vis_width = 0.0f
         origin.x = -100.0f
         origin.y = 15.0f
@@ -23,8 +28,7 @@ class ThingCloud : Thing() {
     }
 
     private fun setAlpha(alpha: Float) {
-        engineColor!!.times(alpha)
-        engineColor!!.a = alpha
+        engineColor.times(alpha).a = alpha
     }
 
     fun randomizeScale() {
@@ -36,18 +40,14 @@ class ThingCloud : Thing() {
     }
 
     private fun calculateCloudRangeX(): Float {
-        return ((origin.y * SceneClear.Companion.CLOUD_X_RANGE) / 90.0f + abs(
+        return ((origin.y * CLOUD_X_RANGE) / 90.0f + abs(
             (scale.x * 6.0f).toDouble()
         )).toFloat()
     }
 
-    override fun render(gl: GL10, textures: Textures?, models: Models?) {
-        if (model == null) {
-            model = models!![MODELS[which - 1]]
-            texture = textures!![TEXTURES[which - 1]]
-        }
+    override fun render(gl: GL10) {
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA)
-        super.render(gl, textures, models)
+        super.render(gl)
     }
 
     override fun update(timeDelta: Float) {
@@ -61,9 +61,9 @@ class ThingCloud : Thing() {
             randomizeScale()
         }
         val todColors: EngineColor = todEngineColorFinal!!
-        engineColor!!.r = todColors.r
-        engineColor!!.g = todColors.g
-        engineColor!!.b = todColors.b
+        engineColor.r = todColors.r
+        engineColor.g = todColors.g
+        engineColor.b = todColors.b
         if (this.sTimeElapsed < 2.0f) {
             setAlpha(this.sTimeElapsed * 0.5f)
         }

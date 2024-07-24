@@ -1,18 +1,24 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 
-import android.content.Context
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.WeatherType
 import io.github.gmazzo.android.livewallpaper.weather.engine.AnimPlayer
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
+import io.github.gmazzo.android.livewallpaper.weather.engine.ThingManager
 import io.github.gmazzo.android.livewallpaper.weather.sky_manager.TimeOfDay
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.AnimatedModel
+import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models
+import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures
 import javax.microedition.khronos.opengles.GL10
-import javax.microedition.khronos.opengles.GL11
 
-abstract class SceneBase(context: Context, gl: GL11) : Scene(context, gl) {
+abstract class SceneBase(
+    models: Models,
+    textures: Textures,
+) : Scene(models, textures) {
+
+    protected val thingManager = ThingManager()
     protected var BG_PADDING: Float = 20.0f
     protected val DBG: Boolean = false
     protected var TREE_ANIMATE_DELAY_MIN: Float = 3.0f
@@ -26,21 +32,8 @@ abstract class SceneBase(context: Context, gl: GL11) : Scene(context, gl) {
     protected var treesAnim: AnimPlayer = AnimPlayer(0, 19, 5.0f, false)
     protected var treesAnimateDelay: Float = 5.0f
 
-    protected fun checkAssetReload(gl10: GL10?) {
-        if (this.reloadAssets) {
-            synchronized(this) {
-                models.close()
-                textures.close()
-                precacheAssets(gl10)
-                this.reloadAssets = false
-            }
-        }
-    }
-
-    override fun unload(gl: GL10?) {
-        models.close()
-        textures.close()
-        mThingManager!!.clear()
+    override fun unload(gl: GL10) {
+        thingManager.clear()
     }
 
     fun numCloudsFromPrefs(weather: WeatherType) {
@@ -51,8 +44,8 @@ abstract class SceneBase(context: Context, gl: GL11) : Scene(context, gl) {
         pref_windSpeed = 3 * 0.5f
     }
 
-    override fun update(globalTime: GlobalTime?) {
-        this.mGlobalTime = globalTime
+    override fun update(time: GlobalTime) {
+        this.mGlobalTime = time
     }
 
     override fun updateTimeOfDay(tod: TimeOfDay) {
@@ -79,7 +72,7 @@ abstract class SceneBase(context: Context, gl: GL11) : Scene(context, gl) {
         gl.glBindTexture(GL10.GL_TEXTURE_2D, trees_overlay.glId)
         gl.glMatrixMode(GL10.GL_MODELVIEW)
         gl.glPushMatrix()
-        if (this.mLandscape) {
+        if (this.landscape) {
             gl.glTranslatef(2.0f, 70.0f, -65.0f)
         } else {
             gl.glTranslatef(-8.0f, 70.0f, -70.0f)

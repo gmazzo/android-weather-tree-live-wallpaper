@@ -1,34 +1,33 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 
-import android.content.Context
 import androidx.annotation.DrawableRes
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.WeatherType
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
-import io.github.gmazzo.android.livewallpaper.weather.engine.ThingManager
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingCloud
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingMoon
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingSun
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingWispy
 import io.github.gmazzo.android.livewallpaper.weather.sky_manager.TimeOfDay
+import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models
+import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 
 open class SceneClear @JvmOverloads constructor(
-    context: Context,
-    gl: GL11,
+    models: Models,
+    textures: Textures,
     @field:DrawableRes @param:DrawableRes private val backgroundId: Int = R.drawable.bg3
-) : SceneBase(context, gl) {
+) : SceneBase(models, textures) {
     protected var batteryLevel: Int
     protected var nextUfoSpawn: Float
     protected var smsLastUnreadCheckTime: Long
     protected var smsUnreadCount: Int
 
     init {
-        this.mThingManager = ThingManager()
         todEngineColorFinal = EngineColor()
         this.pref_todEngineColors = arrayOf(EngineColor(), EngineColor(), EngineColor(), EngineColor())
         this.reloadAssets = true
@@ -40,21 +39,21 @@ open class SceneClear @JvmOverloads constructor(
         this.smsLastUnreadCheckTime = 0
     }
 
-    override fun load(gl: GL10?) {
+    override fun load(gl: GL10) {
         checkSun()
         checkMoon()
         spawnClouds(false)
     }
 
-    override fun updateWeather(weather: WeatherType?) {
+    override fun updateWeather(weather: WeatherType) {
         windSpeedFromPrefs()
-        numCloudsFromPrefs(weather!!)
+        numCloudsFromPrefs(weather)
         todFromPrefs()
         checkSun()
         checkMoon()
     }
 
-    override fun precacheAssets(gl10: GL10?) {
+    override fun precacheAssets(gl: GL10) {
         textures[backgroundId]
         textures[R.drawable.trees_overlay]
         textures[R.drawable.cloud1]
@@ -102,36 +101,36 @@ open class SceneClear @JvmOverloads constructor(
     }
 
     private fun removeMoon() {
-        mThingManager!!.clearByTargetname("moon")
+        thingManager.clearByTargetname("moon")
     }
 
     private fun removeSun() {
-        mThingManager!!.clearByTargetname("sun")
+        thingManager.clearByTargetname("sun")
     }
 
     private fun spawnMoon() {
-        if (mThingManager!!.countByTargetname("moon") == 0) {
-            val moon = ThingMoon()
+        if (thingManager.countByTargetname("moon") == 0) {
+            val moon = ThingMoon(models, textures)
             moon.origin.set(-30.0f, 100.0f, -100.0f)
             moon.targetName = "moon"
-            mThingManager!!.add(moon)
+            thingManager.add(moon)
         }
     }
 
     private fun spawnSun() {
-        if (mThingManager!!.countByTargetname("sun") == 0) {
-            val sun = ThingSun()
+        if (thingManager.countByTargetname("sun") == 0) {
+            val sun = ThingSun(models, textures)
             sun.origin.set(WISPY_Z_RANGE, 100.0f, 0.0f)
             sun.targetName = "sun"
-            mThingManager!!.add(sun)
+            thingManager.add(sun)
         }
     }
 
     protected fun spawnClouds(num_clouds: Int, num_wisps: Int, force: Boolean) {
-        val cloudsExist = mThingManager!!.countByTargetname("cloud") != 0
+        val cloudsExist = thingManager.countByTargetname("cloud") != 0
         if (force || !cloudsExist) {
-            mThingManager!!.clearByTargetname("cloud")
-            mThingManager!!.clearByTargetname("wispy")
+            thingManager.clearByTargetname("cloud")
+            thingManager.clearByTargetname("wispy")
             val cloudDepthList = FloatArray(num_clouds)
             val cloudDepthStep = 131.25f / (num_clouds.toFloat())
             var i = 0
@@ -149,26 +148,24 @@ open class SceneClear @JvmOverloads constructor(
             }
             i = 0
             while (i < cloudDepthList.size) {
-                val cloud = ThingCloud()
+                val cloud = ThingCloud(models, textures, i)
                 cloud.randomizeScale()
                 if (GlobalRand.intRange(0, 2) == 0) {
-                    cloud.scale.x = cloud.scale.x * -1.0f
+                    cloud.scale.x *= -1.0f
                 }
                 cloud.origin.x = ((i.toFloat()) * (90.0f / (num_clouds.toFloat()))) - 0.099609375f
                 cloud.origin.y = cloudDepthList[i]
                 cloud.origin.z = GlobalRand.floatRange(-20.0f, -10.0f)
-                cloud.which = (i % 5) + 1
                 cloud.targetName = "cloud"
-                cloud.velocity = Vector(SceneBase.Companion.pref_windSpeed * 1.5f, 0.0f, 0.0f)
-                mThingManager!!.add(cloud)
+                cloud.velocity = Vector(pref_windSpeed * 1.5f, 0.0f, 0.0f)
+                thingManager.add(cloud)
                 i++
             }
             i = 0
             while (i < cloudDepthList.size) {
-                val wispy = ThingWispy()
-                wispy.which = (i % 3) + 1
+                val wispy = ThingWispy(models, textures, i)
                 wispy.targetName = "wispy"
-                wispy.velocity = Vector(SceneBase.Companion.pref_windSpeed * 1.5f, 0.0f, 0.0f)
+                wispy.velocity = Vector(pref_windSpeed * 1.5f, 0.0f, 0.0f)
                 wispy.scale.set(
                     GlobalRand.floatRange(1.0f, 3.0f),
                     1.0f,
@@ -177,20 +174,19 @@ open class SceneClear @JvmOverloads constructor(
                 wispy.origin.x = ((i.toFloat()) * (120.0f / (num_wisps.toFloat()))) - 0.0703125f
                 wispy.origin.y = GlobalRand.floatRange(87.5f, CLOUD_START_DISTANCE)
                 wispy.origin.z = GlobalRand.floatRange(-40.0f, -20.0f)
-                mThingManager!!.add(wispy)
+                thingManager.add(wispy)
                 i++
             }
         }
     }
 
     override fun updateTimeOfDay(tod: TimeOfDay) {
-        SceneBase.Companion.todSunPosition = tod.sunPosition
+        todSunPosition = tod.sunPosition
         super.updateTimeOfDay(tod)
     }
 
     override fun draw(gl: GL10, time: GlobalTime) {
-        checkAssetReload(gl)
-        mThingManager!!.update(time.sTimeDelta)
+        thingManager.update(time.sTimeDelta)
         gl.glDisable(GL10.GL_COLOR_BUFFER_BIT)
         gl.glDisable(GL10.GL_LIGHT1)
         gl.glDisable(GL10.GL_LIGHTING)
@@ -199,16 +195,16 @@ open class SceneClear @JvmOverloads constructor(
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA)
         renderBackground(gl, time.sTimeElapsed)
         gl.glTranslatef(0.0f, 0.0f, 40.0f)
-        mThingManager!!.render(gl, textures, models)
+        thingManager.render(gl)
         drawTree(gl, time.sTimeDelta)
     }
 
     private fun renderBackground(gl: GL10, timeDelta: Float) {
         gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[backgroundId].glId)
         gl.glColor4f(
-            SceneBase.Companion.todEngineColorFinal!!.r,
-            SceneBase.Companion.todEngineColorFinal!!.g,
-            SceneBase.Companion.todEngineColorFinal!!.b,
+            todEngineColorFinal!!.r,
+            todEngineColorFinal!!.g,
+            todEngineColorFinal!!.b,
             1.0f
         )
         gl.glMatrixMode(GL10.GL_MODELVIEW)
@@ -218,7 +214,7 @@ open class SceneClear @JvmOverloads constructor(
         gl.glMatrixMode(GL10.GL_TEXTURE)
         gl.glPushMatrix()
         gl.glTranslatef(
-            ((SceneBase.Companion.pref_windSpeed * timeDelta) * -0.005f) % 1.0f,
+            ((pref_windSpeed * timeDelta) * -0.005f) % 1.0f,
             0.0f,
             0.0f
         )
@@ -231,8 +227,8 @@ open class SceneClear @JvmOverloads constructor(
     }
 
     private fun renderStars(gl: GL10, timeDelta: Float) {
-        if (SceneBase.Companion.todSunPosition <= 0.0f) {
-            gl.glColor4f(1.0f, 1.0f, 1.0f, SceneBase.Companion.todSunPosition * -2.0f)
+        if (todSunPosition <= 0.0f) {
+            gl.glColor4f(1.0f, 1.0f, 1.0f, todSunPosition * -2.0f)
             gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE)
             val starMesh = models[R.raw.stars]
             val noise = textures[R.drawable.noise]

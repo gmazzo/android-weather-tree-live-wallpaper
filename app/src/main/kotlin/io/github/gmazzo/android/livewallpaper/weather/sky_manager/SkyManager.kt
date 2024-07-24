@@ -16,11 +16,11 @@ object SkyManager {
     const val ZENITH_NAUTICAL: Double = 102.0
     const val ZENITH_OFFICIAL: Double = 90.833333
 
-    private fun DayOfYear(): Int {
+    private fun dayOfYear(): Int {
         return Calendar.getInstance()[Calendar.DAY_OF_YEAR]
     }
 
-    fun GetMoonPhase(): Double {
+    fun getMoonPhase(): Double {
         val calendar = Calendar.getInstance()
         val year = calendar[Calendar.YEAR]
         val month = calendar[Calendar.MONTH]
@@ -75,7 +75,7 @@ object SkyManager {
 
     fun GetSunPosition(time: Long, latitude: Double, longitude: Double, zenith: Double): Float {
         var time = time
-        val dayofyear = DayOfYear()
+        val dayofyear = dayOfYear()
         val todaySunrise_time =
             GetSunEvent(SunEvent.SUNRISE, latitude, longitude, dayofyear, zenith)!!
                 .timeInMillis
@@ -113,11 +113,11 @@ object SkyManager {
     }
 
     fun GetSunrise(lat: Double, lon: Double): Calendar? {
-        return GetSunEvent(SunEvent.SUNRISE, lat, lon, DayOfYear(), 0.0)
+        return GetSunEvent(SunEvent.SUNRISE, lat, lon, dayOfYear(), 0.0)
     }
 
     fun GetSunrise(lat: Double, lon: Double, degree: Double): Calendar? {
-        return GetSunEvent(SunEvent.SUNRISE, lat, lon, DayOfYear(), degree)
+        return GetSunEvent(SunEvent.SUNRISE, lat, lon, dayOfYear(), degree)
     }
 
     fun GetSunrise(location: Location): Calendar? {
@@ -125,29 +125,29 @@ object SkyManager {
             SunEvent.SUNRISE,
             location.latitude,
             location.longitude,
-            DayOfYear(),
+            dayOfYear(),
             0.0
         )
     }
 
     fun GetSunrise(location: Location, d: Double): Calendar? {
-        return GetSunEvent(SunEvent.SUNRISE, location.latitude, location.longitude, DayOfYear(), d)
+        return GetSunEvent(SunEvent.SUNRISE, location.latitude, location.longitude, dayOfYear(), d)
     }
 
     fun GetSunset(d: Double, d1: Double): Calendar? {
-        return GetSunEvent(SunEvent.SUNSET, d, d1, DayOfYear(), 0.0)
+        return GetSunEvent(SunEvent.SUNSET, d, d1, dayOfYear(), 0.0)
     }
 
     fun GetSunset(d: Double, d1: Double, d2: Double): Calendar? {
-        return GetSunEvent(SunEvent.SUNSET, d, d1, DayOfYear(), d2)
+        return GetSunEvent(SunEvent.SUNSET, d, d1, dayOfYear(), d2)
     }
 
     fun GetSunset(location: Location): Calendar? {
-        return GetSunEvent(SunEvent.SUNSET, location.latitude, location.longitude, DayOfYear(), 0.0)
+        return GetSunEvent(SunEvent.SUNSET, location.latitude, location.longitude, dayOfYear(), 0.0)
     }
 
     fun GetSunset(location: Location, d: Double): Calendar? {
-        return GetSunEvent(SunEvent.SUNSET, location.latitude, location.longitude, DayOfYear(), d)
+        return GetSunEvent(SunEvent.SUNSET, location.latitude, location.longitude, dayOfYear(), d)
     }
 
     private fun JulianDay(calendar: Calendar): Int {

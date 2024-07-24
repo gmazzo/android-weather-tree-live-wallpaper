@@ -17,6 +17,7 @@ class Models(
 ) : Closeable {
     private val models = mutableMapOf<Int, Model>()
 
+    @Synchronized
     operator fun get(@RawRes rawId: Int) = models.getOrPut(rawId) {
         DataInputStream(resources.openRawResource(rawId)).use { input ->
             val buffer4 = ByteArray(4)
@@ -142,6 +143,7 @@ class Models(
         }
     }
 
+    @Synchronized
     override fun close() {
         models.values.forEach(Model::unload)
         models.clear()

@@ -7,15 +7,15 @@ import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures
 import javax.microedition.khronos.opengles.GL10
 
-class ThingWispy : Thing() {
-    var which: Int = 0
+class ThingWispy(
+    models: Models,
+    textures: Textures,
+    which: Int,
+) : SimpleThing(models, textures, R.raw.plane_16x16, WISPY_TEXTURES[which % WISPY_TEXTURES.size]) {
 
-    override fun render(gl: GL10, textures: Textures?, models: Models?) {
-        if (model == null) {
-            model = models!![R.raw.plane_16x16]
-            texture = textures!![WISPY_TEXTURES[which - 1]]
-        }
+    override val engineColor: EngineColor? = null
 
+    override fun render(gl: GL10) {
         val todEngineColor: EngineColor = todEngineColorFinal!!
         gl.glColor4f(
             todEngineColor.r,
@@ -24,18 +24,21 @@ class ThingWispy : Thing() {
             (todEngineColor.r + todEngineColor.g) + (todEngineColor.b / 3.0f)
         )
         gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA)
-        super.render(gl, textures, models)
+
+        super.render(gl)
     }
 
-    override fun update(f: Float) {
-        super.update(f)
+    override fun update(timeDelta: Float) {
+        super.update(timeDelta)
+
         if (origin.x > 123.75f) {
             val vector = this.origin
-            vector!!.x = vector.x - 247.5f
+            vector.x -= 247.5f
         }
     }
 
     companion object {
         private val WISPY_TEXTURES = intArrayOf(R.raw.wispy1, R.raw.wispy2, R.raw.wispy3)
     }
+
 }

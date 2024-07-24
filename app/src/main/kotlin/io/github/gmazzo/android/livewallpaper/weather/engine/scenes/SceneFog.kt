@@ -1,21 +1,22 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 
-import android.content.Context
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.WeatherType
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
-import io.github.gmazzo.android.livewallpaper.weather.engine.ThingManager
 import io.github.gmazzo.android.livewallpaper.weather.sky_manager.TimeOfDay
+import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models
+import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures
 import javax.microedition.khronos.opengles.GL10
-import javax.microedition.khronos.opengles.GL11
 
-class SceneFog(context: Context, gl: GL11) : SceneBase(context, gl) {
+class SceneFog(
+    models: Models,
+    textures: Textures,
+) : SceneBase(models, textures) {
     var fogEngineColorFinal: EngineColor
     var fog_todEngineColors: Array<EngineColor?>
 
     init {
-        this.mThingManager = ThingManager()
         todEngineColorFinal = EngineColor()
         this.pref_todEngineColors = arrayOf(EngineColor(), EngineColor(), EngineColor(), EngineColor())
         this.fogEngineColorFinal = EngineColor()
@@ -23,16 +24,16 @@ class SceneFog(context: Context, gl: GL11) : SceneBase(context, gl) {
         this.reloadAssets = false
     }
 
-    override fun load(gl: GL10?) {
+    override fun load(gl: GL10) {
     }
 
-    override fun updateWeather(weather: WeatherType?) {
+    override fun updateWeather(weather: WeatherType) {
         windSpeedFromPrefs()
         todFromPrefs()
         pref_fog_density = 0.2f
     }
 
-    override fun precacheAssets(gl10: GL10?) {
+    override fun precacheAssets(gl: GL10) {
         textures[R.drawable.bg1]
         textures[R.drawable.trees_overlay]
         textures[R.raw.sun]
@@ -58,7 +59,7 @@ class SceneFog(context: Context, gl: GL11) : SceneBase(context, gl) {
         val iMain = tod.mainIndex
         val iBlend = tod.blendIndex
         val blendAmount = tod.blendAmount
-        SceneBase.Companion.todEngineColorFinal!!.blend(
+        todEngineColorFinal!!.blend(
             pref_todEngineColors[iMain],
             pref_todEngineColors[iBlend], blendAmount
         )
@@ -70,8 +71,7 @@ class SceneFog(context: Context, gl: GL11) : SceneBase(context, gl) {
     }
 
     override fun draw(gl: GL10, time: GlobalTime) {
-        checkAssetReload(gl)
-        mThingManager!!.update(time.sTimeDelta)
+        thingManager.update(time.sTimeDelta)
         gl.glDisable(GL10.GL_COLOR_BUFFER_BIT)
         gl.glDisable(GL10.GL_LIGHT1)
         gl.glDisable(GL10.GL_LIGHTING)
@@ -87,7 +87,7 @@ class SceneFog(context: Context, gl: GL11) : SceneBase(context, gl) {
         gl.glFogf(GL10.GL_FOG_HINT, 4352.0f)
         renderBackground(gl, time.sTimeElapsed)
         gl.glTranslatef(0.0f, 0.0f, 40.0f)
-        mThingManager!!.render(gl, textures, models)
+        thingManager.render(gl)
         drawTree(gl, time.sTimeDelta)
         gl.glDisable(GL10.GL_FOG)
     }
@@ -95,9 +95,9 @@ class SceneFog(context: Context, gl: GL11) : SceneBase(context, gl) {
     private fun renderBackground(gl: GL10, timeDelta: Float) {
         gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[R.drawable.bg1].glId)
         gl.glColor4f(
-            SceneBase.Companion.todEngineColorFinal!!.r,
-            SceneBase.Companion.todEngineColorFinal!!.g,
-            SceneBase.Companion.todEngineColorFinal!!.b,
+            todEngineColorFinal!!.r,
+            todEngineColorFinal!!.g,
+            todEngineColorFinal!!.b,
             1.0f
         )
         gl.glMatrixMode(GL10.GL_MODELVIEW)
@@ -107,7 +107,7 @@ class SceneFog(context: Context, gl: GL11) : SceneBase(context, gl) {
         gl.glMatrixMode(GL10.GL_TEXTURE)
         gl.glPushMatrix()
         gl.glTranslatef(
-            ((SceneBase.Companion.pref_windSpeed * timeDelta) * -0.005f) % 1.0f,
+            ((pref_windSpeed * timeDelta) * -0.005f) % 1.0f,
             0.0f,
             0.0f
         )
@@ -120,7 +120,6 @@ class SceneFog(context: Context, gl: GL11) : SceneBase(context, gl) {
     }
 
     companion object {
-        private const val TAG = "Fog"
         var fogColor: FloatArray = floatArrayOf(0.8f, 0.8f, 0.8f, 1.0f)
         var pref_fog_density: Float = 0.2f
     }

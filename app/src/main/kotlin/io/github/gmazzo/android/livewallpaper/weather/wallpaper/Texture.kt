@@ -1,8 +1,9 @@
 package io.github.gmazzo.android.livewallpaper.weather.wallpaper
 
-import androidx.annotation.AnyRes
+import androidx.annotation.DrawableRes
+import androidx.annotation.RawRes
 
 data class Texture(
-    @AnyRes val resId: Int,
+    @DrawableRes @RawRes val resId: Int,
     val glId: Int
 )

@@ -1,16 +1,20 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.particles
 
 import io.github.gmazzo.android.livewallpaper.weather.R
+import io.github.gmazzo.android.livewallpaper.weather.WeatherRenderer
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand
-import io.github.gmazzo.android.livewallpaper.weather.engine.IsolatedRenderer
-import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
-import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.Scene
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneBase
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneSnow
+import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models
+import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures
+import javax.inject.Inject
 import javax.microedition.khronos.opengles.GL10
-import javax.microedition.khronos.opengles.GL11
 
-class ParticleSnow : ParticleSystem() {
+class ParticleSnow @Inject constructor(
+    models: Models,
+    textures: Textures,
+) : ParticleSystem(models[R.raw.flakes], textures[R.raw.p_snow1]) {
+
     init {
         this.spawnRate = 0.25f
         this.spawnRateVariance = 0.05f
@@ -19,17 +23,9 @@ class ParticleSnow : ParticleSystem() {
         this.spawnRangeX = 20.0f
     }
 
-    override fun render(gl: GL11, systemOrigin: Vector?) {
-        if (model == null) {
-            model = Scene.Companion.sModels!!.get(R.raw.flakes)
-            texture = Scene.Companion.sTextures!!.get(R.raw.p_snow1)
-        }
-        super.render(gl, systemOrigin)
-    }
-
     override fun particleSetup(particle: Particle?) {
         super.particleSetup(particle)
-        val bias: Float = ((IsolatedRenderer.Companion.homeOffsetPercentage * 2.0f) - 1.0f) * 4.0f
+        val bias: Float = ((WeatherRenderer.Companion.homeOffsetPercentage * 2.0f) - 1.0f) * 4.0f
         particle!!.lifetime = 4.5f
         particle.startScale.set(GlobalRand.floatRange(0.15f, 0.3f))
         particle.destScale.set(GlobalRand.floatRange(0.15f, 0.3f))
@@ -55,15 +51,15 @@ class ParticleSnow : ParticleSystem() {
     override fun update(timeDelta: Float) {
         super.update(timeDelta)
         startEngineColor.set(
-            SceneBase.Companion.todEngineColorFinal!!.r,
-            SceneBase.Companion.todEngineColorFinal!!.g,
-            SceneBase.Companion.todEngineColorFinal!!.b,
+            SceneBase.todEngineColorFinal!!.r,
+            SceneBase.todEngineColorFinal!!.g,
+            SceneBase.todEngineColorFinal!!.b,
             3.0f
         )
         destEngineColor.set(
-            SceneBase.Companion.todEngineColorFinal!!.r,
-            SceneBase.Companion.todEngineColorFinal!!.g,
-            SceneBase.Companion.todEngineColorFinal!!.b,
+            SceneBase.todEngineColorFinal!!.r,
+            SceneBase.todEngineColorFinal!!.g,
+            SceneBase.todEngineColorFinal!!.b,
             0.0f
         )
     }

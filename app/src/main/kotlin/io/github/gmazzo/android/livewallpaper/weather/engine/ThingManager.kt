@@ -2,9 +2,6 @@ package io.github.gmazzo.android.livewallpaper.weather.engine
 
 import android.text.TextUtils
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Thing
-import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models
-import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures
-import java.util.Collections
 import javax.microedition.khronos.opengles.GL10
 
 class ThingManager {
@@ -46,15 +43,15 @@ class ThingManager {
     }
 
     @Synchronized
-    fun render(gl10: GL10, textures: Textures?, models: Models?) {
+    fun render(gl10: GL10) {
         for (thing in thingList) {
-            thing.renderIfVisible(gl10, textures, models)
+            thing.renderIfVisible(gl10)
         }
     }
 
     @Synchronized
     fun sortByY() {
-        Collections.sort(thingList) { lhs, rhs -> (lhs.origin.y - rhs.origin.y).toInt() }
+        thingList.sortBy { it.origin.y }
     }
 
     @Synchronized
