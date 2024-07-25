@@ -1,6 +1,18 @@
 # android-weather-tree-live-wallpaper
 This is a resurrected project of `Weather Wallpaper` (`com.hm.weather`) originally developed by `yitiaocaiHM`, where you can still find its APK over the Internet.
 
+Partially migrated to a modern stack (WIP):
+- Kotlin
+- KotlinX Serialzation JSON
+- Hilt
+- AndroixX framework:
+  - Compose
+  - Material 3
+  - DataStore
+  - WorkManager
+- Retrofit
+- And using Norway's [MET Weather API](https://api.met.no/) for fetching weather conditions
+
 ## Scenes
 |                                  |                                |                            |
 |----------------------------------|--------------------------------|----------------------------|
