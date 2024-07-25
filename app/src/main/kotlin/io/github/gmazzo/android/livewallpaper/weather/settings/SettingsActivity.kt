@@ -12,8 +12,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
+import io.github.gmazzo.android.livewallpaper.weather.WeatherSurfaceView
 import io.github.gmazzo.android.livewallpaper.weather.WeatherWallpaperService
 import io.github.gmazzo.android.livewallpaper.weather.hasBackgroundLocationPermission
 import io.github.gmazzo.android.livewallpaper.weather.hasLocationPermission
@@ -42,7 +44,11 @@ class SettingsActivity : ComponentActivity() {
                 onRequestLocationPermission = { checkPermissions(null) },
                 onSetAsWallpaper = ::openWallpaperChooser,
                 onNavigateBack = ::finish,
-            )
+            ) {
+                AndroidView(factory = { context ->
+                    WeatherSurfaceView(context).also { it.isDemoMode = true }
+                })
+            }
         }
     }
 

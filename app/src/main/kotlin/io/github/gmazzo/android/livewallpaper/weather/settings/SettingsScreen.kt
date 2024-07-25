@@ -1,6 +1,7 @@
 package io.github.gmazzo.android.livewallpaper.weather.settings
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +17,7 @@ import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
@@ -27,9 +29,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -39,11 +41,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import com.example.compose.AppTheme
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.WeatherConditions
-import io.github.gmazzo.android.livewallpaper.weather.WeatherSurfaceView
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -63,24 +63,23 @@ fun SettingsScreen(
     onRequestLocationPermission: () -> Unit = {},
     onSetAsWallpaper: () -> Unit = {},
     onNavigateBack: () -> Unit = {},
+    surfaceView: @Composable () -> Unit = { Surface(modifier = Modifier.fillMaxSize()) {} },
 ) {
-    AndroidView(
-        modifier = Modifier.fillMaxSize(),
-        factory = { context -> WeatherSurfaceView(context).also { it.isDemoMode = true } },
-    )
-
     AppTheme {
-        Scaffold(containerColor = Color.Transparent,
-            topBar = {
-                TopAppBar(colors = TopAppBarDefaults.topAppBarColors()
-                    .copy(containerColor = Color.Transparent), title = { }, navigationIcon = {
+        Box(Modifier.fillMaxSize()) { surfaceView() }
+        Scaffold(containerColor = Color.Transparent, topBar = {
+            CenterAlignedTopAppBar(title = { Text(text = stringResource(id = weatherConditions.weatherType.scene.textId)) },
+                colors = TopAppBarDefaults.topAppBarColors()
+                    .copy(containerColor = Color.Transparent),
+                navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
                             contentDescription = null,
                         )
                     }
-                }, actions = {
+                },
+                actions = {
                     FilledIconButton(onClick = onSetAsWallpaper) {
                         Icon(
                             imageVector = Icons.Outlined.Check,
@@ -88,7 +87,7 @@ fun SettingsScreen(
                         )
                     }
                 })
-            }) { innerPadding ->
+        }) { innerPadding ->
             Column(
                 modifier = Modifier
                     .padding(innerPadding)
