@@ -6,22 +6,20 @@ import android.annotation.SuppressLint
 import android.app.WallpaperManager
 import android.content.ComponentName
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.gmazzo.android.livewallpaper.weather.WeatherSurfaceView
 import io.github.gmazzo.android.livewallpaper.weather.WeatherWallpaperService
 import io.github.gmazzo.android.livewallpaper.weather.hasBackgroundLocationPermission
 import io.github.gmazzo.android.livewallpaper.weather.hasLocationPermission
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class SettingsActivity : ComponentActivity() {
@@ -58,24 +56,17 @@ class SettingsActivity : ComponentActivity() {
         viewModel.onResume()
     }
 
-    override fun onPostResume() {
-        super.onPostResume()
-
-        lifecycleScope.launch {
-            viewModel.updateLocationEnabled.drop(1).collectLatest { enabled ->
-                if (enabled) checkPermissions(null)
-            }
-        }
-    }
-
     @SuppressLint("InlinedApi")
     private fun checkPermissions(granted: Boolean?) {
         when {
-            granted == false -> {}
+            granted == false -> if (hasLocationPermission && !hasBackgroundLocationPermission) {
+                startActivityForResult(Intent(
+                    Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                    Uri.fromParts("package", packageName, null)
+                ), 0)
+            }
             !hasLocationPermission -> requestPermissionLauncher.launch(ACCESS_COARSE_LOCATION)
-            !hasBackgroundLocationPermission -> requestPermissionLauncher.launch(
-                ACCESS_BACKGROUND_LOCATION
-            )
+            !hasBackgroundLocationPermission -> requestPermissionLauncher.launch(ACCESS_BACKGROUND_LOCATION)
         }
     }
 
