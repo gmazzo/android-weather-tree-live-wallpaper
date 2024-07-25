@@ -1,6 +1,7 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine
 
 import android.graphics.Color
+import androidx.annotation.ColorInt
 
 data class EngineColor(
     var r: Float = 1f,
@@ -9,43 +10,14 @@ data class EngineColor(
     var a: Float = 1f
 ) {
 
-    fun plus(
-        x: Float,
-        y: Float,
-        z: Float,
-        a: Float
-    ): EngineColor {
-        this.r += x
-        this.g += y
-        this.b += z
-        this.a += a
-        return this
+    operator fun timesAssign(scale: Float) {
+        this.r *= scale
+        this.g *= scale
+        this.b *= scale
+        this.a *= scale
     }
 
-    operator fun plus(other: EngineColor) =
-        plus(other.r, other.g, other.b, other.a)
-
-    operator fun times(scale: Float) = times(scale, scale, scale, scale)
-
-    fun times(
-        x: Float,
-        y: Float,
-        z: Float,
-        a: Float
-    ): EngineColor {
-        this.r *= x
-        this.g *= y
-        this.b *= z
-        this.a *= a
-        return this
-    }
-
-    fun set(
-        x: Float,
-        y: Float,
-        z: Float,
-        a: Float
-    ): EngineColor {
+    fun set(x: Float, y: Float, z: Float, a: Float): EngineColor {
         this.r = x
         this.g = y
         this.b = z
@@ -53,11 +25,11 @@ data class EngineColor(
         return this
     }
 
-    fun set(webColor: Int) = set(
-        Color.red(webColor) / 255f,
-        Color.green(webColor) / 255f,
-        Color.blue(webColor) / 255f,
-        Color.alpha(webColor) / 255f
+    fun set(@ColorInt color: Int) = set(
+        Color.red(color) / 255f,
+        Color.green(color) / 255f,
+        Color.blue(color) / 255f,
+        Color.alpha(color) / 255f
     )
 
     fun set(other: Vector, a: Float) = set(other.x, other.y, other.z, a)
@@ -90,11 +62,6 @@ data class EngineColor(
             ret[3] = this.a
         }
     }
-
-    fun blend(
-        other: EngineColor,
-        amount: Float
-    ) = blend(this, other, amount)
 
     fun blend(
         main: EngineColor,

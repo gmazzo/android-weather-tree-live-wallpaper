@@ -26,8 +26,8 @@ open class ParticleSystem(
     protected var animLastFrame: Int = 0
     protected var destEngineColor: EngineColor = EngineColor(1.0f, 1.0f, 1.0f, 1.0f)
     var enableSpawning: Boolean = true
-    protected var flowDirection: Vector? = null
-    private var orientScratch: Vector? = null
+    private var flowDirection: Vector? = null
+    private val orientScratch = Vector()
     protected var spawnBurst: Int = 0
     protected var spawnRangeX: Float = 0.0f
     protected var spawnRangeY: Float = 0.0f
@@ -147,7 +147,7 @@ open class ParticleSystem(
             return true
         }
 
-        fun updateVelocity(timeDelta: Float, percentage: Float, invPercentage: Float) {
+        private fun updateVelocity(timeDelta: Float, percentage: Float, invPercentage: Float) {
             _velocity.set(
                 (startVelocity.x * invPercentage) + (destVelocity.x * percentage),
                 (startVelocity.y * invPercentage) + (destVelocity.y * percentage),
@@ -163,10 +163,10 @@ open class ParticleSystem(
     }
 
     private fun handleOrientation(gl11: GL11, newDirection: Vector) {
-        if (this.orientScratch == null) {
-            this.orientScratch = Vector()
-        }
-        orientScratch!!.crossProduct(flowDirection!!, newDirection).normalize()
+        orientScratch.set(flowDirection!!)
+        orientScratch *= newDirection
+        orientScratch.normalize()
+
         gl11.glRotatef(
             (acos(
                 newDirection.times(
@@ -174,9 +174,9 @@ open class ParticleSystem(
                 ).toDouble()
             )
                 .toFloat()) * 57.295776f,
-            orientScratch!!.x,
-            orientScratch!!.y,
-            orientScratch!!.z
+            orientScratch.x,
+            orientScratch.y,
+            orientScratch.z
         )
     }
 
@@ -216,7 +216,7 @@ open class ParticleSystem(
             handleOrientation(gl, direction)
         }
         renderStart(gl)
-        val mesg = model!!.asMesh()
+        val mesg = model.asMesh()
         mesg.renderFrame_gl11_setup(gl, this._animCurrentFrame)
         for (i in _particles.indices) {
             if (_particles[i]!!.alive) {

@@ -1,13 +1,15 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine
 
+import java.lang.Math.toRadians
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
+
 data class Vector(
     var x: Float = 0f,
     var y: Float = 0f,
     var z: Float = 0f
 ) {
-
-    val magnitude: Float
-        get() = Math.sqrt(x.toDouble() * x + y.toDouble() * y + z.toDouble() * z).toFloat()
 
     fun plus(x: Float, y: Float, z: Float): Vector {
         this.x += x
@@ -30,8 +32,11 @@ data class Vector(
     }
 
     fun normalize(): Vector {
-        magnitude.takeIf { it != 0f }?.also {
-            val reciprocal = 1.0f / it
+        val magnitude = sqrt(x * x + y * y + z * z)
+
+        if (magnitude > 0) {
+            val reciprocal = 1.0f / magnitude
+
             this.x *= reciprocal
             this.y *= reciprocal
             this.z *= reciprocal
@@ -40,9 +45,10 @@ data class Vector(
     }
 
     fun rotateAroundZ(degrees: Float): Vector {
-        val radians = Math.toRadians(degrees.toDouble())
-        val radSin = Math.sin(radians).toFloat()
-        val radCos = Math.cos(radians).toFloat()
+        val radians = toRadians(degrees.toDouble())
+        val radSin = sin(radians).toFloat()
+        val radCos = cos(radians).toFloat()
+
         this.x = this.x * radCos - this.y * radSin
         this.y = this.x * radSin + this.y * radCos
         return this
@@ -50,21 +56,21 @@ data class Vector(
 
     fun set(xyz: Float) = set(xyz, xyz, xyz)
 
-    fun set(X: Float, Y: Float, Z: Float): Vector {
-        this.x = X
-        this.y = Y
-        this.z = Z
+    fun set(x: Float, y: Float, z: Float): Vector {
+        this.x = x
+        this.y = y
+        this.z = z
         return this
     }
 
     fun set(vector: Vector) = set(vector.x, vector.y, vector.z)
 
-    fun crossProduct(other: Vector) = crossProduct(this, other)
-
-    fun crossProduct(a: Vector, b: Vector) = set(
-        a.y * b.z - a.z * b.y,
-        a.z * b.x - a.x * b.z,
-        a.x * b.y - a.y * b.x
-    )
+    operator fun timesAssign(other: Vector) {
+        set(
+            this.y * other.z - this.z * other.y,
+            this.z * other.x - this.x * other.z,
+            this.x * other.y - this.y * other.x
+        )
+    }
 
 }

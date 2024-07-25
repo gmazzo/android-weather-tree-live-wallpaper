@@ -18,17 +18,11 @@ class ThingCloud(
 
     override val engineColor = EngineColor(1.0f, 1.0f, 1.0f, 1.0f)
 
-    private var fade: Float = 0f
-
     init {
         this.vis_width = 0.0f
         origin.x = -100.0f
         origin.y = 15.0f
         origin.z = 50.0f
-    }
-
-    private fun setAlpha(alpha: Float) {
-        engineColor.times(alpha).a = alpha
     }
 
     fun randomizeScale() {
@@ -55,17 +49,18 @@ class ThingCloud(
         val rangX = calculateCloudRangeX()
         if (origin.x > rangX) {
             origin.x = GlobalRand.floatRange((-rangX) - 5.0f, (-rangX) + 5.0f)
-            this.fade = 0.0f
-            setAlpha(this.fade)
-            this.sTimeElapsed = 0.0f
+            engineColor.set(0)
+            sTimeElapsed = 0.0f
             randomizeScale()
         }
         val todColors: EngineColor = todEngineColorFinal!!
         engineColor.r = todColors.r
         engineColor.g = todColors.g
         engineColor.b = todColors.b
-        if (this.sTimeElapsed < 2.0f) {
-            setAlpha(this.sTimeElapsed * 0.5f)
+        if (sTimeElapsed < 2.0f) {
+            val alpha = sTimeElapsed * 0.5f
+            engineColor *= alpha
+            engineColor.a = alpha
         }
     }
 
@@ -78,9 +73,5 @@ class ThingCloud(
             R.drawable.cloud1, R.drawable.cloud2, R.drawable.cloud3,
             R.drawable.cloud4, R.drawable.cloud5
         )
-        const val CLOUD_FADE_START_X: Float = 25.0f
-        const val CLOUD_FADE_START_Y: Float = 25.0f
-        const val CLOUD_RESET_X: Float = 10.0f
-        const val CLOUD_RESET_Y: Float = 10.0f
     }
 }

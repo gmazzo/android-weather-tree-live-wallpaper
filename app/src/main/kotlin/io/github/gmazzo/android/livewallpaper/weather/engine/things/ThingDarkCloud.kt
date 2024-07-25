@@ -23,20 +23,10 @@ class ThingDarkCloud(
 
     private var flashIntensity = 0.0f
 
-    private fun setFade(alpha: Float) {
-        engineColor.times(alpha)
-        engineColor.a = alpha
-    }
-
     private fun calculateCloudRangeX(): Float {
         return ((origin.y * CLOUD_X_RANGE) / 90.0f + abs(
             scale.x.toDouble()
         )).toFloat()
-    }
-
-    fun randomWithinRangeX(): Float {
-        val x = calculateCloudRangeX()
-        return GlobalRand.floatRange(-x, x)
     }
 
     fun randomizeScale() {
@@ -48,7 +38,7 @@ class ThingDarkCloud(
     }
 
     override fun render(gl: GL10) {
-        particleSystem?.render(gl as GL11, this.origin)
+        particleSystem?.render(gl as GL11, origin)
         gl.glBindTexture(GL10.GL_TEXTURE_2D, texture.glId)
 
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA)
@@ -64,14 +54,14 @@ class ThingDarkCloud(
         if (!pref_minimalist) {
             model.render()
         }
-        if (this.withFlare && this.flashIntensity > 0.0f) {
+        if (withFlare && flashIntensity > 0.0f) {
             gl.glDisable(GL10.GL_LIGHTING)
             gl.glBindTexture(GL10.GL_TEXTURE_2D, texNameFlare.glId)
             gl.glColor4f(
                 pref_boltEngineColor.r,
                 pref_boltEngineColor.g,
                 pref_boltEngineColor.b,
-                this.flashIntensity
+                flashIntensity
             )
             gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE)
             model.render()
@@ -92,15 +82,17 @@ class ThingDarkCloud(
         engineColor.r = 0.2f
         engineColor.g = 0.2f
         engineColor.b = 0.2f
-        if (this.sTimeElapsed < 2.0f) {
-            setFade(this.sTimeElapsed * 0.5f)
+        if (sTimeElapsed < 2.0f) {
+            val alpha = sTimeElapsed * 0.5f
+            engineColor *= alpha
+            engineColor.a = alpha
         }
-        if (this.withFlare) {
-            if (this.flashIntensity > 0.0f) {
-                this.flashIntensity -= 1.25f * timeDelta
+        if (withFlare) {
+            if (flashIntensity > 0.0f) {
+                flashIntensity -= 1.25f * timeDelta
             }
-            if (this.flashIntensity <= 0.0f && GlobalRand.floatRange(0.0f, 4.5f) < timeDelta) {
-                this.flashIntensity = 0.5f
+            if (flashIntensity <= 0.0f && GlobalRand.floatRange(0.0f, 4.5f) < timeDelta) {
+                flashIntensity = 0.5f
             }
         }
     }

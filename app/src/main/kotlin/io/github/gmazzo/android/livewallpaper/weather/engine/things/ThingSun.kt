@@ -31,10 +31,10 @@ class ThingSun(
         gl.glLoadIdentity()
         gl.glTranslatef(origin.x, origin.y, origin.z)
         gl.glScalef(scale.x, scale.y, scale.z)
-        gl.glRotatef((this.sTimeElapsed * 12.0f) % 360.0f, 0.0f, 1.0f, 0.0f)
+        gl.glRotatef((sTimeElapsed * 12.0f) % 360.0f, 0.0f, 1.0f, 0.0f)
         gl.glMatrixMode(GL10.GL_TEXTURE)
         gl.glPushMatrix()
-        val f11 = (this.sTimeElapsed * 18.0f) % 360.0f
+        val f11 = (sTimeElapsed * 18.0f) % 360.0f
         gl.glTranslatef(0.5f, 0.5f, 0.0f)
         gl.glRotatef(f11, 0.0f, 0.0f, 1.0f)
         gl.glTranslatef(-0.5f, -0.5f, 0.0f)
@@ -68,7 +68,8 @@ class ThingSun(
             scale.set(0.0f)
         }
 
-        engineColor.set(todEngineColorFinal!!).times(alpha)
+        engineColor.set(todEngineColorFinal!!)
+        engineColor.a = alpha
     }
 
 }
