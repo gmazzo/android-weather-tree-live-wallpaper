@@ -9,7 +9,6 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.particles.ParticleSnow
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingCloud
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingWispy
-import io.github.gmazzo.android.livewallpaper.weather.sky_manager.TimeOfDay
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures
 import javax.microedition.khronos.opengles.GL10
@@ -157,11 +156,6 @@ class SceneSnow(
                 i++
             }
         }
-    }
-
-    override fun updateTimeOfDay(tod: TimeOfDay) {
-        todSunPosition = tod.sunPosition
-        super.updateTimeOfDay(tod)
     }
 
     override fun draw(gl: GL10, time: GlobalTime) {

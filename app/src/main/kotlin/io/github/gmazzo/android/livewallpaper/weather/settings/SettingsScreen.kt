@@ -4,21 +4,26 @@ import android.graphics.Typeface
 import android.os.Build
 import android.text.Spanned
 import android.text.style.StyleSpan
+import androidx.annotation.FloatRange
 import androidx.annotation.StringRes
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.outlined.Check
-import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -58,6 +63,7 @@ import com.example.compose.AppTheme
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.WeatherConditions
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode
+import io.github.gmazzo.android.livewallpaper.weather.theme.WeatherIcons
 import kotlinx.coroutines.flow.MutableStateFlow
 
 private const val opacity = .6f
@@ -69,6 +75,7 @@ private val sampleConditions = MutableStateFlow(WeatherConditions())
 @Preview
 fun SettingsScreen(
     updateLocationEnabled: Boolean = true,
+    sunPosition: Float = -.3f,
     weatherConditions: WeatherConditions = sampleConditions.value,
     missingLocationPermission: Boolean = true,
     updateLocationEnabledChange: (Boolean) -> Unit = {},
@@ -76,30 +83,39 @@ fun SettingsScreen(
     onRequestLocationPermission: () -> Unit = {},
     onSetAsWallpaper: () -> Unit = {},
     onNavigateBack: () -> Unit = {},
-    surfaceView: @Composable () -> Unit = { Surface(modifier = Modifier.fillMaxSize()) {} },
+    surfaceView: @Composable () -> Unit = {
+        Surface(
+            color = MaterialTheme.colorScheme.onBackground, modifier = Modifier.fillMaxSize()
+        ) {}
+    },
 ) {
     AppTheme {
         Box(Modifier.fillMaxSize()) { surfaceView() }
         Scaffold(containerColor = Color.Transparent, topBar = {
-            CenterAlignedTopAppBar(title = { Text(text = stringResource(id = weatherConditions.weatherType.scene.textId)) },
-                colors = TopAppBarDefaults.topAppBarColors()
-                    .copy(containerColor = Color.Transparent),
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                            contentDescription = null,
-                        )
-                    }
-                },
-                actions = {
-                    FilledIconButton(onClick = onSetAsWallpaper) {
-                        Icon(
-                            imageVector = Icons.Outlined.Check,
-                            contentDescription = stringResource(id = R.string.settings_set_as_wallpaper),
-                        )
-                    }
-                })
+            Column {
+                CenterAlignedTopAppBar(title = { Text(text = stringResource(id = weatherConditions.weatherType.scene.textId)) },
+                    colors = TopAppBarDefaults.topAppBarColors()
+                        .copy(containerColor = Color.Transparent),
+                    navigationIcon = {
+                        IconButton(onClick = onNavigateBack) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                                contentDescription = null,
+                            )
+                        }
+                    },
+                    actions = {
+                        FilledIconButton(onClick = onSetAsWallpaper) {
+                            Icon(
+                                imageVector = Icons.Outlined.Check,
+                                contentDescription = stringResource(id = R.string.settings_set_as_wallpaper),
+                            )
+                        }
+                    })
+                Box(modifier = Modifier.padding(horizontal = margin)) {
+                    DayTimeProgression(sunPosition + .5f)
+                }
+            }
         }) { innerPadding ->
             Column(
                 modifier = Modifier
@@ -112,7 +128,7 @@ fun SettingsScreen(
                 SettingsItem(
                     icon = {
                         Icon(
-                            imageVector = Icons.Outlined.LocationOn,
+                            imageVector = Icons.Filled.LocationOn,
                             contentDescription = null,
                         )
                     },
@@ -131,6 +147,31 @@ fun SettingsScreen(
             }
         }
     }
+}
+
+@Composable
+private fun DayTimeProgression(
+    @FloatRange(0.0, 1.0) sunFactor: Float,
+) = Row(
+    verticalAlignment = Alignment.CenterVertically,
+    horizontalArrangement = Arrangement.spacedBy(margin, Alignment.CenterHorizontally)
+) {
+    val color = MaterialTheme.colorScheme.surface.copy(alpha = opacity)
+    val track = Modifier.background(color, MaterialTheme.shapes.large).height(2.dp)
+
+    Icon(
+        tint = color, imageVector = WeatherIcons.night, contentDescription = null
+    )
+    if (sunFactor > 0f) {
+        Spacer(modifier = track.weight(sunFactor))
+    }
+    Spacer(modifier = Modifier.size(8.dp).background(color, CircleShape))
+    if (1 - sunFactor > 0f) {
+        Spacer(modifier = track.weight(1 - sunFactor))
+    }
+    Icon(
+        tint = color, imageVector = WeatherIcons.day, contentDescription = null
+    )
 }
 
 @Composable
@@ -255,14 +296,11 @@ fun textResource(@StringRes id: Int) = buildAnnotatedString {
     append(text)
     (text as? Spanned)?.getSpans(0, text.length, StyleSpan::class.java)?.forEach {
         addStyle(
-            start = text.getSpanStart(it),
-            end = text.getSpanEnd(it),
-            style = when (it.style) {
+            start = text.getSpanStart(it), end = text.getSpanEnd(it), style = when (it.style) {
                 Typeface.ITALIC -> SpanStyle(fontStyle = FontStyle.Italic)
                 Typeface.BOLD -> SpanStyle(fontWeight = FontWeight.Bold)
                 Typeface.BOLD_ITALIC -> SpanStyle(
-                    fontWeight = FontWeight.Bold,
-                    fontStyle = FontStyle.Italic
+                    fontWeight = FontWeight.Bold, fontStyle = FontStyle.Italic
                 )
 
                 else -> SpanStyle()

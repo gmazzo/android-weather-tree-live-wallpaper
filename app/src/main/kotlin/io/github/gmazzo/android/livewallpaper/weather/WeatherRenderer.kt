@@ -32,7 +32,8 @@ import javax.microedition.khronos.opengles.GL11
 
 class WeatherRenderer(
     context: Context,
-    private val openGLDispatcher: CoroutineDispatcher,
+    openGLDispatcher: CoroutineDispatcher,
+    private val sunPosition: MutableStateFlow<Float>,
     private val weatherConditions: MutableStateFlow<WeatherConditions>,
 ) : Renderer {
     var landscape: Boolean = false
@@ -53,9 +54,9 @@ class WeatherRenderer(
     private var screenRatio = 1.0f
     private var screenWidth = 0f
 
-    private val textures by lazy { Textures(context.resources, gl!!) }
+    private val textures by lazy { Textures(context.resources, gl) }
 
-    private val models by lazy { Models(context.resources, gl!!) }
+    private val models by lazy { Models(context.resources, gl) }
 
     private val coroutineScope = CoroutineScope(openGLDispatcher)
     private var watchWeatherChanges: Job? = null
@@ -169,8 +170,6 @@ class WeatherRenderer(
 
     @Synchronized
     override fun onDrawFrame(gl: GL10) {
-
-
         val scene = currentScene ?: return
 
         if (!this.isPaused) {
@@ -241,6 +240,7 @@ class WeatherRenderer(
         }
         _tod.update(minutes, true)
         currentScene?.updateTimeOfDay(this._tod)
+        sunPosition.value = _tod.sunPosition
     }
 
     private fun updateCameraPosition(gl: GL10, timeDelta: Float) {

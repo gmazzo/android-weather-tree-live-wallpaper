@@ -55,6 +55,7 @@ abstract class SceneBase(
             pref_todEngineColors[iMain],
             pref_todEngineColors[iBlend], tod.blendAmount
         )
+        todSunPosition = tod.sunPosition
     }
 
     protected fun drawTree(gl: GL10, timeDelta: Float) {

@@ -46,7 +46,7 @@ dependencies {
 
     implementation(platform(libs.androidx.compose))
     implementation(libs.androidx.compose.activity)
-    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material)
     implementation(libs.androidx.compose.uiToolingPreview)
     debugImplementation(libs.androidx.compose.uiTooling)
     implementation(libs.androidx.datastore)

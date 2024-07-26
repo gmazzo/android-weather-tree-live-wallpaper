@@ -11,7 +11,6 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingCloud
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingMoon
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingSun
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingWispy
-import io.github.gmazzo.android.livewallpaper.weather.sky_manager.TimeOfDay
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures
 import javax.microedition.khronos.opengles.GL10
@@ -178,11 +177,6 @@ open class SceneClear @JvmOverloads constructor(
                 i++
             }
         }
-    }
-
-    override fun updateTimeOfDay(tod: TimeOfDay) {
-        todSunPosition = tod.sunPosition
-        super.updateTimeOfDay(tod)
     }
 
     override fun draw(gl: GL10, time: GlobalTime) {

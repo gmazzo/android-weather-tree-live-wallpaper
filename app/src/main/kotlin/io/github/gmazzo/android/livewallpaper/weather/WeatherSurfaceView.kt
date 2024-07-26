@@ -11,13 +11,15 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
+import javax.inject.Named
 import kotlin.coroutines.CoroutineContext
 
 class WeatherSurfaceView(context: Context) : GLSurfaceView(context) {
-    private val weatherConditions =
-        EntryPoints.get(context.applicationContext, Dependencies::class.java).weatherConditions
 
-    private val renderer = WeatherRenderer(context, OpenGLDispatcher(), weatherConditions)
+    private val deps = EntryPoints.get(context.applicationContext, Dependencies::class.java)
+
+    private val renderer =
+        WeatherRenderer(context, OpenGLDispatcher(), deps.sunPosition, deps.weatherConditions)
 
     var isDemoMode by renderer::demoMode
 
@@ -65,19 +67,22 @@ class WeatherSurfaceView(context: Context) : GLSurfaceView(context) {
         return super.onTouchEvent(motionEvent)
     }
 
-    @EntryPoint
-    @InstallIn(SingletonComponent::class)
-    internal interface Dependencies {
-
-        val weatherConditions: MutableStateFlow<WeatherConditions>
-
-    }
-
     private inner class OpenGLDispatcher : CoroutineDispatcher() {
 
         override fun dispatch(context: CoroutineContext, block: Runnable) {
             queueEvent(block)
         }
+
+    }
+
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    internal interface Dependencies {
+
+        @get:Named("sunPosition")
+        val sunPosition: MutableStateFlow<Float>
+
+        val weatherConditions: MutableStateFlow<WeatherConditions>
 
     }
 

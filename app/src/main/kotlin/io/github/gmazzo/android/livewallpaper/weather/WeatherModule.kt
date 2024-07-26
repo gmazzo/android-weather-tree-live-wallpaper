@@ -13,13 +13,11 @@ import androidx.work.Configuration
 import androidx.work.WorkManager
 import dagger.Module
 import dagger.Provides
-import dagger.Reusable
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -28,14 +26,15 @@ object WeatherModule {
     private const val TAG = "WeatherModule"
 
     @Provides
-    @Reusable
-    fun provideWeatherConditions(): MutableStateFlow<WeatherConditions> =
-        MutableStateFlow(WeatherConditions())
+    @Singleton
+    @Named("sunPosition")
+    fun provideSunPosition(): MutableStateFlow<Float> =
+        MutableStateFlow(0f)
 
     @Provides
-    @Reusable
-    fun provideWeatherState(state: MutableStateFlow<WeatherConditions>): StateFlow<WeatherConditions> =
-        state.asStateFlow()
+    @Singleton
+    fun provideWeatherConditions(): MutableStateFlow<WeatherConditions> =
+        MutableStateFlow(WeatherConditions())
 
     @Provides
     @Singleton
