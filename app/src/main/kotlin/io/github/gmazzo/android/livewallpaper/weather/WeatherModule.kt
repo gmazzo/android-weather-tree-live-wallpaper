@@ -28,17 +28,17 @@ object WeatherModule {
     @Provides
     @Singleton
     @Named("sunPosition")
-    fun provideSunPosition(): MutableStateFlow<Float> =
+    fun sunPosition(): MutableStateFlow<Float> =
         MutableStateFlow(0f)
 
     @Provides
     @Singleton
-    fun provideWeatherConditions(): MutableStateFlow<WeatherConditions> =
+    fun weatherConditions(): MutableStateFlow<WeatherConditions> =
         MutableStateFlow(WeatherConditions())
 
     @Provides
     @Singleton
-    fun provideWorkManager(
+    fun workManager(
         @ApplicationContext context: Context,
         workerFactory: HiltWorkerFactory,
     ): WorkManager {
@@ -52,7 +52,7 @@ object WeatherModule {
     }
 
     @Provides
-    fun provideLocation(@ApplicationContext context: Context): Location? {
+    fun location(@ApplicationContext context: Context): Location? {
         if (checkSelfPermission(context, ACCESS_COARSE_LOCATION) != PERMISSION_GRANTED) {
             Log.e(TAG, "Missing $ACCESS_COARSE_LOCATION to access location")
             return null

@@ -19,7 +19,7 @@ internal object SettingsModule {
 
     @Provides
     @Singleton
-    fun provideDataStore(@ApplicationContext context: Context): DataStore<Preferences> =
+    fun dataStore(@ApplicationContext context: Context): DataStore<Preferences> =
         context.dataStore
 
 }

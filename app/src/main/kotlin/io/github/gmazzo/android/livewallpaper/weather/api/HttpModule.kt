@@ -20,19 +20,19 @@ internal object HttpModule {
 
     @Provides
     @Reusable
-    fun provideJson(): Json =
+    fun json(): Json =
         Json { ignoreUnknownKeys = true }
 
     @Provides
     @Reusable
-    fun provideOkHttpClient(): OkHttpClient = OkHttpClient.Builder()
+    fun okHttpClient(): OkHttpClient = OkHttpClient.Builder()
         .addInterceptor(UserAgentInterceptor)
         .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
         .build()
 
     @Provides
     @Reusable
-    fun provideRetrofit(client: OkHttpClient, json: Json): Retrofit = Retrofit.Builder()
+    fun retrofit(client: OkHttpClient, json: Json): Retrofit = Retrofit.Builder()
         .client(client)
         .baseUrl(BuildConfig.FORECAST_ENDPOINT)
         .addConverterFactory(json.asConverterFactory("application/json; charset=UTF8".toMediaType()))
@@ -40,7 +40,7 @@ internal object HttpModule {
 
     @Provides
     @Reusable
-    fun provideLocationForecast(retrofit: Retrofit): LocationForecastAPI =
+    fun locationForecast(retrofit: Retrofit): LocationForecastAPI =
         retrofit.create()
 
 }

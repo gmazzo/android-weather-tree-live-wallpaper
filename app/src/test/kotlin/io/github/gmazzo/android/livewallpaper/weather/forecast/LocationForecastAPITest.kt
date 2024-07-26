@@ -6,10 +6,10 @@ import org.junit.Test
 
 class LocationForecastAPITest {
 
-    private val api by lazy { HttpModule.provideLocationForecast(
-        HttpModule.provideRetrofit(
-            HttpModule.provideOkHttpClient(),
-            HttpModule.provideJson()
+    private val api by lazy { HttpModule.locationForecast(
+        HttpModule.retrofit(
+            HttpModule.okHttpClient(),
+            HttpModule.json()
         )
     ) }
 
