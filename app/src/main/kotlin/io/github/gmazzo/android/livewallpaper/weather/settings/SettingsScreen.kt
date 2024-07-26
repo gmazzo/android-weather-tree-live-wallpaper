@@ -162,13 +162,9 @@ private fun DayTimeProgression(
     Icon(
         tint = color, imageVector = WeatherIcons.night, contentDescription = null
     )
-    if (sunFactor > 0f) {
-        Spacer(modifier = track.weight(sunFactor))
-    }
+    Spacer(modifier = if (sunFactor > 0f) track.weight(sunFactor) else track.size(0.dp))
     Spacer(modifier = Modifier.size(8.dp).background(color, CircleShape))
-    if (1 - sunFactor > 0f) {
-        Spacer(modifier = track.weight(1 - sunFactor))
-    }
+    Spacer(modifier = if (1 - sunFactor > 0f) track.weight(1 - sunFactor) else track.size(0.dp))
     Icon(
         tint = color, imageVector = WeatherIcons.day, contentDescription = null
     )
