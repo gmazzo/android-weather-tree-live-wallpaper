@@ -16,13 +16,17 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.viewinterop.AndroidView
 import dagger.hilt.android.AndroidEntryPoint
-import io.github.gmazzo.android.livewallpaper.weather.WeatherSurfaceView
+import io.github.gmazzo.android.livewallpaper.weather.WeatherView
 import io.github.gmazzo.android.livewallpaper.weather.WeatherWallpaperService
 import io.github.gmazzo.android.livewallpaper.weather.hasBackgroundLocationPermission
 import io.github.gmazzo.android.livewallpaper.weather.hasLocationPermission
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SettingsActivity : ComponentActivity() {
+
+    @Inject
+    internal lateinit var weatherViewFactory: WeatherView.Factory
 
     private val viewModel: SettingsViewModel by viewModels()
 
@@ -45,7 +49,7 @@ class SettingsActivity : ComponentActivity() {
                 onNavigateBack = ::finish,
             ) {
                 AndroidView(factory = { context ->
-                    WeatherSurfaceView(context).also { it.isDemoMode = true }
+                    weatherViewFactory.create(context).also { it.isDemoMode = true }
                 })
             }
         }

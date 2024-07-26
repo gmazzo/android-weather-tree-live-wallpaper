@@ -5,21 +5,19 @@ import android.content.Context
 import android.opengl.GLSurfaceView
 import android.view.MotionEvent
 import android.view.SurfaceHolder
-import dagger.hilt.EntryPoint
-import dagger.hilt.EntryPoints
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.MutableStateFlow
-import javax.inject.Named
 import kotlin.coroutines.CoroutineContext
 
-class WeatherSurfaceView(context: Context) : GLSurfaceView(context) {
+@SuppressLint("ViewConstructor") // we'll never inflate this view
+class WeatherView @AssistedInject internal constructor(
+    @Assisted context: Context,
+    rendererFactory: WeatherViewRenderer.Factory
+) : GLSurfaceView(context) {
 
-    private val deps = EntryPoints.get(context.applicationContext, Dependencies::class.java)
-
-    private val renderer =
-        WeatherRenderer(context, OpenGLDispatcher(), deps.sunPosition, deps.weatherConditions)
+    private val renderer = rendererFactory.create(context, OpenGLDispatcher())
 
     var isDemoMode by renderer::demoMode
 
@@ -67,22 +65,16 @@ class WeatherSurfaceView(context: Context) : GLSurfaceView(context) {
         return super.onTouchEvent(motionEvent)
     }
 
+    @AssistedFactory
+    interface Factory {
+        fun create(context: Context): WeatherView
+    }
+
     private inner class OpenGLDispatcher : CoroutineDispatcher() {
 
         override fun dispatch(context: CoroutineContext, block: Runnable) {
             queueEvent(block)
         }
-
-    }
-
-    @EntryPoint
-    @InstallIn(SingletonComponent::class)
-    internal interface Dependencies {
-
-        @get:Named("sunPosition")
-        val sunPosition: MutableStateFlow<Float>
-
-        val weatherConditions: MutableStateFlow<WeatherConditions>
 
     }
 

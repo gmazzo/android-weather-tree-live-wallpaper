@@ -4,6 +4,9 @@ import android.content.Context
 import android.opengl.GLSurfaceView.Renderer
 import android.opengl.GLU
 import android.util.Log
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.Utility
@@ -26,14 +29,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.runningFold
 import kotlinx.coroutines.launch
 import java.util.Calendar
+import javax.inject.Named
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 
-class WeatherRenderer(
-    context: Context,
-    openGLDispatcher: CoroutineDispatcher,
-    private val sunPosition: MutableStateFlow<Float>,
+internal class WeatherViewRenderer @AssistedInject constructor(
+    @Assisted context: Context,
+    @Assisted dispatcher: CoroutineDispatcher,
+    @Named("sunPosition") private val sunPosition: MutableStateFlow<Float>,
     private val weatherConditions: MutableStateFlow<WeatherConditions>,
 ) : Renderer {
     var landscape: Boolean = false
@@ -58,7 +62,7 @@ class WeatherRenderer(
 
     private val models by lazy { Models(context.resources, gl) }
 
-    private val coroutineScope = CoroutineScope(openGLDispatcher)
+    private val coroutineScope = CoroutineScope(dispatcher)
     private var watchWeatherChanges: Job? = null
 
     private val isPaused get() = watchWeatherChanges == null
@@ -260,6 +264,11 @@ class WeatherRenderer(
             this.cameraFOV = 70.0f
         }
         horizontalFOV = this.cameraFOV * this.screenRatio
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(context: Context, dispatcher: CoroutineDispatcher): WeatherViewRenderer
     }
 
     companion object {

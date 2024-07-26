@@ -1,7 +1,7 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.particles
 
 import io.github.gmazzo.android.livewallpaper.weather.R
-import io.github.gmazzo.android.livewallpaper.weather.WeatherRenderer
+import io.github.gmazzo.android.livewallpaper.weather.WeatherViewRenderer
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneBase
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneSnow
@@ -25,7 +25,7 @@ class ParticleSnow @Inject constructor(
 
     override fun particleSetup(particle: Particle?) {
         super.particleSetup(particle)
-        val bias: Float = ((WeatherRenderer.Companion.homeOffsetPercentage * 2.0f) - 1.0f) * 4.0f
+        val bias: Float = ((WeatherViewRenderer.Companion.homeOffsetPercentage * 2.0f) - 1.0f) * 4.0f
         particle!!.lifetime = 4.5f
         particle.startScale.set(GlobalRand.floatRange(0.15f, 0.3f))
         particle.destScale.set(GlobalRand.floatRange(0.15f, 0.3f))

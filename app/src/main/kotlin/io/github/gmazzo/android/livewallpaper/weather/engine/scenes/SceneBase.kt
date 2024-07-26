@@ -38,6 +38,7 @@ abstract class SceneBase(
 
     fun numCloudsFromPrefs(weather: WeatherType) {
         this.pref_numClouds = weather.clouds
+        this.pref_numWisps = weather.wisps
     }
 
     fun windSpeedFromPrefs() {

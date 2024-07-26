@@ -3,20 +3,19 @@ package io.github.gmazzo.android.livewallpaper.weather
 import android.service.wallpaper.WallpaperService
 import android.view.SurfaceHolder
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class WeatherWallpaperService : WallpaperService() {
 
     @Inject
-    internal lateinit var weatherConditions: MutableStateFlow<WeatherConditions>
+    internal lateinit var weatherViewFactory: WeatherView.Factory
 
     override fun onCreateEngine() = GLEngine()
 
     open inner class GLEngine : Engine() {
 
-        private val surfaceView = WeatherSurfaceView(this@WeatherWallpaperService)
+        private val surfaceView = weatherViewFactory.create(this@WeatherWallpaperService)
 
         override fun onVisibilityChanged(visible: Boolean) {
             super.onVisibilityChanged(visible)
