@@ -64,15 +64,25 @@ class SettingsActivity : ComponentActivity() {
     @SuppressLint("InlinedApi")
     private fun checkPermissions(granted: Boolean?) {
         when {
-            granted == false -> if (hasLocationPermission && !hasBackgroundLocationPermission) {
-                startActivityForResult(Intent(
-                    Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                    Uri.fromParts("package", packageName, null)
-                ), 0)
-            }
+            granted == false -> if (hasLocationPermission && !hasBackgroundLocationPermission) openAppSettings()
             !hasLocationPermission -> requestPermissionLauncher.launch(ACCESS_COARSE_LOCATION)
-            !hasBackgroundLocationPermission -> requestPermissionLauncher.launch(ACCESS_BACKGROUND_LOCATION)
+            !hasBackgroundLocationPermission ->
+                requestPermissionLauncher.launch(ACCESS_BACKGROUND_LOCATION)
         }
+    }
+
+    /**
+     * When a few background permissions requests are made but the user cancels it,
+     * the SO no longer shows the dialog and denies the request automatically
+     * We open the settings in case
+     */
+    private fun openAppSettings() {
+        startActivity(
+            Intent(
+                Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                Uri.fromParts("package", packageName, null)
+            )
+        )
     }
 
     private fun openWallpaperChooser() {
