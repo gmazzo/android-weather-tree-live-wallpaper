@@ -1,27 +1,22 @@
 package io.github.gmazzo.android.livewallpaper.weather
 
-import android.content.Context
 import android.opengl.GLSurfaceView.Renderer
 import android.opengl.GLU
 import android.util.Log
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import dagger.hilt.EntryPoint
+import dagger.hilt.EntryPoints
+import dagger.hilt.InstallIn
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
-import io.github.gmazzo.android.livewallpaper.weather.engine.Utility
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
+import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.Scene
-import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneClear
-import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneCloudy
-import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneFog
-import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode
-import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneRain
-import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneSnow
-import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneStorm
+import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneFactory
+import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.sky_manager.TimeOfDay
-import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models
-import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -35,7 +30,7 @@ import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 
 internal class WeatherViewRenderer @AssistedInject constructor(
-    @Assisted context: Context,
+    private val openGLBuilder: OpenGLComponent.Builder,
     @Assisted dispatcher: CoroutineDispatcher,
     @Named("sunPosition") private val sunPosition: MutableStateFlow<Float>,
     private val weatherConditions: MutableStateFlow<WeatherConditions>,
@@ -51,17 +46,13 @@ internal class WeatherViewRenderer @AssistedInject constructor(
     private val globalTime: GlobalTime
     private var lastCalendarUpdate: Float
     private var lastPositionUpdate: Float
-    private lateinit var gl: GL11
     var pref_cameraSpeed: Float = 1.0f
     var demoMode: Boolean = false
     private var screenHeight = 0f
     private var screenRatio = 1.0f
     private var screenWidth = 0f
 
-    private val textures by lazy { Textures(context.resources, gl) }
-
-    private val models by lazy { Models(context.resources, gl) }
-
+    private lateinit var glContext: GLContext
     private val coroutineScope = CoroutineScope(dispatcher)
     private var watchWeatherChanges: Job? = null
 
@@ -87,7 +78,10 @@ internal class WeatherViewRenderer @AssistedInject constructor(
     fun onResume() {
         lastCalendarUpdate = 10.0f
         lastPositionUpdate = 300.0f
-        watchWeatherChanges()
+
+        if (::glContext.isInitialized) {
+            watchWeatherChanges()
+        }
     }
 
     private fun watchWeatherChanges() {
@@ -101,18 +95,11 @@ internal class WeatherViewRenderer @AssistedInject constructor(
 
     @Synchronized
     private fun onSceneChanged(previous: WeatherConditions?, current: WeatherConditions) {
-        if (!this::gl.isInitialized) return // TODO review this later
-
         if (currentScene == null || previous?.weatherType?.scene != current.weatherType.scene) {
-            currentScene?.unload(gl)
-            currentScene = when (current.weatherType.scene) {
-                SceneMode.CLEAR -> SceneClear(models, textures)
-                SceneMode.CLOUDY -> SceneCloudy(models, textures)
-                SceneMode.STORM -> SceneStorm(models, textures)
-                SceneMode.SNOW -> SceneSnow(models, textures)
-                SceneMode.FOG -> SceneFog(models, textures)
-                SceneMode.RAIN -> SceneRain(models, textures)
-            }.also { it.load(gl) }
+            currentScene?.unload()
+            currentScene = glContext.sceneFactory
+                .createScene(current.weatherType.scene)
+                .also { it.load() }
         }
         currentScene?.landscape = landscape
         currentScene?.updateWeather(current.weatherType)
@@ -121,10 +108,10 @@ internal class WeatherViewRenderer @AssistedInject constructor(
     }
 
     override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
+        glContext = EntryPoints.get(openGLBuilder.openGL(gl as GL11).build(), GLContext::class.java)
     }
 
     override fun onSurfaceChanged(gl: GL10, w: Int, h: Int) {
-        this.gl = gl as GL11
         this.screenWidth = w.toFloat()
         this.screenHeight = h.toFloat()
         this.screenRatio = this.screenWidth / this.screenHeight
@@ -135,10 +122,10 @@ internal class WeatherViewRenderer @AssistedInject constructor(
         gl.glMatrixMode(GL10.GL_PROJECTION)
         gl.glLoadIdentity()
 
-        currentScene?.unload(gl)
+        currentScene?.unload()
         currentScene = null
-        models.close()
-        textures.close()
+        glContext.models.close()
+        glContext.textures.close()
 
         watchWeatherChanges()
     }
@@ -196,21 +183,19 @@ internal class WeatherViewRenderer @AssistedInject constructor(
                 cameraPos.x, 400.0f,
                 cameraPos.z, 0.0f, 0.0f, 1.0f
             )
-            scene.draw(gl, this.globalTime)
+            scene.draw(globalTime)
         }
     }
 
     fun setTouchPos(x: Float, y: Float) {
         val vPos = Vector()
-        Utility.adjustScreenPosForDepth(
-            vPos,
-            this.cameraFOV,
-            this.screenWidth,
-            this.screenHeight,
-            x,
-            y,
-            GlobalRand.floatRange(35.0f, 68.0f) - cameraPos.y
-        )
+        val depth = GlobalRand.floatRange(35.0f, 68.0f) - cameraPos.y
+        val ratioX = (cameraFOV * (screenWidth / screenHeight)) * 0.01111111f
+        val z =
+            (cameraFOV * 0.01111111f) * ((((1.0f - (y / screenHeight)) - 0.5f) * 2.0f) * depth)
+        vPos.x = ((((x / screenWidth) - 0.5f) * 2.0f) * depth) * ratioX
+        vPos.y = depth
+        vPos.z = z
         vPos.x += cameraPos.x
     }
 
@@ -268,7 +253,15 @@ internal class WeatherViewRenderer @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(context: Context, dispatcher: CoroutineDispatcher): WeatherViewRenderer
+        fun create(dispatcher: CoroutineDispatcher): WeatherViewRenderer
+    }
+
+    @EntryPoint
+    @InstallIn(OpenGLComponent::class)
+    interface GLContext {
+        val textures: Textures
+        val models: Models
+        val sceneFactory: SceneFactory
     }
 
     companion object {

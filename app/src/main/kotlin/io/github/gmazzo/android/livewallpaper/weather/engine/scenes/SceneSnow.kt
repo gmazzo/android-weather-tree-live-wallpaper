@@ -11,33 +11,35 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingCloud
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingWispy
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures
+import javax.inject.Inject
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 
-class SceneSnow(
+class SceneSnow @Inject constructor(
+    gl: GL11,
     models: Models,
     textures: Textures,
-) : SceneBase(models, textures) {
+) : Scene(gl, models, textures) {
     
     private val particleSnow by lazy { ParticleSnow(models, textures) }
     
-    var pref_snowDensity: Int = 0
-    var snowPos1: Vector
-    var snowPos2: Vector
-    var snowPos3: Vector
+    private var snowDensity: Int = 0
+    private var snowPos1: Vector
+    private var snowPos2: Vector
+    private var snowPos3: Vector
 
     init {
         todEngineColorFinal = EngineColor()
-        this.pref_todEngineColors = arrayOf(EngineColor(), EngineColor(), EngineColor(), EngineColor())
+        this.todEngineColors = arrayOf(EngineColor(), EngineColor(), EngineColor(), EngineColor())
         this.reloadAssets = false
-        this.pref_numClouds = 20
-        this.pref_numWisps = 6
+        this.numClouds = 20
+        this.numWisps = 6
         this.snowPos1 = Vector(0.0f, CLOUD_Z_RANGE, -20.0f)
         this.snowPos2 = Vector(8.0f, 15.0f, -20.0f)
         this.snowPos3 = Vector(-8.0f, 10.0f, -20.0f)
     }
 
-    override fun load(gl: GL10) {
+    override fun load() {
         spawnClouds(false)
     }
 
@@ -51,7 +53,7 @@ class SceneSnow(
         snowTypeFromPrefs()
     }
 
-    override fun precacheAssets(gl: GL10) {
+    override fun precacheAssets() {
         textures[R.drawable.bg2]
         textures[R.drawable.trees_overlay]
         textures[R.drawable.cloud1]
@@ -77,18 +79,18 @@ class SceneSnow(
     }
 
     private fun spawnClouds(force: Boolean) {
-        spawnClouds(this.pref_numClouds, this.pref_numWisps, force)
+        spawnClouds(this.numClouds, this.numWisps, force)
     }
 
     private fun todFromPrefs() {
-        pref_todEngineColors[0].set("0.5 0.5 0.75 1", 0.0f, 1.0f)
-        pref_todEngineColors[1].set("1 0.73 0.58 1", 0.0f, 1.0f)
-        pref_todEngineColors[2].set("1 1 1 1", 0.0f, 1.0f)
-        pref_todEngineColors[3].set("1 0.85 0.75 1", 0.0f, 1.0f)
+        todEngineColors[0].set("0.5 0.5 0.75 1", 0.0f, 1.0f)
+        todEngineColors[1].set("1 0.73 0.58 1", 0.0f, 1.0f)
+        todEngineColors[2].set("1 1 1 1", 0.0f, 1.0f)
+        todEngineColors[3].set("1 0.85 0.75 1", 0.0f, 1.0f)
     }
 
     private fun snowDensityFromPrefs() {
-        this.pref_snowDensity = 2
+        this.snowDensity = 2
     }
 
     private fun snowGravityFromPrefs() {
@@ -158,7 +160,7 @@ class SceneSnow(
         }
     }
 
-    override fun draw(gl: GL10, time: GlobalTime) {
+    override fun draw(time: GlobalTime) {
         thingManager.update(time.sTimeDelta)
         gl.glDisable(GL10.GL_COLOR_BUFFER_BIT)
         gl.glDisable(GL10.GL_LIGHT1)
@@ -166,25 +168,25 @@ class SceneSnow(
         gl.glMatrixMode(GL10.GL_MODELVIEW)
         gl.glLoadIdentity()
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA)
-        renderBackground(gl, time.sTimeElapsed)
+        renderBackground(time.sTimeElapsed)
         gl.glTranslatef(0.0f, 0.0f, 40.0f)
         thingManager.render(gl)
-        renderSnow(gl, time.sTimeDelta)
-        drawTree(gl, time.sTimeDelta)
+        renderSnow(time.sTimeDelta)
+        drawTree(time.sTimeDelta)
     }
 
-    private fun renderSnow(gl: GL10, timeDelta: Float) {
+    private fun renderSnow(timeDelta: Float) {
         particleSnow.update(timeDelta)
         particleSnow.render(gl as GL11, this.snowPos1)
-        if (this.pref_snowDensity > 1) {
+        if (this.snowDensity > 1) {
             particleSnow.render(gl, this.snowPos2)
         }
-        if (this.pref_snowDensity > 2) {
+        if (this.snowDensity > 2) {
             particleSnow.render(gl, this.snowPos3)
         }
     }
 
-    private fun renderBackground(gl: GL10, timeDelta: Float) {
+    private fun renderBackground(timeDelta: Float) {
         gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[R.drawable.bg2].glId)
         gl.glColor4f(
             todEngineColorFinal!!.r,
@@ -195,7 +197,7 @@ class SceneSnow(
         gl.glMatrixMode(GL10.GL_MODELVIEW)
         gl.glPushMatrix()
         gl.glTranslatef(0.0f, 250.0f, 35.0f)
-        gl.glScalef(this.BG_PADDING * 2.0f, this.BG_PADDING, this.BG_PADDING)
+        gl.glScalef(this.bgPadding * 2.0f, this.bgPadding, this.bgPadding)
         gl.glMatrixMode(GL10.GL_TEXTURE)
         gl.glPushMatrix()
         gl.glTranslatef(

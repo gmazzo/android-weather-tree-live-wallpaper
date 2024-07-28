@@ -2,8 +2,8 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.things
 
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
-import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneBase.Companion.todEngineColorFinal
-import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneBase.Companion.todSunPosition
+import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.Scene.Companion.todEngineColorFinal
+import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.Scene.Companion.todSunPosition
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures
 import javax.microedition.khronos.opengles.GL10

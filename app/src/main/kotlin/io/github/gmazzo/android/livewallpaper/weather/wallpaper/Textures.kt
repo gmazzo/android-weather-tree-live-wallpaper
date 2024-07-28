@@ -5,10 +5,12 @@ import android.graphics.BitmapFactory
 import android.opengl.GLUtils
 import androidx.annotation.DrawableRes
 import androidx.annotation.RawRes
+import io.github.gmazzo.android.livewallpaper.weather.OpenGLScoped
 import java.io.Closeable
 import java.io.IOException
 import java.nio.ByteBuffer
 import java.nio.IntBuffer
+import javax.inject.Inject
 import javax.microedition.khronos.opengles.GL10.GL_LINEAR
 import javax.microedition.khronos.opengles.GL10.GL_LUMINANCE
 import javax.microedition.khronos.opengles.GL10.GL_REPEAT
@@ -23,10 +25,12 @@ import javax.microedition.khronos.opengles.GL10.GL_UNSIGNED_BYTE
 import javax.microedition.khronos.opengles.GL11
 import kotlin.math.absoluteValue
 
-class Textures(
+@OpenGLScoped
+class Textures @Inject constructor(
     private val resources: Resources,
     private val gl: GL11
 ) : Closeable {
+
     private val textures = mutableMapOf<Int, Texture>()
 
     @Synchronized
@@ -57,8 +61,7 @@ class Textures(
     }
 
     private fun loadBitmap(@DrawableRes resId: Int) {
-        val bitmap = BitmapFactory.decodeResource(resources, resId,
-            BitmapFactory.Options().apply { inDither = false })
+        val bitmap = BitmapFactory.decodeResource(resources, resId)
         try {
             GLUtils.texImage2D(GL_TEXTURE_2D, 0, bitmap, 0)
 

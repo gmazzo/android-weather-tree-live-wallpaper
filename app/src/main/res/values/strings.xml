@@ -5,7 +5,6 @@
 
     <string name="settings_use_location">Use device location</string>
     <string name="settings_use_location_summary">Changes the scene based on weather conditions at the device location</string>
-    <string name="settings_use_location_current">Current: %1$.3f lat %2%.3f lng</string>
     <string name="settings_missing_location_permission_title">Access to <b>background location</b> required</string>
     <string name="settings_missing_location_permission_summary">The wallpaper should have access to your device location at any moment to be able to fetch current weather condition</string>
     <string name="settings_missing_location_permission_summary_instructions">When prompted, select the option:</string>

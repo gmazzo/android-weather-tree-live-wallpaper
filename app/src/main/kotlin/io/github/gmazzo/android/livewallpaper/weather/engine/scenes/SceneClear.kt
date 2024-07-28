@@ -1,6 +1,5 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 
-import androidx.annotation.DrawableRes
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.WeatherType
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
@@ -13,14 +12,16 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingSun
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingWispy
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures
+import javax.inject.Inject
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 
-open class SceneClear @JvmOverloads constructor(
+open class SceneClear @Inject constructor(
+    gl: GL11,
     models: Models,
     textures: Textures,
-    @field:DrawableRes @param:DrawableRes private val backgroundId: Int = R.drawable.bg3
-) : SceneBase(models, textures) {
+) : Scene(gl, models, textures) {
+    open val backgroundId: Int = R.drawable.bg3
     protected var batteryLevel: Int
     protected var nextUfoSpawn: Float
     protected var smsLastUnreadCheckTime: Long
@@ -28,17 +29,17 @@ open class SceneClear @JvmOverloads constructor(
 
     init {
         todEngineColorFinal = EngineColor()
-        this.pref_todEngineColors = arrayOf(EngineColor(), EngineColor(), EngineColor(), EngineColor())
+        this.todEngineColors = arrayOf(EngineColor(), EngineColor(), EngineColor(), EngineColor())
         this.reloadAssets = true
         this.batteryLevel = 100
-        this.pref_numClouds = 20
-        this.pref_numWisps = 6
+        this.numClouds = 20
+        this.numWisps = 6
         this.nextUfoSpawn = WISPY_X_RANGE
         this.smsUnreadCount = 0
         this.smsLastUnreadCheckTime = 0
     }
 
-    override fun load(gl: GL10) {
+    override fun load() {
         checkSun()
         checkMoon()
         spawnClouds(false)
@@ -52,7 +53,7 @@ open class SceneClear @JvmOverloads constructor(
         checkMoon()
     }
 
-    override fun precacheAssets(gl: GL10) {
+    override fun precacheAssets() {
         textures[backgroundId]
         textures[R.drawable.trees_overlay]
         textures[R.drawable.cloud1]
@@ -81,7 +82,7 @@ open class SceneClear @JvmOverloads constructor(
     }
 
     protected fun spawnClouds(force: Boolean) {
-        spawnClouds(this.pref_numClouds, this.pref_numWisps, force)
+        spawnClouds(this.numClouds, this.numWisps, force)
     }
 
     private fun checkMoon() {
@@ -93,10 +94,10 @@ open class SceneClear @JvmOverloads constructor(
     }
 
     private fun todFromPrefs() {
-        pref_todEngineColors[0].set("0.5 0.5 0.75 1", 0.0f, 1.0f)
-        pref_todEngineColors[1].set("1 0.73 0.58 1", 0.0f, 1.0f)
-        pref_todEngineColors[2].set("1 1 1 1", 0.0f, 1.0f)
-        pref_todEngineColors[3].set("1 0.85 0.75 1", 0.0f, 1.0f)
+        todEngineColors[0].set("0.5 0.5 0.75 1", 0.0f, 1.0f)
+        todEngineColors[1].set("1 0.73 0.58 1", 0.0f, 1.0f)
+        todEngineColors[2].set("1 1 1 1", 0.0f, 1.0f)
+        todEngineColors[3].set("1 0.85 0.75 1", 0.0f, 1.0f)
     }
 
     private fun removeMoon() {
@@ -179,7 +180,7 @@ open class SceneClear @JvmOverloads constructor(
         }
     }
 
-    override fun draw(gl: GL10, time: GlobalTime) {
+    override fun draw(time: GlobalTime) {
         thingManager.update(time.sTimeDelta)
         gl.glDisable(GL10.GL_COLOR_BUFFER_BIT)
         gl.glDisable(GL10.GL_LIGHT1)
@@ -190,7 +191,7 @@ open class SceneClear @JvmOverloads constructor(
         renderBackground(gl, time.sTimeElapsed)
         gl.glTranslatef(0.0f, 0.0f, 40.0f)
         thingManager.render(gl)
-        drawTree(gl, time.sTimeDelta)
+        drawTree(time.sTimeDelta)
     }
 
     private fun renderBackground(gl: GL10, timeDelta: Float) {
@@ -204,7 +205,7 @@ open class SceneClear @JvmOverloads constructor(
         gl.glMatrixMode(GL10.GL_MODELVIEW)
         gl.glPushMatrix()
         gl.glTranslatef(0.0f, 250.0f, 35.0f)
-        gl.glScalef(this.BG_PADDING * 2.0f, this.BG_PADDING, this.BG_PADDING)
+        gl.glScalef(this.bgPadding * 2.0f, this.bgPadding, this.bgPadding)
         gl.glMatrixMode(GL10.GL_TEXTURE)
         gl.glPushMatrix()
         gl.glTranslatef(

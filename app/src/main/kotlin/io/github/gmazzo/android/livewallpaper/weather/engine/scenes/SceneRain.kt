@@ -11,38 +11,40 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingDarkClo
 import io.github.gmazzo.android.livewallpaper.weather.sky_manager.TimeOfDay
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures
+import javax.inject.Inject
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 
-class SceneRain(
+class SceneRain @Inject constructor(
+    gl: GL11,
     models: Models,
     textures: Textures,
-) : SceneBase(models, textures) {
+) : Scene(gl, models, textures) {
     
     private val particleRain by lazy { ParticleRain(models, textures, rainDensity) }
     
-    var light_diffuse: FloatArray
-    var particleRainOrigin: Vector
-    val rainDensity: Int = 10
-    var v_light_diffuse: EngineColor
+    private var lightDiffuse: FloatArray
+    private var particleRainOrigin: Vector
+    private val rainDensity: Int = 10
+    private var lightDiffuseColor: EngineColor
 
     init {
         todEngineColorFinal = EngineColor()
-        this.pref_todEngineColors = arrayOf(EngineColor(), EngineColor(), EngineColor(), EngineColor())
+        this.todEngineColors = arrayOf(EngineColor(), EngineColor(), EngineColor(), EngineColor())
         this.reloadAssets = false
-        this.pref_numClouds = 20
-        this.pref_numWisps = 6
-        this.v_light_diffuse = EngineColor(0.5f, 0.5f, 0.5f, 1.0f)
-        this.light_diffuse = floatArrayOf(0.1f, 0.1f, 0.1f, 1.0f)
+        this.numClouds = 20
+        this.numWisps = 6
+        this.lightDiffuseColor = EngineColor(0.5f, 0.5f, 0.5f, 1.0f)
+        this.lightDiffuse = floatArrayOf(0.1f, 0.1f, 0.1f, 1.0f)
         this.particleRainOrigin = Vector(0.0f, 25.0f, 10.0f)
     }
 
-    override fun load(gl: GL10) {
+    override fun load() {
         spawnClouds(false)
     }
 
     private fun spawnClouds(force: Boolean) {
-        spawnClouds(this.pref_numClouds, force)
+        spawnClouds(this.numClouds, force)
     }
 
     private fun spawnClouds(num_clouds: Int, force: Boolean) {
@@ -89,13 +91,13 @@ class SceneRain(
     }
 
     private fun todFromPrefs() {
-        pref_todEngineColors[0].set("0.25 0.2 0.2 1", 0.0f, 1.0f)
-        pref_todEngineColors[1].set("0.6 0.6 0.6 1", 0.0f, 1.0f)
-        pref_todEngineColors[2].set("0.9 0.9 0.9 1", 0.0f, 1.0f)
-        pref_todEngineColors[3].set("0.65 0.6 0.6 1", 0.0f, 1.0f)
+        todEngineColors[0].set("0.25 0.2 0.2 1", 0.0f, 1.0f)
+        todEngineColors[1].set("0.6 0.6 0.6 1", 0.0f, 1.0f)
+        todEngineColors[2].set("0.9 0.9 0.9 1", 0.0f, 1.0f)
+        todEngineColors[3].set("0.65 0.6 0.6 1", 0.0f, 1.0f)
     }
 
-    override fun precacheAssets(gl: GL10) {
+    override fun precacheAssets() {
         textures[R.drawable.storm_bg]
         textures[R.drawable.trees_overlay]
         textures[R.drawable.clouddark1]
@@ -118,15 +120,15 @@ class SceneRain(
     override fun updateTimeOfDay(tod: TimeOfDay) {
         val iMain = tod.mainIndex
         val iBlend = tod.blendIndex
-        v_light_diffuse.blend(
-            pref_todEngineColors[iMain],
-            pref_todEngineColors[iBlend], tod.blendAmount
+        lightDiffuseColor.blend(
+            todEngineColors[iMain],
+            todEngineColors[iBlend], tod.blendAmount
         )
     }
 
-    private fun renderBackground(gl: GL10, timeDelta: Float) {
-        val storm_bg = textures[R.drawable.storm_bg]
-        gl.glBindTexture(GL10.GL_TEXTURE_2D, storm_bg.glId)
+    private fun renderBackground(timeDelta: Float) {
+        val stormBg = textures[R.drawable.storm_bg]
+        gl.glBindTexture(GL10.GL_TEXTURE_2D, stormBg.glId)
         gl.glColor4f(
             todEngineColorFinal!!.r,
             todEngineColorFinal!!.g,
@@ -136,7 +138,7 @@ class SceneRain(
         gl.glMatrixMode(GL10.GL_MODELVIEW)
         gl.glPushMatrix()
         gl.glTranslatef(0.0f, 250.0f, 35.0f)
-        gl.glScalef(this.BG_PADDING * 2.0f, this.BG_PADDING, this.BG_PADDING)
+        gl.glScalef(this.bgPadding * 2.0f, this.bgPadding, this.bgPadding)
         gl.glMatrixMode(GL10.GL_TEXTURE)
         gl.glPushMatrix()
         gl.glTranslatef(
@@ -151,7 +153,7 @@ class SceneRain(
         gl.glPopMatrix()
     }
 
-    private fun renderRain(gl: GL10, timeDelta: Float) {
+    private fun renderRain(timeDelta: Float) {
         gl.glMatrixMode(GL10.GL_MODELVIEW)
         gl.glPushMatrix()
         gl.glTranslatef(0.0f, 0.0f, -5.0f)
@@ -162,26 +164,26 @@ class SceneRain(
         gl.glPopMatrix()
     }
 
-    override fun draw(gl: GL10, time: GlobalTime) {
+    override fun draw(time: GlobalTime) {
         thingManager.update(time.sTimeDelta)
         gl.glEnable(GL10.GL_LIGHTING)
         gl.glEnable(GL10.GL_COLOR_BUFFER_BIT)
         gl.glMatrixMode(GL10.GL_MODELVIEW)
         gl.glLoadIdentity()
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA)
-        light_diffuse[0] = v_light_diffuse.r
-        light_diffuse[1] = v_light_diffuse.g
-        light_diffuse[2] = v_light_diffuse.b
-        light_diffuse[3] = v_light_diffuse.a
-        gl.glLightfv(GL10.GL_COLOR_BUFFER_BIT, 4609, this.light_diffuse, 0)
-        gl.glLightfv(GL10.GL_COLOR_BUFFER_BIT, 4608, this.light_diffuse, 0)
-        renderBackground(gl, time.sTimeElapsed)
-        renderRain(gl, time.sTimeDelta)
+        lightDiffuse[0] = lightDiffuseColor.r
+        lightDiffuse[1] = lightDiffuseColor.g
+        lightDiffuse[2] = lightDiffuseColor.b
+        lightDiffuse[3] = lightDiffuseColor.a
+        gl.glLightfv(GL10.GL_COLOR_BUFFER_BIT, 4609, this.lightDiffuse, 0)
+        gl.glLightfv(GL10.GL_COLOR_BUFFER_BIT, 4608, this.lightDiffuse, 0)
+        renderBackground(time.sTimeElapsed)
+        renderRain(time.sTimeDelta)
         gl.glTranslatef(0.0f, 0.0f, 40.0f)
         thingManager.render(gl)
         gl.glDisable(GL10.GL_COLOR_BUFFER_BIT)
         gl.glDisable(GL10.GL_LIGHTING)
-        drawTree(gl, time.sTimeDelta)
+        drawTree(time.sTimeDelta)
     }
 
     companion object {

@@ -3,7 +3,7 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.particles
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.WeatherViewRenderer
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand
-import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneBase
+import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.Scene
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneSnow
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures
@@ -51,15 +51,15 @@ class ParticleSnow @Inject constructor(
     override fun update(timeDelta: Float) {
         super.update(timeDelta)
         startEngineColor.set(
-            SceneBase.todEngineColorFinal!!.r,
-            SceneBase.todEngineColorFinal!!.g,
-            SceneBase.todEngineColorFinal!!.b,
+            Scene.todEngineColorFinal!!.r,
+            Scene.todEngineColorFinal!!.g,
+            Scene.todEngineColorFinal!!.b,
             3.0f
         )
         destEngineColor.set(
-            SceneBase.todEngineColorFinal!!.r,
-            SceneBase.todEngineColorFinal!!.g,
-            SceneBase.todEngineColorFinal!!.b,
+            Scene.todEngineColorFinal!!.r,
+            Scene.todEngineColorFinal!!.g,
+            Scene.todEngineColorFinal!!.b,
             0.0f
         )
     }

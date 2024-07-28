@@ -7,24 +7,27 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.sky_manager.TimeOfDay
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures
+import javax.inject.Inject
 import javax.microedition.khronos.opengles.GL10
+import javax.microedition.khronos.opengles.GL11
 
-class SceneFog(
+class SceneFog @Inject constructor(
+    gl: GL11,
     models: Models,
     textures: Textures,
-) : SceneBase(models, textures) {
+) : Scene(gl, models, textures) {
     var fogEngineColorFinal: EngineColor
     var fog_todEngineColors: Array<EngineColor?>
 
     init {
         todEngineColorFinal = EngineColor()
-        this.pref_todEngineColors = arrayOf(EngineColor(), EngineColor(), EngineColor(), EngineColor())
+        this.todEngineColors = arrayOf(EngineColor(), EngineColor(), EngineColor(), EngineColor())
         this.fogEngineColorFinal = EngineColor()
         this.fog_todEngineColors = arrayOfNulls(4)
         this.reloadAssets = false
     }
 
-    override fun load(gl: GL10) {
+    override fun load() {
     }
 
     override fun updateWeather(weather: WeatherType) {
@@ -33,7 +36,7 @@ class SceneFog(
         pref_fog_density = 0.2f
     }
 
-    override fun precacheAssets(gl: GL10) {
+    override fun precacheAssets() {
         textures[R.drawable.bg1]
         textures[R.drawable.trees_overlay]
         textures[R.raw.sun]
@@ -45,10 +48,10 @@ class SceneFog(
     }
 
     private fun todFromPrefs() {
-        pref_todEngineColors[0].set("0.5 0.5 0.75 1", 0.0f, 1.0f)
-        pref_todEngineColors[1].set("1 0.73 0.58 1", 0.0f, 1.0f)
-        pref_todEngineColors[2].set("1 1 1 1", 0.0f, 1.0f)
-        pref_todEngineColors[3].set("1 0.85 0.75 1", 0.0f, 1.0f)
+        todEngineColors[0].set("0.5 0.5 0.75 1", 0.0f, 1.0f)
+        todEngineColors[1].set("1 0.73 0.58 1", 0.0f, 1.0f)
+        todEngineColors[2].set("1 1 1 1", 0.0f, 1.0f)
+        todEngineColors[3].set("1 0.85 0.75 1", 0.0f, 1.0f)
         fog_todEngineColors[0] = EngineColor(0.2f, 0.2f, 0.2f, 1.0f)
         fog_todEngineColors[1] = EngineColor(0.5f, 0.5f, 0.5f, 1.0f)
         fog_todEngineColors[2] = EngineColor(0.8f, 0.8f, 0.8f, 1.0f)
@@ -60,8 +63,8 @@ class SceneFog(
         val iBlend = tod.blendIndex
         val blendAmount = tod.blendAmount
         todEngineColorFinal!!.blend(
-            pref_todEngineColors[iMain],
-            pref_todEngineColors[iBlend], blendAmount
+            todEngineColors[iMain],
+            todEngineColors[iBlend], blendAmount
         )
         fogEngineColorFinal.blend(
             fog_todEngineColors[iMain]!!,
@@ -70,7 +73,7 @@ class SceneFog(
         fogEngineColorFinal.setToArray(fogColor)
     }
 
-    override fun draw(gl: GL10, time: GlobalTime) {
+    override fun draw(time: GlobalTime) {
         thingManager.update(time.sTimeDelta)
         gl.glDisable(GL10.GL_COLOR_BUFFER_BIT)
         gl.glDisable(GL10.GL_LIGHT1)
@@ -85,14 +88,14 @@ class SceneFog(
         gl.glFogf(GL10.GL_FOG_START, -10.0f)
         gl.glFogf(GL10.GL_FOG_END, 190.0f)
         gl.glFogf(GL10.GL_FOG_HINT, 4352.0f)
-        renderBackground(gl, time.sTimeElapsed)
+        renderBackground(time.sTimeElapsed)
         gl.glTranslatef(0.0f, 0.0f, 40.0f)
         thingManager.render(gl)
-        drawTree(gl, time.sTimeDelta)
+        drawTree(time.sTimeDelta)
         gl.glDisable(GL10.GL_FOG)
     }
 
-    private fun renderBackground(gl: GL10, timeDelta: Float) {
+    private fun renderBackground(timeDelta: Float) {
         gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[R.drawable.bg1].glId)
         gl.glColor4f(
             todEngineColorFinal!!.r,
@@ -103,7 +106,7 @@ class SceneFog(
         gl.glMatrixMode(GL10.GL_MODELVIEW)
         gl.glPushMatrix()
         gl.glTranslatef(0.0f, 250.0f, 35.0f)
-        gl.glScalef(this.BG_PADDING * 2.0f, this.BG_PADDING, this.BG_PADDING)
+        gl.glScalef(this.bgPadding * 2.0f, this.bgPadding, this.bgPadding)
         gl.glMatrixMode(GL10.GL_TEXTURE)
         gl.glPushMatrix()
         gl.glTranslatef(

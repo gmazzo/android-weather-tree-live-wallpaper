@@ -12,46 +12,46 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingLightni
 import io.github.gmazzo.android.livewallpaper.weather.sky_manager.TimeOfDay
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures
+import javax.inject.Inject
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 
-class SceneStorm(
+class SceneStorm @Inject constructor(
+    gl: GL11,
     models: Models,
     textures: Textures,
-) : SceneBase(models, textures) {
-    var lastLightningSpawn: Float
-    var light1_ambientLight: FloatArray
-    var light1_position: FloatArray
-    var lightFlashTime: Float
-    var lightFlashX: Float
-    var light_ambientLight: FloatArray
-    var light_flashColor: FloatArray
-    var light_position: FloatArray
-    var light_specularLight: FloatArray
-    var particleRain: ParticleRain?
-    var particleRainOrigin: Vector
-    var pref_boltFrequency: Float = 2.0f
-    var pref_diffuseLight: FloatArray
-    var pref_flashLights: Boolean = true
-    var pref_randomBoltColor: Boolean = false
-    val rainDensity: Int = 10
-    var v_light1_ambientLight: EngineColor
+) : Scene(gl, models, textures) {
+    private var lightAmbientLight: FloatArray
+    private var lightPosition: FloatArray
+    private var lightFlashTime: Float
+    private var lightFlashX: Float
+    private var ambientLight: FloatArray
+    private var flashColor: FloatArray
+    private var possition: FloatArray
+    private var specularLight: FloatArray
+    private var particleRain: ParticleRain?
+    private var particleRainOrigin: Vector
+    private var boltFrequency: Float = 2.0f
+    private var diffuseLight: FloatArray
+    private var flashLights: Boolean = true
+    private var randomBoltColor: Boolean = false
+    private val rainDensity: Int = 10
+    private var lightAmbientLightColor: EngineColor
 
     init {
-        this.lastLightningSpawn = 0.0f
         this.lightFlashTime = 0.0f
         this.lightFlashX = 0.0f
-        this.light_ambientLight = floatArrayOf(1.0f, 1.0f, 1.0f, 1.0f)
-        this.pref_diffuseLight = floatArrayOf(1.5f, 1.5f, 1.5f, 1.0f)
-        this.light_specularLight = floatArrayOf(0.1f, 0.1f, 0.1f, 1.0f)
-        this.light_position = floatArrayOf(0.0f, 0.0f, 0.0f, 1.0f)
-        this.light_flashColor = floatArrayOf(1.0f, 1.0f, 1.0f, 1.0f)
-        this.v_light1_ambientLight = EngineColor(0.5f, 0.5f, 0.5f, 1.0f)
-        this.light1_ambientLight = FloatArray(4)
-        this.light1_position = floatArrayOf(0.0f, 0.0f, 0.0f, 1.0f)
-        this.pref_numClouds = 20
+        this.ambientLight = floatArrayOf(1.0f, 1.0f, 1.0f, 1.0f)
+        this.diffuseLight = floatArrayOf(1.5f, 1.5f, 1.5f, 1.0f)
+        this.specularLight = floatArrayOf(0.1f, 0.1f, 0.1f, 1.0f)
+        this.possition = floatArrayOf(0.0f, 0.0f, 0.0f, 1.0f)
+        this.flashColor = floatArrayOf(1.0f, 1.0f, 1.0f, 1.0f)
+        this.lightAmbientLightColor = EngineColor(0.5f, 0.5f, 0.5f, 1.0f)
+        this.lightAmbientLight = FloatArray(4)
+        this.lightPosition = floatArrayOf(0.0f, 0.0f, 0.0f, 1.0f)
+        this.numClouds = 20
         todEngineColorFinal = EngineColor()
-        this.pref_todEngineColors =
+        this.todEngineColors =
             arrayOf(EngineColor(), EngineColor(), EngineColor(), EngineColor())
         this.particleRain = ParticleRain(models, textures, rainDensity)
         this.particleRainOrigin = Vector(0.0f, 25.0f, 10.0f)
@@ -62,27 +62,27 @@ class SceneStorm(
         windSpeedFromPrefs()
         numCloudsFromPrefs(weather)
         todFromPrefs()
-        this.pref_randomBoltColor = false
+        this.randomBoltColor = false
         boltColorFromPrefs()
         boltFrequencyFromPrefs()
     }
 
     private fun todFromPrefs() {
-        pref_todEngineColors[0].set("0.25 0.2 0.2 1", 0.0f, 1.0f)
-        pref_todEngineColors[1].set("0.6 0.6 0.6 1", 0.0f, 1.0f)
-        pref_todEngineColors[2].set("0.9 0.9 0.9 1", 0.0f, 1.0f)
-        pref_todEngineColors[3].set("0.65 0.6 0.6 1", 0.0f, 1.0f)
+        todEngineColors[0].set("0.25 0.2 0.2 1", 0.0f, 1.0f)
+        todEngineColors[1].set("0.6 0.6 0.6 1", 0.0f, 1.0f)
+        todEngineColors[2].set("0.9 0.9 0.9 1", 0.0f, 1.0f)
+        todEngineColors[3].set("0.65 0.6 0.6 1", 0.0f, 1.0f)
     }
 
-    fun boltColorFromPrefs() {
+    private fun boltColorFromPrefs() {
         pref_boltEngineColor.set("1 1 1 1", 0.0f, 1.0f)
     }
 
-    fun boltFrequencyFromPrefs() {
-        this.pref_boltFrequency = 5f
+    private fun boltFrequencyFromPrefs() {
+        this.boltFrequency = 5f
     }
 
-    override fun precacheAssets(gl: GL10) {
+    override fun precacheAssets() {
         textures[R.drawable.storm_bg]
         textures[R.drawable.trees_overlay]
         textures[R.drawable.clouddark1]
@@ -107,12 +107,13 @@ class SceneStorm(
         models[R.raw.trees_overlay_terrain]
     }
 
-    override fun load(gl: GL10) {
+    override fun load() {
         spawnClouds(false)
     }
 
-    override fun unload(gl: GL10) {
-        super.unload(gl)
+    override fun unload() {
+        super.unload()
+
         gl.glDisable(GL10.GL_COLOR_BUFFER_BIT)
         gl.glDisable(GL10.GL_LIGHT1)
         gl.glDisable(GL10.GL_LIGHTING)
@@ -121,27 +122,27 @@ class SceneStorm(
     override fun updateTimeOfDay(tod: TimeOfDay) {
         val iMain = tod.mainIndex
         val iBlend = tod.blendIndex
-        v_light1_ambientLight.blend(
-            pref_todEngineColors[iMain],
-            pref_todEngineColors[iBlend], tod.blendAmount
+        lightAmbientLightColor.blend(
+            todEngineColors[iMain],
+            todEngineColors[iBlend], tod.blendAmount
         )
     }
 
-    override fun draw(gl: GL10, time: GlobalTime) {
+    override fun draw(time: GlobalTime) {
         thingManager.update(time.sTimeDelta)
         gl.glMatrixMode(GL10.GL_MODELVIEW)
         gl.glLoadIdentity()
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA)
-        renderBackground(gl, time.sTimeElapsed)
-        renderRain(gl, time.sTimeDelta)
+        renderBackground(time.sTimeElapsed)
+        renderRain(time.sTimeDelta)
         checkForLightning(time.sTimeDelta)
-        updateLightValues(gl, time.sTimeDelta)
+        updateLightValues(time.sTimeDelta)
         gl.glTranslatef(0.0f, 0.0f, 40.0f)
         thingManager.render(gl)
-        drawTree(gl, time.sTimeDelta)
+        drawTree(time.sTimeDelta)
     }
 
-    private fun renderBackground(gl: GL10, timeDelta: Float) {
+    private fun renderBackground(timeDelta: Float) {
         val storm_bg = textures[R.drawable.storm_bg]
         gl.glBindTexture(GL10.GL_TEXTURE_2D, storm_bg.glId)
         gl.glColor4f(
@@ -153,7 +154,7 @@ class SceneStorm(
         gl.glMatrixMode(GL10.GL_MODELVIEW)
         gl.glPushMatrix()
         gl.glTranslatef(0.0f, 250.0f, 35.0f)
-        gl.glScalef(this.BG_PADDING * 2.0f, this.BG_PADDING, this.BG_PADDING)
+        gl.glScalef(this.bgPadding * 2.0f, this.bgPadding, this.bgPadding)
         gl.glMatrixMode(GL10.GL_TEXTURE)
         gl.glPushMatrix()
         gl.glTranslatef(
@@ -161,14 +162,14 @@ class SceneStorm(
             0.0f,
             0.0f
         )
-        if (!this.pref_flashLights || this.lightFlashTime <= 0.0f) {
+        if (!this.flashLights || this.lightFlashTime <= 0.0f) {
             gl.glEnable(GL10.GL_LIGHTING)
             gl.glEnable(GL10.GL_LIGHT1)
-            light1_ambientLight[0] = v_light1_ambientLight.r
-            light1_ambientLight[1] = v_light1_ambientLight.g
-            light1_ambientLight[2] = v_light1_ambientLight.b
-            light1_ambientLight[3] = v_light1_ambientLight.a
-            gl.glLightfv(GL10.GL_LIGHT1, GL10.GL_AMBIENT, this.light1_ambientLight, 0)
+            lightAmbientLight[0] = lightAmbientLightColor.r
+            lightAmbientLight[1] = lightAmbientLightColor.g
+            lightAmbientLight[2] = lightAmbientLightColor.b
+            lightAmbientLight[3] = lightAmbientLightColor.a
+            gl.glLightfv(GL10.GL_LIGHT1, GL10.GL_AMBIENT, this.lightAmbientLight, 0)
         }
         val mesh = models[R.raw.plane_16x16]
         mesh.render()
@@ -178,7 +179,7 @@ class SceneStorm(
         gl.glPopMatrix()
     }
 
-    private fun renderRain(gl: GL10, timeDelta: Float) {
+    private fun renderRain(timeDelta: Float) {
         if (this.particleRain == null) {
             this.particleRain = ParticleRain(models, textures, rainDensity)
         }
@@ -193,7 +194,7 @@ class SceneStorm(
     }
 
     private fun spawnClouds(force: Boolean) {
-        spawnClouds(this.pref_numClouds, force)
+        spawnClouds(this.numClouds, force)
     }
 
     private fun spawnClouds(clouds: Int, force: Boolean) {
@@ -234,7 +235,7 @@ class SceneStorm(
     }
 
     private fun spawnLightning() {
-        if (this.pref_randomBoltColor) {
+        if (this.randomBoltColor) {
             GlobalRand.randomNormalizedVector(pref_boltEngineColor)
         }
         val lightning = ThingLightning(models, textures, pref_boltEngineColor)
@@ -253,31 +254,31 @@ class SceneStorm(
     }
 
     private fun checkForLightning(timeDelta: Float) {
-        if (GlobalRand.floatRange(0.0f, this.pref_boltFrequency * 0.75f) < timeDelta) {
+        if (GlobalRand.floatRange(0.0f, this.boltFrequency * 0.75f) < timeDelta) {
             spawnLightning()
         }
     }
 
-    private fun updateLightValues(gl: GL10, timeDelta: Float) {
+    private fun updateLightValues(timeDelta: Float) {
         val lightPosX: Float = GlobalTime.Companion.waveCos(0.0f, 500.0f, 0.0f, 0.005f)
-        if (!this.pref_flashLights || this.lightFlashTime <= 0.0f) {
-            light_position[0] = lightPosX
-            gl.glLightfv(GL10.GL_COLOR_BUFFER_BIT, 4610, this.light_specularLight, 0)
+        if (!this.flashLights || this.lightFlashTime <= 0.0f) {
+            possition[0] = lightPosX
+            gl.glLightfv(GL10.GL_COLOR_BUFFER_BIT, 4610, this.specularLight, 0)
         } else {
             val flashRemaining = this.lightFlashTime / 0.25f
-            light_position[0] =
+            possition[0] =
                 (this.lightFlashX * flashRemaining) + ((1.0f - flashRemaining) * lightPosX)
-            light_flashColor[0] = pref_boltEngineColor.r
-            light_flashColor[1] = pref_boltEngineColor.g
-            light_flashColor[2] = pref_boltEngineColor.b
-            gl.glLightfv(GL10.GL_COLOR_BUFFER_BIT, 4610, this.light_flashColor, 0)
+            flashColor[0] = pref_boltEngineColor.r
+            flashColor[1] = pref_boltEngineColor.g
+            flashColor[2] = pref_boltEngineColor.b
+            gl.glLightfv(GL10.GL_COLOR_BUFFER_BIT, 4610, this.flashColor, 0)
             this.lightFlashTime -= timeDelta
         }
-        light_position[1] = 50.0f
-        light_position[2] = GlobalTime.Companion.waveSin(0.0f, 500.0f, 0.0f, 0.005f)
-        gl.glLightfv(GL10.GL_COLOR_BUFFER_BIT, 4608, this.light_ambientLight, 0)
-        gl.glLightfv(GL10.GL_COLOR_BUFFER_BIT, 4609, this.pref_diffuseLight, 0)
-        gl.glLightfv(GL10.GL_COLOR_BUFFER_BIT, 4611, this.light_position, 0)
+        possition[1] = 50.0f
+        possition[2] = GlobalTime.Companion.waveSin(0.0f, 500.0f, 0.0f, 0.005f)
+        gl.glLightfv(GL10.GL_COLOR_BUFFER_BIT, 4608, this.ambientLight, 0)
+        gl.glLightfv(GL10.GL_COLOR_BUFFER_BIT, 4609, this.diffuseLight, 0)
+        gl.glLightfv(GL10.GL_COLOR_BUFFER_BIT, 4611, this.possition, 0)
     }
 
     companion object {

@@ -2,19 +2,23 @@ package io.github.gmazzo.android.livewallpaper.weather.wallpaper
 
 import android.content.res.Resources
 import androidx.annotation.RawRes
+import io.github.gmazzo.android.livewallpaper.weather.OpenGLScoped
 import java.io.Closeable
 import java.io.DataInputStream
 import java.io.InputStream
 import java.nio.charset.Charset
+import javax.inject.Inject
 import javax.microedition.khronos.opengles.GL11
 import javax.microedition.khronos.opengles.GL11.GL_ARRAY_BUFFER
 import javax.microedition.khronos.opengles.GL11.GL_ELEMENT_ARRAY_BUFFER
 import javax.microedition.khronos.opengles.GL11.GL_STATIC_DRAW
 
-class Models(
+@OpenGLScoped
+class Models @Inject constructor(
     private val resources: Resources,
     private val gl: GL11
 ) : Closeable {
+
     private val models = mutableMapOf<Int, Model>()
 
     @Synchronized

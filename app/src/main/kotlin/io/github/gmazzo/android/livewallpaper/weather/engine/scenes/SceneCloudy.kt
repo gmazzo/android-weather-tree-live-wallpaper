@@ -3,8 +3,15 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures
+import javax.inject.Inject
+import javax.microedition.khronos.opengles.GL11
 
-class SceneCloudy(
+class SceneCloudy @Inject constructor(
+    gl: GL11,
     models: Models,
     textures: Textures,
-) : SceneClear(models, textures, R.drawable.bg1)
+) : SceneClear(gl, models, textures) {
+
+    override val backgroundId = R.drawable.bg1
+
+}
