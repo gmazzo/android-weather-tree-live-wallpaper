@@ -2,13 +2,14 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.things
 
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
-import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
+import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.Scene.Companion.todEngineColorFinal
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneClear.Companion.CLOUD_X_RANGE
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import javax.microedition.khronos.opengles.GL10
 import kotlin.math.abs
+import kotlin.random.Random
 
 class ThingCloud(
     models: Models,
@@ -27,9 +28,9 @@ class ThingCloud(
 
     fun randomizeScale() {
         scale.set(
-            3.5f + GlobalRand.floatRange(0.0f, 2.0f),
+            3.5f + Random.nextFloat(0.0f, 2.0f),
             3.0f,
-            3.5f + GlobalRand.floatRange(0.0f, 2.0f)
+            3.5f + Random.nextFloat(0.0f, 2.0f)
         )
     }
 
@@ -48,7 +49,7 @@ class ThingCloud(
         super.update(timeDelta)
         val rangX = calculateCloudRangeX()
         if (origin.x > rangX) {
-            origin.x = GlobalRand.floatRange((-rangX) - 5.0f, (-rangX) + 5.0f)
+            origin.x = Random.nextFloat((-rangX) - 5.0f, (-rangX) + 5.0f)
             engineColor.set(0)
             sTimeElapsed = 0.0f
             randomizeScale()

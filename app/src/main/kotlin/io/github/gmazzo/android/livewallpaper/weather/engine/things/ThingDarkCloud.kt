@@ -2,13 +2,14 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.things
 
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
-import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
+import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneClear.Companion.CLOUD_X_RANGE
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 import kotlin.math.abs
+import kotlin.random.Random
 
 class ThingDarkCloud(
     models: Models,
@@ -31,9 +32,9 @@ class ThingDarkCloud(
 
     fun randomizeScale() {
         scale.set(
-            3.5f + GlobalRand.floatRange(0.0f, 2.0f),
+            3.5f + Random.nextFloat(0.0f, 2.0f),
             3.0f,
-            3.5f + GlobalRand.floatRange(0.0f, 2.0f)
+            3.5f + Random.nextFloat(0.0f, 2.0f)
         )
     }
 
@@ -91,7 +92,7 @@ class ThingDarkCloud(
             if (flashIntensity > 0.0f) {
                 flashIntensity -= 1.25f * timeDelta
             }
-            if (flashIntensity <= 0.0f && GlobalRand.floatRange(0.0f, 4.5f) < timeDelta) {
+            if (flashIntensity <= 0.0f && Random.nextFloat(0.0f, 4.5f) < timeDelta) {
                 flashIntensity = 0.5f
             }
         }

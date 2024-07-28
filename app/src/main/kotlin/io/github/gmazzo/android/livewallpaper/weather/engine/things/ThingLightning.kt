@@ -2,10 +2,10 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.things
 
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
-import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import javax.microedition.khronos.opengles.GL10
+import kotlin.random.Random
 
 class ThingLightning(
     models: Models,
@@ -14,7 +14,7 @@ class ThingLightning(
 ) : SimpleThing(
     models,
     textures,
-    MODELS[GlobalRand.intRange(0, MODELS.size)],
+    MODELS[Random.nextInt(MODELS.size)],
     R.raw.lightning_pieces_core
 ) {
 

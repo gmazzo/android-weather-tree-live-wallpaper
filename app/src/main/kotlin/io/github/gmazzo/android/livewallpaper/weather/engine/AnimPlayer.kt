@@ -2,38 +2,30 @@ package io.github.gmazzo.android.livewallpaper.weather.engine
 
 import android.util.Log
 
-class AnimPlayer {
+class AnimPlayer(first: Int, last: Int, duration: Float, loop: Boolean) {
     var blendFrame: Int = 0
         private set
     var blendFrameAmount: Float = 0.0f
         private set
     var currentFrame: Int = 0
         private set
-    var firstFrame: Int = 0
+    var firstFrame: Int = first
         private set
-    var lastFrame: Int = 19
+    var lastFrame: Int = last
         private set
-    private var half_frame_time = 0f
-    private var isLooping = true
+    private var halfFrameTime = 0f
+    private var isLooping = loop
     private var isPaused = false
     private var numFrames = 20
-    var duration: Float = 1.0f
+    var duration: Float = duration
         private set
     private var sTimeElapsed = 0.0f
     var count: Int = 0
         private set
 
-    // TODO temporary workaround
-    @Deprecated("")
-    constructor()
-
-    constructor(first: Int, last: Int, duration: Float, loop: Boolean) {
-        this.firstFrame = first
-        this.lastFrame = last
-        this.duration = duration
-        this.isLooping = loop
+    init {
         this.numFrames = (this.lastFrame - this.firstFrame) + 1
-        this.half_frame_time = (this.duration / (numFrames.toFloat())) * 0.5f
+        this.halfFrameTime = (this.duration / (numFrames.toFloat())) * 0.5f
         if (this.duration <= 0.0f) {
             Log.v(
                 TAG,
@@ -58,10 +50,6 @@ class AnimPlayer {
         return ((f.toDouble()) + 0.5).toInt()
     }
 
-    fun randomizeCurrentFrame() {
-        this.sTimeElapsed = GlobalRand.floatRange(0.0f, this.duration)
-    }
-
     fun reset() {
         this.sTimeElapsed = 0.0f
         this.count = 0
@@ -81,7 +69,7 @@ class AnimPlayer {
     fun update(timeDelta: Float) {
         if (!this.isPaused) {
             this.sTimeElapsed += timeDelta
-            if (this.sTimeElapsed < this.duration + this.half_frame_time) {
+            if (this.sTimeElapsed < this.duration + this.halfFrameTime) {
                 val framesPassed = ((numFrames.toFloat()) * this.sTimeElapsed) / this.duration
                 val currentFrame = quickRound(framesPassed)
                 this.currentFrame = this.firstFrame + currentFrame
@@ -120,7 +108,7 @@ class AnimPlayer {
                 }
             } else if (this.isLooping) {
                 this.sTimeElapsed =
-                    (this.sTimeElapsed - this.duration) + (this.half_frame_time * 2.0f)
+                    (this.sTimeElapsed - this.duration) + (this.halfFrameTime * 2.0f)
                 count++
             } else {
                 this.currentFrame = this.lastFrame

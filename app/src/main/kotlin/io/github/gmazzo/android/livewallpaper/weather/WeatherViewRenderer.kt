@@ -9,10 +9,10 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.EntryPoint
 import dagger.hilt.EntryPoints
 import dagger.hilt.InstallIn
-import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
+import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.Scene
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneFactory
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
@@ -28,6 +28,7 @@ import javax.inject.Named
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
+import kotlin.random.Random
 
 internal class WeatherViewRenderer @AssistedInject constructor(
     private val openGLBuilder: OpenGLComponent.Builder,
@@ -189,7 +190,7 @@ internal class WeatherViewRenderer @AssistedInject constructor(
 
     fun setTouchPos(x: Float, y: Float) {
         val vPos = Vector()
-        val depth = GlobalRand.floatRange(35.0f, 68.0f) - cameraPos.y
+        val depth = Random.nextFloat(35.0f, 68.0f) - cameraPos.y
         val ratioX = (cameraFOV * (screenWidth / screenHeight)) * 0.01111111f
         val z =
             (cameraFOV * 0.01111111f) * ((((1.0f - (y / screenHeight)) - 0.5f) * 2.0f) * depth)

@@ -3,10 +3,10 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.WeatherType
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
-import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
+import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.particles.ParticleSnow
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingCloud
@@ -14,6 +14,7 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingWispy
 import javax.inject.Inject
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
+import kotlin.random.Random
 
 class SceneSnow @Inject constructor(
     gl: GL11,
@@ -106,13 +107,13 @@ class SceneSnow @Inject constructor(
         this.reloadAssets = true
     }
 
-    private fun spawnClouds(num_clouds: Int, num_wisps: Int, force: Boolean) {
+    private fun spawnClouds(numClouds: Int, numWisps: Int, force: Boolean) {
         val cloudsExist = thingManager.countByTargetname("cloud") != 0
         if (force || !cloudsExist) {
             thingManager.clearByTargetname("cloud")
             thingManager.clearByTargetname("wispy")
-            val cloudDepthList = FloatArray(num_clouds)
-            val cloudDepthStep = 131.25f / (num_clouds.toFloat())
+            val cloudDepthList = FloatArray(numClouds)
+            val cloudDepthStep = 131.25f / (numClouds.toFloat())
             var i = 0
             while (i < cloudDepthList.size) {
                 cloudDepthList[i] = ((i.toFloat()) * cloudDepthStep) + 43.75f
@@ -121,7 +122,7 @@ class SceneSnow @Inject constructor(
             i = 0
             while (i < cloudDepthList.size) {
                 val f4 = cloudDepthList[i]
-                val i2 = GlobalRand.intRange(0, cloudDepthList.size)
+                val i2 = Random.nextInt(cloudDepthList.size)
                 cloudDepthList[i] = cloudDepthList[i2]
                 cloudDepthList[i2] = f4
                 i++
@@ -130,12 +131,12 @@ class SceneSnow @Inject constructor(
             while (i < cloudDepthList.size) {
                 val cloud = ThingCloud(models, textures, i)
                 cloud.randomizeScale()
-                if (GlobalRand.intRange(0, 2) == 0) {
+                if (Random.nextInt(2) == 0) {
                     cloud.scale.x *= -1.0f
                 }
-                cloud.origin.x = ((i.toFloat()) * (90.0f / (num_clouds.toFloat()))) - 0.099609375f
+                cloud.origin.x = ((i.toFloat()) * (90.0f / (numClouds.toFloat()))) - 0.099609375f
                 cloud.origin.y = cloudDepthList[i]
-                cloud.origin.z = GlobalRand.floatRange(-20.0f, -10.0f)
+                cloud.origin.z = Random.nextFloat(-20.0f, -10.0f)
                 cloud.targetName = "cloud"
                 cloud.velocity = Vector(pref_windSpeed * 1.5f, 0.0f, 0.0f)
                 thingManager.add(cloud)
@@ -147,13 +148,13 @@ class SceneSnow @Inject constructor(
                 wispy.targetName = "wispy"
                 wispy.velocity = Vector(pref_windSpeed * 1.5f, 0.0f, 0.0f)
                 wispy.scale.set(
-                    GlobalRand.floatRange(1.0f, 3.0f),
+                    Random.nextFloat(1.0f, 3.0f),
                     1.0f,
-                    GlobalRand.floatRange(1.0f, 1.5f)
+                    Random.nextFloat(1.0f, 1.5f)
                 )
-                wispy.origin.x = ((i.toFloat()) * (120.0f / (num_wisps.toFloat()))) - 0.0703125f
-                wispy.origin.y = GlobalRand.floatRange(87.5f, CLOUD_START_DISTANCE)
-                wispy.origin.z = GlobalRand.floatRange(-40.0f, -20.0f)
+                wispy.origin.x = ((i.toFloat()) * (120.0f / (numWisps.toFloat()))) - 0.0703125f
+                wispy.origin.y = Random.nextFloat(87.5f, CLOUD_START_DISTANCE)
+                wispy.origin.z = Random.nextFloat(-40.0f, -20.0f)
                 thingManager.add(wispy)
                 i++
             }
@@ -177,7 +178,7 @@ class SceneSnow @Inject constructor(
 
     private fun renderSnow(timeDelta: Float) {
         particleSnow.update(timeDelta)
-        particleSnow.render(gl as GL11, this.snowPos1)
+        particleSnow.render(gl, this.snowPos1)
         if (this.snowDensity > 1) {
             particleSnow.render(gl, this.snowPos2)
         }

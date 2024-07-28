@@ -5,7 +5,6 @@ import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.WeatherType
 import io.github.gmazzo.android.livewallpaper.weather.engine.AnimPlayer
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
-import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.ThingManager
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.AnimatedModel
@@ -14,6 +13,7 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.sky_manager.TimeOfDay
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
+import kotlin.random.Random
 
 abstract class Scene(
     protected val gl: GL11,
@@ -77,7 +77,7 @@ abstract class Scene(
             this.treesAnimateDelay -= timeDelta
             if (this.treesAnimateDelay <= 0.0f) {
                 this.treesAnimateDelay =
-                    this.treeAnimateDelayMin + (this.treeAnimateDelayRange * GlobalRand.rand.nextFloat())
+                    this.treeAnimateDelayMin + (this.treeAnimateDelayRange * Random.nextFloat())
                 treesAnim.reset()
             }
         }

@@ -1,14 +1,15 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.particles
 
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
-import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Mesh
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Model
+import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Texture
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 import kotlin.math.acos
+import kotlin.random.Random
 
 open class ParticleSystem(
     protected val model: Model,
@@ -190,13 +191,13 @@ open class ParticleSystem(
         var rY = 0.0f
         var rZ = 0.0f
         if (spawnRangeX > 0.01f) {
-            rX = GlobalRand.floatRange(-spawnRangeX, spawnRangeX)
+            rX = Random.nextFloat(-spawnRangeX, spawnRangeX)
         }
         if (spawnRangeY > 0.01f) {
-            rY = GlobalRand.floatRange(-spawnRangeY, spawnRangeY)
+            rY = Random.nextFloat(-spawnRangeY, spawnRangeY)
         }
         if (spawnRangeZ > 0.01f) {
-            rZ = GlobalRand.floatRange(-spawnRangeZ, spawnRangeZ)
+            rZ = Random.nextFloat(-spawnRangeZ, spawnRangeZ)
         }
         particle.modifyPosition(rX, rY, rZ)
         particle.alive = true
@@ -251,7 +252,7 @@ open class ParticleSystem(
             while (this._timeSinceLastSpawn + this._nextSpawnRateVariance > this.spawnRate) {
                 this._timeSinceLastSpawn -= this.spawnRate + this._nextSpawnRateVariance
                 this._nextSpawnRateVariance =
-                    GlobalRand.floatRange(-this.spawnRateVariance, this.spawnRateVariance)
+                    Random.nextFloat(-this.spawnRateVariance, this.spawnRateVariance)
                 createNew++
             }
         }

@@ -1,11 +1,12 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.particles
 
 import io.github.gmazzo.android.livewallpaper.weather.R
-import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
+import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import javax.inject.Inject
 import javax.microedition.khronos.opengles.GL10
+import kotlin.random.Random
 
 class ParticleRain @Inject constructor(
     models: Models,
@@ -24,10 +25,10 @@ class ParticleRain @Inject constructor(
     override fun particleSetup(particle: Particle?) {
         super.particleSetup(particle)
         particle!!.lifetime = 1.0f
-        val startScale = GlobalRand.floatRange(1.0f, 1.5f)
+        val startScale = Random.nextFloat(1.0f, 1.5f)
         particle.startScale.set(startScale, startScale, startScale)
         particle.destScale.set(startScale, startScale, startScale)
-        val velocity = GlobalRand.floatRange(0.95f, 1.05f)
+        val velocity = Random.nextFloat(0.95f, 1.05f)
         particle.startVelocity.set(8.0f, 0.0f, -15.0f)
         particle.destVelocity.set(9.45f * velocity, 0.0f, -35.0f * velocity)
     }

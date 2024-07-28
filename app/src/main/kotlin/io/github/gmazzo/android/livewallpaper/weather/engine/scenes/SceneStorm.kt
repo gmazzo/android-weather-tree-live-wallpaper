@@ -3,10 +3,11 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.WeatherType
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
-import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
+import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
+import io.github.gmazzo.android.livewallpaper.weather.engine.normalizedRandom
 import io.github.gmazzo.android.livewallpaper.weather.engine.particles.ParticleRain
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingDarkCloud
@@ -15,6 +16,7 @@ import io.github.gmazzo.android.livewallpaper.weather.sky_manager.TimeOfDay
 import javax.inject.Inject
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
+import kotlin.random.Random
 
 class SceneStorm @Inject constructor(
     gl: GL11,
@@ -75,7 +77,7 @@ class SceneStorm @Inject constructor(
     }
 
     private fun boltColorFromPrefs() {
-        pref_boltEngineColor.set("1 1 1 1", 0.0f, 1.0f)
+        boltEngineColor.set("1 1 1 1", 0.0f, 1.0f)
     }
 
     private fun boltFrequencyFromPrefs() {
@@ -189,7 +191,7 @@ class SceneStorm @Inject constructor(
         gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
         particleRain!!.update(timeDelta)
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ZERO)
-        particleRain!!.render(gl as GL11, this.particleRainOrigin)
+        particleRain!!.render(gl, this.particleRainOrigin)
         gl.glPopMatrix()
     }
 
@@ -211,7 +213,7 @@ class SceneStorm @Inject constructor(
             i = 0
             while (i < cloudDepthList.size) {
                 val f4 = cloudDepthList[i]
-                val i2 = GlobalRand.intRange(0, cloudDepthList.size)
+                val i2 = Random.nextInt(cloudDepthList.size)
                 cloudDepthList[i] = cloudDepthList[i2]
                 cloudDepthList[i2] = f4
                 i++
@@ -220,12 +222,12 @@ class SceneStorm @Inject constructor(
             while (i < cloudDepthList.size) {
                 val cloud = ThingDarkCloud(models, textures, i, true)
                 cloud.randomizeScale()
-                if (GlobalRand.intRange(0, 2) == 0) {
+                if (Random.nextInt(2) == 0) {
                     cloud.scale.x *= -1.0f
                 }
                 cloud.origin.x = ((i.toFloat()) * (90.0f / clouds)) - 0.099609375f
                 cloud.origin.y = cloudDepthList[i]
-                cloud.origin.z = GlobalRand.floatRange(-20.0f, -10.0f)
+                cloud.origin.z = Random.nextFloat(-20.0f, -10.0f)
                 cloud.targetName = "dark_cloud"
                 cloud.velocity = Vector(pref_windSpeed * 1.5f, 0.0f, 0.0f)
                 thingManager.add(cloud)
@@ -236,16 +238,16 @@ class SceneStorm @Inject constructor(
 
     private fun spawnLightning() {
         if (this.randomBoltColor) {
-            GlobalRand.randomNormalizedVector(pref_boltEngineColor)
+            boltEngineColor.normalizedRandom()
         }
-        val lightning = ThingLightning(models, textures, pref_boltEngineColor)
+        val lightning = ThingLightning(models, textures, boltEngineColor)
         lightning.origin.set(
-            GlobalRand.floatRange(-25.0f, 25.0f),
-            GlobalRand.floatRange(95.0f, 168.0f),
+            Random.nextFloat(-25.0f, 25.0f),
+            Random.nextFloat(95.0f, 168.0f),
             20.0f
         )
-        if (GlobalRand.intRange(0, 2) == 0) {
-            lightning.scale.z = lightning.scale.z * -1.0f
+        if (Random.nextInt(2) == 0) {
+            lightning.scale.z *= -1.0f
         }
         thingManager.add(lightning)
         thingManager.sortByY()
@@ -254,7 +256,7 @@ class SceneStorm @Inject constructor(
     }
 
     private fun checkForLightning(timeDelta: Float) {
-        if (GlobalRand.floatRange(0.0f, this.boltFrequency * 0.75f) < timeDelta) {
+        if (Random.nextFloat(0.0f, this.boltFrequency * 0.75f) < timeDelta) {
             spawnLightning()
         }
     }
@@ -268,9 +270,9 @@ class SceneStorm @Inject constructor(
             val flashRemaining = this.lightFlashTime / 0.25f
             possition[0] =
                 (this.lightFlashX * flashRemaining) + ((1.0f - flashRemaining) * lightPosX)
-            flashColor[0] = pref_boltEngineColor.r
-            flashColor[1] = pref_boltEngineColor.g
-            flashColor[2] = pref_boltEngineColor.b
+            flashColor[0] = boltEngineColor.r
+            flashColor[1] = boltEngineColor.g
+            flashColor[2] = boltEngineColor.b
             gl.glLightfv(GL10.GL_COLOR_BUFFER_BIT, 4610, this.flashColor, 0)
             this.lightFlashTime -= timeDelta
         }
@@ -283,6 +285,6 @@ class SceneStorm @Inject constructor(
 
     companion object {
         private const val TAG = "Storm"
-        var pref_boltEngineColor: EngineColor = EngineColor(1.0f, 1.0f, 1.0f, 1.0f)
+        var boltEngineColor: EngineColor = EngineColor(1.0f, 1.0f, 1.0f, 1.0f)
     }
 }
