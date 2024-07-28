@@ -3,9 +3,9 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.things
 import androidx.annotation.RawRes
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
+import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.particles.ParticleSystem
-import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models
-import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Texture
+import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Texture
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 import kotlin.math.abs

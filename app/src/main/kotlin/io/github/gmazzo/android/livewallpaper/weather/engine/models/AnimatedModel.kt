@@ -1,7 +1,8 @@
-package io.github.gmazzo.android.livewallpaper.weather.wallpaper
+package io.github.gmazzo.android.livewallpaper.weather.engine.models
 
 import androidx.annotation.RawRes
 import io.github.gmazzo.android.livewallpaper.weather.engine.AnimPlayer
+import io.github.gmazzo.android.livewallpaper.weather.engine.textures.set
 import java.nio.FloatBuffer
 import javax.microedition.khronos.opengles.GL10.GL_FLOAT
 import javax.microedition.khronos.opengles.GL11

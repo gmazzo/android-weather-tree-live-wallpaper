@@ -3,8 +3,8 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.things
 import androidx.annotation.AnyRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.RawRes
-import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models
-import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures
+import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
+import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 
 abstract class SimpleThing(
     models: Models,

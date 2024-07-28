@@ -1,8 +1,11 @@
-package io.github.gmazzo.android.livewallpaper.weather.wallpaper
+package io.github.gmazzo.android.livewallpaper.weather.engine.models
 
 import android.content.res.Resources
 import androidx.annotation.RawRes
 import io.github.gmazzo.android.livewallpaper.weather.OpenGLScoped
+import io.github.gmazzo.android.livewallpaper.weather.engine.textures.asDirectFloatBuffer
+import io.github.gmazzo.android.livewallpaper.weather.engine.textures.asDirectShortBuffer
+import io.github.gmazzo.android.livewallpaper.weather.engine.textures.sizeInBytes
 import java.io.Closeable
 import java.io.DataInputStream
 import java.io.InputStream

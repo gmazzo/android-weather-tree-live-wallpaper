@@ -2,9 +2,9 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.things
 
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
+import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.Scene.Companion.todEngineColorFinal
-import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models
-import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures
+import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import javax.microedition.khronos.opengles.GL10
 
 class ThingWispy(

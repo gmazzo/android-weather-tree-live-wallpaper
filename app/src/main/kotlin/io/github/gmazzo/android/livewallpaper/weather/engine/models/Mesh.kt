@@ -1,5 +1,6 @@
-package io.github.gmazzo.android.livewallpaper.weather.engine
+package io.github.gmazzo.android.livewallpaper.weather.engine.models
 
+import android.util.Log
 import java.io.DataInputStream
 import java.io.IOException
 import java.io.InputStream
@@ -49,19 +50,6 @@ class Mesh {
             position[i * 3 + 1] = f1
             position[i * 3 + 2] = f2
         }
-
-        fun getNormal(vector: Vector, i: Int) {
-            if (i * 3 >= position.size) {
-                Utility.Logger.v(TAG, "ERROR: Tried to get tag normal on invalid frame $i")
-                vector.y = 0.0f
-                vector.x = 0.0f
-                vector.z = 1.0f
-                return
-            }
-            vector.x = normal[i * 3]
-            vector.y = normal[i * 3 + 1]
-            vector.z = normal[i * 3 + 2]
-        }
     }
 
     init {
@@ -90,7 +78,7 @@ class Mesh {
     ) {
         val useVertexBufferObjects = gl is GL11
         if (useVertexBufferObjects) {
-            Utility.Logger.v(TAG, " - using GL11 vertex buffer objects")
+            Log.v(TAG, " - using GL11 vertex buffer objects")
         }
         val iCapacity = indices.size
         this.numTriangles = indices.size / 3
@@ -98,7 +86,7 @@ class Mesh {
         this.numElements = num_elements
         if (willBeInterpolated) {
             this.originalVertexArray = vertexs
-            Utility.Logger.v(TAG, " - preparing for interpolated animation")
+            Log.v(TAG, " - preparing for interpolated animation")
         } else {
             this.originalVertexArray = null
         }
@@ -183,7 +171,7 @@ class Mesh {
         willBeInterpolated: Boolean
     ) {
         val tagList: HashMap<*, *> = HashMap<Any?, Any?>()
-        Utility.Logger.v(TAG, " - reading as binary")
+        Log.v(TAG, " - reading as binary")
         this.meshName = name
         val dataInputStream = DataInputStream(inputstream)
         val segchars = ByteArray(4)
@@ -194,7 +182,7 @@ class Mesh {
                     val fileVersion = dataInputStream.readInt()
                     val fileElements = dataInputStream.readInt()
                     val fileFrames = dataInputStream.readInt()
-                    Utility.Logger.v(
+                    Log.v(
                         TAG,
                         "version: $fileVersion elements: $fileElements frames: $fileFrames"
                     )
@@ -241,7 +229,7 @@ class Mesh {
                                         if (vertScale == 0) {
                                             vertScale = 128
                                         }
-                                        Utility.Logger.i(TAG, "vertScale=$vertScale")
+                                        Log.i(TAG, "vertScale=$vertScale")
                                         dataInputStream.skip(4)
                                         val n = numVertices * fileFrames
                                         curReadIndex = 0
@@ -317,38 +305,38 @@ class Mesh {
                                                 }
                                                 return
                                             }
-                                            Utility.Logger.v(TAG, " - invalid chunk tag: NORM")
+                                            Log.v(TAG, " - invalid chunk tag: NORM")
                                             return
                                         } catch (ex2: IOException) {
                                             ex2.printStackTrace()
                                             return
                                         }
                                     }
-                                    Utility.Logger.v(TAG, " - invalid chunk tag: BVRT")
+                                    Log.v(TAG, " - invalid chunk tag: BVRT")
                                     return
                                 } catch (ex22: IOException) {
                                     ex22.printStackTrace()
                                     return
                                 }
                             }
-                            Utility.Logger.v(TAG, " - invalid chunk tag: TEXT")
+                            Log.v(TAG, " - invalid chunk tag: TEXT")
                             return
                         } catch (ex222: IOException) {
                             ex222.printStackTrace()
                             return
                         }
                     }
-                    Utility.Logger.v(TAG, " - invalid chunk tag: WIND")
+                    Log.v(TAG, " - invalid chunk tag: WIND")
                     return
                 } catch (ex2222: IOException) {
-                    Utility.Logger.v(TAG, " - ERROR reading model WIND!")
+                    Log.v(TAG, " - ERROR reading model WIND!")
                     ex2222.printStackTrace()
                     return
                 }
             }
-            Utility.Logger.v(TAG, " - invalid chunk tag: BMDL")
+            Log.v(TAG, " - invalid chunk tag: BMDL")
         } catch (ex22222: IOException) {
-            Utility.Logger.v(TAG, " - ERROR reading model BMDL!")
+            Log.v(TAG, " - ERROR reading model BMDL!")
             ex22222.printStackTrace()
         }
     }
@@ -363,7 +351,7 @@ class Mesh {
     fun renderFrame(gl10: GL10, frameNum: Int) {
         var frameNum = frameNum
         if (frameNum >= frames.size || frameNum < 0) {
-            Utility.Logger.v(
+            Log.v(
                 TAG,
                 "ERROR: Mesh.renderFrame (" + this.meshName + ") given a frame outside of frames.length: " + frameNum
             )
@@ -400,7 +388,7 @@ class Mesh {
                 sb.append(this.meshName)
                 sb.append(") given a frame outside of frames.length: ")
                 sb.append(frameNum)
-                Utility.Logger.v(TAG, sb.toString())
+                Log.v(TAG, sb.toString())
                 frameNum = frames.size - 1
             }
             if (frameBlendNum >= frames.size || frameBlendNum < 0) {
@@ -408,12 +396,12 @@ class Mesh {
                 sb.append(this.meshName)
                 sb.append(") given a blendframe outside of frames.length: ")
                 sb.append(frameBlendNum)
-                Utility.Logger.v(TAG, sb.toString())
+                Log.v(TAG, sb.toString())
                 frameBlendNum = frames.size - 1
             }
             if (this.bufScratch == null) {
                 allocateScratchBuffers()
-                Utility.Logger.v(TAG, this.meshName + " allocated animation buffers")
+                Log.v(TAG, this.meshName + " allocated animation buffers")
             }
             val firstFrameOffset = (this.numElements * frameNum) * 3
             val blendFrameOffset = (this.numElements * frameBlendNum) * 3
@@ -513,7 +501,7 @@ class Mesh {
     fun renderFrame_gl11_setup(gl11: GL11, frameNum: Int) {
         var frameNum = frameNum
         if (frameNum >= frames.size || frameNum < 0) {
-            Utility.Logger.v(
+            Log.v(
                 TAG,
                 "ERROR: Mesh.renderFrame (" + this.meshName + ") given a frame outside of frames.length: " + frameNum
             )

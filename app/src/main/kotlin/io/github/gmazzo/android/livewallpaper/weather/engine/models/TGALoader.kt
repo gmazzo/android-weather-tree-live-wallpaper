@@ -2,8 +2,9 @@
 // Source code recreated from a .class file by IntelliJ IDEA
 // (powered by Fernflower decompiler)
 //
-package io.github.gmazzo.android.livewallpaper.weather.engine
+package io.github.gmazzo.android.livewallpaper.weather.engine.models
 
+import android.util.Log
 import java.io.IOException
 import java.io.InputStream
 import java.nio.ByteBuffer
@@ -13,7 +14,7 @@ import java.nio.channels.ReadableByteChannel
 internal class TGALoader {
     @Throws(IOException::class)
     private fun loadCompressedTGA(var1: ReadableByteChannel): TGA {
-        Utility.Logger.v("GL Engine", " - reading compressed tga")
+        Log.v("GL Engine", " - reading compressed tga")
         val var9 = TGA()
         this.readBuffer(var1, var9.header)
         var9.width = (this.unsignedByteToInt(var9.header[10]) shl 8) + this.unsignedByteToInt(
@@ -119,7 +120,7 @@ internal class TGALoader {
 
     @Throws(IOException::class)
     private fun loadUncompressedTGA(var1: ReadableByteChannel): TGA {
-        Utility.Logger.v("GL Engine", " - reading uncompressed tga")
+        Log.v("GL Engine", " - reading uncompressed tga")
         val var4 = TGA()
         this.readBuffer(var1, var4.header)
         var4.width = (this.unsignedByteToInt(var4.header[10]) shl 8) + this.unsignedByteToInt(
@@ -135,7 +136,7 @@ internal class TGALoader {
             var4.bytesPerPixel = var4.bpp / 8
             var4.imageSize = var4.bytesPerPixel * var4.width * var4.height
             var4.imageData = ByteBuffer.allocate(var4.imageSize)
-            Utility.Logger.v(
+            Log.v(
                 "GL Engine",
                 " - " + var4.width + "r" + var4.height + "r" + var4.bpp + "(" + var4.imageSize + ")"
             )

@@ -2,8 +2,8 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.particles
 
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand
-import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models
-import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures
+import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
+import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import javax.inject.Inject
 import javax.microedition.khronos.opengles.GL10
 

@@ -1,7 +1,7 @@
-package io.github.gmazzo.android.livewallpaper.weather.wallpaper
+package io.github.gmazzo.android.livewallpaper.weather.engine.models
 
 import androidx.annotation.RawRes
-import io.github.gmazzo.android.livewallpaper.weather.engine.Mesh
+import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Texture
 import javax.microedition.khronos.opengles.GL10.GL_FLOAT
 import javax.microedition.khronos.opengles.GL10.GL_MODULATE
 import javax.microedition.khronos.opengles.GL10.GL_TEXTURE0

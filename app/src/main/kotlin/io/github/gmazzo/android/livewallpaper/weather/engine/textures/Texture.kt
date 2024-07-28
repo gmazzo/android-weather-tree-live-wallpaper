@@ -1,4 +1,4 @@
-package io.github.gmazzo.android.livewallpaper.weather.wallpaper
+package io.github.gmazzo.android.livewallpaper.weather.engine.textures
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.RawRes

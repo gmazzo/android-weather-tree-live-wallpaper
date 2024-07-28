@@ -1,5 +1,7 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine
 
+import android.util.Log
+
 class AnimPlayer {
     var blendFrame: Int = 0
         private set
@@ -33,7 +35,7 @@ class AnimPlayer {
         this.numFrames = (this.lastFrame - this.firstFrame) + 1
         this.half_frame_time = (this.duration / (numFrames.toFloat())) * 0.5f
         if (this.duration <= 0.0f) {
-            Utility.Logger.v(
+            Log.v(
                 TAG,
                 "AnimPlayer WARNING: Duration shouldn't be zero, setting to 0.01f"
             )

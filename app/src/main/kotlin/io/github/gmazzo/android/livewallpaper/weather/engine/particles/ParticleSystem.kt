@@ -2,10 +2,10 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.particles
 
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand
-import io.github.gmazzo.android.livewallpaper.weather.engine.Mesh
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
-import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Model
-import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Texture
+import io.github.gmazzo.android.livewallpaper.weather.engine.models.Mesh
+import io.github.gmazzo.android.livewallpaper.weather.engine.models.Model
+import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Texture
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 import kotlin.math.acos
