@@ -27,13 +27,12 @@ import kotlin.math.absoluteValue
 
 @OpenGLScoped
 class Textures @Inject constructor(
+    private val gl: GL11,
     private val resources: Resources,
-    private val gl: GL11
 ) : Closeable {
 
     private val textures = mutableMapOf<Int, Texture>()
 
-    @Synchronized
     operator fun get(@DrawableRes @RawRes resId: Int) = textures.getOrPut(resId) {
         gl.glEnable(GL_TEXTURE_2D)
 
@@ -115,7 +114,6 @@ class Textures @Inject constructor(
         }
     }
 
-    @Synchronized
     override fun close() {
         val ids = textures.values.map(Texture::glId).toIntArray()
         textures.clear()

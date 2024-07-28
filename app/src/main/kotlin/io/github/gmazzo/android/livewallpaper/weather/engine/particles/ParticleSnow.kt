@@ -2,19 +2,26 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.particles
 
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.WeatherViewRenderer.Companion.homeOffsetPercentage
+import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
-import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.Scene
-import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneSnow
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import javax.inject.Inject
+import javax.inject.Named
 import javax.microedition.khronos.opengles.GL10
+import javax.microedition.khronos.opengles.GL11
 import kotlin.random.Random
 
 class ParticleSnow @Inject constructor(
+    gl: GL11,
     models: Models,
     textures: Textures,
-) : ParticleSystem(models[R.raw.flakes], textures[R.raw.p_snow1]) {
+    @Named("timeOfDay") private val timeOfDayColor: EngineColor,
+) : ParticleSystem(
+    gl,
+    models[R.raw.flakes],
+    textures[if (Random.nextBoolean()) R.raw.p_snow1 else R.raw.p_snow2],
+) {
 
     init {
         this.spawnRate = 0.25f
@@ -31,13 +38,13 @@ class ParticleSnow @Inject constructor(
         particle.startScale.set(Random.nextFloat(0.15f, 0.3f))
         particle.destScale.set(Random.nextFloat(0.15f, 0.3f))
         val randX1: Float =
-            (Random.nextFloat(-6.0f, 6.0f) * SceneSnow.Companion.pref_snowNoise) + bias
+            (Random.nextFloat(-6.0f, 6.0f) * SNOW_NOISE) + bias
         val randX2: Float =
-            (Random.nextFloat(-8.0f, 8.0f) * SceneSnow.Companion.pref_snowNoise) + bias
+            (Random.nextFloat(-8.0f, 8.0f) * SNOW_NOISE) + bias
         val randY1 = Random.nextFloat(-2.0f, 2.0f)
         val randY2 = Random.nextFloat(-2.0f, 2.0f)
         val randZ =
-            Random.nextFloat(-(3.0f + (SceneSnow.Companion.pref_snowGravity * 1.5f)), -3.0f)
+            Random.nextFloat(-(3.0f + (SNOW_GRAVITY * 1.5f)), -3.0f)
         particle.startVelocity.set(randX1, randY1, randZ)
         particle.destVelocity.set(randX2, randY2, randZ)
     }
@@ -52,16 +59,22 @@ class ParticleSnow @Inject constructor(
     override fun update(timeDelta: Float) {
         super.update(timeDelta)
         startEngineColor.set(
-            Scene.todEngineColorFinal!!.r,
-            Scene.todEngineColorFinal!!.g,
-            Scene.todEngineColorFinal!!.b,
+            timeOfDayColor.r,
+            timeOfDayColor.g,
+            timeOfDayColor.b,
             3.0f
         )
         destEngineColor.set(
-            Scene.todEngineColorFinal!!.r,
-            Scene.todEngineColorFinal!!.g,
-            Scene.todEngineColorFinal!!.b,
+            timeOfDayColor.r,
+            timeOfDayColor.g,
+            timeOfDayColor.b,
             0.0f
         )
     }
+
+    companion object {
+        private const val SNOW_NOISE = 7 * 0.1f
+        private const val SNOW_GRAVITY = 2 * 0.5f
+    }
+
 }

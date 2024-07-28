@@ -3,17 +3,22 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.things
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
-import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.Scene.Companion.todSunPosition
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Texture
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.sky_manager.SkyManager
+import kotlinx.coroutines.flow.MutableStateFlow
+import javax.inject.Inject
+import javax.inject.Named
 import javax.microedition.khronos.opengles.GL10
+import javax.microedition.khronos.opengles.GL11
 import kotlin.math.roundToInt
 
-class ThingMoon(
+class ThingMoon @Inject constructor(
+    gl: GL11,
     models: Models,
     private val textures: Textures,
-) : Thing(models, R.raw.plane_16x16) {
+    @Named("sunPosition") private val todSunPosition: MutableStateFlow<Float>,
+) : Thing(gl, models, R.raw.plane_16x16) {
 
     override val engineColor = EngineColor(1.0f, 1.0f, 1.0f, 1.0f)
 
@@ -21,17 +26,18 @@ class ThingMoon(
 
     private var phase = 0
 
-    override fun render(gl: GL10) {
+    override fun render() {
         if (texture === reload) {
             texture = textures[PHASES[phase]]
         }
         gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA)
-        super.render(gl)
+
+        super.render()
     }
 
     override fun update(timeDelta: Float) {
         super.update(timeDelta)
-        val position: Float = todSunPosition
+        val position: Float = todSunPosition.value
         if (position >= 0.0f) {
             scale.set(0.0f)
 

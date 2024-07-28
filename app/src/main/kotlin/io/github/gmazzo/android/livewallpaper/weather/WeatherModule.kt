@@ -8,6 +8,10 @@ import android.location.LocationManager
 import android.util.Log
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.core.content.getSystemService
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import androidx.work.WorkManager
@@ -16,7 +20,12 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.launch
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -24,6 +33,8 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object WeatherModule {
     private const val TAG = "WeatherModule"
+
+    private val settingLastWeather = stringPreferencesKey("weather")
 
     @Provides
     @Singleton
@@ -37,8 +48,20 @@ object WeatherModule {
 
     @Provides
     @Singleton
-    fun weatherConditions(): MutableStateFlow<WeatherConditions> =
-        MutableStateFlow(WeatherConditions())
+    fun weatherConditions(dataStore: DataStore<Preferences>): MutableStateFlow<WeatherConditions> =
+        MutableStateFlow(WeatherConditions()).also { flow ->
+            MainScope().launch(Dispatchers.Default) {
+                val current = dataStore.data.firstOrNull()?.get(settingLastWeather)
+                if (current != null) {
+                    flow.value = flow.value.copy(weatherType = WeatherType.valueOf(current))
+                }
+
+                flow.collectLatest { weather ->
+                    dataStore.edit { it[settingLastWeather] = weather.weatherType.name }
+                }
+            }
+
+        }
 
     @Provides
     @Singleton

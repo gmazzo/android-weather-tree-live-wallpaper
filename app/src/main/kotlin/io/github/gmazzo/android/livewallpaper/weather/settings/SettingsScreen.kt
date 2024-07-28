@@ -156,7 +156,7 @@ private fun DayTimeProgression(
     verticalAlignment = Alignment.CenterVertically,
     horizontalArrangement = Arrangement.spacedBy(margin, Alignment.CenterHorizontally)
 ) {
-    val color = MaterialTheme.colorScheme.surface.copy(alpha = opacity)
+    val color = MaterialTheme.colorScheme.primary.copy(alpha = opacity)
     val track = Modifier.background(color, MaterialTheme.shapes.large).height(2.dp)
 
     Icon(

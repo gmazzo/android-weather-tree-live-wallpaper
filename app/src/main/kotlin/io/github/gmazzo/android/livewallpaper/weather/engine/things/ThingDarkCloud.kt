@@ -1,22 +1,26 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.things
 
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
-import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneClear.Companion.CLOUD_X_RANGE
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
+import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingCloud.Companion.CLOUD_X_RANGE
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 import kotlin.math.abs
 import kotlin.random.Random
 
-class ThingDarkCloud(
+class ThingDarkCloud @AssistedInject constructor(
+    gl: GL11,
     models: Models,
     textures: Textures,
-    which: Int,
-    private val withFlare: Boolean
-) : SimpleThing(models, textures, MODELS[which % MODELS.size], TEXTURES[which % TEXTURES.size]) {
+    @Assisted which: Int,
+    @Assisted private val withFlare: Boolean,
+) : SimpleThing(gl, models, textures, MODELS[which % MODELS.size], TEXTURES[which % TEXTURES.size]) {
 
     override val engineColor = EngineColor(1.0f, 1.0f, 1.0f, 1.0f)
 
@@ -30,16 +34,7 @@ class ThingDarkCloud(
         )).toFloat()
     }
 
-    fun randomizeScale() {
-        scale.set(
-            3.5f + Random.nextFloat(0.0f, 2.0f),
-            3.0f,
-            3.5f + Random.nextFloat(0.0f, 2.0f)
-        )
-    }
-
-    override fun render(gl: GL10) {
-        particleSystem?.render(gl as GL11, origin)
+    override fun render() {
         gl.glBindTexture(GL10.GL_TEXTURE_2D, texture.glId)
 
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA)
@@ -83,8 +78,8 @@ class ThingDarkCloud(
         engineColor.r = 0.2f
         engineColor.g = 0.2f
         engineColor.b = 0.2f
-        if (sTimeElapsed < 2.0f) {
-            val alpha = sTimeElapsed * 0.5f
+        if (timeElapsed < 2.0f) {
+            val alpha = timeElapsed * 0.5f
             engineColor *= alpha
             engineColor.a = alpha
         }
@@ -96,6 +91,11 @@ class ThingDarkCloud(
                 flashIntensity = 0.5f
             }
         }
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(which: Int, withFlare: Boolean = true): ThingDarkCloud
     }
 
     companion object {

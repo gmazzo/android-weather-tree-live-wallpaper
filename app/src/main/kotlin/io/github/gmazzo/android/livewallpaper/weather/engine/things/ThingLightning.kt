@@ -4,25 +4,22 @@ import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
+import javax.inject.Inject
 import javax.microedition.khronos.opengles.GL10
+import javax.microedition.khronos.opengles.GL11
 import kotlin.random.Random
 
-class ThingLightning(
+class ThingLightning @Inject constructor(
+    gl: GL11,
     models: Models,
     textures: Textures,
-    color: EngineColor,
-) : SimpleThing(
-    models,
-    textures,
-    MODELS[Random.nextInt(MODELS.size)],
-    R.raw.lightning_pieces_core
-) {
+) : SimpleThing(gl, models, textures, MODELS[Random.nextInt(MODELS.size)], R.raw.lightning_pieces_core) {
 
-    override val engineColor = EngineColor(color.r, color.g, color.b, 1.0f)
+    override val engineColor = EngineColor(1f, 1f, 1f, 1.0f)
 
     private val glowTexture by lazy { textures[R.raw.lightning_pieces_glow] }
 
-    override fun render(gl: GL10) {
+    override fun render() {
         gl.glEnable(GL10.GL_LIGHTING)
         gl.glEnable(GL10.GL_COLOR_BUFFER_BIT)
 

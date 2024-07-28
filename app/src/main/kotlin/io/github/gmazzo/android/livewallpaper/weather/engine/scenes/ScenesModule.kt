@@ -5,6 +5,9 @@ import dagger.Provides
 import dagger.Reusable
 import dagger.hilt.InstallIn
 import io.github.gmazzo.android.livewallpaper.weather.OpenGLComponent
+import io.github.gmazzo.android.livewallpaper.weather.OpenGLScoped
+import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
+import javax.inject.Named
 import javax.inject.Provider
 
 @Module
@@ -20,15 +23,20 @@ internal object ScenesModule {
         snow: Provider<SceneSnow>,
         storm: Provider<SceneStorm>,
         fog: Provider<SceneFog>
-    ) = SceneFactory {
-        when (it) {
+    ) = SceneFactory { type, init ->
+        when (type) {
             SceneMode.CLEAR -> clear.get()
             SceneMode.CLOUDY -> cloudy.get()
             SceneMode.RAIN -> rain.get()
             SceneMode.SNOW -> snow.get()
             SceneMode.STORM -> storm.get()
             SceneMode.FOG -> fog.get()
-        }
+        }.apply(init)
     }
+
+    @Provides
+    @Named("timeOfDay")
+    @OpenGLScoped
+    fun timeOfDayColor() = EngineColor()
 
 }

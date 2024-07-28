@@ -3,22 +3,26 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.things
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
-import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.Scene.Companion.todEngineColorFinal
-import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.Scene.Companion.todSunPosition
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
+import kotlinx.coroutines.flow.MutableStateFlow
+import javax.inject.Inject
+import javax.inject.Named
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 
-class ThingSun(
+class ThingSun @Inject constructor(
+    gl: GL11,
     models: Models,
     textures: Textures,
-) : SimpleThing(models, textures, R.raw.plane_16x16, R.raw.sun) {
+    @Named("timeOfDay") private val timeOfDayColor: EngineColor,
+    @Named("sunPosition") private val todSunPosition: MutableStateFlow<Float>,
+) : SimpleThing(gl, models, textures, R.raw.plane_16x16, R.raw.sun) {
 
     override val engineColor = EngineColor(1.0f, 1.0f, 0.95f, 1.0f)
 
     private val sunBlend by lazy { textures[R.raw.sun_blend] }
 
-    override fun render(gl: GL10) {
+    override fun render() {
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_COLOR)
         gl.glColor4f(
             engineColor.r,
@@ -31,19 +35,15 @@ class ThingSun(
         gl.glLoadIdentity()
         gl.glTranslatef(origin.x, origin.y, origin.z)
         gl.glScalef(scale.x, scale.y, scale.z)
-        gl.glRotatef((sTimeElapsed * 12.0f) % 360.0f, 0.0f, 1.0f, 0.0f)
+        gl.glRotatef((timeElapsed * 12.0f) % 360.0f, 0.0f, 1.0f, 0.0f)
         gl.glMatrixMode(GL10.GL_TEXTURE)
         gl.glPushMatrix()
-        val f11 = (sTimeElapsed * 18.0f) % 360.0f
+
+        val angle = (timeElapsed * 18.0f) % 360.0f
         gl.glTranslatef(0.5f, 0.5f, 0.0f)
-        gl.glRotatef(f11, 0.0f, 0.0f, 1.0f)
+        gl.glRotatef(angle, 0.0f, 0.0f, 1.0f)
         gl.glTranslatef(-0.5f, -0.5f, 0.0f)
-        if (gl is GL11) {
-            model.renderFrameMultiTexture(sunBlend, texture, GL10.GL_MODULATE, false)
-        } else {
-            gl.glBindTexture(GL10.GL_TEXTURE0, texture.glId)
-            model.render()
-        }
+        model.renderFrameMultiTexture(sunBlend, texture, GL10.GL_MODULATE, false)
         gl.glPopMatrix()
         gl.glMatrixMode(GL10.GL_MODELVIEW)
         gl.glPopMatrix()
@@ -51,11 +51,13 @@ class ThingSun(
 
     override fun update(timeDelta: Float) {
         super.update(timeDelta)
-        val sunPos: Float = todSunPosition
+        val sunPos = todSunPosition.value
         var alpha = 0.0f
+
         if (sunPos > 0.0f) {
             scale.set(2.0f)
             val altitude = 175.0f * sunPos
+
             alpha = altitude / 25.0f
             if (alpha > 1.0f) {
                 alpha = 1.0f
@@ -68,7 +70,7 @@ class ThingSun(
             scale.set(0.0f)
         }
 
-        engineColor.set(todEngineColorFinal!!)
+        engineColor.set(timeOfDayColor)
         engineColor.a = alpha
     }
 

@@ -98,12 +98,11 @@ internal class WeatherViewRenderer @AssistedInject constructor(
     private fun onSceneChanged(previous: WeatherConditions?, current: WeatherConditions) {
         if (currentScene == null || previous?.weatherType?.scene != current.weatherType.scene) {
             currentScene?.unload()
-            currentScene = glContext.sceneFactory
-                .createScene(current.weatherType.scene)
-                .also { it.load() }
+            currentScene = glContext.sceneFactory.create(current.weatherType.scene) {
+                it.landscape = landscape
+                it.load(weatherConditions.value.weatherType)
+            }
         }
-        currentScene?.landscape = landscape
-        currentScene?.updateWeather(current.weatherType)
 
         Log.i(TAG, "Weather changed to $current, isDemoMode=$demoMode")
     }

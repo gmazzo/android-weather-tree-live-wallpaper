@@ -18,13 +18,12 @@ import javax.microedition.khronos.opengles.GL11.GL_STATIC_DRAW
 
 @OpenGLScoped
 class Models @Inject constructor(
+    private val gl: GL11,
     private val resources: Resources,
-    private val gl: GL11
 ) : Closeable {
 
     private val models = mutableMapOf<Int, Model>()
 
-    @Synchronized
     operator fun get(@RawRes rawId: Int) = models.getOrPut(rawId) {
         DataInputStream(resources.openRawResource(rawId)).use { input ->
             val buffer4 = ByteArray(4)
@@ -150,7 +149,6 @@ class Models @Inject constructor(
         }
     }
 
-    @Synchronized
     override fun close() {
         models.values.forEach(Model::unload)
         models.clear()

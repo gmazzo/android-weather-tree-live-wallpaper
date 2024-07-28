@@ -6,16 +6,17 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import javax.inject.Inject
 import javax.microedition.khronos.opengles.GL10
+import javax.microedition.khronos.opengles.GL11
 import kotlin.random.Random
 
 class ParticleRain @Inject constructor(
+    gl: GL11,
     models: Models,
     textures: Textures,
-    density: Int
-) : ParticleSystem(models[R.raw.rain], textures[R.drawable.raindrop]) {
+) : ParticleSystem(gl, models[R.raw.rain], textures[R.drawable.raindrop]) {
 
     init {
-        this.spawnRate = 1.0f / (density.toFloat())
+        this.spawnRate = 1.0f / RAIN_DENSITY
         this.spawnRateVariance = 0.05f
         this.spawnRangeX = 15.0f
         this.spawnRangeY = 5.0f
@@ -39,4 +40,9 @@ class ParticleRain @Inject constructor(
     public override fun renderStart(gl: GL10) {
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA)
     }
+
+    companion object {
+        const val RAIN_DENSITY = 10f
+    }
+
 }

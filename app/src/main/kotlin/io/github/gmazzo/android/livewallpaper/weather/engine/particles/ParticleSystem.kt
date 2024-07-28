@@ -12,6 +12,7 @@ import kotlin.math.acos
 import kotlin.random.Random
 
 open class ParticleSystem(
+    private val gl: GL11,
     protected val model: Model,
     protected val texture: Texture,
 ) {
@@ -203,11 +204,7 @@ open class ParticleSystem(
         particle.alive = true
     }
 
-    open fun render(gl: GL11, systemOrigin: Vector?) {
-        render(gl, systemOrigin, null)
-    }
-
-    fun render(gl: GL11, systemOrigin: Vector?, direction: Vector?) {
+    fun render(systemOrigin: Vector?, direction: Vector? = null) {
         gl.glBindTexture(GL10.GL_TEXTURE_2D, texture.glId)
 
         gl.glMatrixMode(GL10.GL_MODELVIEW)

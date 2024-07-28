@@ -1,168 +1,38 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 
 import io.github.gmazzo.android.livewallpaper.weather.R
-import io.github.gmazzo.android.livewallpaper.weather.WeatherType
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
-import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.particles.ParticleSnow
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
-import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingCloud
-import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingWispy
+import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things
+import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things.Companion.WIND_SPEED
 import javax.inject.Inject
+import javax.inject.Named
+import javax.inject.Provider
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
-import kotlin.random.Random
 
 class SceneSnow @Inject constructor(
     gl: GL11,
     models: Models,
     textures: Textures,
-) : Scene(gl, models, textures) {
-    
-    private val particleSnow by lazy { ParticleSnow(models, textures) }
-    
-    private var snowDensity: Int = 0
-    private var snowPos1: Vector
-    private var snowPos2: Vector
-    private var snowPos3: Vector
+    things: Things,
+    @Named("timeOfDay") timeOfDayColor: EngineColor,
+    particle: Provider<ParticleSnow>,
+) : Scene(gl, models, textures, things, timeOfDayColor) {
 
-    init {
-        todEngineColorFinal = EngineColor()
-        this.todEngineColors = arrayOf(EngineColor(), EngineColor(), EngineColor(), EngineColor())
-        this.reloadAssets = false
-        this.numClouds = 20
-        this.numWisps = 6
-        this.snowPos1 = Vector(0.0f, CLOUD_Z_RANGE, -20.0f)
-        this.snowPos2 = Vector(8.0f, 15.0f, -20.0f)
-        this.snowPos3 = Vector(-8.0f, 10.0f, -20.0f)
-    }
-
-    override fun load() {
-        spawnClouds(false)
-    }
-
-    override fun updateWeather(weather: WeatherType) {
-        windSpeedFromPrefs()
-        numCloudsFromPrefs(weather)
-        todFromPrefs()
-        snowDensityFromPrefs()
-        snowGravityFromPrefs()
-        snowNoiseFromPrefs()
-        snowTypeFromPrefs()
-    }
-
-    override fun precacheAssets() {
-        textures[R.drawable.bg2]
-        textures[R.drawable.trees_overlay]
-        textures[R.drawable.cloud1]
-        textures[R.drawable.cloud2]
-        textures[R.drawable.cloud3]
-        textures[R.drawable.cloud4]
-        textures[R.drawable.cloud5]
-        textures[R.raw.wispy1]
-        textures[R.raw.wispy2]
-        textures[R.raw.wispy3]
-        textures[R.raw.p_snow1]
-        textures[R.raw.p_snow2]
-        models[R.raw.plane_16x16]
-        models[R.raw.cloud1m]
-        models[R.raw.cloud2m]
-        models[R.raw.cloud3m]
-        models[R.raw.cloud4m]
-        models[R.raw.cloud5m]
-        models[R.raw.grass_overlay]
-        models[R.raw.trees_overlay]
-        models[R.raw.trees_overlay_terrain]
-        models[R.raw.flakes]
-    }
-
-    private fun spawnClouds(force: Boolean) {
-        spawnClouds(this.numClouds, this.numWisps, force)
-    }
-
-    private fun todFromPrefs() {
-        todEngineColors[0].set("0.5 0.5 0.75 1", 0.0f, 1.0f)
-        todEngineColors[1].set("1 0.73 0.58 1", 0.0f, 1.0f)
-        todEngineColors[2].set("1 1 1 1", 0.0f, 1.0f)
-        todEngineColors[3].set("1 0.85 0.75 1", 0.0f, 1.0f)
-    }
-
-    private fun snowDensityFromPrefs() {
-        this.snowDensity = 2
-    }
-
-    private fun snowGravityFromPrefs() {
-        pref_snowGravity = 2 * 0.5f
-    }
-
-    private fun snowNoiseFromPrefs() {
-        pref_snowNoise = 7 * 0.1f
-    }
-
-    private fun snowTypeFromPrefs() {
-        pref_snowImage = "p_snow1"
-        this.reloadAssets = true
-    }
-
-    private fun spawnClouds(numClouds: Int, numWisps: Int, force: Boolean) {
-        val cloudsExist = thingManager.countByTargetname("cloud") != 0
-        if (force || !cloudsExist) {
-            thingManager.clearByTargetname("cloud")
-            thingManager.clearByTargetname("wispy")
-            val cloudDepthList = FloatArray(numClouds)
-            val cloudDepthStep = 131.25f / (numClouds.toFloat())
-            var i = 0
-            while (i < cloudDepthList.size) {
-                cloudDepthList[i] = ((i.toFloat()) * cloudDepthStep) + 43.75f
-                i++
-            }
-            i = 0
-            while (i < cloudDepthList.size) {
-                val f4 = cloudDepthList[i]
-                val i2 = Random.nextInt(cloudDepthList.size)
-                cloudDepthList[i] = cloudDepthList[i2]
-                cloudDepthList[i2] = f4
-                i++
-            }
-            i = 0
-            while (i < cloudDepthList.size) {
-                val cloud = ThingCloud(models, textures, i)
-                cloud.randomizeScale()
-                if (Random.nextInt(2) == 0) {
-                    cloud.scale.x *= -1.0f
-                }
-                cloud.origin.x = ((i.toFloat()) * (90.0f / (numClouds.toFloat()))) - 0.099609375f
-                cloud.origin.y = cloudDepthList[i]
-                cloud.origin.z = Random.nextFloat(-20.0f, -10.0f)
-                cloud.targetName = "cloud"
-                cloud.velocity = Vector(pref_windSpeed * 1.5f, 0.0f, 0.0f)
-                thingManager.add(cloud)
-                i++
-            }
-            i = 0
-            while (i < cloudDepthList.size) {
-                val wispy = ThingWispy(models, textures, i)
-                wispy.targetName = "wispy"
-                wispy.velocity = Vector(pref_windSpeed * 1.5f, 0.0f, 0.0f)
-                wispy.scale.set(
-                    Random.nextFloat(1.0f, 3.0f),
-                    1.0f,
-                    Random.nextFloat(1.0f, 1.5f)
-                )
-                wispy.origin.x = ((i.toFloat()) * (120.0f / (numWisps.toFloat()))) - 0.0703125f
-                wispy.origin.y = Random.nextFloat(87.5f, CLOUD_START_DISTANCE)
-                wispy.origin.z = Random.nextFloat(-40.0f, -20.0f)
-                thingManager.add(wispy)
-                i++
-            }
-        }
-    }
+    private val snowPositions = arrayOf(
+        Vector(0f, 20f, -20f),
+        Vector(8f, 15f, -20f),
+        Vector(-8f, 10f, -20f)
+    )
+    private val particles = snowPositions.map { particle.get() }
 
     override fun draw(time: GlobalTime) {
-        thingManager.update(time.sTimeDelta)
+        things.update(time.sTimeDelta)
         gl.glDisable(GL10.GL_COLOR_BUFFER_BIT)
         gl.glDisable(GL10.GL_LIGHT1)
         gl.glDisable(GL10.GL_LIGHTING)
@@ -171,28 +41,22 @@ class SceneSnow @Inject constructor(
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA)
         renderBackground(time.sTimeElapsed)
         gl.glTranslatef(0.0f, 0.0f, 40.0f)
-        thingManager.render(gl)
+        things.render()
         renderSnow(time.sTimeDelta)
         drawTree(time.sTimeDelta)
     }
 
-    private fun renderSnow(timeDelta: Float) {
-        particleSnow.update(timeDelta)
-        particleSnow.render(gl, this.snowPos1)
-        if (this.snowDensity > 1) {
-            particleSnow.render(gl, this.snowPos2)
-        }
-        if (this.snowDensity > 2) {
-            particleSnow.render(gl, this.snowPos3)
-        }
+    private fun renderSnow(timeDelta: Float) = particles.forEachIndexed { i, it ->
+        it.update(timeDelta)
+        it.render(snowPositions[i])
     }
 
     private fun renderBackground(timeDelta: Float) {
         gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[R.drawable.bg2].glId)
         gl.glColor4f(
-            todEngineColorFinal!!.r,
-            todEngineColorFinal!!.g,
-            todEngineColorFinal!!.b,
+            timeOfDayColor.r,
+            timeOfDayColor.g,
+            timeOfDayColor.b,
             1.0f
         )
         gl.glMatrixMode(GL10.GL_MODELVIEW)
@@ -202,7 +66,7 @@ class SceneSnow @Inject constructor(
         gl.glMatrixMode(GL10.GL_TEXTURE)
         gl.glPushMatrix()
         gl.glTranslatef(
-            ((pref_windSpeed * timeDelta) * -0.005f) % 1.0f,
+            ((WIND_SPEED * timeDelta) * -0.005f) % 1.0f,
             0.0f,
             0.0f
         )
@@ -213,24 +77,4 @@ class SceneSnow @Inject constructor(
         gl.glPopMatrix()
     }
 
-    companion object {
-        private val CLOUD_MODELS = intArrayOf(
-            R.raw.cloud1m, R.raw.cloud2m, R.raw.cloud3m,
-            R.raw.cloud4m, R.raw.cloud5m
-        )
-        private val CLOUD_TEXTURES = intArrayOf(
-            R.drawable.cloud1, R.drawable.cloud2, R.drawable.cloud3,
-            R.drawable.cloud4, R.drawable.cloud5
-        )
-        private val WISPY_TEXTURES = intArrayOf(R.raw.wispy1, R.raw.wispy2, R.raw.wispy3)
-        const val CLOUD_START_DISTANCE: Float = 175.0f
-        const val CLOUD_X_RANGE: Float = 45.0f
-        const val CLOUD_Z_RANGE: Float = 20.0f
-        private const val TAG = "Snow"
-        const val WISPY_X_RANGE: Float = 60.0f
-        const val WISPY_Z_RANGE: Float = 30.0f
-        var pref_snowGravity: Float = 0f
-        var pref_snowImage: String? = null
-        var pref_snowNoise: Float = 0f
-    }
 }

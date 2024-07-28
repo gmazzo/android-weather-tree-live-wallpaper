@@ -46,9 +46,13 @@ class SettingsViewModel @Inject constructor(
                 val locationOn = it[settingLocationOn] ?: false
 
                 updateLocationEnabled.value = locationOn
-                computeMissingLocationPermission(locationOn)
+            }
+        }
+        viewModelScope.launch {
+            updateLocationEnabled.collectLatest { enabled ->
+                computeMissingLocationPermission(enabled)
 
-                if (locationOn) workManager.enableWeatherConditionsUpdate()
+                if (enabled) workManager.enableWeatherConditionsUpdate()
                 else workManager.disableWeatherConditionsUpdate()
             }
         }
@@ -67,8 +71,8 @@ class SettingsViewModel @Inject constructor(
         preferences.edit { it[settingLocationOn] = enabled }
     }
 
-    fun updateSelectedScene(scene: SceneMode) {
-        weatherConditions.update { it.copy(weatherType = WeatherType.entries.first { it.scene == scene }) }
+    fun updateSelectedScene(scene: SceneMode) = weatherConditions.update { prefs ->
+        prefs.copy(weatherType = WeatherType.entries.first { it.scene == scene })
     }
 
 }
