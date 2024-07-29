@@ -14,7 +14,6 @@ import kotlin.random.Random
 sealed class Thing(
     protected val gl: GL11,
 ) {
-    protected val angles: EngineColor = EngineColor(0.0f, 0.0f, 1.0f, 0.0f)
     protected abstract val engineColor: EngineColor?
     var isDeleted: Boolean = false
         private set
@@ -53,15 +52,8 @@ sealed class Thing(
         gl.glMatrixMode(GL10.GL_MODELVIEW)
         gl.glTranslatef(origin.x, origin.y, origin.z)
         gl.glScalef(scale.x, scale.y, scale.z)
-        if (angles.a != 0.0f) {
-            gl.glRotatef(
-                angles.a,
-                angles.r,
-                angles.g,
-                angles.b
-            )
-        }
         gl.glBindTexture(GL10.GL_TEXTURE_2D, texture.glId)
+
         engineColor?.let { gl.glColor4f(it.r, it.g, it.b, it.a) }
 
         model.render()

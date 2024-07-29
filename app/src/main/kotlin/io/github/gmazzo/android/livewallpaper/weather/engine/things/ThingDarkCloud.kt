@@ -25,7 +25,7 @@ class ThingDarkCloud @AssistedInject constructor(
 
     override val engineColor = EngineColor(1.0f, 1.0f, 1.0f, 1.0f)
 
-    private val texNameFlare by lazy { textures[FLARES[which % MODELS.size]] }
+    private val texNameFlare = textures[FLARES[which % MODELS.size]]
 
     private var flashIntensity = 0.0f
 
@@ -41,24 +41,12 @@ class ThingDarkCloud @AssistedInject constructor(
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA)
         gl.glTranslatef(origin.x, origin.y, origin.z)
         gl.glScalef(scale.x, scale.y, scale.z)
-        gl.glRotatef(
-            angles.a,
-            angles.r,
-            angles.g,
-            angles.b
-        )
-        if (!pref_minimalist) {
             model.render()
-        }
+
         if (withFlare && flashIntensity > 0.0f) {
             gl.glDisable(GL10.GL_LIGHTING)
             gl.glBindTexture(GL10.GL_TEXTURE_2D, texNameFlare.glId)
-            gl.glColor4f(
-                pref_boltEngineColor.r,
-                pref_boltEngineColor.g,
-                pref_boltEngineColor.b,
-                flashIntensity
-            )
+            gl.glColor4f(1f,1f,1f, flashIntensity)
             gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE)
             model.render()
             gl.glEnable(GL10.GL_LIGHTING)
@@ -98,8 +86,6 @@ class ThingDarkCloud @AssistedInject constructor(
     }
 
     companion object {
-        var pref_boltEngineColor: EngineColor = EngineColor(1.0f, 1.0f, 1.0f, 1.0f)
-        var pref_minimalist: Boolean = false
         private val MODELS = intArrayOf(
             R.raw.cloud1m, R.raw.cloud2m, R.raw.cloud3m,
             R.raw.cloud4m, R.raw.cloud5m

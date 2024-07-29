@@ -27,7 +27,6 @@ class ThingLightning @Inject constructor(
         gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE)
         gl.glTranslatef(origin.x, origin.y, origin.z)
         gl.glScalef(scale.x, scale.x, scale.x)
-        gl.glRotatef(angles.a, angles.r, angles.g, angles.b)
         gl.glColor4f(engineColor.r, engineColor.g, engineColor.b, engineColor.a)
         model.renderFrameMultiTexture(glowTexture, texture, 260, false)
 
