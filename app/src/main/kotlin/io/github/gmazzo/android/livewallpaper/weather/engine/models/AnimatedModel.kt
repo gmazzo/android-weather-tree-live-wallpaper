@@ -14,12 +14,12 @@ class AnimatedModel internal constructor(
     indicesCount: Int,
     bufTCHandle: Int,
     bufIndexHandle: Int,
-    var animator: AnimPlayer?, // TODO make it private non-null once done
     private val elementsCount: Int,
     private val vertices: FloatArray,
     private val bufScratch: FloatBuffer
-) :
-    Model(gl, resId, frames, indicesCount, bufTCHandle, bufIndexHandle) {
+) : Model(gl, resId, frames, indicesCount, bufTCHandle, bufIndexHandle) {
+
+    var animator: AnimPlayer? = null
 
     override fun render() {
         val frameNum = animator?.currentFrame ?: 0
@@ -52,7 +52,6 @@ class AnimatedModel internal constructor(
         renderFrameShared(frame)
     }
 
-    // TODO delete this once finished
     override fun asMesh() = super.asMesh().also {
         it.numElements = elementsCount
         it.originalVertexArray = vertices

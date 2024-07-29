@@ -90,9 +90,10 @@ class SceneRain @Inject constructor(
         renderBackground(time.sTimeElapsed)
         renderRain(time.sTimeDelta)
         gl.glTranslatef(0.0f, 0.0f, 40.0f)
-        things.render()
         gl.glDisable(GL10.GL_COLOR_BUFFER_BIT)
         gl.glDisable(GL10.GL_LIGHTING)
+
+        things.render()
         drawTree(time.sTimeDelta)
     }
 

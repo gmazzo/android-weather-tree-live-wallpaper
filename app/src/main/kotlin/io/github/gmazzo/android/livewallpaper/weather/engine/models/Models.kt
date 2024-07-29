@@ -142,7 +142,7 @@ class Models @Inject constructor(
 
             return@getOrPut AnimatedModel(
                 gl, rawId, frames, indicesCount, bufTCHandle, bufIndexHandle,
-                null, elementsCount, vertices, bufScratch
+                elementsCount, vertices, bufScratch
             )
         } else {
             return@getOrPut Model(gl, rawId, frames, indicesCount, bufTCHandle, bufIndexHandle)

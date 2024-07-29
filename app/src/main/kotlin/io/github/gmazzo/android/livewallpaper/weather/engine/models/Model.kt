@@ -50,7 +50,6 @@ open class Model internal constructor(
         gl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
     }
 
-    // TODO delete this once finished
     fun renderFrameMultiTexture(tex1: Texture, tex2: Texture, combine: Int, envMap: Boolean) {
         val frameNum = 0
         gl.glActiveTexture(GL_TEXTURE0)
@@ -95,7 +94,6 @@ open class Model internal constructor(
         gl.glDeleteBuffers(ids.size, ids, 0)
     }
 
-    // TODO delete this once finished
     open fun asMesh() = Mesh().also { mesh ->
         mesh.meshName = "resource:$resId"
         mesh.numIndices = indicesCount

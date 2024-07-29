@@ -42,6 +42,7 @@ class SceneSnow @Inject constructor(
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA)
         renderBackground(time.sTimeElapsed)
         gl.glTranslatef(0.0f, 0.0f, 40.0f)
+
         things.render()
         renderSnow(time.sTimeDelta)
         drawTree(time.sTimeDelta)

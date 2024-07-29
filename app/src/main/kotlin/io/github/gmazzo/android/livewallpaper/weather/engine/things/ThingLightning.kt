@@ -30,7 +30,6 @@ class ThingLightning @Inject constructor(
         gl.glRotatef(angles.a, angles.r, angles.g, angles.b)
         gl.glColor4f(engineColor.r, engineColor.g, engineColor.b, engineColor.a)
         model.renderFrameMultiTexture(glowTexture, texture, 260, false)
-        gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
 
         gl.glDisable(GL10.GL_COLOR_BUFFER_BIT)
         gl.glDisable(GL10.GL_LIGHTING)

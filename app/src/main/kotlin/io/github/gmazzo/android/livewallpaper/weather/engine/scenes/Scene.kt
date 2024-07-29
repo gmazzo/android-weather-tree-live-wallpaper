@@ -22,7 +22,6 @@ abstract class Scene(
     protected val textures: Textures,
     protected val things: Things,
     protected val timeOfDayColor: EngineColor,
-    private val sunMoon: Boolean = false,
     raining: Boolean = false,
     private val darkClouds: Boolean? = false,
 ) {
@@ -43,7 +42,7 @@ abstract class Scene(
         EngineColor(.9f, .9f, .9f, 1f),
         EngineColor(.65f, .6f, .6f, 1f),
 
-    ) else arrayOf(
+        ) else arrayOf(
         EngineColor(.5f, .5f, .75f, 1f),
         EngineColor(1f, .73f, .58f, 1f),
         EngineColor(1f, 1f, 1f, 1f),
@@ -55,10 +54,8 @@ abstract class Scene(
     fun load(weather: WeatherType) {
         timeOfDayColor.set(1f, 1f, 1f, 1f)
 
-        if (sunMoon) {
-            things.spawnSun()
-            things.spawnMoon()
-        }
+        things.spawnSun()
+        things.spawnMoon()
         updateWeather(weather)
     }
 
@@ -94,7 +91,8 @@ abstract class Scene(
             treesAnimateDelay -= timeDelta
 
             if (treesAnimateDelay <= 0f) {
-                treesAnimateDelay = treeAnimateDelayMin + (treeAnimateDelayRange * Random.nextFloat())
+                treesAnimateDelay =
+                    treeAnimateDelayMin + (treeAnimateDelayRange * Random.nextFloat())
                 treesAnim.reset()
             }
         }

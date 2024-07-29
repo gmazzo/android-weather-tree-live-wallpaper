@@ -59,9 +59,10 @@ class SceneFog @Inject constructor(
         gl.glFogf(GL10.GL_FOG_HINT, 4352.0f)
         renderBackground(time.sTimeElapsed)
         gl.glTranslatef(0.0f, 0.0f, 40.0f)
+        gl.glDisable(GL10.GL_FOG)
+
         things.render()
         drawTree(time.sTimeDelta)
-        gl.glDisable(GL10.GL_FOG)
     }
 
     private fun renderBackground(timeDelta: Float) = gl.pushMatrix {

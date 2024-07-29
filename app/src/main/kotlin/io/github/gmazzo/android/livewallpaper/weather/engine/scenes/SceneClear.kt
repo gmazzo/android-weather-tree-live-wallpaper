@@ -21,7 +21,7 @@ open class SceneClear @Inject constructor(
     things: Things,
     @Named("timeOfDay") timeOfDayColor: EngineColor,
     @Named("sunPosition") private val sunPosition: MutableStateFlow<Float>,
-) : Scene(gl, models, textures, things, timeOfDayColor, sunMoon = true) {
+) : Scene(gl, models, textures, things, timeOfDayColor) {
 
     open val backgroundId: Int = R.drawable.bg3
 
@@ -35,6 +35,7 @@ open class SceneClear @Inject constructor(
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA)
         renderBackground(time.sTimeElapsed)
         gl.glTranslatef(0.0f, 0.0f, 40.0f)
+
         things.render()
         drawTree(time.sTimeDelta)
     }
