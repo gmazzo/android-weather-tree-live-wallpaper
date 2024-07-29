@@ -1,9 +1,8 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.things
 
-import androidx.annotation.RawRes
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
-import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
+import io.github.gmazzo.android.livewallpaper.weather.engine.models.Model
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Texture
@@ -12,10 +11,8 @@ import javax.microedition.khronos.opengles.GL11
 import kotlin.math.abs
 import kotlin.random.Random
 
-abstract class Thing(
+sealed class Thing(
     protected val gl: GL11,
-    models: Models,
-    @RawRes modelId: Int,
 ) {
     protected val angles: EngineColor = EngineColor(0.0f, 0.0f, 1.0f, 0.0f)
     protected abstract val engineColor: EngineColor?
@@ -29,7 +26,7 @@ abstract class Thing(
     private var visible = true
     var visWidth: Float = 3.0f
 
-    protected val model = models[modelId]
+    protected abstract val model: Model
 
     protected abstract val texture: Texture
 

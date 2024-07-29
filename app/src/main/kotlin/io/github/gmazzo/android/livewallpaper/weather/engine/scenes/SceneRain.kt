@@ -5,7 +5,7 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
-import io.github.gmazzo.android.livewallpaper.weather.engine.particles.ParticleRain
+import io.github.gmazzo.android.livewallpaper.weather.engine.particles.ParticlesRain
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things
@@ -22,7 +22,7 @@ class SceneRain @Inject constructor(
     textures: Textures,
     things: Things,
     @Named("timeOfDay") timeOfDayColor: EngineColor,
-    private val particles: ParticleRain,
+    private val particles: ParticlesRain,
 ) : Scene(gl, models, textures, things, timeOfDayColor, raining = true) {
     private val particleRainOrigin= Vector(0.0f, 25.0f, 10.0f)
     private val lightDiffuse = floatArrayOf(0.1f, 0.1f, 0.1f, 1.0f)

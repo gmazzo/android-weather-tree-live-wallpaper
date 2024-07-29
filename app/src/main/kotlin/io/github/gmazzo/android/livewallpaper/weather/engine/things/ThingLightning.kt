@@ -14,7 +14,7 @@ class ThingLightning @Inject constructor(
     gl: GL11,
     models: Models,
     textures: Textures,
-) : SimpleThing(gl, models, textures, MODELS[Random.nextInt(MODELS.size)], R.raw.lightning_pieces_core) {
+) : ThingSimple(gl, models, textures, MODELS[Random.nextInt(MODELS.size)], R.raw.lightning_pieces_core) {
 
     override val engineColor = EngineColor(1f, 1f, 1f, 1.0f)
 

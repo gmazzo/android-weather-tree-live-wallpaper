@@ -5,7 +5,7 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
-import io.github.gmazzo.android.livewallpaper.weather.engine.particles.ParticleSnow
+import io.github.gmazzo.android.livewallpaper.weather.engine.particles.ParticlesSnow
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things
@@ -22,7 +22,7 @@ class SceneSnow @Inject constructor(
     textures: Textures,
     things: Things,
     @Named("timeOfDay") timeOfDayColor: EngineColor,
-    particle: Provider<ParticleSnow>,
+    particle: Provider<ParticlesSnow>,
 ) : Scene(gl, models, textures, things, timeOfDayColor) {
 
     private val snowPositions = arrayOf(

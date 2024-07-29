@@ -12,12 +12,12 @@ import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 import kotlin.random.Random
 
-class ParticleSnow @Inject constructor(
+class ParticlesSnow @Inject constructor(
     gl: GL11,
     models: Models,
     textures: Textures,
     @Named("timeOfDay") private val timeOfDayColor: EngineColor,
-) : ParticleSystem(
+) : Particles(
     gl,
     models[R.raw.flakes],
     textures[if (Random.nextBoolean()) R.raw.p_snow1 else R.raw.p_snow2],

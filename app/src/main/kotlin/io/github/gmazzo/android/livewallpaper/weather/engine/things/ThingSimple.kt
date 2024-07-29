@@ -7,13 +7,15 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import javax.microedition.khronos.opengles.GL11
 
-abstract class SimpleThing(
+sealed class ThingSimple(
     gl: GL11,
     models: Models,
     textures: Textures,
     @RawRes modelId: Int,
     @AnyRes @DrawableRes textureId: Int,
-) : Thing(gl, models, modelId) {
+) : Thing(gl) {
+
+    override val model = models[modelId]
 
     override val texture = textures[textureId]
 

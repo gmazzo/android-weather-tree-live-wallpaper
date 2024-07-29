@@ -18,9 +18,11 @@ class ThingMoon @Inject constructor(
     models: Models,
     private val textures: Textures,
     @Named("sunPosition") private val todSunPosition: MutableStateFlow<Float>,
-) : Thing(gl, models, R.raw.plane_16x16) {
+) : Thing(gl) {
 
     override val engineColor = EngineColor(1.0f, 1.0f, 1.0f, 1.0f)
+
+    override val model = models[R.raw.plane_16x16]
 
     override var texture: Texture = reload
 

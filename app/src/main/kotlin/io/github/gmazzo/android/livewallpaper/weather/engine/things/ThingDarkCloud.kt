@@ -21,7 +21,7 @@ class ThingDarkCloud @AssistedInject constructor(
     textures: Textures,
     @Assisted which: Int,
     @Assisted private val withFlare: Boolean,
-) : SimpleThing(gl, models, textures, MODELS[which % MODELS.size], TEXTURES[which % TEXTURES.size]) {
+) : ThingSimple(gl, models, textures, MODELS[which % MODELS.size], TEXTURES[which % TEXTURES.size]) {
 
     override val engineColor = EngineColor(1.0f, 1.0f, 1.0f, 1.0f)
 

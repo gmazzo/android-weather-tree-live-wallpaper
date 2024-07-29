@@ -12,7 +12,7 @@ import javax.microedition.khronos.opengles.GL11
 import kotlin.math.acos
 import kotlin.random.Random
 
-open class ParticleSystem(
+sealed class Particles(
     private val gl: GL11,
     protected val model: Model,
     protected val texture: Texture,
@@ -78,7 +78,7 @@ open class ParticleSystem(
                 position.y,
                 position.z
             )
-            if (this@ParticleSystem._useColor) {
+            if (this@Particles._useColor) {
                 gl11.glColor4f(
                     color.r,
                     color.g,
@@ -122,7 +122,7 @@ open class ParticleSystem(
             val percentage = this.timeElapsed / this.lifetime
             val invPercentage = 1.0f - percentage
             updateVelocity(percentage, invPercentage)
-            if (this@ParticleSystem._useColor) {
+            if (this@Particles._useColor) {
                 color.set(
                     (startEngineColor.r * invPercentage) + (destEngineColor.r * percentage),
                     (startEngineColor.g * invPercentage) + (destEngineColor.g * percentage),

@@ -17,7 +17,7 @@ class ThingSun @Inject constructor(
     textures: Textures,
     @Named("timeOfDay") private val timeOfDayColor: EngineColor,
     @Named("sunPosition") private val todSunPosition: MutableStateFlow<Float>,
-) : SimpleThing(gl, models, textures, R.raw.plane_16x16, R.raw.sun) {
+) : ThingSimple(gl, models, textures, R.raw.plane_16x16, R.raw.sun) {
 
     override val engineColor = EngineColor(1.0f, 1.0f, 0.95f, 1.0f)
 

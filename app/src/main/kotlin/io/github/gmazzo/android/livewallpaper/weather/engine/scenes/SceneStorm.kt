@@ -7,7 +7,7 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime.Companio
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
-import io.github.gmazzo.android.livewallpaper.weather.engine.particles.ParticleRain
+import io.github.gmazzo.android.livewallpaper.weather.engine.particles.ParticlesRain
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingLightning
@@ -27,7 +27,7 @@ class SceneStorm @Inject constructor(
     textures: Textures,
     things: Things,
     @Named("timeOfDay") timeOfDayColor: EngineColor,
-    private val particles: ParticleRain,
+    private val particles: ParticlesRain,
     private val lightningProvider: Provider<ThingLightning>,
 ) : Scene(gl, models, textures, things, timeOfDayColor, raining = true, darkClouds = true) {
     private val lightAmbientLight = FloatArray(4)

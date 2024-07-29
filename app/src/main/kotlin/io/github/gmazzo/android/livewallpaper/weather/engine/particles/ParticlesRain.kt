@@ -9,11 +9,11 @@ import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 import kotlin.random.Random
 
-class ParticleRain @Inject constructor(
+class ParticlesRain @Inject constructor(
     gl: GL11,
     models: Models,
     textures: Textures,
-) : ParticleSystem(gl, models[R.raw.rain], textures[R.drawable.raindrop]) {
+) : Particles(gl, models[R.raw.rain], textures[R.drawable.raindrop]) {
 
     init {
         this.spawnRate = 1.0f / RAIN_DENSITY

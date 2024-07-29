@@ -17,7 +17,7 @@ class ThingWispy @AssistedInject constructor(
     textures: Textures,
     @Named("timeOfDay") private val timeOfDayColor: EngineColor,
     @Assisted which: Int,
-) : SimpleThing(gl, models, textures, R.raw.plane_16x16, WISPY_TEXTURES[which % WISPY_TEXTURES.size]) {
+) : ThingSimple(gl, models, textures, R.raw.plane_16x16, WISPY_TEXTURES[which % WISPY_TEXTURES.size]) {
 
     override val engineColor: EngineColor? = null
 
