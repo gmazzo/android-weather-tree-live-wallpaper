@@ -195,13 +195,6 @@ internal class WeatherViewRenderer @AssistedInject constructor(
     }
 
     private fun calculateTimeOfDay() {
-        val (latitude, longitude) = weatherConditions.value
-
-        tod.calculateTimeTable(
-            latitude.takeUnless(Float::isNaN) ?: 0f,
-            longitude.takeUnless(Float::isNaN) ?: 0f
-        )
-
         val cal = Calendar.getInstance()
         var minutes = (cal[Calendar.HOUR_OF_DAY] * 60) + cal[Calendar.MINUTE]
         if (this.demoMode) {
