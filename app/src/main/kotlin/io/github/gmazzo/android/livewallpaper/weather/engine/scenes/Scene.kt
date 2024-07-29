@@ -16,7 +16,7 @@ import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 import kotlin.random.Random
 
-abstract class Scene(
+sealed class Scene(
     protected val gl: GL11,
     protected val models: Models,
     protected val textures: Textures,
@@ -25,6 +25,17 @@ abstract class Scene(
     raining: Boolean = false,
     private val darkClouds: Boolean? = false,
 ) {
+
+    @Suppress("LeakingThis")
+    val mode: SceneMode = when(this) {
+        is SceneCloudy -> SceneMode.CLOUDY
+        is SceneClear -> SceneMode.CLEAR
+        is SceneRain -> SceneMode.RAIN
+        is SceneStorm -> SceneMode.STORM
+        is SceneSnow -> SceneMode.SNOW
+        is SceneFog -> SceneMode.FOG
+    }
+
     var landscape: Boolean = false
     protected var bgPadding: Float = 20f
     private var treeAnimateDelayMin: Float = 3f
@@ -51,7 +62,8 @@ abstract class Scene(
 
     abstract fun draw(time: GlobalTime)
 
-    fun load(weather: WeatherType) {
+    @CallSuper
+    open fun load(weather: WeatherType) {
         timeOfDayColor.set(1f, 1f, 1f, 1f)
 
         things.spawnSun()

@@ -1,5 +1,6 @@
 package io.github.gmazzo.android.livewallpaper.weather
 
+import android.opengl.GLSurfaceView
 import dagger.BindsInstance
 import dagger.hilt.DefineComponent
 import dagger.hilt.components.SingletonComponent
@@ -17,7 +18,8 @@ interface OpenGLComponent {
 
     @DefineComponent.Builder
     interface Builder {
-        fun openGL(@BindsInstance gl: GL11): Builder
+        fun view(@BindsInstance view: GLSurfaceView): Builder
+        fun gl(@BindsInstance gl: GL11): Builder
         fun build(): OpenGLComponent
     }
 

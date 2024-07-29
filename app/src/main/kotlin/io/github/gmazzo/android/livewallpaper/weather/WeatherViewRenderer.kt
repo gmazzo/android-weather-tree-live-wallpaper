@@ -1,5 +1,6 @@
 package io.github.gmazzo.android.livewallpaper.weather
 
+import android.opengl.GLSurfaceView
 import android.opengl.GLSurfaceView.Renderer
 import android.opengl.GLU
 import android.util.Log
@@ -15,10 +16,8 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.Scene
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneFactory
-import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.sky_manager.TimeOfDay
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,7 +32,7 @@ import kotlin.random.Random
 
 internal class WeatherViewRenderer @AssistedInject constructor(
     private val openGLBuilder: OpenGLComponent.Builder,
-    @Assisted dispatcher: CoroutineDispatcher,
+    @Assisted private val view: GLSurfaceView,
     @Named("sunPosition") private val sunPosition: MutableStateFlow<Float>,
     private val weatherConditions: MutableStateFlow<WeatherConditions>,
 ) : Renderer {
@@ -42,7 +41,6 @@ internal class WeatherViewRenderer @AssistedInject constructor(
     private val cameraDir = Vector()
     private var cameraFOV = 65.0f
     private val cameraPos: Vector
-    private var currentSceneMode: SceneMode? = null
     private var currentScene: Scene? = null
     private val desiredCameraPos: Vector
     private val globalTime: GlobalTime
@@ -52,7 +50,6 @@ internal class WeatherViewRenderer @AssistedInject constructor(
     private var screenRatio = 1.0f
     private var screenWidth = 0f
     private lateinit var glContext: GLContext
-    private val coroutineScope = CoroutineScope(dispatcher)
     private var watchWeatherChanges: Job? = null
     private val isPaused get() = watchWeatherChanges == null
 
@@ -78,7 +75,7 @@ internal class WeatherViewRenderer @AssistedInject constructor(
 
     private fun watchWeatherChanges() {
         watchWeatherChanges?.cancel()
-        watchWeatherChanges = coroutineScope.launch {
+        watchWeatherChanges = CoroutineScope(glContext.dispatcher).launch {
             weatherConditions.collectLatest(::onSceneChanged)
         }
     }
@@ -87,10 +84,10 @@ internal class WeatherViewRenderer @AssistedInject constructor(
     private fun onSceneChanged(weather: WeatherConditions) {
         updateTimeOfDayTable(weather)
 
-        if (currentSceneMode != weather.weatherType.scene) {
-            currentSceneMode = weather.weatherType.scene
+        val mode = weather.weatherType.scene
+        if (currentScene?.mode != mode) {
             currentScene?.unload()
-            currentScene = glContext.sceneFactory.create(weather.weatherType.scene) {
+            currentScene = glContext.sceneFactory.create(mode) {
                 it.landscape = landscape
                 it.load(weather.weatherType)
             }
@@ -100,7 +97,12 @@ internal class WeatherViewRenderer @AssistedInject constructor(
     }
 
     override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
-        glContext = EntryPoints.get(openGLBuilder.openGL(gl as GL11).build(), GLContext::class.java)
+        val component = openGLBuilder
+            .view(view)
+            .gl(gl as GL11)
+            .build()
+
+        glContext = EntryPoints.get(component, GLContext::class.java)
     }
 
     override fun onSurfaceChanged(gl: GL10, w: Int, h: Int) {
@@ -231,7 +233,7 @@ internal class WeatherViewRenderer @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(dispatcher: CoroutineDispatcher): WeatherViewRenderer
+        fun create(view: GLSurfaceView): WeatherViewRenderer
     }
 
     @EntryPoint
@@ -240,6 +242,7 @@ internal class WeatherViewRenderer @AssistedInject constructor(
         val textures: Textures
         val models: Models
         val sceneFactory: SceneFactory
+        val dispatcher: OpenGLDispatcher
     }
 
     companion object {

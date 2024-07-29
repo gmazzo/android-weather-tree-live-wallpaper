@@ -17,7 +17,7 @@ class WeatherView @AssistedInject internal constructor(
     rendererFactory: WeatherViewRenderer.Factory
 ) : GLSurfaceView(context) {
 
-    private val renderer = rendererFactory.create(OpenGLDispatcher())
+    private val renderer = rendererFactory.create(this)
 
     var isDemoMode by renderer::demoMode
 
