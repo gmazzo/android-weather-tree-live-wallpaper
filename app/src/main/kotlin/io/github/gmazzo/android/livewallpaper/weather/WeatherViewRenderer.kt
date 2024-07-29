@@ -34,16 +34,17 @@ internal class WeatherViewRenderer @AssistedInject constructor(
     private val openGLBuilder: OpenGLComponent.Builder,
     @Assisted private val view: GLSurfaceView,
     @Named("sunPosition") private val sunPosition: MutableStateFlow<Float>,
+    @Named("homeOffset") private val homeOffset: MutableStateFlow<Float>,
     private val weatherConditions: MutableStateFlow<WeatherConditions>,
 ) : Renderer {
     private var landscape: Boolean = false
     private val tod = TimeOfDay()
     private val cameraDir = Vector()
     private var cameraFOV = 65.0f
-    private val cameraPos: Vector
+    private val cameraPos = Vector(0.0f, 0.0f, 0.0f)
     private var currentScene: Scene? = null
-    private val desiredCameraPos: Vector
-    private val globalTime: GlobalTime
+    private val desiredCameraPos = Vector(0.0f, 0.0f, 0.0f)
+    private val globalTime = GlobalTime()
     private val cameraSpeed: Float = 1.0f
     var demoMode: Boolean = false
     private var screenHeight = 0f
@@ -52,13 +53,6 @@ internal class WeatherViewRenderer @AssistedInject constructor(
     private lateinit var glContext: GLContext
     private var watchWeatherChanges: Job? = null
     private val isPaused get() = watchWeatherChanges == null
-
-    init {
-        homeOffsetPercentage = 0.5f
-        this.globalTime = GlobalTime()
-        this.cameraPos = Vector(0.0f, 0.0f, 0.0f)
-        this.desiredCameraPos = Vector(0.0f, 0.0f, 0.0f)
-    }
 
     @Synchronized
     fun onPause() {
@@ -182,7 +176,7 @@ internal class WeatherViewRenderer @AssistedInject constructor(
     }
 
     fun updateOffset(offset: Float) {
-        homeOffsetPercentage = offset
+        homeOffset.value = offset
     }
 
     private fun updateTimeOfDayTable(current: WeatherConditions) {
@@ -206,7 +200,7 @@ internal class WeatherViewRenderer @AssistedInject constructor(
     }
 
     private fun updateCameraPosition(timeDelta: Float) {
-        desiredCameraPos.set((28.0f * homeOffsetPercentage) - CAMERA_X_RANGE, 0.0f, 0.0f)
+        desiredCameraPos.set((28 * homeOffset.value) - 14, 0f, 0f)
         val rate = (3.5f * timeDelta) * this.cameraSpeed
         val dx = (desiredCameraPos.x - cameraPos.x) * rate
         val dy = (desiredCameraPos.y - cameraPos.y) * rate
@@ -221,7 +215,6 @@ internal class WeatherViewRenderer @AssistedInject constructor(
         } else {
             this.cameraFOV = 70.0f
         }
-        horizontalFOV = this.cameraFOV * this.screenRatio
     }
 
     @AssistedFactory
@@ -239,16 +232,6 @@ internal class WeatherViewRenderer @AssistedInject constructor(
     }
 
     companion object {
-        const val BACKGROUND_DISTANCE: Float = 300.0f
-        const val CALENDAR_UPDATE_INTERVAL: Float = 10.0f
-        const val CAMERA_X_POSITION: Float = 0.0f
-        const val CAMERA_X_RANGE: Float = 14.0f
-        const val CAMERA_Y_POSITION: Float = 0.0f
-        const val CAMERA_Z_POSITION: Float = 0.0f
-        const val CAMERA_Z_RANGE: Float = 10.0f
-        const val POSITION_UPDATE_INTERVAL: Float = 300.0f
         private const val TAG = "IsolatedRenderer"
-        var homeOffsetPercentage: Float = 0.5f
-        var horizontalFOV: Float = 45.0f
     }
 }

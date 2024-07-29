@@ -48,6 +48,12 @@ object WeatherModule {
 
     @Provides
     @Singleton
+    @Named("homeOffset")
+    fun homeOffset(): MutableStateFlow<Float> =
+        MutableStateFlow(.5f)
+
+    @Provides
+    @Singleton
     fun weatherConditions(
         dataStore: DataStore<Preferences>,
     ): MutableStateFlow<WeatherConditions> = runBlocking {

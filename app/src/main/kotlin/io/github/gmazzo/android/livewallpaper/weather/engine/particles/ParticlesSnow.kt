@@ -1,11 +1,11 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.particles
 
 import io.github.gmazzo.android.livewallpaper.weather.R
-import io.github.gmazzo.android.livewallpaper.weather.WeatherViewRenderer.Companion.homeOffsetPercentage
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
+import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 import javax.inject.Named
 import javax.microedition.khronos.opengles.GL10
@@ -17,6 +17,7 @@ class ParticlesSnow @Inject constructor(
     models: Models,
     textures: Textures,
     @Named("timeOfDay") private val timeOfDayColor: EngineColor,
+    @Named("homeOffset") private val homeOffset: MutableStateFlow<Float>,
 ) : Particles(
     gl,
     models[R.raw.flakes],
@@ -33,7 +34,7 @@ class ParticlesSnow @Inject constructor(
 
     override fun particleSetup(particle: Particle?) {
         super.particleSetup(particle)
-        val bias: Float = ((homeOffsetPercentage * 2.0f) - 1.0f) * 4.0f
+        val bias: Float = ((homeOffset.value * 2.0f) - 1.0f) * 4.0f
         particle!!.lifetime = 4.5f
         particle.startScale.set(Random.nextFloat(0.15f, 0.3f))
         particle.destScale.set(Random.nextFloat(0.15f, 0.3f))
