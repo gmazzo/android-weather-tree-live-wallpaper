@@ -36,34 +36,26 @@ internal class WeatherViewRenderer @AssistedInject constructor(
     @Named("sunPosition") private val sunPosition: MutableStateFlow<Float>,
     private val weatherConditions: MutableStateFlow<WeatherConditions>,
 ) : Renderer {
-    var landscape: Boolean = false
-    private val _tod = TimeOfDay()
-    private var calendarInstance: Calendar?
+    private var landscape: Boolean = false
+    private val tod = TimeOfDay()
     private val cameraDir = Vector()
     private var cameraFOV = 65.0f
     private val cameraPos: Vector
     private var currentScene: Scene? = null
     private val desiredCameraPos: Vector
     private val globalTime: GlobalTime
-    private var lastCalendarUpdate: Float
-    private var lastPositionUpdate: Float
-    var pref_cameraSpeed: Float = 1.0f
+    private val cameraSpeed: Float = 1.0f
     var demoMode: Boolean = false
     private var screenHeight = 0f
     private var screenRatio = 1.0f
     private var screenWidth = 0f
-
     private lateinit var glContext: GLContext
     private val coroutineScope = CoroutineScope(dispatcher)
     private var watchWeatherChanges: Job? = null
-
     private val isPaused get() = watchWeatherChanges == null
 
     init {
         homeOffsetPercentage = 0.5f
-        this.calendarInstance = null
-        this.lastCalendarUpdate = 10.0f
-        this.lastPositionUpdate = 300.0f
         this.globalTime = GlobalTime()
         this.cameraPos = Vector(0.0f, 0.0f, 0.0f)
         this.desiredCameraPos = Vector(0.0f, 0.0f, 0.0f)
@@ -77,9 +69,6 @@ internal class WeatherViewRenderer @AssistedInject constructor(
 
     @Synchronized
     fun onResume() {
-        lastCalendarUpdate = 10.0f
-        lastPositionUpdate = 300.0f
-
         if (::glContext.isInitialized) {
             watchWeatherChanges()
         }
@@ -96,6 +85,8 @@ internal class WeatherViewRenderer @AssistedInject constructor(
 
     @Synchronized
     private fun onSceneChanged(previous: WeatherConditions?, current: WeatherConditions) {
+        updateTimeOfDayTable(current)
+
         if (currentScene == null || previous?.weatherType?.scene != current.weatherType.scene) {
             currentScene?.unload()
             currentScene = glContext.sceneFactory.create(current.weatherType.scene) {
@@ -153,8 +144,8 @@ internal class WeatherViewRenderer @AssistedInject constructor(
 
         if (!this.isPaused) {
             globalTime.updateTime()
-            updateCalendar(globalTime.sTimeDelta)
-            updateCameraPosition(gl, globalTime.sTimeDelta)
+            calculateTimeOfDay()
+            updateCameraPosition(globalTime.sTimeDelta)
             gl.glClear(GL10.GL_DEPTH_BUFFER_BIT)
             gl.glMatrixMode(GL10.GL_PROJECTION)
             gl.glLoadIdentity()
@@ -191,45 +182,43 @@ internal class WeatherViewRenderer @AssistedInject constructor(
         homeOffsetPercentage = offset
     }
 
-    private fun updateCalendar(timeDelta: Float) {
-        this.lastCalendarUpdate += timeDelta
-        if (this.lastCalendarUpdate >= 10.0f || this.calendarInstance == null) {
-            this.calendarInstance = Calendar.getInstance()
-            this.lastCalendarUpdate = 0.0f
-        }
-        if (this.lastPositionUpdate >= 300.0f) {
-            val (latitude, longitude) = weatherConditions.value
+    private fun updateTimeOfDayTable(current: WeatherConditions) {
+        val (latitude, longitude) = current
 
-            _tod.calculateTimeTable(
-                latitude.takeUnless(Float::isNaN) ?: 0f,
-                longitude.takeUnless(Float::isNaN) ?: 0f
-            )
-            this.lastPositionUpdate = 0.0f
-        }
-        calculateTimeOfDay(timeDelta)
+        tod.calculateTimeTable(
+            latitude.takeUnless(Float::isNaN) ?: 0f,
+            longitude.takeUnless(Float::isNaN) ?: 0f
+        )
     }
 
-    private fun calculateTimeOfDay(timeDelta: Float) {
-        var minutes =
-            (calendarInstance!![Calendar.HOUR_OF_DAY] * 60) + calendarInstance!![Calendar.MINUTE]
+    private fun calculateTimeOfDay() {
+        val (latitude, longitude) = weatherConditions.value
+
+        tod.calculateTimeTable(
+            latitude.takeUnless(Float::isNaN) ?: 0f,
+            longitude.takeUnless(Float::isNaN) ?: 0f
+        )
+
+        val cal = Calendar.getInstance()
+        var minutes = (cal[Calendar.HOUR_OF_DAY] * 60) + cal[Calendar.MINUTE]
         if (this.demoMode) {
             minutes = ((globalTime.msTimeCurrent / 10) % 1440).toInt()
         }
-        _tod.update(minutes, true)
-        currentScene?.updateTimeOfDay(this._tod)
-        sunPosition.value = _tod.sunPosition
+        tod.update(minutes, true)
+        currentScene?.updateTimeOfDay(this.tod)
+        sunPosition.value = tod.sunPosition
     }
 
-    private fun updateCameraPosition(gl: GL10, timeDelta: Float) {
+    private fun updateCameraPosition(timeDelta: Float) {
         desiredCameraPos.set((28.0f * homeOffsetPercentage) - CAMERA_X_RANGE, 0.0f, 0.0f)
-        val rate = (3.5f * timeDelta) * this.pref_cameraSpeed
+        val rate = (3.5f * timeDelta) * this.cameraSpeed
         val dx = (desiredCameraPos.x - cameraPos.x) * rate
         val dy = (desiredCameraPos.y - cameraPos.y) * rate
         val dz = (desiredCameraPos.z - cameraPos.z) * rate
         cameraPos.x += dx
         cameraPos.y += dy
         cameraPos.z += dz
-        cameraDir.x = cameraPos.x - cameraPos.x // FIXME isn't this 0?
+        cameraDir.x = 0f
         cameraDir.y = 100.0f - cameraPos.y
         if (this.landscape) {
             this.cameraFOV = 45.0f
