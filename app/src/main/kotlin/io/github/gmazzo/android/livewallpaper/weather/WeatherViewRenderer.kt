@@ -15,13 +15,14 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.Scene
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneFactory
+import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.sky_manager.TimeOfDay
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.runningFold
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import javax.inject.Named
@@ -41,6 +42,7 @@ internal class WeatherViewRenderer @AssistedInject constructor(
     private val cameraDir = Vector()
     private var cameraFOV = 65.0f
     private val cameraPos: Vector
+    private var currentSceneMode: SceneMode? = null
     private var currentScene: Scene? = null
     private val desiredCameraPos: Vector
     private val globalTime: GlobalTime
@@ -77,25 +79,24 @@ internal class WeatherViewRenderer @AssistedInject constructor(
     private fun watchWeatherChanges() {
         watchWeatherChanges?.cancel()
         watchWeatherChanges = coroutineScope.launch {
-            weatherConditions
-                .runningFold(null as WeatherConditions? to WeatherConditions()) { (_, prev), it -> prev to it }
-                .collect { (previous, current) -> onSceneChanged(previous, current) }
+            weatherConditions.collectLatest(::onSceneChanged)
         }
     }
 
     @Synchronized
-    private fun onSceneChanged(previous: WeatherConditions?, current: WeatherConditions) {
-        updateTimeOfDayTable(current)
+    private fun onSceneChanged(weather: WeatherConditions) {
+        updateTimeOfDayTable(weather)
 
-        if (currentScene == null || previous?.weatherType?.scene != current.weatherType.scene) {
+        if (currentSceneMode != weather.weatherType.scene) {
+            currentSceneMode = weather.weatherType.scene
             currentScene?.unload()
-            currentScene = glContext.sceneFactory.create(current.weatherType.scene) {
+            currentScene = glContext.sceneFactory.create(weather.weatherType.scene) {
                 it.landscape = landscape
-                it.load(weatherConditions.value.weatherType)
+                it.load(weather.weatherType)
             }
         }
 
-        Log.i(TAG, "Weather changed to $current, isDemoMode=$demoMode")
+        Log.i(TAG, "Weather changed to $weather, isDemoMode=$demoMode")
     }
 
     override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {

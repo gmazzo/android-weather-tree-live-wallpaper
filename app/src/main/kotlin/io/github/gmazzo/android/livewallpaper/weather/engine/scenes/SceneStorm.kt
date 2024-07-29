@@ -133,7 +133,6 @@ class SceneStorm @Inject constructor(
             lightning.scale.z *= -1.0f
         }
         things.add(lightning)
-        things.sortByY()
         lightFlashTime = 0.25f
         lightFlashX = lightning.origin.x
     }

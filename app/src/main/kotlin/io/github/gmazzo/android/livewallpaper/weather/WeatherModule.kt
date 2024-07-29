@@ -20,12 +20,12 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -48,20 +48,21 @@ object WeatherModule {
 
     @Provides
     @Singleton
-    fun weatherConditions(dataStore: DataStore<Preferences>): MutableStateFlow<WeatherConditions> =
-        MutableStateFlow(WeatherConditions()).also { flow ->
-            MainScope().launch(Dispatchers.Default) {
-                val current = dataStore.data.firstOrNull()?.get(settingLastWeather)
-                if (current != null) {
-                    flow.value = flow.value.copy(weatherType = WeatherType.valueOf(current))
-                }
+    fun weatherConditions(
+        dataStore: DataStore<Preferences>,
+    ): MutableStateFlow<WeatherConditions> = runBlocking {
+        val current =
+            dataStore.data.firstOrNull()?.get(settingLastWeather)?.let(WeatherType::valueOf)
+        val flow =
+            MutableStateFlow(WeatherConditions(weatherType = current ?: WeatherType.SUNNY_DAY))
 
-                flow.collectLatest { weather ->
-                    dataStore.edit { it[settingLastWeather] = weather.weatherType.name }
-                }
+        MainScope().launch {
+            flow.collectLatest { weather ->
+                dataStore.edit { it[settingLastWeather] = weather.weatherType.name }
             }
-
         }
+        return@runBlocking flow
+    }
 
     @Provides
     @Singleton

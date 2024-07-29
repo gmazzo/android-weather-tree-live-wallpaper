@@ -12,34 +12,39 @@ class Things @Inject constructor(
     private val cloudFactory: ThingCloud.Factory,
     private val darkCloudFactory: ThingDarkCloud.Factory,
     private val wispyFactory: ThingWispy.Factory,
-) : MutableList<Thing> by mutableListOf() {
+) {
+
+    private val items = mutableListOf<Thing>()
+
+    fun clear() =
+        items.clear()
+
+    fun add(thing: Thing) {
+        items.add(thing)
+        items.sortWith(Sorter)
+    }
 
     private inline fun <reified Type : Thing> addIfMissing(
         provider: () -> Type,
         noinline init: ((Type) -> Unit)? = null
-    ) = firstOrNull { it is Type } ?: provider().also { init?.invoke(it); add(it) }
+    ) = items.firstOrNull { it is Type } ?: provider().also { init?.invoke(it); add(it) }
 
     private inline fun <reified Type> removeOfType() =
-        removeAll { it is Type }
+        items.removeAll { it is Type }
 
     fun render() =
-        forEach(Thing::renderIfVisible)
-
-    fun sortByY() {
-        sortBy { it.origin.y }
-    }
+        items.forEach(Thing::renderIfVisible)
 
     fun update(timeDelta: Float) {
         update(timeDelta, false)
     }
 
-    fun update(timeDelta: Float, onlyVisible: Boolean) {
-        val it = iterator()
-        while (it.hasNext()) {
-            val thing = it.next()
+    fun update(timeDelta: Float, onlyVisible: Boolean) = with(items.iterator()) {
+        while (hasNext()) {
+            val thing = next()
 
             if (thing.isDeleted) {
-                it.remove()
+                remove()
 
             } else if (onlyVisible) {
                 thing.updateIfVisible(timeDelta)
@@ -107,6 +112,13 @@ class Things @Inject constructor(
             add(wispy)
         }
     }
+
+    private object Sorter : Comparator<Thing> by (compareBy<Thing> {
+        when (it) {
+            is ThingSun, is ThingMoon -> 0
+            else -> 1
+        }
+    }.thenBy { it.origin.y })
 
     companion object {
         const val WIND_SPEED = 3 * .5f
