@@ -3,6 +3,7 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.things
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
+import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
@@ -22,7 +23,7 @@ class ThingSun @Inject constructor(
 
     private val sunBlend by lazy { textures[R.raw.sun_blend] }
 
-    override fun render() {
+    override fun render() = gl.pushMatrix {
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_COLOR)
         gl.glColor4f(
             engineColor.r,
@@ -31,22 +32,21 @@ class ThingSun @Inject constructor(
             engineColor.a
         )
         gl.glMatrixMode(GL10.GL_MODELVIEW)
-        gl.glPushMatrix()
         gl.glLoadIdentity()
         gl.glTranslatef(origin.x, origin.y, origin.z)
         gl.glScalef(scale.x, scale.y, scale.z)
         gl.glRotatef((timeElapsed * 12.0f) % 360.0f, 0.0f, 1.0f, 0.0f)
         gl.glMatrixMode(GL10.GL_TEXTURE)
-        gl.glPushMatrix()
 
-        val angle = (timeElapsed * 18.0f) % 360.0f
-        gl.glTranslatef(0.5f, 0.5f, 0.0f)
-        gl.glRotatef(angle, 0.0f, 0.0f, 1.0f)
-        gl.glTranslatef(-0.5f, -0.5f, 0.0f)
-        model.renderFrameMultiTexture(sunBlend, texture, GL10.GL_MODULATE, false)
-        gl.glPopMatrix()
+        pushMatrix {
+            val angle = (timeElapsed * 18.0f) % 360.0f
+
+            gl.glTranslatef(0.5f, 0.5f, 0.0f)
+            gl.glRotatef(angle, 0.0f, 0.0f, 1.0f)
+            gl.glTranslatef(-0.5f, -0.5f, 0.0f)
+            model.renderFrameMultiTexture(sunBlend, texture, GL10.GL_MODULATE, false)
+        }
         gl.glMatrixMode(GL10.GL_MODELVIEW)
-        gl.glPopMatrix()
     }
 
     override fun update(timeDelta: Float) {

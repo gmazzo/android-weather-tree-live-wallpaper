@@ -145,18 +145,6 @@ internal class WeatherViewRenderer @AssistedInject constructor(
         gl.glCullFace(GL10.GL_BACK)
         gl.glActiveTexture(GL10.GL_TEXTURE0)
         gl.glEnable(GL10.GL_COLOR_MATERIAL)
-        gl.glMatrixMode(GL10.GL_TEXTURE)
-        gl.glPopMatrix()
-        gl.glPopMatrix()
-        gl.glLoadIdentity()
-        gl.glMatrixMode(GL10.GL_PROJECTION)
-        gl.glPopMatrix()
-        gl.glPopMatrix()
-        gl.glLoadIdentity()
-        gl.glMatrixMode(GL10.GL_MODELVIEW)
-        gl.glPopMatrix()
-        gl.glPopMatrix()
-        gl.glLoadIdentity()
     }
 
     @Synchronized

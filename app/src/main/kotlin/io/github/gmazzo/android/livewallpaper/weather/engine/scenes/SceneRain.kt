@@ -6,6 +6,7 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.particles.ParticleRain
+import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things.Companion.WIND_SPEED
@@ -35,7 +36,7 @@ class SceneRain @Inject constructor(
         )
     }
 
-    private fun renderBackground(timeDelta: Float) {
+    private fun renderBackground(timeDelta: Float) = gl.pushMatrix {
         val stormBg = textures[R.drawable.storm_bg]
 
         gl.glBindTexture(GL10.GL_TEXTURE_2D, stormBg.glId)
@@ -46,32 +47,31 @@ class SceneRain @Inject constructor(
             1.0f
         )
         gl.glMatrixMode(GL10.GL_MODELVIEW)
-        gl.glPushMatrix()
+
         gl.glTranslatef(0.0f, 250.0f, 35.0f)
-        gl.glScalef(this.bgPadding * 2.0f, this.bgPadding, this.bgPadding)
+        gl.glScalef(bgPadding * 2.0f, bgPadding, bgPadding)
         gl.glMatrixMode(GL10.GL_TEXTURE)
-        gl.glPushMatrix()
-        gl.glTranslatef(
-            ((WIND_SPEED * timeDelta) * -0.005f) % 1.0f,
-            0.0f,
-            0.0f
-        )
-        val mesh = models[R.raw.plane_16x16]
-        mesh.render()
-        gl.glPopMatrix()
+
+        gl.pushMatrix {
+            gl.glTranslatef(
+                ((WIND_SPEED * timeDelta) * -0.005f) % 1.0f,
+                0.0f,
+                0.0f
+            )
+            val mesh = models[R.raw.plane_16x16]
+            mesh.render()
+        }
+
         gl.glMatrixMode(GL10.GL_MODELVIEW)
-        gl.glPopMatrix()
     }
 
-    private fun renderRain(timeDelta: Float) {
+    private fun renderRain(timeDelta: Float) = gl.pushMatrix {
         gl.glMatrixMode(GL10.GL_MODELVIEW)
-        gl.glPushMatrix()
         gl.glTranslatef(0.0f, 0.0f, -5.0f)
         gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
         particles.update(timeDelta)
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ZERO)
         particles.render(particleRainOrigin)
-        gl.glPopMatrix()
     }
 
     override fun draw(time: GlobalTime) {

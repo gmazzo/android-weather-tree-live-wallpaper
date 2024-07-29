@@ -8,6 +8,7 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.particles.ParticleRain
+import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingLightning
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things
@@ -73,7 +74,7 @@ class SceneStorm @Inject constructor(
         drawTree(time.sTimeDelta)
     }
 
-    private fun renderBackground(timeDelta: Float) {
+    private fun renderBackground(timeDelta: Float) = gl.pushMatrix {
         gl.glBindTexture(GL10.GL_TEXTURE_2D, stormBg.glId)
         gl.glColor4f(
             timeOfDayColor.r,
@@ -82,42 +83,41 @@ class SceneStorm @Inject constructor(
             1.0f
         )
         gl.glMatrixMode(GL10.GL_MODELVIEW)
-        gl.glPushMatrix()
+
         gl.glTranslatef(0.0f, 250.0f, 35.0f)
         gl.glScalef(bgPadding * 2.0f, bgPadding, bgPadding)
         gl.glMatrixMode(GL10.GL_TEXTURE)
-        gl.glPushMatrix()
-        gl.glTranslatef(
-            ((WIND_SPEED * timeDelta) * -0.005f) % 1.0f,
-            0.0f,
-            0.0f
-        )
-        if (!flashLights || lightFlashTime <= 0.0f) {
-            gl.glEnable(GL10.GL_LIGHTING)
-            gl.glEnable(GL10.GL_LIGHT1)
-            lightAmbientLight[0] = lightAmbientLightColor.r
-            lightAmbientLight[1] = lightAmbientLightColor.g
-            lightAmbientLight[2] = lightAmbientLightColor.b
-            lightAmbientLight[3] = lightAmbientLightColor.a
-            gl.glLightfv(GL10.GL_LIGHT1, GL10.GL_AMBIENT, lightAmbientLight, 0)
+
+        pushMatrix {
+            gl.glTranslatef(
+                ((WIND_SPEED * timeDelta) * -0.005f) % 1.0f,
+                0.0f,
+                0.0f
+            )
+            if (!flashLights || lightFlashTime <= 0.0f) {
+                gl.glEnable(GL10.GL_LIGHTING)
+                gl.glEnable(GL10.GL_LIGHT1)
+                lightAmbientLight[0] = lightAmbientLightColor.r
+                lightAmbientLight[1] = lightAmbientLightColor.g
+                lightAmbientLight[2] = lightAmbientLightColor.b
+                lightAmbientLight[3] = lightAmbientLightColor.a
+                gl.glLightfv(GL10.GL_LIGHT1, GL10.GL_AMBIENT, lightAmbientLight, 0)
+            }
+            val mesh = models[R.raw.plane_16x16]
+            mesh.render()
+            gl.glDisable(GL10.GL_LIGHT1)
         }
-        val mesh = models[R.raw.plane_16x16]
-        mesh.render()
-        gl.glDisable(GL10.GL_LIGHT1)
-        gl.glPopMatrix()
+
         gl.glMatrixMode(GL10.GL_MODELVIEW)
-        gl.glPopMatrix()
     }
 
-    private fun renderRain(timeDelta: Float) {
+    private fun renderRain(timeDelta: Float) = gl.pushMatrix {
         gl.glMatrixMode(GL10.GL_MODELVIEW)
-        gl.glPushMatrix()
         gl.glTranslatef(0.0f, 0.0f, -5.0f)
         gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
         particles.update(timeDelta)
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ZERO)
         particles.render(particleRainOrigin)
-        gl.glPopMatrix()
     }
 
     private fun spawnLightning() {

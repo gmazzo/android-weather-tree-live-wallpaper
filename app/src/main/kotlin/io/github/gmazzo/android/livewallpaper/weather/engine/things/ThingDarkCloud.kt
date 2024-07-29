@@ -7,6 +7,7 @@ import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
+import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingCloud.Companion.CLOUD_X_RANGE
 import javax.microedition.khronos.opengles.GL10
@@ -34,11 +35,10 @@ class ThingDarkCloud @AssistedInject constructor(
         )).toFloat()
     }
 
-    override fun render() {
+    override fun render() = gl.pushMatrix {
         gl.glBindTexture(GL10.GL_TEXTURE_2D, texture.glId)
 
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA)
-        gl.glPushMatrix()
         gl.glTranslatef(origin.x, origin.y, origin.z)
         gl.glScalef(scale.x, scale.y, scale.z)
         gl.glRotatef(
@@ -63,7 +63,6 @@ class ThingDarkCloud @AssistedInject constructor(
             model.render()
             gl.glEnable(GL10.GL_LIGHTING)
         }
-        gl.glPopMatrix()
         gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
     }
 

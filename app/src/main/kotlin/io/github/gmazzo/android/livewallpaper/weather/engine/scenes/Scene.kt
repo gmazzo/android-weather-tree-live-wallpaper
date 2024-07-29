@@ -8,6 +8,7 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.AnimatedModel
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
+import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things
 import io.github.gmazzo.android.livewallpaper.weather.sky_manager.TimeOfDay
@@ -88,12 +89,12 @@ abstract class Scene(
         )
     }
 
-    protected fun drawTree(timeDelta: Float) {
-        if (this.treeAnim && treesAnim.count > 0) {
-            this.treesAnimateDelay -= timeDelta
-            if (this.treesAnimateDelay <= 0f) {
-                this.treesAnimateDelay =
-                    this.treeAnimateDelayMin + (this.treeAnimateDelayRange * Random.nextFloat())
+    protected fun drawTree(timeDelta: Float) = gl.pushMatrix {
+        if (treeAnim && treesAnim.count > 0) {
+            treesAnimateDelay -= timeDelta
+
+            if (treesAnimateDelay <= 0f) {
+                treesAnimateDelay = treeAnimateDelayMin + (treeAnimateDelayRange * Random.nextFloat())
                 treesAnim.reset()
             }
         }
@@ -102,9 +103,10 @@ abstract class Scene(
         val treesOverlay = textures[R.drawable.trees_overlay]
         gl.glBindTexture(GL10.GL_TEXTURE_2D, treesOverlay.glId)
         gl.glMatrixMode(GL10.GL_MODELVIEW)
-        gl.glPushMatrix()
-        if (this.landscape) {
+
+        if (landscape) {
             gl.glTranslatef(2f, 70f, -65f)
+
         } else {
             gl.glTranslatef(-8f, 70f, -70f)
         }
@@ -119,8 +121,6 @@ abstract class Scene(
         treesAnim.update(timeDelta)
         tree.render()
         grass.render()
-
-        gl.glPopMatrix()
     }
 
 }

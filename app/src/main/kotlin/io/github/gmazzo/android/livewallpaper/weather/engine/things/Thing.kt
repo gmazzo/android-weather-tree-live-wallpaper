@@ -5,6 +5,7 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
+import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Texture
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
@@ -51,9 +52,8 @@ abstract class Thing(
         this.isDeleted = true
     }
 
-    open fun render() {
+    open fun render() = gl.pushMatrix {
         gl.glMatrixMode(GL10.GL_MODELVIEW)
-        gl.glPushMatrix()
         gl.glTranslatef(origin.x, origin.y, origin.z)
         gl.glScalef(scale.x, scale.y, scale.z)
         if (angles.a != 0.0f) {
@@ -69,8 +69,7 @@ abstract class Thing(
 
         model.render()
 
-        gl.glPopMatrix()
-        if (this.engineColor != null) {
+        if (engineColor != null) {
             gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
         }
     }

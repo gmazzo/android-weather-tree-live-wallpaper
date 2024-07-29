@@ -4,6 +4,7 @@ import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
+import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things.Companion.WIND_SPEED
@@ -38,7 +39,7 @@ open class SceneClear @Inject constructor(
         drawTree(time.sTimeDelta)
     }
 
-    private fun renderBackground(timeDelta: Float) {
+    private fun renderBackground(timeDelta: Float) = gl.pushMatrix {
         gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[backgroundId].glId)
         gl.glColor4f(
             timeOfDayColor.r,
@@ -47,22 +48,22 @@ open class SceneClear @Inject constructor(
             1.0f
         )
         gl.glMatrixMode(GL10.GL_MODELVIEW)
-        gl.glPushMatrix()
         gl.glTranslatef(0.0f, 250.0f, 35.0f)
-        gl.glScalef(this.bgPadding * 2.0f, this.bgPadding, this.bgPadding)
+        gl.glScalef(bgPadding * 2.0f, bgPadding, bgPadding)
         gl.glMatrixMode(GL10.GL_TEXTURE)
-        gl.glPushMatrix()
-        gl.glTranslatef(
-            ((WIND_SPEED * timeDelta) * -0.005f) % 1.0f,
-            0.0f,
-            0.0f
-        )
-        val mesh = models[R.raw.plane_16x16]
-        mesh.render()
-        renderStars(timeDelta)
-        gl.glPopMatrix()
+
+        pushMatrix {
+            gl.glTranslatef(
+                ((WIND_SPEED * timeDelta) * -0.005f) % 1.0f,
+                0.0f,
+                0.0f
+            )
+            val mesh = models[R.raw.plane_16x16]
+            mesh.render()
+            renderStars(timeDelta)
+        }
+
         gl.glMatrixMode(GL10.GL_MODELVIEW)
-        gl.glPopMatrix()
     }
 
     private fun renderStars(timeDelta: Float) {
