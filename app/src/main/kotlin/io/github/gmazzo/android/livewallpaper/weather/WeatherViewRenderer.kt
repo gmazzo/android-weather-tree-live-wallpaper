@@ -27,6 +27,24 @@ import java.util.Calendar
 import javax.inject.Named
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
+import javax.microedition.khronos.opengles.GL10.GL_BACK
+import javax.microedition.khronos.opengles.GL10.GL_BLEND
+import javax.microedition.khronos.opengles.GL10.GL_COLOR_MATERIAL
+import javax.microedition.khronos.opengles.GL10.GL_FASTEST
+import javax.microedition.khronos.opengles.GL10.GL_GEQUAL
+import javax.microedition.khronos.opengles.GL10.GL_LEQUAL
+import javax.microedition.khronos.opengles.GL10.GL_MODULATE
+import javax.microedition.khronos.opengles.GL10.GL_ONE
+import javax.microedition.khronos.opengles.GL10.GL_ONE_MINUS_SRC_ALPHA
+import javax.microedition.khronos.opengles.GL10.GL_PERSPECTIVE_CORRECTION_HINT
+import javax.microedition.khronos.opengles.GL10.GL_PROJECTION
+import javax.microedition.khronos.opengles.GL10.GL_SMOOTH
+import javax.microedition.khronos.opengles.GL10.GL_TEXTURE0
+import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D
+import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_COORD_ARRAY
+import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_ENV
+import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_ENV_MODE
+import javax.microedition.khronos.opengles.GL10.GL_VERTEX_ARRAY
 import javax.microedition.khronos.opengles.GL11
 import kotlin.random.Random
 
@@ -106,9 +124,7 @@ internal class WeatherViewRenderer @AssistedInject constructor(
         this.landscape = this.screenRatio > 1.0f
 
         gl.glViewport(0, 0, w, h)
-        setRenderDefaults(gl)
-        gl.glMatrixMode(GL10.GL_PROJECTION)
-        gl.glLoadIdentity()
+        gl.setRenderDefaults()
 
         currentScene?.unload()
         currentScene = null
@@ -118,49 +134,47 @@ internal class WeatherViewRenderer @AssistedInject constructor(
         watchWeatherChanges()
     }
 
-    private fun setRenderDefaults(gl: GL10) {
-        gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_FASTEST)
-        gl.glShadeModel(GL10.GL_SMOOTH)
-        gl.glEnable(GL10.GL_TEXTURE_2D)
-        gl.glEnable(GL10.GL_BLEND)
-        gl.glAlphaFunc(GL10.GL_GEQUAL, 0.02f)
-        gl.glDepthMask(false)
-        gl.glDepthFunc(GL10.GL_LEQUAL)
-        gl.glTexEnvx(GL10.GL_TEXTURE_ENV, GL10.GL_TEXTURE_ENV_MODE, GL10.GL_MODULATE)
-        gl.glEnableClientState(GL10.GL_VERTEX_ARRAY)
-        gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY)
-        gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA)
-        gl.glCullFace(GL10.GL_BACK)
-        gl.glActiveTexture(GL10.GL_TEXTURE0)
-        gl.glEnable(GL10.GL_COLOR_MATERIAL)
+    private fun GL10.setRenderDefaults() {
+        glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST)
+        glShadeModel(GL_SMOOTH)
+        glEnable(GL_TEXTURE_2D)
+        glEnable(GL_BLEND)
+        glAlphaFunc(GL_GEQUAL, 0.02f)
+        glDepthMask(false)
+        glDepthFunc(GL_LEQUAL)
+        glTexEnvx(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE)
+        glEnableClientState(GL_VERTEX_ARRAY)
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY)
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA)
+        glCullFace(GL_BACK)
+        glActiveTexture(GL_TEXTURE0)
+        glEnable(GL_COLOR_MATERIAL)
     }
 
     @Synchronized
     override fun onDrawFrame(gl: GL10) {
         val scene = currentScene ?: return
 
-        if (!this.isPaused) {
+        if (!isPaused) {
             globalTime.updateTime()
             calculateTimeOfDay()
+
             updateCameraPosition(globalTime.sTimeDelta)
-            gl.glClear(GL10.GL_DEPTH_BUFFER_BIT)
-            gl.glMatrixMode(GL10.GL_PROJECTION)
-            gl.glLoadIdentity()
-            if (this.landscape) {
-                GLU.gluPerspective(gl, this.cameraFOV, this.screenRatio, 1.0f, 400.0f)
-            } else {
-                GLU.gluPerspective(gl, this.cameraFOV, this.screenRatio, 1.0f, 400.0f)
-            }
-            GLU.gluLookAt(
-                gl,
-                cameraPos.x,
-                cameraPos.y,
-                cameraPos.z,
-                cameraPos.x, 400.0f,
-                cameraPos.z, 0.0f, 0.0f, 1.0f
-            )
+            gl.updateProjection()
+
             scene.draw(globalTime)
         }
+    }
+
+    private fun GL10.updateProjection() {
+        glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()
+        GLU.gluPerspective(this, cameraFOV, screenRatio, 1.0f, 400.0f)
+        GLU.gluLookAt(this,
+            cameraPos.x, cameraPos.y, cameraPos.z,
+            cameraPos.x, 400.0f, cameraPos.z,
+            0.0f, 0.0f, 1.0f,
+        )
     }
 
     fun setTouchPos(x: Float, y: Float) {

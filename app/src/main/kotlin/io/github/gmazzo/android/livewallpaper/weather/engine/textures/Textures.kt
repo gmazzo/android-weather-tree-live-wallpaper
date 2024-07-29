@@ -6,6 +6,7 @@ import android.opengl.GLUtils
 import androidx.annotation.DrawableRes
 import androidx.annotation.RawRes
 import io.github.gmazzo.android.livewallpaper.weather.OpenGLScoped
+import io.github.gmazzo.android.livewallpaper.weather.engine.with
 import java.io.Closeable
 import java.io.IOException
 import java.nio.ByteBuffer
@@ -34,29 +35,29 @@ class Textures @Inject constructor(
     private val textures = mutableMapOf<Int, Texture>()
 
     operator fun get(@DrawableRes @RawRes resId: Int) = textures.getOrPut(resId) {
-        gl.glEnable(GL_TEXTURE_2D)
+        gl.with(GL_TEXTURE_2D) {
+            val buffer = IntBuffer.allocate(1)
+            gl.glGenTextures(1, buffer)
 
-        val buffer = IntBuffer.allocate(1)
-        gl.glGenTextures(1, buffer)
+            val glId = buffer.get(0)
+            check(glId > 0) {
+                "Failed to load texture ${resources.getResourceName(resId)} (resId=$resId)"
+            }
 
-        val glId = buffer.get(0)
-        check(glId > 0) {
-            "Failed to load texture ${resources.getResourceName(resId)} (resId=$resId)"
+            gl.glBindTexture(GL_TEXTURE_2D, glId)
+            gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+            gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+            gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
+            gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
+
+            when (val type = resources.getResourceTypeName(resId)) {
+                "drawable" -> loadBitmap(resId)
+                "raw" -> loadTGA(resId)
+                else -> error("Unsupported resource '$type' for resId=$resId")
+            }
+
+            Texture(resId, glId)
         }
-
-        gl.glBindTexture(GL_TEXTURE_2D, glId)
-        gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-        gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-        gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
-        gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
-
-        when (val type = resources.getResourceTypeName(resId)) {
-            "drawable" -> loadBitmap(resId)
-            "raw" -> loadTGA(resId)
-            else -> error("Unsupported resource '$type' for resId=$resId")
-        }
-
-        return@getOrPut Texture(resId, glId)
     }
 
     private fun loadBitmap(@DrawableRes resId: Int) {
