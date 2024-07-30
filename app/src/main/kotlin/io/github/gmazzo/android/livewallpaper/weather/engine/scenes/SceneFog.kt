@@ -21,7 +21,7 @@ class SceneFog @Inject constructor(
     textures: Textures,
     things: Things,
     @Named("timeOfDay") timeOfDayColor: EngineColor,
-) : Scene(time, gl, models, textures, things, timeOfDayColor, darkClouds = null) {
+) : Scene(time, gl, models, textures, things, timeOfDayColor) {
 
     private val fogEngineColorFinal = EngineColor()
 

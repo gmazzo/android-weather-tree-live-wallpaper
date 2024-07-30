@@ -15,7 +15,7 @@ enum class WeatherType(
     MOSTLY_CLOUDY_DAY(SceneMode.CLOUDY, 15, 5),
     CLOUDY(SceneMode.CLOUDY, 20, 5),
     DREARY_OVERCAST(SceneMode.CLOUDY, 25, 5),
-    FOG(SceneMode.FOG, 5, 10),
+    FOG(SceneMode.FOG, 0, 0),
     SHOWERS(SceneMode.RAIN, 10, 5),
     MOSTLY_CLOUDY_WITH_SHOWERS_DAY(SceneMode.RAIN, 20, 5),
     PARTLY_SUNNY_WITH_SHOWERS_DAY(SceneMode.RAIN, 15, 5),

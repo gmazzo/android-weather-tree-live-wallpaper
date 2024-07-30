@@ -5,6 +5,7 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import javax.inject.Inject
 import javax.inject.Provider
 import kotlin.random.Random
+import kotlin.reflect.KClass
 
 class Things @Inject constructor(
     private val sunProvider: Provider<ThingSun>,
@@ -28,9 +29,6 @@ class Things @Inject constructor(
         provider: () -> Type,
         noinline init: ((Type) -> Unit)? = null
     ) = items.firstOrNull { it is Type } ?: provider().also { init?.invoke(it); add(it) }
-
-    private inline fun <reified Type> removeOfType() =
-        items.removeAll { it is Type }
 
     fun render() =
         items.forEach(Thing::renderIfVisible)
@@ -59,54 +57,76 @@ class Things @Inject constructor(
         sun.origin.set(30f, 100f, 0f)
     }
 
-    fun spawnClouds(numClouds: Int, numWisps: Int, dark: Boolean = false) {
-        removeOfType<ThingCloud>()
-        removeOfType<ThingDarkCloud>()
-        removeOfType<ThingWispy>()
+    fun spawnClouds(numClouds: Int, dark: Boolean = false) {
+        val cloudDepthStep = 131.25f / numClouds
 
-        val cloudDepthList = FloatArray(numClouds)
-        val cloudDepthStep = 131.25f / (numClouds.toFloat())
-
-        (0 until numClouds).forEach { i ->
-            cloudDepthList[i] = ((i.toFloat()) * cloudDepthStep) + 43.75f
-        }
-
-        (0 until numClouds).forEach { i ->
-            val current = cloudDepthList[i]
-            val randomPos = Random.nextInt(cloudDepthList.size)
-            cloudDepthList[i] = cloudDepthList[randomPos]
-            cloudDepthList[randomPos] = current
-        }
-
-        (0 until numClouds).forEach { i ->
+        val changed = syncInstances(
+            if (dark) ThingDarkCloud::class else ThingCloud::class,
+            numClouds
+        ) { which ->
             val cloud =
-                if (dark) darkCloudFactory.create(i)
-                else cloudFactory.create(i)
+                if (dark) darkCloudFactory.create(which)
+                else cloudFactory.create(which)
 
             cloud.randomizeScale()
             if (Random.nextInt(2) == 0) {
                 cloud.scale.x *= -1.0f
             }
-            cloud.origin.x = ((i.toFloat()) * (90.0f / (numClouds.toFloat()))) - 0.099609375f
-            cloud.origin.y = cloudDepthList[i]
+            cloud.origin.x = ((which.toFloat()) * (90.0f / (numClouds.toFloat()))) - 0.099609375f
             cloud.origin.z = Random.nextFloat(-20.0f, -10.0f)
             cloud.velocity = Vector(WIND_SPEED * 1.5f, 0.0f, 0.0f)
-            add(cloud)
+            return@syncInstances cloud
         }
+        if (changed) {
+            // positions the clouds randomly uniformly in the height
+            items
+                .filter { if (dark) it is ThingDarkCloud else it is ThingCloud }
+                .shuffled()
+                .forEachIndexed { which, cloud ->
+                    cloud.origin.y = ((which.toFloat()) * cloudDepthStep) + 43.75f
+                }
+        }
+    }
 
-        (0 until numWisps).forEach { i ->
-            val wispy = wispyFactory.create(i)
-            wispy.velocity = Vector(WIND_SPEED * 1.5f, 0.0f, 0.0f)
-            wispy.scale.set(
-                Random.nextFloat(1.0f, 3.0f),
-                1.0f,
-                Random.nextFloat(1.0f, 1.5f)
-            )
-            wispy.origin.x = ((i.toFloat()) * (120.0f / (numWisps.toFloat()))) - 0.0703125f
-            wispy.origin.y = Random.nextFloat(87.5f, CLOUD_START_DISTANCE)
-            wispy.origin.z = Random.nextFloat(-40.0f, -20.0f)
-            add(wispy)
+    fun spawnWisps(numWisps: Int) = syncInstances(ThingWispy::class, numWisps) { which ->
+        val wispy = wispyFactory.create(which)
+
+        wispy.velocity = Vector(WIND_SPEED * 1.5f, 0.0f, 0.0f)
+        wispy.scale.set(
+            Random.nextFloat(1.0f, 3.0f),
+            1.0f,
+            Random.nextFloat(1.0f, 1.5f)
+        )
+        wispy.origin.x = ((which.toFloat()) * (120.0f / (numWisps.toFloat()))) - 0.0703125f
+        wispy.origin.y = Random.nextFloat(87.5f, CLOUD_START_DISTANCE)
+        wispy.origin.z = Random.nextFloat(-40.0f, -20.0f)
+        return@syncInstances wispy
+    }
+
+    private fun <Type : Thing> syncInstances(
+        type: KClass<out Type>,
+        desiredCount: Int,
+        onCreate: (Int) -> Type
+    ): Boolean {
+        var changed = false
+        var count = 0
+        val it = items.iterator()
+
+        while (it.hasNext()) {
+            if (type.isInstance(it.next())) {
+                count++
+
+                if (count > desiredCount) {
+                    it.remove()
+                    changed = true
+                }
+            }
         }
+        (count until desiredCount).forEach {
+            add(onCreate(it))
+            changed = true
+        }
+        return changed
     }
 
     private object Sorter : Comparator<Thing> by (compareBy<Thing> {

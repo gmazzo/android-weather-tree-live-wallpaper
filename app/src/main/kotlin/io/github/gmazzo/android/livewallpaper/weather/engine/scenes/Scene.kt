@@ -24,11 +24,11 @@ sealed class Scene(
     protected val things: Things,
     protected val timeOfDayColor: EngineColor,
     raining: Boolean = false,
-    private val darkClouds: Boolean? = false,
+    private val darkClouds: Boolean = false,
 ) {
 
     @Suppress("LeakingThis")
-    val mode: SceneMode = when(this) {
+    val mode: SceneMode = when (this) {
         is SceneCloudy -> SceneMode.CLOUDY
         is SceneClear -> SceneMode.CLEAR
         is SceneRain -> SceneMode.RAIN
@@ -61,12 +61,11 @@ sealed class Scene(
     abstract fun draw()
 
     @CallSuper
-    open fun load(state: WeatherType) {
+    open fun load() {
         timeOfDayColor.set(1f, 1f, 1f, 1f)
 
         things.spawnSun()
         things.spawnMoon()
-        updateWeather(state)
     }
 
     @CallSuper
@@ -76,9 +75,8 @@ sealed class Scene(
 
     @CallSuper
     open fun updateWeather(state: WeatherType) {
-        if (darkClouds != null) {
-            things.spawnClouds(state.clouds, state.wisps, dark = darkClouds)
-        }
+        things.spawnClouds(state.clouds, dark = darkClouds)
+        things.spawnWisps(state.wisps)
     }
 
     open fun updateTimeOfDay(tod: TimeOfDay) {
