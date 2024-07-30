@@ -14,7 +14,6 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.TimeOfDay
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
-import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.Scene
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneFactory
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
@@ -45,7 +44,6 @@ import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_ENV
 import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_ENV_MODE
 import javax.microedition.khronos.opengles.GL10.GL_VERTEX_ARRAY
 import javax.microedition.khronos.opengles.GL11
-import kotlin.random.Random
 
 internal class WeatherViewRenderer @AssistedInject constructor(
     private val openGLBuilder: OpenGLComponent.Builder,
@@ -172,18 +170,6 @@ internal class WeatherViewRenderer @AssistedInject constructor(
             cameraPos.x, 400.0f, cameraPos.z,
             0.0f, 0.0f, 1.0f,
         )
-    }
-
-    fun setTouchPos(x: Float, y: Float) {
-        val vPos = Vector()
-        val depth = Random.nextFloat(35.0f, 68.0f) - cameraPos.y
-        val ratioX = (cameraFOV * (screenWidth / screenHeight)) * 0.01111111f
-        val z =
-            (cameraFOV * 0.01111111f) * ((((1.0f - (y / screenHeight)) - 0.5f) * 2.0f) * depth)
-        vPos.x = ((((x / screenWidth) - 0.5f) * 2.0f) * depth) * ratioX
-        vPos.y = depth
-        vPos.z = z
-        vPos.x += cameraPos.x
     }
 
     fun updateOffset(offset: Float) {
