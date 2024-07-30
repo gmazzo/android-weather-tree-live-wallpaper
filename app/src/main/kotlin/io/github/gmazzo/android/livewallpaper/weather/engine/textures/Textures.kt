@@ -41,7 +41,7 @@ class Textures @Inject constructor(
 
             val glId = buffer.get(0)
             check(glId > 0) {
-                "Failed to load texture ${resources.getResourceName(resId)} (resId=$resId)"
+                "Failed to load texture ${resources.getResourceName(resId)} (resId=$resId, errorCode=${gl.glGetError()})"
             }
 
             gl.glBindTexture(GL_TEXTURE_2D, glId)

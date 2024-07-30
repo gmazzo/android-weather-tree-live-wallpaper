@@ -11,7 +11,7 @@ import dagger.assisted.AssistedInject
 @SuppressLint("ViewConstructor") // we'll never inflate this view
 class WeatherView @AssistedInject internal constructor(
     @Assisted context: Context,
-    rendererFactory: WeatherViewRenderer.Factory
+    rendererFactory: WeatherRenderer.Factory
 ) : GLSurfaceView(context) {
 
     private val renderer = rendererFactory.create(this)

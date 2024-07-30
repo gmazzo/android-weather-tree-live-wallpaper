@@ -8,72 +8,71 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Texture
 import javax.inject.Inject
-import javax.microedition.khronos.opengles.GL10
+import javax.microedition.khronos.opengles.GL10.GL_MODELVIEW
+import javax.microedition.khronos.opengles.GL10.GL_ONE
+import javax.microedition.khronos.opengles.GL10.GL_ONE_MINUS_SRC_ALPHA
+import javax.microedition.khronos.opengles.GL10.GL_SRC_ALPHA
+import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D
 import javax.microedition.khronos.opengles.GL11
 import kotlin.math.acos
 import kotlin.random.Random
 
 sealed class Particles(
     private val gl: GL11,
-    protected val model: Model,
-    protected val texture: Texture,
+    model: Model,
+    private val texture: Texture,
+    private val spawnRate: Float = 1f,
+    private val spawnRateVariance: Float = .2f,
+    private val spawnRangeX: Float = 0f,
+    private val spawnRangeY: Float = 0f,
+    private val spawnRangeZ: Float = 0f,
+    private val translucent: Boolean = false,
 ) {
+    private val mesh = model.asMesh()
     private var animCurrentFrame = 0
     private var animTimeElapsed = 0.0f
-    private var _nextSpawnRateVariance = 0.0f
+    private var nextSpawnRateVariance = 0.0f
     private var numParticles = 0
-    private val particles = arrayOfNulls<Particle>(MAX_PARTICLES)
+    private val particles = (0..MAX_PARTICLES).map { Particle() }.toTypedArray()
     private var timeSinceLastSpawn = 0.0f
-    private var _useColor = true
-    private var animFrameOffset: Int = 0
-    private var animFramerate: Float = 20.0f
-    private var animLastFrame: Int = 0
-    protected var destEngineColor: EngineColor = EngineColor(1.0f, 1.0f, 1.0f, 1.0f)
-    private var enableSpawning: Boolean = true
+    private var useColor = true
+    private var animFrameOffset = 0
+    private var animFrameRate = 20.0f
+    private var animLastFrame = 0
+    private var enableSpawning = true
     private var flowDirection: Vector? = null
     private var orientScratch = Vector()
-    private var spawnBurst: Int = 0
-    protected var spawnRangeX: Float = 0.0f
-    protected var spawnRangeY: Float = 0.0f
-    protected var spawnRangeZ: Float = 0.0f
-    protected var spawnRate: Float = 1.0f
-    protected var spawnRateVariance: Float = 0.2f
-    protected var startEngineColor: EngineColor = EngineColor(1.0f, 1.0f, 1.0f, 1.0f)
+    private var spawnBurst = 0
+    protected val destEngineColor = EngineColor(1f, 1f, 1f, 1f)
+    protected val startEngineColor = EngineColor(1.0f, 1.0f, 1.0f, 1.0f)
 
     inner class Particle {
-        private var angle: Float
+        private var angle = 0f
         private val color = EngineColor()
         lateinit var position: Vector
         private var scale = Vector()
-        private var timeElapsed: Float
-        private var useAngles: Boolean
-        private var useScale: Boolean
+        private var timeElapsed = 0f
+        private var useAngles = false
+        private var useScale = false
         private var velocity: Vector = Vector()
-        var alive: Boolean = false
-        private var destAngle: Float = 0f
+        var alive = false
+        private var destAngle = 0f
         lateinit var destScale: Vector
         lateinit var destVelocity: Vector
-        var lifetime: Float = 0f
-        private var startAngle: Float = 0f
+        var lifetime = 0f
+        private var startAngle = 0f
         lateinit var startScale: Vector
         lateinit var startVelocity: Vector
 
-        init {
-            this.angle = 0.0f
-            this.useAngles = false
-            this.useScale = false
-            this.timeElapsed = 0.0f
-        }
-
-        fun render(gl11: GL11, mesh: Mesh) = gl.pushMatrix {
-            gl11.glMatrixMode(GL10.GL_MODELVIEW)
-            gl11.glTranslatef(
+        fun render(mesh: Mesh) = gl.pushMatrix {
+            gl.glMatrixMode(GL_MODELVIEW)
+            gl.glTranslatef(
                 position.x,
                 position.y,
                 position.z
             )
-            if (this@Particles._useColor) {
-                gl11.glColor4f(
+            if (useColor) {
+                gl.glColor4f(
                     color.r,
                     color.g,
                     color.b,
@@ -81,43 +80,43 @@ sealed class Particles(
                 )
             }
             if (useScale) {
-                gl11.glScalef(scale.x, scale.y, scale.z)
+                gl.glScalef(scale.x, scale.y, scale.z)
             }
             if (useAngles) {
-                gl11.glRotatef(angle, 0.0f, 1.0f, 0.0f)
+                gl.glRotatef(angle, 0.0f, 1.0f, 0.0f)
             }
-            mesh.renderFrame_gl11_render(gl11)
+            mesh.renderFrame_gl11_render(gl)
         }
 
         @Inject
         fun reset() {
             position = Vector()
-            this.timeElapsed = 0.0f
+            timeElapsed = 0.0f
             startVelocity = Vector()
             destVelocity = Vector()
             startScale = Vector(1f)
             destScale = Vector(1f)
-            this.startAngle = 0.0f
-            this.destAngle = 0.0f
-            this.lifetime = 1.0f
+            startAngle = 0.0f
+            destAngle = 0.0f
+            lifetime = 1.0f
         }
 
         fun setUsageFlags() {
-            this.useAngles = this.startAngle != 0.0f || this.destAngle != 0.0f
-            this.useScale =
+            useAngles = startAngle != 0.0f || destAngle != 0.0f
+            useScale =
                 (startScale.x != 1.0f) || (startScale.y != 1.0f) || (startScale.z != 1.0f) || (destScale.x != 1.0f) || (destScale.y != 1.0f) || (destScale.z != 1.0f)
         }
 
         fun update(timeDelta: Float): Boolean {
-            this.timeElapsed += timeDelta
-            if (this.timeElapsed > this.lifetime) {
-                this.alive = false
+            timeElapsed += timeDelta
+            if (timeElapsed > lifetime) {
+                alive = false
                 return false
             }
-            val percentage = this.timeElapsed / this.lifetime
+            val percentage = timeElapsed / lifetime
             val invPercentage = 1.0f - percentage
             updateVelocity(percentage, invPercentage)
-            if (this@Particles._useColor) {
+            if (useColor) {
                 color.set(
                     (startEngineColor.r * invPercentage) + (destEngineColor.r * percentage),
                     (startEngineColor.g * invPercentage) + (destEngineColor.g * percentage),
@@ -125,15 +124,15 @@ sealed class Particles(
                     (startEngineColor.a * invPercentage) + (destEngineColor.a * percentage)
                 )
             }
-            if (this.useScale) {
+            if (useScale) {
                 scale = Vector(
                     (startScale.x * invPercentage) + (destScale.x * percentage),
                     (startScale.y * invPercentage) + (destScale.y * percentage),
                     (startScale.z * invPercentage) + (destScale.z * percentage)
                 )
             }
-            if (this.useAngles) {
-                this.angle = (this.startAngle * invPercentage) + (this.destAngle * percentage)
+            if (useAngles) {
+                angle = (startAngle * invPercentage) + (destAngle * percentage)
             }
             position += velocity * timeDelta
             return true
@@ -148,22 +147,16 @@ sealed class Particles(
         }
     }
 
-    init {
-        for (i in particles.indices) {
-            particles[i] = Particle()
-        }
-    }
-
-    private fun handleOrientation(gl11: GL11, newDirection: Vector) {
+    private fun handleOrientation(newDirection: Vector) {
         orientScratch = (flowDirection!! * newDirection).normalized
 
         val angle = acos(newDirection.scalarProduct(flowDirection!!)) * 57.295776f
 
-        gl11.glRotatef(angle, orientScratch.x, orientScratch.y, orientScratch.z)
+        gl.glRotatef(angle, orientScratch.x, orientScratch.y, orientScratch.z)
     }
 
-    open fun particleSetup(particle: Particle?) {
-        particle!!.reset()
+    open fun particleSetup(particle: Particle) {
+        particle.reset()
         particle.position += Vector(
             if (spawnRangeX > 0.01f) Random.nextFloat(-spawnRangeX, spawnRangeX) else 0f,
             if (spawnRangeY > 0.01f) Random.nextFloat(-spawnRangeY, spawnRangeY) else 0f,
@@ -173,71 +166,64 @@ sealed class Particles(
     }
 
     fun render(systemOrigin: Vector?, direction: Vector? = null) = gl.pushMatrix {
-        gl.glBindTexture(GL10.GL_TEXTURE_2D, texture.glId)
-        gl.glMatrixMode(GL10.GL_MODELVIEW)
+        gl.glBindTexture(GL_TEXTURE_2D, texture.glId)
+        gl.glMatrixMode(GL_MODELVIEW)
         gl.glTranslatef(systemOrigin!!.x, systemOrigin.y, systemOrigin.z)
         if (!(direction == null || flowDirection == null)) {
-            handleOrientation(gl, direction)
+            handleOrientation(direction)
         }
-        renderStart(gl)
-        val mesg = model.asMesh()
-        mesg.renderFrame_gl11_setup(gl, animCurrentFrame)
-        for (i in particles.indices) {
-            if (particles[i]!!.alive) {
-                particles[i]!!.render(gl, mesg)
+        gl.glBlendFunc(if (translucent) GL_SRC_ALPHA else GL_ONE, GL_ONE_MINUS_SRC_ALPHA)
+        mesh.renderFrame_gl11_setup(gl, animCurrentFrame)
+
+        particles.forEach {
+            if (it.alive) {
+                it.render(mesh)
             }
         }
-        mesg.renderFrame_gl11_clear(gl)
-        renderEnd(gl)
+
+        mesh.renderFrame_gl11_clear(gl)
         gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
-    }
-
-    protected open fun renderEnd(gl: GL10?) {
-    }
-
-    protected open fun renderStart(gl: GL10) {
-    }
-
-    protected fun setUsageFlags() {
-        this._useColor =
-            (startEngineColor.r != 1.0f) || (startEngineColor.g != 1.0f) || (startEngineColor.b != 1.0f) || (startEngineColor.a != 1.0f) || (destEngineColor.r != 1.0f) || (destEngineColor.g != 1.0f) || (destEngineColor.b != 1.0f) || (destEngineColor.a != 1.0f)
     }
 
     open fun update(timeDelta: Float) {
         var createNew = 0
-        if (this.enableSpawning && this.spawnBurst > 0) {
-            createNew = this.spawnBurst
-            this.enableSpawning = false
+
+        if (enableSpawning && spawnBurst > 0) {
+            createNew = spawnBurst
+            enableSpawning = false
         }
-        if (this.numParticles < MAX_PARTICLES) {
-            this.timeSinceLastSpawn += timeDelta
-            while (this.timeSinceLastSpawn + this._nextSpawnRateVariance > this.spawnRate) {
-                this.timeSinceLastSpawn -= this.spawnRate + this._nextSpawnRateVariance
-                this._nextSpawnRateVariance =
-                    Random.nextFloat(-this.spawnRateVariance, this.spawnRateVariance)
+        if (numParticles < MAX_PARTICLES) {
+            timeSinceLastSpawn += timeDelta
+            while (timeSinceLastSpawn + nextSpawnRateVariance > spawnRate) {
+                timeSinceLastSpawn -= spawnRate + nextSpawnRateVariance
+                nextSpawnRateVariance =
+                    Random.nextFloat(-spawnRateVariance, spawnRateVariance)
                 createNew++
             }
         }
-        for (i in particles.indices) {
-            if (particles[i]!!.alive) {
-                if (!particles[i]!!.update(timeDelta)) {
+        particles.forEach { particle ->
+            if (particle.alive) {
+                if (!particle.update(timeDelta)) {
                     numParticles--
                 }
+
             } else if (createNew > 0) {
                 var fakeTimeElapsed = 0.001f
-                if (createNew > 1 && this.spawnBurst == 0) {
-                    fakeTimeElapsed = ((createNew - 1).toFloat()) * this.spawnRate
+
+                if (createNew > 1 && spawnBurst == 0) {
+                    fakeTimeElapsed = ((createNew - 1).toFloat()) * spawnRate
                 }
-                particleSetup(particles[i])
-                particles[i]!!.setUsageFlags()
-                particles[i]!!.update(fakeTimeElapsed)
+
+                particleSetup(particle)
+                particle.setUsageFlags()
+                particle.update(fakeTimeElapsed)
+
                 numParticles++
                 createNew--
-                if (this.animLastFrame > 0) {
-                    this.animTimeElapsed += timeDelta
-                    this.animCurrentFrame = (this.animTimeElapsed * this.animFramerate).toInt()
-                    this.animCurrentFrame += this.animFrameOffset
-                    this.animCurrentFrame %= this.animLastFrame + 1
+                if (animLastFrame > 0) {
+                    animTimeElapsed += timeDelta
+                    animCurrentFrame =
+                        ((animTimeElapsed * animFrameRate) + animFrameOffset).toInt() % (animLastFrame + 1)
                 }
             }
         }

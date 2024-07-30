@@ -14,7 +14,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import javax.inject.Named
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL10.GL_BACK
@@ -37,10 +36,9 @@ import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_ENV_MODE
 import javax.microedition.khronos.opengles.GL10.GL_VERTEX_ARRAY
 import javax.microedition.khronos.opengles.GL11
 
-internal class WeatherViewRenderer @AssistedInject constructor(
+internal class WeatherRenderer @AssistedInject constructor(
     private val openGLFactory: OpenGLComponent.Factory,
     @Assisted private val view: GLSurfaceView,
-    @Named("homeOffset") private val homeOffset: MutableStateFlow<Float>,
     private val weatherState: MutableStateFlow<WeatherState>,
 ) : Renderer {
     private var landscape: Boolean = false
@@ -54,6 +52,7 @@ internal class WeatherViewRenderer @AssistedInject constructor(
     private var screenWidth = 0f
     private lateinit var glContext: OpenGLComponent
     private var watchWeatherChanges: Job? = null
+    private val homeOffset = MutableStateFlow(.5f)
     private val isPaused get() = watchWeatherChanges == null
 
     @Synchronized
@@ -93,7 +92,7 @@ internal class WeatherViewRenderer @AssistedInject constructor(
     }
 
     override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
-        glContext = openGLFactory.create(view, gl as GL11, demoMode)
+        glContext = openGLFactory.create(view, gl as GL11, demoMode, homeOffset)
     }
 
     override fun onSurfaceChanged(gl: GL10, w: Int, h: Int) {
@@ -170,7 +169,7 @@ internal class WeatherViewRenderer @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(view: GLSurfaceView): WeatherViewRenderer
+        fun create(view: GLSurfaceView): WeatherRenderer
     }
 
     companion object {

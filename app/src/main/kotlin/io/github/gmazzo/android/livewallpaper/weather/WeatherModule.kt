@@ -26,7 +26,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import javax.inject.Named
 import javax.inject.Singleton
 
 @Module(subcomponents = [OpenGLComponent::class])
@@ -39,13 +38,6 @@ object WeatherModule {
     @Provides
     @Singleton
     fun resources(@ApplicationContext context: Context) = context.resources
-
-    // TODO review if there is a better way to share this
-    @Provides
-    @Singleton
-    @Named("homeOffset")
-    fun homeOffset(): MutableStateFlow<Float> =
-        MutableStateFlow(.5f)
 
     @Provides
     @Singleton

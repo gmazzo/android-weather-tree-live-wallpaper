@@ -10,6 +10,8 @@ import java.nio.FloatBuffer
 import java.nio.ShortBuffer
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
+import kotlin.math.max
+import kotlin.math.min
 
 class Mesh {
     private var bufIndex: ShortBuffer? = null
@@ -52,21 +54,13 @@ class Mesh {
         }
     }
 
-    init {
-        if (tagOrigin == null) {
-            tagOrigin = Tag(1)
-            tagOrigin!!.addPosition(0.0f, 0.0f, 0.0f, 0)
-            tagOrigin!!.addNormal(0.0f, 0.0f, 1.0f, 0)
-        }
-    }
-
     private fun allocateScratchBuffers() {
         this.bufScratch = ByteBuffer.allocateDirect(this.numElements * 3 * 4)
             .order(ByteOrder.nativeOrder())
             .asFloatBuffer()
     }
 
-    fun createFromArrays(
+    private fun createFromArrays(
         gl: GL10,
         vertexs: FloatArray?,
         normals: FloatArray?,
@@ -499,64 +493,24 @@ class Mesh {
     }
 
     fun renderFrame_gl11_setup(gl11: GL11, frameNum: Int) {
-        var frameNum = frameNum
-        if (frameNum >= frames.size || frameNum < 0) {
+        val frame = max(min(frameNum, frames.size - 1), 0)
+        if (frame != frameNum) {
             Log.v(
                 TAG,
                 "ERROR: Mesh.renderFrame (" + this.meshName + ") given a frame outside of frames.length: " + frameNum
             )
-            frameNum = frames.size - 1
         }
-        gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, frames[frameNum]!!.bufVertexHandle)
+
+        gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, frames[frame]!!.bufVertexHandle)
         gl11.glVertexPointer(3, GL10.GL_FLOAT, 0, 0)
-        gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, frames[frameNum]!!.bufNormalHandle)
+        gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, frames[frame]!!.bufNormalHandle)
         gl11.glNormalPointer(GL10.GL_FLOAT, 0, 0)
         gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, this.bufTCHandle)
         gl11.glTexCoordPointer(2, GL10.GL_FLOAT, 0, 0)
         gl11.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, this.bufIndexHandle)
     }
 
-    fun unload(gl10: GL10?) {
-        /* TODO managed by Models
-        boolean isGL11 = gl10 instanceof GL11;
-        int[] tmpBuffer = new int[2];
-        for (int i = 0; i < this.frames.length; i++) {
-            this.frames[i].bufNormal = null;
-            this.frames[i].bufNormalDirect = null;
-            this.frames[i].bufVertex = null;
-            this.frames[i].bufVertexDirect = null;
-            if (isGL11) {
-                GL11 gl11 = (GL11) gl10;
-                tmpBuffer[0] = this.frames[i].bufNormalHandle;
-                tmpBuffer[1] = this.frames[i].bufVertexHandle;
-                gl11.glDeleteBuffers(2, tmpBuffer, 0);
-            }
-        }
-        this.bufIndex = null;
-        this.bufIndexDirect = null;
-        this.bufTC = null;
-        this.bufTCDirect = null;
-        if (isGL11) {
-            GL11 gl11 = (GL11) gl10;
-            tmpBuffer[0] = this.bufIndexHandle;
-            tmpBuffer[1] = this.bufTCHandle;
-            gl11.glDeleteBuffers(2, tmpBuffer, 0);
-        }
-        this.bufScratch = null;
-        */
-    }
-
     companion object {
         private const val TAG = "GL Engine"
-        val assertionsDisabled: Boolean
-        private var tagOrigin: Tag? = null
-
-        init {
-            assertionsDisabled = !desiredAssertionStatus()
-        }
-
-        private fun desiredAssertionStatus(): Boolean {
-            return true
-        }
     }
 }

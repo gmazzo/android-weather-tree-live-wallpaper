@@ -10,6 +10,7 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things.Companion.WIND_SPEED
 import javax.inject.Inject
+import javax.inject.Provider
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 
@@ -20,7 +21,7 @@ class SceneSnow @Inject constructor(
     textures: Textures,
     things: Things,
     timeOfDayTint: TimeOfDayTint,
-    particle: ParticlesSnow.Factory,
+    private val particle: Provider<ParticlesSnow>,
 ) : Scene(time, gl, models, textures, things, timeOfDayTint) {
 
     private val snowPositions = arrayOf(
@@ -30,7 +31,7 @@ class SceneSnow @Inject constructor(
     )
 
     private val particles =
-        snowPositions.map { particle.create(timeOfDayTint.color) }
+        snowPositions.map { particle.get() }
 
     override fun draw() {
         super.draw()
