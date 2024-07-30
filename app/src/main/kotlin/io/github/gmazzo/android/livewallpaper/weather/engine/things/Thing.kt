@@ -19,11 +19,11 @@ sealed class Thing(
     protected abstract val engineColor: EngineColor?
     var isDeleted: Boolean = false
         private set
-    val origin = Vector(0.0f, 0.0f, 0.0f)
+    var origin = Vector()
     protected var timeElapsed = 0.0f
-    var scale: Vector = Vector(1.0f, 1.0f, 1.0f)
+    var scale: Vector = Vector(1f)
     var velocity: Vector? = null
-    private val visScratch = Vector(0.0f, 0.0f, 0.0f)
+    private val visScratch = Vector()
     var visWidth = 3.0f
 
     protected abstract val model: Model
@@ -54,19 +54,15 @@ sealed class Thing(
         val timeDelta = time.deltaSeconds
 
         timeElapsed += timeDelta
-        velocity?.let { velocity ->
-            origin.plus(
-                velocity.x * timeDelta,
-                velocity.y * timeDelta,
-                velocity.z * timeDelta
-            )
-        }
+        velocity?.let { origin += it * timeDelta }
     }
 
-    fun randomizeScale() = scale.set(
-        3.5f + Random.nextFloat(0.0f, 2.0f),
-        3.0f,
-        3.5f + Random.nextFloat(0.0f, 2.0f)
-    )
+    fun randomizeScale() {
+        scale = Vector(
+            3.5f + Random.nextFloat(0.0f, 2.0f),
+            3.0f,
+            3.5f + Random.nextFloat(0.0f, 2.0f)
+        )
+    }
 
 }

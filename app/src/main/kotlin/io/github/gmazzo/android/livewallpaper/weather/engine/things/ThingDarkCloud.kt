@@ -61,9 +61,10 @@ class ThingDarkCloud @AssistedInject constructor(
 
         val rangX = calculateCloudRangeX()
         if (origin.x > rangX) {
-            origin.x = -rangX
+            origin = origin.copy(x = -rangX)
+
         } else if (origin.x < (-rangX)) {
-            origin.x = rangX
+            origin = origin.copy(x = rangX)
         }
         engineColor.r = 0.2f
         engineColor.g = 0.2f

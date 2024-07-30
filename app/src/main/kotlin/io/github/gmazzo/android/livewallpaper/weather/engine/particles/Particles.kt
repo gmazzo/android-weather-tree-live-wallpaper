@@ -30,7 +30,7 @@ sealed class Particles(
     protected var destEngineColor: EngineColor = EngineColor(1.0f, 1.0f, 1.0f, 1.0f)
     private var enableSpawning: Boolean = true
     private var flowDirection: Vector? = null
-    private val orientScratch = Vector()
+    private var orientScratch = Vector()
     private var spawnBurst: Int = 0
     protected var spawnRangeX: Float = 0.0f
     protected var spawnRangeY: Float = 0.0f
@@ -39,36 +39,30 @@ sealed class Particles(
     protected var spawnRateVariance: Float = 0.2f
     protected var startEngineColor: EngineColor = EngineColor(1.0f, 1.0f, 1.0f, 1.0f)
 
-    open inner class Particle {
+    inner class Particle {
         private var angle: Float
         private val color = EngineColor()
-        private val position = Vector()
-        private val scale = Vector()
+        lateinit var position: Vector
+        private var scale = Vector()
         private var timeElapsed: Float
         private var useAngles: Boolean
         private var useScale: Boolean
         private var velocity: Vector = Vector()
         var alive: Boolean = false
         private var destAngle: Float = 0f
-        var destScale: Vector = Vector()
-        var destVelocity: Vector = Vector()
+        lateinit var destScale: Vector
+        lateinit var destVelocity: Vector
         var lifetime: Float = 0f
         private var startAngle: Float = 0f
-        var startScale: Vector = Vector()
-        var startVelocity: Vector = Vector()
+        lateinit var startScale: Vector
+        lateinit var startVelocity: Vector
 
         init {
-            position.set(0.0f)
             this.angle = 0.0f
             this.useAngles = false
             this.useScale = false
             this.timeElapsed = 0.0f
-        }
-
-        fun modifyPosition(offsetX: Float, offsetY: Float, offsetZ: Float) {
-            position.x += offsetX
-            position.y += offsetY
-            position.z += offsetZ
+            reset()
         }
 
         fun render(gl11: GL11, mesh: Mesh) = gl.pushMatrix {
@@ -96,12 +90,12 @@ sealed class Particles(
         }
 
         fun reset() {
-            position.set(0.0f, 0.0f, 0.0f)
+            position = Vector()
             this.timeElapsed = 0.0f
-            startVelocity.set(0.0f, 0.0f, 0.0f)
-            destVelocity.set(0.0f, 0.0f, 0.0f)
-            startScale.set(1.0f, 1.0f, 1.0f)
-            destScale.set(1.0f, 1.0f, 1.0f)
+            startVelocity = Vector()
+            destVelocity = Vector()
+            startScale = Vector(1f)
+            destScale = Vector(1f)
             this.startAngle = 0.0f
             this.destAngle = 0.0f
             this.lifetime = 1.0f
@@ -131,7 +125,7 @@ sealed class Particles(
                 )
             }
             if (this.useScale) {
-                scale.set(
+                scale = Vector(
                     (startScale.x * invPercentage) + (destScale.x * percentage),
                     (startScale.y * invPercentage) + (destScale.y * percentage),
                     (startScale.z * invPercentage) + (destScale.z * percentage)
@@ -140,16 +134,12 @@ sealed class Particles(
             if (this.useAngles) {
                 this.angle = (this.startAngle * invPercentage) + (this.destAngle * percentage)
             }
-            position.plus(
-                velocity.x * timeDelta,
-                velocity.y * timeDelta,
-                velocity.z * timeDelta
-            )
+            position += velocity * timeDelta
             return true
         }
 
         private fun updateVelocity(percentage: Float, invPercentage: Float) {
-            velocity.set(
+            velocity = Vector(
                 (startVelocity.x * invPercentage) + (destVelocity.x * percentage),
                 (startVelocity.y * invPercentage) + (destVelocity.y * percentage),
                 (startVelocity.z * invPercentage) + (destVelocity.z * percentage)
@@ -159,47 +149,25 @@ sealed class Particles(
 
     init {
         for (i in particles.indices) {
-            particles[i] = newParticle()
+            particles[i] = Particle()
         }
     }
 
     private fun handleOrientation(gl11: GL11, newDirection: Vector) {
-        orientScratch.set(flowDirection!!)
-        orientScratch *= newDirection
-        orientScratch.normalize()
+        orientScratch = (flowDirection!! * newDirection).normalized
 
-        gl11.glRotatef(
-            (acos(
-                newDirection.times(
-                    flowDirection!!
-                ).toDouble()
-            )
-                .toFloat()) * 57.295776f,
-            orientScratch.x,
-            orientScratch.y,
-            orientScratch.z
-        )
-    }
+        val angle = acos(newDirection.scalarProduct(flowDirection!!)) * 57.295776f
 
-    protected fun newParticle(): Particle {
-        return Particle()
+        gl11.glRotatef(angle, orientScratch.x, orientScratch.y, orientScratch.z)
     }
 
     open fun particleSetup(particle: Particle?) {
         particle!!.reset()
-        var rX = 0.0f
-        var rY = 0.0f
-        var rZ = 0.0f
-        if (spawnRangeX > 0.01f) {
-            rX = Random.nextFloat(-spawnRangeX, spawnRangeX)
-        }
-        if (spawnRangeY > 0.01f) {
-            rY = Random.nextFloat(-spawnRangeY, spawnRangeY)
-        }
-        if (spawnRangeZ > 0.01f) {
-            rZ = Random.nextFloat(-spawnRangeZ, spawnRangeZ)
-        }
-        particle.modifyPosition(rX, rY, rZ)
+        particle.position += Vector(
+            if (spawnRangeX > 0.01f) Random.nextFloat(-spawnRangeX, spawnRangeX) else 0f,
+            if (spawnRangeY > 0.01f) Random.nextFloat(-spawnRangeY, spawnRangeY) else 0f,
+            if (spawnRangeZ > 0.01f) Random.nextFloat(-spawnRangeZ, spawnRangeZ) else 0f,
+        )
         particle.alive = true
     }
 

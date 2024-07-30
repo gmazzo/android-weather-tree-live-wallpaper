@@ -1,6 +1,7 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.particles
 
 import io.github.gmazzo.android.livewallpaper.weather.R
+import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
@@ -26,12 +27,14 @@ class ParticlesRain @Inject constructor(
     override fun particleSetup(particle: Particle?) {
         super.particleSetup(particle)
         particle!!.lifetime = 1.0f
+
         val startScale = Random.nextFloat(1.0f, 1.5f)
-        particle.startScale.set(startScale, startScale, startScale)
-        particle.destScale.set(startScale, startScale, startScale)
+        particle.startScale = Vector(startScale)
+        particle.destScale = Vector(startScale)
+
         val velocity = Random.nextFloat(0.95f, 1.05f)
-        particle.startVelocity.set(8.0f, 0.0f, -15.0f)
-        particle.destVelocity.set(9.45f * velocity, 0.0f, -35.0f * velocity)
+        particle.startVelocity = Vector(8.0f, 0.0f, -15.0f)
+        particle.destVelocity = Vector(9.45f * velocity, 0.0f, -35.0f * velocity)
     }
 
     public override fun renderEnd(gl: GL10?) {

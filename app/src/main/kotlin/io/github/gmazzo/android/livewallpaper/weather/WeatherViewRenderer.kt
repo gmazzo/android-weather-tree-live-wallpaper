@@ -52,11 +52,9 @@ internal class WeatherViewRenderer @AssistedInject constructor(
     private val weatherState: MutableStateFlow<WeatherState>,
 ) : Renderer {
     private var landscape: Boolean = false
-    private val cameraDir = Vector()
     private var cameraFOV = 65.0f
-    private val cameraPos = Vector(0.0f, 0.0f, 0.0f)
+    private var cameraPos = Vector(0.0f, 0.0f, 0.0f)
     private var currentScene: Scene? = null
-    private val desiredCameraPos = Vector(0.0f, 0.0f, 0.0f)
     private val cameraSpeed: Float = 1.0f
     var demoMode = false
     private var screenHeight = 0f
@@ -113,10 +111,10 @@ internal class WeatherViewRenderer @AssistedInject constructor(
     }
 
     override fun onSurfaceChanged(gl: GL10, w: Int, h: Int) {
-        this.screenWidth = w.toFloat()
-        this.screenHeight = h.toFloat()
-        this.screenRatio = this.screenWidth / this.screenHeight
-        this.landscape = this.screenRatio > 1.0f
+        screenWidth = w.toFloat()
+        screenHeight = h.toFloat()
+        screenRatio = screenWidth / screenHeight
+        landscape = screenRatio > 1.0f
 
         gl.glViewport(0, 0, w, h)
         gl.setRenderDefaults()
@@ -177,21 +175,11 @@ internal class WeatherViewRenderer @AssistedInject constructor(
     }
 
     private fun updateCameraPosition() {
-        desiredCameraPos.set((28 * homeOffset.value) - 14, 0f, 0f)
-        val rate = (3.5f * glContext.time.deltaSeconds) * this.cameraSpeed
-        val dx = (desiredCameraPos.x - cameraPos.x) * rate
-        val dy = (desiredCameraPos.y - cameraPos.y) * rate
-        val dz = (desiredCameraPos.z - cameraPos.z) * rate
-        cameraPos.x += dx
-        cameraPos.y += dy
-        cameraPos.z += dz
-        cameraDir.x = 0f
-        cameraDir.y = 100.0f - cameraPos.y
-        if (this.landscape) {
-            this.cameraFOV = 45.0f
-        } else {
-            this.cameraFOV = 70.0f
-        }
+        val rate = (3.5f * glContext.time.deltaSeconds) * cameraSpeed
+        val diff = (Vector(28 * homeOffset.value - 14, 0f, 0f) - cameraPos) * rate
+
+        cameraPos += diff
+        cameraFOV = if (landscape) 45f else 70f
     }
 
     @AssistedFactory

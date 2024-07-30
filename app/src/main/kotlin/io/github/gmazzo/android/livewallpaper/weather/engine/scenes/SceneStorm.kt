@@ -127,13 +127,13 @@ class SceneStorm @Inject constructor(
     private fun spawnLightning() {
         val lightning = lightningProvider.get()
 
-        lightning.origin.set(
+        lightning.origin = Vector(
             Random.nextFloat(-25.0f, 25.0f),
             Random.nextFloat(95.0f, 168.0f),
             20.0f
         )
         if (Random.nextInt(2) == 0) {
-            lightning.scale.z *= -1.0f
+            lightning.scale = lightning.scale.let { it.copy(z = it.z * -1.0f) }
         }
         things.add(lightning)
         lightFlashTime = 0.25f

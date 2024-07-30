@@ -5,6 +5,7 @@ import io.github.gmazzo.android.livewallpaper.weather.WeatherState
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.SkyManager
+import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Texture
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
@@ -12,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
+import kotlin.math.min
 import kotlin.math.roundToInt
 
 class ThingMoon @Inject constructor(
@@ -43,21 +45,18 @@ class ThingMoon @Inject constructor(
         super.update()
 
         val position: Float = state.value.sunPosition
-        if (position >= 0.0f) {
-            scale.set(0.0f)
+        if (position >= 0f) {
+            scale = Vector()
 
         } else {
-            scale.set(2.0f)
+            scale = Vector(2f)
             val altitude = position * -175.0f
             var alpha = altitude / 25.0f
             if (alpha > 1.0f) {
                 alpha = 1.0f
             }
             engineColor.a = alpha
-            origin.z = altitude - 80.0f
-            if (origin.z > 0.0f) {
-                origin.z = 0.0f
-            }
+            origin = origin.copy(z = min(altitude - 80f, 0f))
         }
 
         val currentPhase = phase

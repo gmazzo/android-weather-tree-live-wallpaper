@@ -6,6 +6,7 @@ import dagger.assisted.AssistedInject
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
+import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
@@ -22,15 +23,20 @@ class ThingCloud @AssistedInject constructor(
     textures: Textures,
     @Named("timeOfDay") private val timeOfDayColor: EngineColor,
     @Assisted which: Int,
-) : ThingSimple(time, gl, models, textures, MODELS[which % MODELS.size], TEXTURES[which % TEXTURES.size]) {
+) : ThingSimple(
+    time,
+    gl,
+    models,
+    textures,
+    MODELS[which % MODELS.size],
+    TEXTURES[which % TEXTURES.size]
+) {
 
     override val engineColor = EngineColor(1.0f, 1.0f, 1.0f, 1.0f)
 
     init {
         visWidth = 0.0f
-        origin.x = -100.0f
-        origin.y = 15.0f
-        origin.z = 50.0f
+        origin = Vector(-100f, 15f, 50f)
     }
 
     private fun calculateCloudRangeX(): Float {
@@ -49,7 +55,7 @@ class ThingCloud @AssistedInject constructor(
 
         val rangX = calculateCloudRangeX()
         if (origin.x > rangX) {
-            origin.x = Random.nextFloat((-rangX) - 5.0f, (-rangX) + 5.0f)
+            origin = origin.copy(x = Random.nextFloat((-rangX) - 5.0f, (-rangX) + 5.0f))
             engineColor.set(0)
             timeElapsed = 0.0f
             randomizeScale()

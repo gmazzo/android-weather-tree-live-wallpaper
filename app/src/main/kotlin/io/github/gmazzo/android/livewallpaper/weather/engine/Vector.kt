@@ -1,76 +1,34 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine
 
-import java.lang.Math.toRadians
-import kotlin.math.cos
-import kotlin.math.sin
 import kotlin.math.sqrt
 
 data class Vector(
-    var x: Float = 0f,
-    var y: Float = 0f,
-    var z: Float = 0f
+    val x: Float = 0f,
+    val y: Float = 0f,
+    val z: Float = 0f
 ) {
 
-    fun plus(x: Float, y: Float, z: Float): Vector {
-        this.x += x
-        this.y += y
-        this.z += z
-        return this
-    }
+    constructor(value: Float) : this(value, value, value)
 
-    operator fun plus(other: Vector) = plus(other.x, other.y, other.z)
+    operator fun plus(other: Vector) = copy(x = x + other.x, y = y + other.y, z = z + other.z)
 
-    operator fun times(scalar: Float) = times(scalar, scalar, scalar)
+    operator fun minus(other: Vector) = copy(x = x - other.x, y = y - other.y, z = z - other.z)
 
-    operator fun times(other: Vector) = this.x * other.x + this.y * other.y + this.z * other.z
+    operator fun times(scalar: Float) = copy(x = x * scalar, y = y * scalar, z = z * scalar)
 
-    fun times(x: Float, y: Float, z: Float): Vector {
-        this.x *= x
-        this.y *= y
-        this.z *= z
-        return this
-    }
+    operator fun times(other: Vector) = copy(
+        x = y * other.z - z * other.y,
+        y = z * other.x - x * other.z,
+        z = x * other.y - y * other.x
+    )
 
-    fun normalize(): Vector {
-        val magnitude = sqrt(x * x + y * y + z * z)
+    fun scalarProduct(other: Vector) = x * other.x + y * other.y + z * other.z
 
-        if (magnitude > 0) {
+    val normalized: Vector
+        get() {
+            val magnitude = sqrt(x * x + y * y + z * z)
             val reciprocal = 1.0f / magnitude
-
-            this.x *= reciprocal
-            this.y *= reciprocal
-            this.z *= reciprocal
+            return copy(x = x * reciprocal, y = y * reciprocal, z = z * reciprocal)
         }
-        return this
-    }
-
-    fun rotateAroundZ(degrees: Float): Vector {
-        val radians = toRadians(degrees.toDouble())
-        val radSin = sin(radians).toFloat()
-        val radCos = cos(radians).toFloat()
-
-        this.x = this.x * radCos - this.y * radSin
-        this.y = this.x * radSin + this.y * radCos
-        return this
-    }
-
-    fun set(xyz: Float) = set(xyz, xyz, xyz)
-
-    fun set(x: Float, y: Float, z: Float): Vector {
-        this.x = x
-        this.y = y
-        this.z = z
-        return this
-    }
-
-    fun set(vector: Vector) = set(vector.x, vector.y, vector.z)
-
-    operator fun timesAssign(other: Vector) {
-        set(
-            this.y * other.z - this.z * other.y,
-            this.z * other.x - this.x * other.z,
-            this.x * other.y - this.y * other.x
-        )
-    }
 
 }

@@ -19,7 +19,14 @@ class ThingWispy @AssistedInject constructor(
     textures: Textures,
     @Named("timeOfDay") private val timeOfDayColor: EngineColor,
     @Assisted which: Int,
-) : ThingSimple(time, gl, models, textures, R.raw.plane_16x16, WISPY_TEXTURES[which % WISPY_TEXTURES.size]) {
+) : ThingSimple(
+    time,
+    gl,
+    models,
+    textures,
+    R.raw.plane_16x16,
+    WISPY_TEXTURES[which % WISPY_TEXTURES.size]
+) {
 
     override val engineColor: EngineColor? = null
 
@@ -39,7 +46,7 @@ class ThingWispy @AssistedInject constructor(
         super.update()
 
         if (origin.x > 123.75f) {
-            origin.x -= 247.5f
+            origin = origin.let { it.copy(x = it.x - 247.5f) }
         }
     }
 

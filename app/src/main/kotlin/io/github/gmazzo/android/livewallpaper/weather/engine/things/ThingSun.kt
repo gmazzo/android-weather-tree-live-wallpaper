@@ -4,6 +4,7 @@ import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.WeatherState
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
+import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
@@ -12,6 +13,7 @@ import javax.inject.Inject
 import javax.inject.Named
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
+import kotlin.math.min
 
 class ThingSun @Inject constructor(
     time: GlobalTime,
@@ -59,19 +61,17 @@ class ThingSun @Inject constructor(
         var alpha = 0.0f
 
         if (sunPos > 0.0f) {
-            scale.set(2.0f)
+            scale = Vector(2.0f)
             val altitude = 175.0f * sunPos
 
             alpha = altitude / 25.0f
             if (alpha > 1.0f) {
                 alpha = 1.0f
             }
-            origin.z = altitude - 50.0f
-            if (origin.z > 40.0f) {
-                origin.z = 40.0f
-            }
+            origin = origin.copy(z = min(altitude - 50f, 40f))
+
         } else {
-            scale.set(0.0f)
+            scale = Vector(0.0f)
         }
 
         engineColor.set(timeOfDayColor)

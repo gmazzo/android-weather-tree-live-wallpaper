@@ -47,11 +47,11 @@ class Things @Inject constructor(
     }
 
     fun spawnMoon() = addIfMissing(moonProvider::get) { moon ->
-        moon.origin.set(-30f, 100f, -100f)
+        moon.origin = Vector(-30f, 100f, -100f)
     }
 
     fun spawnSun() = addIfMissing(sunProvider::get) { sun ->
-        sun.origin.set(30f, 100f, 0f)
+        sun.origin = Vector(30f, 100f, 0f)
     }
 
     fun spawnClouds(numClouds: Int, dark: Boolean = false) {
@@ -67,10 +67,12 @@ class Things @Inject constructor(
 
             cloud.randomizeScale()
             if (Random.nextInt(2) == 0) {
-                cloud.scale.x *= -1.0f
+                cloud.scale.let { it.copy(x = it.x * -1f) }
             }
-            cloud.origin.x = ((which.toFloat()) * (90.0f / (numClouds.toFloat()))) - 0.099609375f
-            cloud.origin.z = Random.nextFloat(-20.0f, -10.0f)
+            cloud.origin = Vector(
+                x = ((which.toFloat()) * (90.0f / (numClouds.toFloat()))) - 0.099609375f,
+                z = Random.nextFloat(-20.0f, -10.0f)
+            )
             cloud.velocity = Vector(WIND_SPEED * 1.5f, 0.0f, 0.0f)
             return@syncInstances cloud
         }
@@ -80,7 +82,8 @@ class Things @Inject constructor(
                 .filter { if (dark) it is ThingDarkCloud else it is ThingCloud }
                 .shuffled()
                 .forEachIndexed { which, cloud ->
-                    cloud.origin.y = ((which.toFloat()) * cloudDepthStep) + 43.75f
+                    cloud.origin =
+                        cloud.origin.copy(y = ((which.toFloat()) * cloudDepthStep) + 43.75f)
                 }
         }
     }
@@ -89,14 +92,16 @@ class Things @Inject constructor(
         val wispy = wispyFactory.create(which)
 
         wispy.velocity = Vector(WIND_SPEED * 1.5f, 0.0f, 0.0f)
-        wispy.scale.set(
-            Random.nextFloat(1.0f, 3.0f),
-            1.0f,
-            Random.nextFloat(1.0f, 1.5f)
+        wispy.scale = Vector(
+            x = Random.nextFloat(1.0f, 3.0f),
+            y = 1.0f,
+            z = Random.nextFloat(1.0f, 1.5f)
         )
-        wispy.origin.x = ((which.toFloat()) * (120.0f / (numWisps.toFloat()))) - 0.0703125f
-        wispy.origin.y = Random.nextFloat(87.5f, CLOUD_START_DISTANCE)
-        wispy.origin.z = Random.nextFloat(-40.0f, -20.0f)
+        wispy.origin = Vector(
+            x = ((which.toFloat()) * (120.0f / (numWisps.toFloat()))) - 0.0703125f,
+            y = Random.nextFloat(87.5f, CLOUD_START_DISTANCE),
+            z = Random.nextFloat(-40.0f, -20.0f),
+        )
         return@syncInstances wispy
     }
 
