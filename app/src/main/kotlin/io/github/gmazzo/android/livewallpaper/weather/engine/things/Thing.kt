@@ -10,7 +10,6 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Texture
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
-import kotlin.math.abs
 import kotlin.random.Random
 
 sealed class Thing(
@@ -25,27 +24,11 @@ sealed class Thing(
     var scale: Vector = Vector(1.0f, 1.0f, 1.0f)
     var velocity: Vector? = null
     private val visScratch = Vector(0.0f, 0.0f, 0.0f)
-    private var visible = true
     var visWidth = 3.0f
 
     protected abstract val model: Model
 
     protected abstract val texture: Texture
-
-    fun checkVisibility(cameraPos: Vector, cameraAngleZ: Float, fov: Float) {
-        if (visWidth == 0.0f) {
-            visible = true
-            return
-        }
-        visScratch.set(
-            origin.x - cameraPos.x,
-            origin.y - cameraPos.y,
-            origin.z - cameraPos.z
-        )
-        visScratch.rotateAroundZ(cameraAngleZ)
-        visible =
-            abs(visScratch.x.toDouble()) < visWidth + ((visScratch.y * 0.01111111f) * fov)
-    }
 
     fun delete() {
         isDeleted = true
@@ -66,12 +49,6 @@ sealed class Thing(
         }
     }
 
-    fun renderIfVisible() {
-        if (visible) {
-            render()
-        }
-    }
-
     @CallSuper
     open fun update() {
         val timeDelta = time.deltaSeconds
@@ -83,12 +60,6 @@ sealed class Thing(
                 velocity.y * timeDelta,
                 velocity.z * timeDelta
             )
-        }
-    }
-
-    fun updateIfVisible() {
-        if (visible) {
-            update()
         }
     }
 

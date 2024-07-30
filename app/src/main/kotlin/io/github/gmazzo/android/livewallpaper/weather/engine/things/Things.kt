@@ -31,17 +31,14 @@ class Things @Inject constructor(
     ) = items.firstOrNull { it is Type } ?: provider().also { init?.invoke(it); add(it) }
 
     fun render() =
-        items.forEach(Thing::renderIfVisible)
+        items.forEach(Thing::render)
 
-    fun update(onlyVisible: Boolean = false) = with(items.iterator()) {
+    fun update() = with(items.iterator()) {
         while (hasNext()) {
             val thing = next()
 
             if (thing.isDeleted) {
                 remove()
-
-            } else if (onlyVisible) {
-                thing.updateIfVisible()
 
             } else {
                 thing.update()
