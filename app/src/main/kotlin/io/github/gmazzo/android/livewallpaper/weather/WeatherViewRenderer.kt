@@ -7,16 +7,8 @@ import android.util.Log
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import dagger.hilt.EntryPoint
-import dagger.hilt.EntryPoints
-import dagger.hilt.InstallIn
-import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
-import io.github.gmazzo.android.livewallpaper.weather.engine.TimeOfDay
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
-import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.Scene
-import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneFactory
-import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,7 +38,7 @@ import javax.microedition.khronos.opengles.GL10.GL_VERTEX_ARRAY
 import javax.microedition.khronos.opengles.GL11
 
 internal class WeatherViewRenderer @AssistedInject constructor(
-    private val openGLBuilder: OpenGLComponent.Builder,
+    private val openGLFactory: OpenGLComponent.Factory,
     @Assisted private val view: GLSurfaceView,
     @Named("homeOffset") private val homeOffset: MutableStateFlow<Float>,
     private val weatherState: MutableStateFlow<WeatherState>,
@@ -60,7 +52,7 @@ internal class WeatherViewRenderer @AssistedInject constructor(
     private var screenHeight = 0f
     private var screenRatio = 1.0f
     private var screenWidth = 0f
-    private lateinit var glContext: GLContext
+    private lateinit var glContext: OpenGLComponent
     private var watchWeatherChanges: Job? = null
     private val isPaused get() = watchWeatherChanges == null
 
@@ -101,13 +93,7 @@ internal class WeatherViewRenderer @AssistedInject constructor(
     }
 
     override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
-        val component = openGLBuilder
-            .fastTime(demoMode)
-            .view(view)
-            .gl(gl as GL11)
-            .build()
-
-        glContext = EntryPoints.get(component, GLContext::class.java)
+        glContext = openGLFactory.create(view, gl as GL11, demoMode)
     }
 
     override fun onSurfaceChanged(gl: GL10, w: Int, h: Int) {
@@ -185,17 +171,6 @@ internal class WeatherViewRenderer @AssistedInject constructor(
     @AssistedFactory
     interface Factory {
         fun create(view: GLSurfaceView): WeatherViewRenderer
-    }
-
-    @EntryPoint
-    @InstallIn(OpenGLComponent::class)
-    interface GLContext {
-        val time: GlobalTime
-        val timeOfDay: TimeOfDay
-        val textures: Textures
-        val models: Models
-        val sceneFactory: SceneFactory
-        val dispatcher: OpenGLDispatcher
     }
 
     companion object {

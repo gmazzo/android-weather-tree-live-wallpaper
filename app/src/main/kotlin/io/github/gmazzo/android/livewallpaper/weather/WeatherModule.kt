@@ -29,7 +29,7 @@ import kotlinx.coroutines.runBlocking
 import javax.inject.Named
 import javax.inject.Singleton
 
-@Module
+@Module(subcomponents = [OpenGLComponent::class])
 @InstallIn(SingletonComponent::class)
 object WeatherModule {
     private const val TAG = "WeatherModule"

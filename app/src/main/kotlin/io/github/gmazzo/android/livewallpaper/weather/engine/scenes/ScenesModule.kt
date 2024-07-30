@@ -3,15 +3,14 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 import dagger.Module
 import dagger.Provides
 import dagger.Reusable
-import dagger.hilt.InstallIn
-import io.github.gmazzo.android.livewallpaper.weather.OpenGLComponent
+import dagger.hilt.migration.DisableInstallInCheck
 import io.github.gmazzo.android.livewallpaper.weather.OpenGLScoped
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import javax.inject.Named
 import javax.inject.Provider
 
 @Module
-@InstallIn(OpenGLComponent::class)
+@DisableInstallInCheck
 internal object ScenesModule {
 
     @Provides
