@@ -2,12 +2,13 @@ package io.github.gmazzo.android.livewallpaper.weather
 
 import android.opengl.GLSurfaceView
 import dagger.BindsInstance
+import dagger.Module
 import dagger.Subcomponent
+import dagger.hilt.migration.DisableInstallInCheck
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.TimeOfDay
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
-import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneFactory
-import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.ScenesModule
+import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneComponent
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import javax.inject.Named
 import javax.inject.Scope
@@ -19,7 +20,7 @@ import javax.microedition.khronos.opengles.GL11
 annotation class OpenGLScoped
 
 @OpenGLScoped
-@Subcomponent(modules = [ScenesModule::class])
+@Subcomponent(modules = [OpenGLComponent.GLModule::class])
 interface OpenGLComponent {
 
     val time: GlobalTime
@@ -30,9 +31,9 @@ interface OpenGLComponent {
 
     val models: Models
 
-    val sceneFactory: SceneFactory
-
     val dispatcher: OpenGLDispatcher
+
+    val sceneFactory: SceneComponent.Factory
 
     @Subcomponent.Factory
     fun interface Factory {
@@ -42,5 +43,9 @@ interface OpenGLComponent {
             @BindsInstance @Named("fastTime") fastTime: Boolean,
         ): OpenGLComponent
     }
+
+    @DisableInstallInCheck
+    @Module(subcomponents = [SceneComponent::class])
+    interface GLModule
 
 }

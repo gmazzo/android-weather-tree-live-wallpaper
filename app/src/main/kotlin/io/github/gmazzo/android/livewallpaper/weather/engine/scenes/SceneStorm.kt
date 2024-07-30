@@ -3,7 +3,6 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
-import io.github.gmazzo.android.livewallpaper.weather.engine.TimeOfDay
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.Wave
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
@@ -15,9 +14,19 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingLightni
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things.Companion.WIND_SPEED
 import javax.inject.Inject
-import javax.inject.Named
 import javax.inject.Provider
-import javax.microedition.khronos.opengles.GL10
+import javax.microedition.khronos.opengles.GL10.GL_AMBIENT
+import javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT
+import javax.microedition.khronos.opengles.GL10.GL_DIFFUSE
+import javax.microedition.khronos.opengles.GL10.GL_LIGHT1
+import javax.microedition.khronos.opengles.GL10.GL_LIGHTING
+import javax.microedition.khronos.opengles.GL10.GL_MODELVIEW
+import javax.microedition.khronos.opengles.GL10.GL_ONE
+import javax.microedition.khronos.opengles.GL10.GL_ONE_MINUS_SRC_ALPHA
+import javax.microedition.khronos.opengles.GL10.GL_POSITION
+import javax.microedition.khronos.opengles.GL10.GL_TEXTURE
+import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D
+import javax.microedition.khronos.opengles.GL10.GL_ZERO
 import javax.microedition.khronos.opengles.GL11
 import kotlin.random.Random
 
@@ -27,10 +36,11 @@ class SceneStorm @Inject constructor(
     models: Models,
     textures: Textures,
     things: Things,
-    @Named("timeOfDay") timeOfDayColor: EngineColor,
+    timeOfDayTint: TimeOfDayTint,
     private val particles: ParticlesRain,
     private val lightningProvider: Provider<ThingLightning>,
-) : Scene(time, gl, models, textures, things, timeOfDayColor, raining = true, darkClouds = true) {
+) : Scene(time, gl, models, textures, things, timeOfDayTint, darkClouds = true) {
+
     private val lightAmbientLight = FloatArray(4)
     private var lightFlashTime = 0f
     private var lightFlashX = 0f
@@ -49,25 +59,21 @@ class SceneStorm @Inject constructor(
     override fun unload() {
         super.unload()
 
-        gl.glDisable(GL10.GL_COLOR_BUFFER_BIT)
-        gl.glDisable(GL10.GL_LIGHT1)
-        gl.glDisable(GL10.GL_LIGHTING)
-    }
-
-    override fun updateTimeOfDay(tod: TimeOfDay) {
-        lightAmbientLightColor.blend(
-            timeOfDayColors[tod.mainIndex],
-            timeOfDayColors[tod.blendIndex],
-            tod.blendAmount
-        )
+        gl.glDisable(GL_COLOR_BUFFER_BIT)
+        gl.glDisable(GL_LIGHT1)
+        gl.glDisable(GL_LIGHTING)
     }
 
     override fun draw() {
-        things.update()
+        super.draw()
 
-        gl.glMatrixMode(GL10.GL_MODELVIEW)
+        timeOfDayTint.reset()
+        timeOfDayTint.update(lightAmbientLightColor)
+        lightAmbientLightColor.setToArray(lightAmbientLight)
+
+        gl.glMatrixMode(GL_MODELVIEW)
         gl.glLoadIdentity()
-        gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA)
+        gl.glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA)
         renderBackground(time.elapsedSeconds)
         renderRain(time.deltaSeconds)
         checkForLightning(time.deltaSeconds)
@@ -79,18 +85,13 @@ class SceneStorm @Inject constructor(
     }
 
     private fun renderBackground(timeDelta: Float) = gl.pushMatrix {
-        gl.glBindTexture(GL10.GL_TEXTURE_2D, stormBg.glId)
-        gl.glColor4f(
-            timeOfDayColor.r,
-            timeOfDayColor.g,
-            timeOfDayColor.b,
-            1.0f
-        )
-        gl.glMatrixMode(GL10.GL_MODELVIEW)
+        gl.glBindTexture(GL_TEXTURE_2D, stormBg.glId)
+        gl.glColor4f(timeOfDayTint.color.r, timeOfDayTint.color.g, timeOfDayTint.color.b, 1f)
+        gl.glMatrixMode(GL_MODELVIEW)
 
         gl.glTranslatef(0.0f, 250.0f, 35.0f)
         gl.glScalef(bgPadding * 2.0f, bgPadding, bgPadding)
-        gl.glMatrixMode(GL10.GL_TEXTURE)
+        gl.glMatrixMode(GL_TEXTURE)
 
         pushMatrix {
             gl.glTranslatef(
@@ -99,28 +100,24 @@ class SceneStorm @Inject constructor(
                 0.0f
             )
             if (!flashLights || lightFlashTime <= 0.0f) {
-                gl.glEnable(GL10.GL_LIGHTING)
-                gl.glEnable(GL10.GL_LIGHT1)
-                lightAmbientLight[0] = lightAmbientLightColor.r
-                lightAmbientLight[1] = lightAmbientLightColor.g
-                lightAmbientLight[2] = lightAmbientLightColor.b
-                lightAmbientLight[3] = lightAmbientLightColor.a
-                gl.glLightfv(GL10.GL_LIGHT1, GL10.GL_AMBIENT, lightAmbientLight, 0)
+                gl.glEnable(GL_LIGHTING)
+                gl.glEnable(GL_LIGHT1)
+                gl.glLightfv(GL_LIGHT1, GL_AMBIENT, lightAmbientLight, 0)
             }
             val mesh = models[R.raw.plane_16x16]
             mesh.render()
-            gl.glDisable(GL10.GL_LIGHT1)
+            gl.glDisable(GL_LIGHT1)
         }
 
-        gl.glMatrixMode(GL10.GL_MODELVIEW)
+        gl.glMatrixMode(GL_MODELVIEW)
     }
 
     private fun renderRain(timeDelta: Float) = gl.pushMatrix {
-        gl.glMatrixMode(GL10.GL_MODELVIEW)
+        gl.glMatrixMode(GL_MODELVIEW)
         gl.glTranslatef(0.0f, 0.0f, -5.0f)
         gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
         particles.update(timeDelta)
-        gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ZERO)
+        gl.glBlendFunc(GL_ONE, GL_ZERO)
         particles.render(particleRainOrigin)
     }
 
@@ -153,23 +150,23 @@ class SceneStorm @Inject constructor(
 
         if (!flashLights || lightFlashTime <= 0.0f) {
             position[0] = lightPosX
-            gl.glLightfv(GL10.GL_COLOR_BUFFER_BIT, 4610, specularLight, 0)
+            gl.glLightfv(GL_COLOR_BUFFER_BIT, 4610, specularLight, 0)
 
         } else {
             val flashRemaining = lightFlashTime / 0.25f
             position[0] =
                 (lightFlashX * flashRemaining) + ((1.0f - flashRemaining) * lightPosX)
 
-            gl.glLightfv(GL10.GL_COLOR_BUFFER_BIT, 4610, flashColor, 0)
+            gl.glLightfv(GL_COLOR_BUFFER_BIT, 4610, flashColor, 0)
             lightFlashTime -= timeDelta
         }
 
         position[1] = 50.0f
         position[2] = wave.sin.toFloat()
 
-        gl.glLightfv(GL10.GL_COLOR_BUFFER_BIT, 4608, ambientLight, 0)
-        gl.glLightfv(GL10.GL_COLOR_BUFFER_BIT, 4609, diffuseLight, 0)
-        gl.glLightfv(GL10.GL_COLOR_BUFFER_BIT, 4611, position, 0)
+        gl.glLightfv(GL_COLOR_BUFFER_BIT, GL_AMBIENT, ambientLight, 0)
+        gl.glLightfv(GL_COLOR_BUFFER_BIT, GL_DIFFUSE, diffuseLight, 0)
+        gl.glLightfv(GL_COLOR_BUFFER_BIT, GL_POSITION, position, 0)
     }
 
 }

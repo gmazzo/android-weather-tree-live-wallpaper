@@ -1,7 +1,6 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 
 import io.github.gmazzo.android.livewallpaper.weather.R
-import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
@@ -11,8 +10,6 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things.Companion.WIND_SPEED
 import javax.inject.Inject
-import javax.inject.Named
-import javax.inject.Provider
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 
@@ -22,19 +19,21 @@ class SceneSnow @Inject constructor(
     models: Models,
     textures: Textures,
     things: Things,
-    @Named("timeOfDay") timeOfDayColor: EngineColor,
-    particle: Provider<ParticlesSnow>,
-) : Scene(time, gl, models, textures, things, timeOfDayColor) {
+    timeOfDayTint: TimeOfDayTint,
+    particle: ParticlesSnow.Factory,
+) : Scene(time, gl, models, textures, things, timeOfDayTint) {
 
     private val snowPositions = arrayOf(
         Vector(0f, 20f, -20f),
         Vector(8f, 15f, -20f),
         Vector(-8f, 10f, -20f)
     )
-    private val particles = snowPositions.map { particle.get() }
+
+    private val particles =
+        snowPositions.map { particle.create(timeOfDayTint.color) }
 
     override fun draw() {
-        things.update()
+        super.draw()
 
         gl.glDisable(GL10.GL_COLOR_BUFFER_BIT)
         gl.glDisable(GL10.GL_LIGHT1)
@@ -58,12 +57,7 @@ class SceneSnow @Inject constructor(
 
     private fun renderBackground(timeDelta: Float) = gl.pushMatrix {
         gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[R.drawable.bg2].glId)
-        gl.glColor4f(
-            timeOfDayColor.r,
-            timeOfDayColor.g,
-            timeOfDayColor.b,
-            1.0f
-        )
+        gl.glColor4f(timeOfDayTint.color.r, timeOfDayTint.color.g, timeOfDayTint.color.b, 1f)
         gl.glMatrixMode(GL10.GL_MODELVIEW)
 
         gl.glTranslatef(0.0f, 250.0f, 35.0f)

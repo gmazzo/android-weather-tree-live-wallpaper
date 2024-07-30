@@ -3,7 +3,6 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
-import io.github.gmazzo.android.livewallpaper.weather.engine.TimeOfDay
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.particles.ParticlesRain
@@ -12,8 +11,9 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things.Companion.WIND_SPEED
 import javax.inject.Inject
-import javax.inject.Named
 import javax.microedition.khronos.opengles.GL10
+import javax.microedition.khronos.opengles.GL10.GL_AMBIENT
+import javax.microedition.khronos.opengles.GL10.GL_DIFFUSE
 import javax.microedition.khronos.opengles.GL11
 
 class SceneRain @Inject constructor(
@@ -22,31 +22,19 @@ class SceneRain @Inject constructor(
     models: Models,
     textures: Textures,
     things: Things,
-    @Named("timeOfDay") timeOfDayColor: EngineColor,
+    timeOfDayTint: TimeOfDayTint,
     private val particles: ParticlesRain,
-) : Scene(time, gl, models, textures, things, timeOfDayColor, raining = true) {
+) : Scene(time, gl, models, textures, things, timeOfDayTint) {
+
     private val particleRainOrigin= Vector(0.0f, 25.0f, 10.0f)
     private val lightDiffuse = floatArrayOf(0.1f, 0.1f, 0.1f, 1.0f)
     private val lightDiffuseColor = EngineColor(0.5f, 0.5f, 0.5f, 1.0f)
-
-    override fun updateTimeOfDay(tod: TimeOfDay) {
-        lightDiffuseColor.blend(
-            timeOfDayColors[tod.mainIndex],
-            timeOfDayColors[tod.blendIndex],
-            tod.blendAmount
-        )
-    }
 
     private fun renderBackground() = gl.pushMatrix {
         val stormBg = textures[R.drawable.storm_bg]
 
         gl.glBindTexture(GL10.GL_TEXTURE_2D, stormBg.glId)
-        gl.glColor4f(
-            timeOfDayColor.r,
-            timeOfDayColor.g,
-            timeOfDayColor.b,
-            1.0f
-        )
+        gl.glColor4f(timeOfDayTint.color.r, timeOfDayTint.color.g, timeOfDayTint.color.b, 1f)
         gl.glMatrixMode(GL10.GL_MODELVIEW)
 
         gl.glTranslatef(0.0f, 250.0f, 35.0f)
@@ -76,22 +64,22 @@ class SceneRain @Inject constructor(
     }
 
     override fun draw() {
-        things.update()
+        super.draw()
+
+        timeOfDayTint.reset()
+        timeOfDayTint.update(lightDiffuseColor)
+        lightDiffuseColor.setToArray(lightDiffuse)
 
         gl.glEnable(GL10.GL_LIGHTING)
         gl.glEnable(GL10.GL_COLOR_BUFFER_BIT)
         gl.glMatrixMode(GL10.GL_MODELVIEW)
         gl.glLoadIdentity()
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA)
-        lightDiffuse[0] = lightDiffuseColor.r
-        lightDiffuse[1] = lightDiffuseColor.g
-        lightDiffuse[2] = lightDiffuseColor.b
-        lightDiffuse[3] = lightDiffuseColor.a
-        gl.glLightfv(GL10.GL_COLOR_BUFFER_BIT, 4609, this.lightDiffuse, 0)
-        gl.glLightfv(GL10.GL_COLOR_BUFFER_BIT, 4608, this.lightDiffuse, 0)
+        gl.glLightfv(GL10.GL_COLOR_BUFFER_BIT, GL_DIFFUSE, lightDiffuse, 0)
+        gl.glLightfv(GL10.GL_COLOR_BUFFER_BIT, GL_AMBIENT, lightDiffuse, 0)
         renderBackground()
         renderRain()
-        gl.glTranslatef(0.0f, 0.0f, 40.0f)
+        gl.glTranslatef(0f, 0f, 40f)
         gl.glDisable(GL10.GL_COLOR_BUFFER_BIT)
         gl.glDisable(GL10.GL_LIGHTING)
 

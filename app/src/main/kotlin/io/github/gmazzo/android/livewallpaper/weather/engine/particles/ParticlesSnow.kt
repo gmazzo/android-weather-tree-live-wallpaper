@@ -1,5 +1,8 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.particles
 
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
@@ -7,17 +10,16 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import kotlinx.coroutines.flow.MutableStateFlow
-import javax.inject.Inject
 import javax.inject.Named
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 import kotlin.random.Random
 
-class ParticlesSnow @Inject constructor(
+class ParticlesSnow @AssistedInject constructor(
     gl: GL11,
     models: Models,
     textures: Textures,
-    @Named("timeOfDay") private val timeOfDayColor: EngineColor,
+    @Assisted private val timeOfDayColor: EngineColor,
     @Named("homeOffset") private val homeOffset: MutableStateFlow<Float>,
 ) : Particles(
     gl,
@@ -75,6 +77,11 @@ class ParticlesSnow @Inject constructor(
             timeOfDayColor.b,
             0.0f
         )
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(timeOfDayColor: EngineColor): ParticlesSnow
     }
 
     companion object {

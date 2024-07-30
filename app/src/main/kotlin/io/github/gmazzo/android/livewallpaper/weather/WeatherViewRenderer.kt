@@ -8,7 +8,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
-import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.Scene
+import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,7 +46,7 @@ internal class WeatherViewRenderer @AssistedInject constructor(
     private var landscape: Boolean = false
     private var cameraFOV = 65.0f
     private var cameraPos = Vector(0.0f, 0.0f, 0.0f)
-    private var currentScene: Scene? = null
+    private var currentScene: SceneComponent? = null
     private val cameraSpeed: Float = 1.0f
     var demoMode = false
     private var screenHeight = 0f
@@ -81,13 +81,13 @@ internal class WeatherViewRenderer @AssistedInject constructor(
         val mode = state.weatherType.scene
 
         if (currentScene?.mode != mode) {
-            currentScene?.unload()
-            currentScene = glContext.sceneFactory.create(mode) {
-                it.landscape = landscape
-                it.load()
+            currentScene?.scene?.unload()
+            currentScene = glContext.sceneFactory.create(mode).also {
+                it.scene.landscape = landscape
+                it.scene.load()
             }
         }
-        currentScene!!.updateWeather(state.weatherType)
+        currentScene!!.scene.update(state)
 
         Log.i(TAG, "Weather changed to $state, isDemoMode=$demoMode")
     }
@@ -105,7 +105,7 @@ internal class WeatherViewRenderer @AssistedInject constructor(
         gl.glViewport(0, 0, w, h)
         gl.setRenderDefaults()
 
-        currentScene?.unload()
+        currentScene?.scene?.unload()
         currentScene = null
         glContext.models.close()
         glContext.textures.close()
@@ -132,7 +132,7 @@ internal class WeatherViewRenderer @AssistedInject constructor(
 
     @Synchronized
     override fun onDrawFrame(gl: GL10) {
-        val scene = currentScene ?: return
+        val scene = currentScene?.scene ?: return
 
         if (!isPaused) {
             glContext.time.update()

@@ -9,8 +9,8 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
+import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.TimeOfDayTint
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
-import javax.inject.Named
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 import kotlin.math.abs
@@ -21,7 +21,7 @@ class ThingCloud @AssistedInject constructor(
     gl: GL11,
     models: Models,
     textures: Textures,
-    @Named("timeOfDay") private val timeOfDayColor: EngineColor,
+    private val timeOfDayTint: TimeOfDayTint,
     @Assisted which: Int,
 ) : ThingSimple(
     time,
@@ -61,9 +61,9 @@ class ThingCloud @AssistedInject constructor(
             randomizeScale()
         }
 
-        engineColor.r = timeOfDayColor.r
-        engineColor.g = timeOfDayColor.g
-        engineColor.b = timeOfDayColor.b
+        engineColor.r = timeOfDayTint.color.r
+        engineColor.g = timeOfDayTint.color.g
+        engineColor.b = timeOfDayTint.color.b
         if (timeElapsed < 2.0f) {
             val alpha = timeElapsed * 0.5f
             engineColor *= alpha

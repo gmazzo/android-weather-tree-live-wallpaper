@@ -7,10 +7,10 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
+import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.TimeOfDayTint
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
-import javax.inject.Named
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 import kotlin.math.min
@@ -20,7 +20,7 @@ class ThingSun @Inject constructor(
     gl: GL11,
     models: Models,
     textures: Textures,
-    @Named("timeOfDay") private val timeOfDayColor: EngineColor,
+    private val timeOfDayTint: TimeOfDayTint,
     private val state: MutableStateFlow<WeatherState>,
 ) : ThingSimple(time, gl, models, textures, R.raw.plane_16x16, R.raw.sun) {
 
@@ -74,7 +74,7 @@ class ThingSun @Inject constructor(
             scale = Vector(0.0f)
         }
 
-        engineColor.set(timeOfDayColor)
+        engineColor.set(timeOfDayTint.color)
         engineColor.a = alpha
     }
 

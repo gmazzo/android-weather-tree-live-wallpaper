@@ -2,7 +2,6 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.WeatherState
-import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
@@ -11,7 +10,6 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things.Companion.WIND_SPEED
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
-import javax.inject.Named
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 
@@ -21,14 +19,15 @@ open class SceneClear @Inject constructor(
     models: Models,
     textures: Textures,
     things: Things,
-    @Named("timeOfDay") timeOfDayColor: EngineColor,
+    timeOfDayTint: TimeOfDayTint,
     private val state: MutableStateFlow<WeatherState>,
-) : Scene(time, gl, models, textures, things, timeOfDayColor) {
+) : Scene(time, gl, models, textures, things, timeOfDayTint) {
 
     open val backgroundId: Int = R.drawable.bg3
 
     override fun draw() {
-        things.update()
+        super.draw()
+
         gl.glDisable(GL10.GL_COLOR_BUFFER_BIT)
         gl.glDisable(GL10.GL_LIGHT1)
         gl.glDisable(GL10.GL_LIGHTING)
@@ -44,12 +43,7 @@ open class SceneClear @Inject constructor(
 
     private fun renderBackground(timeDelta: Float) = gl.pushMatrix {
         gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[backgroundId].glId)
-        gl.glColor4f(
-            timeOfDayColor.r,
-            timeOfDayColor.g,
-            timeOfDayColor.b,
-            1.0f
-        )
+        gl.glColor4f(timeOfDayTint.color.r, timeOfDayTint.color.g, timeOfDayTint.color.b, 1f)
         gl.glMatrixMode(GL10.GL_MODELVIEW)
         gl.glTranslatef(0.0f, 250.0f, 35.0f)
         gl.glScalef(bgPadding * 2.0f, bgPadding, bgPadding)

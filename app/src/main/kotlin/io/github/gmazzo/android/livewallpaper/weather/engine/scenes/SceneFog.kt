@@ -1,16 +1,15 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 
 import io.github.gmazzo.android.livewallpaper.weather.R
+import io.github.gmazzo.android.livewallpaper.weather.WeatherState
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
-import io.github.gmazzo.android.livewallpaper.weather.engine.TimeOfDay
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things.Companion.WIND_SPEED
 import javax.inject.Inject
-import javax.inject.Named
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 
@@ -20,10 +19,11 @@ class SceneFog @Inject constructor(
     models: Models,
     textures: Textures,
     things: Things,
-    @Named("timeOfDay") timeOfDayColor: EngineColor,
-) : Scene(time, gl, models, textures, things, timeOfDayColor) {
+    timeOfDayTint: TimeOfDayTint,
+) : Scene(time, gl, models, textures, things, timeOfDayTint) {
 
-    private val fogEngineColorFinal = EngineColor()
+    private val fogEngineColorFinal =
+        EngineColor()
 
     private val fogTimeOfDayColors = arrayOf(
         EngineColor(0.2f, 0.2f, 0.2f, 1.0f),
@@ -32,19 +32,19 @@ class SceneFog @Inject constructor(
         EngineColor(0.5f, 0.5f, 0.5f, 1.0f),
     )
 
-    override fun updateTimeOfDay(tod: TimeOfDay) {
-        super.updateTimeOfDay(tod)
+    private val fogColors =
+        floatArrayOf(0.8f, 0.8f, 0.8f, 1.0f)
 
-        fogEngineColorFinal.blend(
-            fogTimeOfDayColors[tod.mainIndex],
-            fogTimeOfDayColors[tod.blendIndex],
-            tod.blendAmount
-        )
-        fogEngineColorFinal.setToArray(FOG_COLOR)
+    override fun update(state: WeatherState) {
+        super.update(state)
+
+        timeOfDayTint.update(fogEngineColorFinal, fogTimeOfDayColors)
+        fogEngineColorFinal.setToArray(fogColors)
     }
 
     override fun draw() {
-        things.update()
+        super.draw()
+
         gl.glDisable(GL10.GL_COLOR_BUFFER_BIT)
         gl.glDisable(GL10.GL_LIGHT1)
         gl.glDisable(GL10.GL_LIGHTING)
@@ -53,7 +53,7 @@ class SceneFog @Inject constructor(
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA)
         gl.glEnable(GL10.GL_FOG)
         gl.glFogf(GL10.GL_FOG_MODE, GL10.GL_LINEAR.toFloat())
-        gl.glFogfv(GL10.GL_FOG_COLOR, FOG_COLOR, 0)
+        gl.glFogfv(GL10.GL_FOG_COLOR, fogColors, 0)
         gl.glFogf(GL10.GL_FOG_DENSITY, FOG_DENSITY)
         gl.glFogf(GL10.GL_FOG_START, -10.0f)
         gl.glFogf(GL10.GL_FOG_END, 190.0f)
@@ -68,12 +68,7 @@ class SceneFog @Inject constructor(
 
     private fun renderBackground() = gl.pushMatrix {
         gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[R.drawable.bg1].glId)
-        gl.glColor4f(
-            timeOfDayColor.r,
-            timeOfDayColor.g,
-            timeOfDayColor.b,
-            1.0f
-        )
+        gl.glColor4f(timeOfDayTint.color.r, timeOfDayTint.color.g, timeOfDayTint.color.b, 1f)
         gl.glMatrixMode(GL10.GL_MODELVIEW)
         gl.glTranslatef(0.0f, 250.0f, 35.0f)
         gl.glScalef(bgPadding * 2.0f, bgPadding, bgPadding)
@@ -93,7 +88,6 @@ class SceneFog @Inject constructor(
     }
 
     companion object {
-        private val FOG_COLOR: FloatArray = floatArrayOf(0.8f, 0.8f, 0.8f, 1.0f)
         private const val FOG_DENSITY = .2f
     }
 }

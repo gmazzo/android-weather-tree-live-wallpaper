@@ -7,6 +7,7 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.models.Model
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Texture
+import javax.inject.Inject
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 import kotlin.math.acos
@@ -62,7 +63,6 @@ sealed class Particles(
             this.useAngles = false
             this.useScale = false
             this.timeElapsed = 0.0f
-            reset()
         }
 
         fun render(gl11: GL11, mesh: Mesh) = gl.pushMatrix {
@@ -89,6 +89,7 @@ sealed class Particles(
             mesh.renderFrame_gl11_render(gl11)
         }
 
+        @Inject
         fun reset() {
             position = Vector()
             this.timeElapsed = 0.0f

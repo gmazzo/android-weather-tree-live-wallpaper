@@ -7,8 +7,8 @@ import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
+import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.TimeOfDayTint
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
-import javax.inject.Named
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 
@@ -17,7 +17,7 @@ class ThingWispy @AssistedInject constructor(
     gl: GL11,
     models: Models,
     textures: Textures,
-    @Named("timeOfDay") private val timeOfDayColor: EngineColor,
+    private val timeOfDayTint: TimeOfDayTint,
     @Assisted which: Int,
 ) : ThingSimple(
     time,
@@ -32,10 +32,10 @@ class ThingWispy @AssistedInject constructor(
 
     override fun render() {
         gl.glColor4f(
-            timeOfDayColor.r,
-            timeOfDayColor.g,
-            timeOfDayColor.b,
-            (timeOfDayColor.r + timeOfDayColor.g) + (timeOfDayColor.b / 3.0f)
+            timeOfDayTint.color.r,
+            timeOfDayTint.color.g,
+            timeOfDayTint.color.b,
+            (timeOfDayTint.color.r + timeOfDayTint.color.g) + (timeOfDayTint.color.b / 3.0f)
         )
         gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA)
 
