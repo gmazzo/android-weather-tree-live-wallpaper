@@ -1,7 +1,7 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 
 import io.github.gmazzo.android.livewallpaper.weather.R
-import io.github.gmazzo.android.livewallpaper.weather.WeatherConditions
+import io.github.gmazzo.android.livewallpaper.weather.WeatherState
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
@@ -22,7 +22,7 @@ open class SceneClear @Inject constructor(
     textures: Textures,
     things: Things,
     @Named("timeOfDay") timeOfDayColor: EngineColor,
-    private val weather: MutableStateFlow<WeatherConditions>,
+    private val state: MutableStateFlow<WeatherState>,
 ) : Scene(time, gl, models, textures, things, timeOfDayColor) {
 
     open val backgroundId: Int = R.drawable.bg3
@@ -70,7 +70,7 @@ open class SceneClear @Inject constructor(
     }
 
     private fun renderStars(timeDelta: Float) {
-        val position = weather.value.sunPosition
+        val position = state.value.sunPosition
 
         if (position <= 0.0f) {
             gl.glColor4f(1.0f, 1.0f, 1.0f, position * -2.0f)

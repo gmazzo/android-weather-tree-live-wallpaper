@@ -11,10 +11,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.work.WorkManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.github.gmazzo.android.livewallpaper.weather.WeatherConditions
-import io.github.gmazzo.android.livewallpaper.weather.WeatherConditionsUpdateWorker.Companion.disableWeatherConditionsUpdate
-import io.github.gmazzo.android.livewallpaper.weather.WeatherConditionsUpdateWorker.Companion.enableWeatherConditionsUpdate
+import io.github.gmazzo.android.livewallpaper.weather.WeatherState
 import io.github.gmazzo.android.livewallpaper.weather.WeatherType
+import io.github.gmazzo.android.livewallpaper.weather.WeatherUpdateWorker.Companion.disableWeatherConditionsUpdate
+import io.github.gmazzo.android.livewallpaper.weather.WeatherUpdateWorker.Companion.enableWeatherConditionsUpdate
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode
 import io.github.gmazzo.android.livewallpaper.weather.hasBackgroundLocationPermission
 import io.github.gmazzo.android.livewallpaper.weather.hasLocationPermission
@@ -28,7 +28,7 @@ import javax.inject.Inject
 class SettingsViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val preferences: DataStore<Preferences>,
-    val weatherConditions: MutableStateFlow<WeatherConditions>,
+    val weatherState: MutableStateFlow<WeatherState>,
     private val workManager: WorkManager,
 ) : ViewModel(), DefaultLifecycleObserver {
 
@@ -69,7 +69,7 @@ class SettingsViewModel @Inject constructor(
         preferences.edit { it[settingLocationOn] = enabled }
     }
 
-    fun updateSelectedScene(scene: SceneMode) = weatherConditions.update { prefs ->
+    fun updateSelectedScene(scene: SceneMode) = weatherState.update { prefs ->
         prefs.copy(weatherType = WeatherType.entries.first { it.scene == scene })
     }
 

@@ -19,10 +19,10 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Provider
 
 @HiltWorker
-class WeatherConditionsUpdateWorker @AssistedInject constructor(
+class WeatherUpdateWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
-    private val weatherConditions: MutableStateFlow<WeatherConditions>,
+    private val state: MutableStateFlow<WeatherState>,
     private val location: Provider<Location>,
     private val forecastAPI: LocationForecastAPI,
 ) : Worker(context, workerParams) {
@@ -35,7 +35,7 @@ class WeatherConditionsUpdateWorker @AssistedInject constructor(
             .execute().body() ?: return Result.retry()
 
         val series = response.properties.timeSeries.firstOrNull() ?: return Result.failure()
-        weatherConditions.update {
+        state.update {
             it.copy(
                 latitude = location.latitude.toFloat(),
                 longitude = location.longitude.toFloat(),
@@ -52,7 +52,7 @@ class WeatherConditionsUpdateWorker @AssistedInject constructor(
             enqueueUniquePeriodicWork(
                 TAG,
                 ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
-                PeriodicWorkRequestBuilder<WeatherConditionsUpdateWorker>(
+                PeriodicWorkRequestBuilder<WeatherUpdateWorker>(
                     1,
                     TimeUnit.HOURS,
                     8,

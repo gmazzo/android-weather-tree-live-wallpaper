@@ -61,21 +61,21 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.compose.AppTheme
 import io.github.gmazzo.android.livewallpaper.weather.R
-import io.github.gmazzo.android.livewallpaper.weather.WeatherConditions
+import io.github.gmazzo.android.livewallpaper.weather.WeatherState
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode
 import io.github.gmazzo.android.livewallpaper.weather.theme.WeatherIcons
 import kotlinx.coroutines.flow.MutableStateFlow
 
 private const val opacity = .6f
 private val margin = 8.dp
-private val sampleConditions = MutableStateFlow(WeatherConditions())
+private val sampleConditions = MutableStateFlow(WeatherState())
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Preview
 fun SettingsScreen(
     updateLocationEnabled: Boolean = true,
-    weatherConditions: WeatherConditions = sampleConditions.value,
+    weatherState: WeatherState = sampleConditions.value,
     missingLocationPermission: Boolean = true,
     updateLocationEnabledChange: (Boolean) -> Unit = {},
     onSceneSelected: (SceneMode) -> Unit = {},
@@ -92,7 +92,7 @@ fun SettingsScreen(
         Box(Modifier.fillMaxSize()) { surfaceView() }
         Scaffold(containerColor = Color.Transparent, topBar = {
             Column {
-                CenterAlignedTopAppBar(title = { Text(text = stringResource(id = weatherConditions.weatherType.scene.textId)) },
+                CenterAlignedTopAppBar(title = { Text(text = stringResource(id = weatherState.weatherType.scene.textId)) },
                     colors = TopAppBarDefaults.topAppBarColors()
                         .copy(containerColor = Color.Transparent),
                     navigationIcon = {
@@ -112,7 +112,7 @@ fun SettingsScreen(
                         }
                     })
                 Box(modifier = Modifier.padding(horizontal = margin)) {
-                    DayTimeProgression(weatherConditions.sunPosition + .5f)
+                    DayTimeProgression(weatherState.sunPosition + .5f)
                 }
             }
         }) { innerPadding ->
@@ -142,7 +142,7 @@ fun SettingsScreen(
                 if (missingLocationPermission) {
                     MissingLocationPermissionPanel(onRequestLocationPermission)
                 }
-                WeathersGallery(weatherConditions, onSceneSelected)
+                WeathersGallery(weatherState, onSceneSelected)
             }
         }
     }
@@ -217,7 +217,7 @@ private fun SettingsItem(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun WeathersGallery(
-    weatherConditions: WeatherConditions,
+    weatherState: WeatherState,
     onSceneSelected: (SceneMode) -> Unit,
 ) {
     val noSize = CornerSize(0.dp)
@@ -235,7 +235,7 @@ private fun WeathersGallery(
     SingleChoiceSegmentedButtonRow {
         SceneMode.entries.forEachIndexed { index, scene ->
             SegmentedButton(
-                selected = scene == weatherConditions.weatherType.scene,
+                selected = scene == weatherState.weatherType.scene,
                 shape = when (index) {
                     0 -> shapeStart
                     SceneMode.entries.size - 1 -> shapeEnd

@@ -3,7 +3,7 @@ package io.github.gmazzo.android.livewallpaper.weather.engine
 import android.util.Log
 import io.github.gmazzo.android.livewallpaper.weather.OpenGLDispatcher
 import io.github.gmazzo.android.livewallpaper.weather.OpenGLScoped
-import io.github.gmazzo.android.livewallpaper.weather.WeatherConditions
+import io.github.gmazzo.android.livewallpaper.weather.WeatherState
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -17,7 +17,7 @@ import javax.inject.Named
 class TimeOfDay @Inject constructor(
     private val time: GlobalTime,
     private val dispatcher: OpenGLDispatcher,
-    private val weather: MutableStateFlow<WeatherConditions>,
+    private val state: MutableStateFlow<WeatherState>,
     @Named("fastTime") private val fastTime: Boolean,
 ) {
     var blendAmount: Float = 0.0f
@@ -62,14 +62,14 @@ class TimeOfDay @Inject constructor(
     }
 
     @Inject
-    fun watchLocation(weather: MutableStateFlow<WeatherConditions>) {
+    fun watchLocation(state: MutableStateFlow<WeatherState>) {
         MainScope().launch(dispatcher) {
-            weather.collectLatest(::calculateTimeTable)
+            state.collectLatest(::calculateTimeTable)
         }
     }
 
-    private fun calculateTimeTable(weather: WeatherConditions) {
-        val (latitude, longitude) = weather
+    private fun calculateTimeTable(state: WeatherState) {
+        val (latitude, longitude) = state
 
         var minOfSunrise = 360
         var minOfSunset = 1080
@@ -134,7 +134,7 @@ class TimeOfDay @Inject constructor(
         blendAmount = (sinceDelta.toFloat()) / ((sinceDelta + nextDelta).toFloat())
 
         val sunPosition = (_fakeSunArray[mainIndex] * (1.0f - blendAmount)) + (_fakeSunArray[blendIndex] * blendAmount)
-        weather.update { it.copy(sunPosition = sunPosition) }
+        state.update { it.copy(sunPosition = sunPosition) }
 
         if (!useSunriseSunsetWeighting) {
             return

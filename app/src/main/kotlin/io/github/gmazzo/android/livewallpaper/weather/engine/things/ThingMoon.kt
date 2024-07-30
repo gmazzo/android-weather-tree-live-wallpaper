@@ -1,7 +1,7 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.things
 
 import io.github.gmazzo.android.livewallpaper.weather.R
-import io.github.gmazzo.android.livewallpaper.weather.WeatherConditions
+import io.github.gmazzo.android.livewallpaper.weather.WeatherState
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.SkyManager
@@ -19,7 +19,7 @@ class ThingMoon @Inject constructor(
     gl: GL11,
     models: Models,
     private val textures: Textures,
-    private val weather: MutableStateFlow<WeatherConditions>,
+    private val state: MutableStateFlow<WeatherState>,
 ) : Thing(time, gl) {
 
     override val engineColor = EngineColor(1.0f, 1.0f, 1.0f, 1.0f)
@@ -42,7 +42,7 @@ class ThingMoon @Inject constructor(
     override fun update() {
         super.update()
 
-        val position: Float = weather.value.sunPosition
+        val position: Float = state.value.sunPosition
         if (position >= 0.0f) {
             scale.set(0.0f)
 

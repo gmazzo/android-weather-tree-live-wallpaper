@@ -49,17 +49,15 @@ object WeatherModule {
 
     @Provides
     @Singleton
-    fun weatherConditions(
-        dataStore: DataStore<Preferences>,
-    ): MutableStateFlow<WeatherConditions> = runBlocking {
+    fun state(dataStore: DataStore<Preferences>): MutableStateFlow<WeatherState> = runBlocking {
         val current =
             dataStore.data.firstOrNull()?.get(settingLastWeather)?.let(WeatherType::valueOf)
         val flow =
-            MutableStateFlow(WeatherConditions(weatherType = current ?: WeatherType.SUNNY_DAY))
+            MutableStateFlow(WeatherState(weatherType = current ?: WeatherType.SUNNY_DAY))
 
         MainScope().launch {
-            flow.collectLatest { weather ->
-                dataStore.edit { it[settingLastWeather] = weather.weatherType.name }
+            flow.collectLatest { state ->
+                dataStore.edit { it[settingLastWeather] = state.weatherType.name }
             }
         }
         return@runBlocking flow

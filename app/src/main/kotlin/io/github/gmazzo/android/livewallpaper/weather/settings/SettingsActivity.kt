@@ -39,7 +39,7 @@ class SettingsActivity : ComponentActivity() {
         setContent {
             SettingsScreen(
                 updateLocationEnabled = viewModel.updateLocationEnabled.collectAsState().value,
-                weatherConditions = viewModel.weatherConditions.collectAsState().value,
+                weatherState = viewModel.weatherState.collectAsState().value,
                 missingLocationPermission = viewModel.missingLocationPermission.collectAsState().value,
                 updateLocationEnabledChange = viewModel::updateLocationEnabled,
                 onSceneSelected = viewModel::updateSelectedScene,

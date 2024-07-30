@@ -1,7 +1,7 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 
 import io.github.gmazzo.android.livewallpaper.weather.R
-import io.github.gmazzo.android.livewallpaper.weather.WeatherConditions
+import io.github.gmazzo.android.livewallpaper.weather.WeatherState
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
@@ -19,8 +19,8 @@ class SceneCloudy @Inject constructor(
     textures: Textures,
     things: Things,
     @Named("timeOfDay") timeOfDayColor: EngineColor,
-    weather: MutableStateFlow<WeatherConditions>,
-) : SceneClear(time, gl, models, textures, things, timeOfDayColor, weather) {
+    state: MutableStateFlow<WeatherState>,
+) : SceneClear(time, gl, models, textures, things, timeOfDayColor, state) {
 
     override val backgroundId = R.drawable.bg1
 

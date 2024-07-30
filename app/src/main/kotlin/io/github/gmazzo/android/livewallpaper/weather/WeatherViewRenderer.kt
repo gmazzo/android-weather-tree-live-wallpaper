@@ -51,7 +51,7 @@ internal class WeatherViewRenderer @AssistedInject constructor(
     private val openGLBuilder: OpenGLComponent.Builder,
     @Assisted private val view: GLSurfaceView,
     @Named("homeOffset") private val homeOffset: MutableStateFlow<Float>,
-    private val weatherConditions: MutableStateFlow<WeatherConditions>,
+    private val weatherState: MutableStateFlow<WeatherState>,
 ) : Renderer {
     private var landscape: Boolean = false
     private val cameraDir = Vector()
@@ -84,22 +84,23 @@ internal class WeatherViewRenderer @AssistedInject constructor(
     private fun watchWeatherChanges() {
         watchWeatherChanges?.cancel()
         watchWeatherChanges = CoroutineScope(glContext.dispatcher).launch {
-            weatherConditions.collectLatest(::onSceneChanged)
+            weatherState.collectLatest(::onSceneChanged)
         }
     }
 
     @Synchronized
-    private fun onSceneChanged(weather: WeatherConditions) {
-        val mode = weather.weatherType.scene
+    private fun onSceneChanged(state: WeatherState) {
+        val mode = state.weatherType.scene
+
         if (currentScene?.mode != mode) {
             currentScene?.unload()
             currentScene = glContext.sceneFactory.create(mode) {
                 it.landscape = landscape
-                it.load(weather.weatherType)
+                it.load(state.weatherType)
             }
         }
 
-        Log.i(TAG, "Weather changed to $weather, isDemoMode=$demoMode")
+        Log.i(TAG, "Weather changed to $state, isDemoMode=$demoMode")
     }
 
     override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {

@@ -61,12 +61,12 @@ sealed class Scene(
     abstract fun draw()
 
     @CallSuper
-    open fun load(weather: WeatherType) {
+    open fun load(state: WeatherType) {
         timeOfDayColor.set(1f, 1f, 1f, 1f)
 
         things.spawnSun()
         things.spawnMoon()
-        updateWeather(weather)
+        updateWeather(state)
     }
 
     @CallSuper
@@ -75,9 +75,9 @@ sealed class Scene(
     }
 
     @CallSuper
-    open fun updateWeather(weather: WeatherType) {
+    open fun updateWeather(state: WeatherType) {
         if (darkClouds != null) {
-            things.spawnClouds(weather.clouds, weather.wisps, dark = darkClouds)
+            things.spawnClouds(state.clouds, state.wisps, dark = darkClouds)
         }
     }
 
