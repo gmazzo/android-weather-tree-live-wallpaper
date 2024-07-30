@@ -40,12 +40,7 @@ object WeatherModule {
     @Singleton
     fun resources(@ApplicationContext context: Context) = context.resources
 
-    @Provides
-    @Singleton
-    @Named("sunPosition")
-    fun sunPosition(): MutableStateFlow<Float> =
-        MutableStateFlow(0f)
-
+    // TODO review if there is a better way to share this
     @Provides
     @Singleton
     @Named("homeOffset")

@@ -4,4 +4,5 @@ data class WeatherConditions(
     val latitude: Float = Float.NaN,
     val longitude: Float = Float.NaN,
     val weatherType: WeatherType = WeatherType.SUNNY_DAY,
+    val sunPosition: Float = 0f,
 )

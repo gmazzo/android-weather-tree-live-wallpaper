@@ -4,6 +4,7 @@ import android.opengl.GLSurfaceView
 import dagger.BindsInstance
 import dagger.hilt.DefineComponent
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Named
 import javax.inject.Scope
 import javax.microedition.khronos.opengles.GL11
 
@@ -18,6 +19,7 @@ interface OpenGLComponent {
 
     @DefineComponent.Builder
     interface Builder {
+        fun fastTime(@BindsInstance @Named("fastTime") fastTime: Boolean): Builder
         fun view(@BindsInstance view: GLSurfaceView): Builder
         fun gl(@BindsInstance gl: GL11): Builder
         fun build(): OpenGLComponent

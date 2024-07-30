@@ -11,19 +11,18 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.EntryPoints
 import dagger.hilt.InstallIn
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
+import io.github.gmazzo.android.livewallpaper.weather.engine.TimeOfDay
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.Scene
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneFactory
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
-import io.github.gmazzo.android.livewallpaper.weather.sky_manager.TimeOfDay
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.util.Calendar
 import javax.inject.Named
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
@@ -51,20 +50,17 @@ import kotlin.random.Random
 internal class WeatherViewRenderer @AssistedInject constructor(
     private val openGLBuilder: OpenGLComponent.Builder,
     @Assisted private val view: GLSurfaceView,
-    private val time: GlobalTime,
-    @Named("sunPosition") private val sunPosition: MutableStateFlow<Float>,
     @Named("homeOffset") private val homeOffset: MutableStateFlow<Float>,
     private val weatherConditions: MutableStateFlow<WeatherConditions>,
 ) : Renderer {
     private var landscape: Boolean = false
-    private val tod = TimeOfDay()
     private val cameraDir = Vector()
     private var cameraFOV = 65.0f
     private val cameraPos = Vector(0.0f, 0.0f, 0.0f)
     private var currentScene: Scene? = null
     private val desiredCameraPos = Vector(0.0f, 0.0f, 0.0f)
     private val cameraSpeed: Float = 1.0f
-    var demoMode: Boolean = false
+    var demoMode = false
     private var screenHeight = 0f
     private var screenRatio = 1.0f
     private var screenWidth = 0f
@@ -94,8 +90,6 @@ internal class WeatherViewRenderer @AssistedInject constructor(
 
     @Synchronized
     private fun onSceneChanged(weather: WeatherConditions) {
-        updateTimeOfDayTable(weather)
-
         val mode = weather.weatherType.scene
         if (currentScene?.mode != mode) {
             currentScene?.unload()
@@ -110,6 +104,7 @@ internal class WeatherViewRenderer @AssistedInject constructor(
 
     override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
         val component = openGLBuilder
+            .fastTime(demoMode)
             .view(view)
             .gl(gl as GL11)
             .build()
@@ -156,8 +151,8 @@ internal class WeatherViewRenderer @AssistedInject constructor(
         val scene = currentScene ?: return
 
         if (!isPaused) {
-            time.updateTime()
-            calculateTimeOfDay()
+            glContext.time.update()
+            glContext.timeOfDay.update()
 
             updateCameraPosition()
             gl.updateProjection()
@@ -193,29 +188,9 @@ internal class WeatherViewRenderer @AssistedInject constructor(
         homeOffset.value = offset
     }
 
-    private fun updateTimeOfDayTable(current: WeatherConditions) {
-        val (latitude, longitude) = current
-
-        tod.calculateTimeTable(
-            latitude.takeUnless(Float::isNaN) ?: 0f,
-            longitude.takeUnless(Float::isNaN) ?: 0f
-        )
-    }
-
-    private fun calculateTimeOfDay() {
-        val cal = Calendar.getInstance()
-        var minutes = (cal[Calendar.HOUR_OF_DAY] * 60) + cal[Calendar.MINUTE]
-        if (this.demoMode) {
-            minutes = ((time.currentMillis / 10) % 1440).toInt()
-        }
-        tod.update(minutes, true)
-        currentScene?.updateTimeOfDay(this.tod)
-        sunPosition.value = tod.sunPosition
-    }
-
     private fun updateCameraPosition() {
         desiredCameraPos.set((28 * homeOffset.value) - 14, 0f, 0f)
-        val rate = (3.5f * time.deltaSeconds) * this.cameraSpeed
+        val rate = (3.5f * glContext.time.deltaSeconds) * this.cameraSpeed
         val dx = (desiredCameraPos.x - cameraPos.x) * rate
         val dy = (desiredCameraPos.y - cameraPos.y) * rate
         val dz = (desiredCameraPos.z - cameraPos.z) * rate
@@ -239,6 +214,8 @@ internal class WeatherViewRenderer @AssistedInject constructor(
     @EntryPoint
     @InstallIn(OpenGLComponent::class)
     interface GLContext {
+        val time: GlobalTime
+        val timeOfDay: TimeOfDay
         val textures: Textures
         val models: Models
         val sceneFactory: SceneFactory

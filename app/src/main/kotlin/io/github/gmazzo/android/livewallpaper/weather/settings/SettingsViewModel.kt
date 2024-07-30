@@ -23,14 +23,12 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import javax.inject.Named
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val preferences: DataStore<Preferences>,
     val weatherConditions: MutableStateFlow<WeatherConditions>,
-    @Named("sunPosition") val sunPosition: MutableStateFlow<Float>,
     private val workManager: WorkManager,
 ) : ViewModel(), DefaultLifecycleObserver {
 

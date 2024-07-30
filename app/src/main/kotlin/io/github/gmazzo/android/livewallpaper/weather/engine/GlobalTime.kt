@@ -1,11 +1,11 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine
 
+import io.github.gmazzo.android.livewallpaper.weather.OpenGLScoped
 import javax.inject.Inject
-import javax.inject.Singleton
 import kotlin.math.max
 import kotlin.math.min
 
-@Singleton
+@OpenGLScoped
 class GlobalTime @Inject constructor() {
 
     var currentMillis = System.currentTimeMillis()
@@ -17,7 +17,7 @@ class GlobalTime @Inject constructor() {
     var elapsedSeconds = 0f
         private set
 
-    fun updateTime() {
+    fun update() {
         val prev = currentMillis
         currentMillis = System.currentTimeMillis()
         deltaSeconds = max(min((currentMillis - prev) / 1000f, 0.3333333f), 0f)

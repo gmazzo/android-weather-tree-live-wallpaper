@@ -6,12 +6,12 @@ import io.github.gmazzo.android.livewallpaper.weather.WeatherType
 import io.github.gmazzo.android.livewallpaper.weather.engine.AnimPlayer
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
+import io.github.gmazzo.android.livewallpaper.weather.engine.TimeOfDay
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.AnimatedModel
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things
-import io.github.gmazzo.android.livewallpaper.weather.sky_manager.TimeOfDay
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 import kotlin.random.Random
@@ -41,8 +41,6 @@ sealed class Scene(
     protected var bgPadding: Float = 20f
     private var treeAnimateDelayMin: Float = 3f
     private var treeAnimateDelayRange: Float = 7f
-    protected var numClouds: Int = 0
-    protected var numWisps: Int = 0
     private var treeAnim: Boolean = true
     private var treesAnim = AnimPlayer(0, 19, 5f, false)
     private var treesAnimateDelay = 5f
@@ -78,11 +76,8 @@ sealed class Scene(
 
     @CallSuper
     open fun updateWeather(weather: WeatherType) {
-        numClouds = weather.clouds
-        numWisps = weather.wisps
-
         if (darkClouds != null) {
-            things.spawnClouds(numClouds, numWisps, dark = darkClouds)
+            things.spawnClouds(weather.clouds, weather.wisps, dark = darkClouds)
         }
     }
 

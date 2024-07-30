@@ -1,4 +1,4 @@
-package io.github.gmazzo.android.livewallpaper.weather.sky_manager
+package io.github.gmazzo.android.livewallpaper.weather.engine
 
 import android.location.Location
 import android.util.Log
@@ -158,7 +158,7 @@ object SkyManager {
         return (((((secs - ss) - (60 * mm)) - (3600 * (((minutes - mm) / 60) % 24))) / 86400) + 2440588).toInt()
     }
 
-    /* renamed from: io.github.gmazzo.android.livewallpaper.weather.sky_manager.SkyManager$1 */
+    /* renamed from: io.github.gmazzo.android.livewallpaper.weather.engine.SkyManager$1 */
     internal object AnonymousClass1 {
         /* synthetic */val `$SwitchMap$gs$weather$sky_manager$SkyManager$SunEvent`: IntArray =
             IntArray(SunEvent.entries.size)

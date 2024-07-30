@@ -1,15 +1,15 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.things
 
 import io.github.gmazzo.android.livewallpaper.weather.R
+import io.github.gmazzo.android.livewallpaper.weather.WeatherConditions
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
+import io.github.gmazzo.android.livewallpaper.weather.engine.SkyManager
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Texture
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
-import io.github.gmazzo.android.livewallpaper.weather.sky_manager.SkyManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
-import javax.inject.Named
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 import kotlin.math.roundToInt
@@ -19,7 +19,7 @@ class ThingMoon @Inject constructor(
     gl: GL11,
     models: Models,
     private val textures: Textures,
-    @Named("sunPosition") private val todSunPosition: MutableStateFlow<Float>,
+    private val weather: MutableStateFlow<WeatherConditions>,
 ) : Thing(time, gl) {
 
     override val engineColor = EngineColor(1.0f, 1.0f, 1.0f, 1.0f)
@@ -42,7 +42,7 @@ class ThingMoon @Inject constructor(
     override fun update() {
         super.update()
 
-        val position: Float = todSunPosition.value
+        val position: Float = weather.value.sunPosition
         if (position >= 0.0f) {
             scale.set(0.0f)
 
