@@ -35,11 +35,7 @@ class Things @Inject constructor(
     fun render() =
         items.forEach(Thing::renderIfVisible)
 
-    fun update(timeDelta: Float) {
-        update(timeDelta, false)
-    }
-
-    fun update(timeDelta: Float, onlyVisible: Boolean) = with(items.iterator()) {
+    fun update(onlyVisible: Boolean = false) = with(items.iterator()) {
         while (hasNext()) {
             val thing = next()
 
@@ -47,10 +43,10 @@ class Things @Inject constructor(
                 remove()
 
             } else if (onlyVisible) {
-                thing.updateIfVisible(timeDelta)
+                thing.updateIfVisible()
 
             } else {
-                thing.update(timeDelta)
+                thing.update()
             }
         }
     }

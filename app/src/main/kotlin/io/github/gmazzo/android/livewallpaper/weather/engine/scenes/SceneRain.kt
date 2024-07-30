@@ -17,13 +17,14 @@ import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 
 class SceneRain @Inject constructor(
+    time: GlobalTime,
     gl: GL11,
     models: Models,
     textures: Textures,
     things: Things,
     @Named("timeOfDay") timeOfDayColor: EngineColor,
     private val particles: ParticlesRain,
-) : Scene(gl, models, textures, things, timeOfDayColor, raining = true) {
+) : Scene(time, gl, models, textures, things, timeOfDayColor, raining = true) {
     private val particleRainOrigin= Vector(0.0f, 25.0f, 10.0f)
     private val lightDiffuse = floatArrayOf(0.1f, 0.1f, 0.1f, 1.0f)
     private val lightDiffuseColor = EngineColor(0.5f, 0.5f, 0.5f, 1.0f)
@@ -36,7 +37,7 @@ class SceneRain @Inject constructor(
         )
     }
 
-    private fun renderBackground(timeDelta: Float) = gl.pushMatrix {
+    private fun renderBackground() = gl.pushMatrix {
         val stormBg = textures[R.drawable.storm_bg]
 
         gl.glBindTexture(GL10.GL_TEXTURE_2D, stormBg.glId)
@@ -54,7 +55,7 @@ class SceneRain @Inject constructor(
 
         gl.pushMatrix {
             gl.glTranslatef(
-                ((WIND_SPEED * timeDelta) * -0.005f) % 1.0f,
+                ((WIND_SPEED * time.deltaSeconds) * -0.005f) % 1.0f,
                 0.0f,
                 0.0f
             )
@@ -65,17 +66,18 @@ class SceneRain @Inject constructor(
         gl.glMatrixMode(GL10.GL_MODELVIEW)
     }
 
-    private fun renderRain(timeDelta: Float) = gl.pushMatrix {
+    private fun renderRain() = gl.pushMatrix {
         gl.glMatrixMode(GL10.GL_MODELVIEW)
         gl.glTranslatef(0.0f, 0.0f, -5.0f)
         gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
-        particles.update(timeDelta)
+        particles.update(time.deltaSeconds)
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ZERO)
         particles.render(particleRainOrigin)
     }
 
-    override fun draw(time: GlobalTime) {
-        things.update(time.sTimeDelta)
+    override fun draw() {
+        things.update()
+
         gl.glEnable(GL10.GL_LIGHTING)
         gl.glEnable(GL10.GL_COLOR_BUFFER_BIT)
         gl.glMatrixMode(GL10.GL_MODELVIEW)
@@ -87,14 +89,14 @@ class SceneRain @Inject constructor(
         lightDiffuse[3] = lightDiffuseColor.a
         gl.glLightfv(GL10.GL_COLOR_BUFFER_BIT, 4609, this.lightDiffuse, 0)
         gl.glLightfv(GL10.GL_COLOR_BUFFER_BIT, 4608, this.lightDiffuse, 0)
-        renderBackground(time.sTimeElapsed)
-        renderRain(time.sTimeDelta)
+        renderBackground()
+        renderRain()
         gl.glTranslatef(0.0f, 0.0f, 40.0f)
         gl.glDisable(GL10.GL_COLOR_BUFFER_BIT)
         gl.glDisable(GL10.GL_LIGHTING)
 
         things.render()
-        drawTree(time.sTimeDelta)
+        drawTree()
     }
 
 }

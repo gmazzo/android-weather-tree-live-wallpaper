@@ -1,6 +1,8 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.things
 
+import androidx.annotation.CallSuper
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
+import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Model
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
@@ -12,6 +14,7 @@ import kotlin.math.abs
 import kotlin.random.Random
 
 sealed class Thing(
+    protected val time: GlobalTime,
     protected val gl: GL11,
 ) {
     protected abstract val engineColor: EngineColor?
@@ -23,15 +26,15 @@ sealed class Thing(
     var velocity: Vector? = null
     private val visScratch = Vector(0.0f, 0.0f, 0.0f)
     private var visible = true
-    var visWidth: Float = 3.0f
+    var visWidth = 3.0f
 
     protected abstract val model: Model
 
     protected abstract val texture: Texture
 
     fun checkVisibility(cameraPos: Vector, cameraAngleZ: Float, fov: Float) {
-        if (this.visWidth == 0.0f) {
-            this.visible = true
+        if (visWidth == 0.0f) {
+            visible = true
             return
         }
         visScratch.set(
@@ -40,12 +43,12 @@ sealed class Thing(
             origin.z - cameraPos.z
         )
         visScratch.rotateAroundZ(cameraAngleZ)
-        this.visible =
-            abs(visScratch.x.toDouble()) < this.visWidth + ((visScratch.y * 0.01111111f) * fov)
+        visible =
+            abs(visScratch.x.toDouble()) < visWidth + ((visScratch.y * 0.01111111f) * fov)
     }
 
     fun delete() {
-        this.isDeleted = true
+        isDeleted = true
     }
 
     open fun render() = gl.pushMatrix {
@@ -64,14 +67,16 @@ sealed class Thing(
     }
 
     fun renderIfVisible() {
-        if (this.visible) {
+        if (visible) {
             render()
         }
     }
 
-    open fun update(timeDelta: Float) {
-        this.timeElapsed += timeDelta
+    @CallSuper
+    open fun update() {
+        val timeDelta = time.deltaSeconds
 
+        timeElapsed += timeDelta
         velocity?.let { velocity ->
             origin.plus(
                 velocity.x * timeDelta,
@@ -81,9 +86,9 @@ sealed class Thing(
         }
     }
 
-    fun updateIfVisible(timeDelta: Float) {
-        if (this.visible) {
-            update(timeDelta)
+    fun updateIfVisible() {
+        if (visible) {
+            update()
         }
     }
 

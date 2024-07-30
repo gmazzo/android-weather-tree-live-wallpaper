@@ -15,12 +15,13 @@ import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 
 class SceneFog @Inject constructor(
+    time: GlobalTime,
     gl: GL11,
     models: Models,
     textures: Textures,
     things: Things,
     @Named("timeOfDay") timeOfDayColor: EngineColor,
-) : Scene(gl, models, textures, things, timeOfDayColor, darkClouds = null) {
+) : Scene(time, gl, models, textures, things, timeOfDayColor, darkClouds = null) {
 
     private val fogEngineColorFinal = EngineColor()
 
@@ -42,8 +43,8 @@ class SceneFog @Inject constructor(
         fogEngineColorFinal.setToArray(FOG_COLOR)
     }
 
-    override fun draw(time: GlobalTime) {
-        things.update(time.sTimeDelta)
+    override fun draw() {
+        things.update()
         gl.glDisable(GL10.GL_COLOR_BUFFER_BIT)
         gl.glDisable(GL10.GL_LIGHT1)
         gl.glDisable(GL10.GL_LIGHTING)
@@ -57,15 +58,15 @@ class SceneFog @Inject constructor(
         gl.glFogf(GL10.GL_FOG_START, -10.0f)
         gl.glFogf(GL10.GL_FOG_END, 190.0f)
         gl.glFogf(GL10.GL_FOG_HINT, 4352.0f)
-        renderBackground(time.sTimeElapsed)
+        renderBackground()
         gl.glTranslatef(0.0f, 0.0f, 40.0f)
         gl.glDisable(GL10.GL_FOG)
 
         things.render()
-        drawTree(time.sTimeDelta)
+        drawTree()
     }
 
-    private fun renderBackground(timeDelta: Float) = gl.pushMatrix {
+    private fun renderBackground() = gl.pushMatrix {
         gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[R.drawable.bg1].glId)
         gl.glColor4f(
             timeOfDayColor.r,
@@ -80,7 +81,7 @@ class SceneFog @Inject constructor(
 
         pushMatrix {
             gl.glTranslatef(
-                ((WIND_SPEED * timeDelta) * -0.005f) % 1.0f,
+                ((WIND_SPEED * time.deltaSeconds) * -0.005f) % 1.0f,
                 0.0f,
                 0.0f
             )

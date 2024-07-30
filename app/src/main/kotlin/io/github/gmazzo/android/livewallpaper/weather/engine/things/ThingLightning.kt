@@ -2,6 +2,7 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.things
 
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
+import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
@@ -11,10 +12,11 @@ import javax.microedition.khronos.opengles.GL11
 import kotlin.random.Random
 
 class ThingLightning @Inject constructor(
+    time: GlobalTime,
     gl: GL11,
     models: Models,
     textures: Textures,
-) : ThingSimple(gl, models, textures, MODELS[Random.nextInt(MODELS.size)], R.raw.lightning_pieces_core) {
+) : ThingSimple(time, gl, models, textures, MODELS[Random.nextInt(MODELS.size)], R.raw.lightning_pieces_core) {
 
     override val engineColor = EngineColor(1f, 1f, 1f, 1.0f)
 
@@ -34,9 +36,10 @@ class ThingLightning @Inject constructor(
         gl.glDisable(GL10.GL_LIGHTING)
     }
 
-    override fun update(timeDelta: Float) {
-        super.update(timeDelta)
-        engineColor.a -= 2.0f * timeDelta
+    override fun update() {
+        super.update()
+
+        engineColor.a -= 2.0f * time.deltaSeconds
         if (engineColor.a <= 0.0f) {
             delete()
         }

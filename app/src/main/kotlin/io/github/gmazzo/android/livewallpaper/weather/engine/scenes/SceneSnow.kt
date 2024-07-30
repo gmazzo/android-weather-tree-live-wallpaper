@@ -17,13 +17,14 @@ import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 
 class SceneSnow @Inject constructor(
+    time: GlobalTime,
     gl: GL11,
     models: Models,
     textures: Textures,
     things: Things,
     @Named("timeOfDay") timeOfDayColor: EngineColor,
     particle: Provider<ParticlesSnow>,
-) : Scene(gl, models, textures, things, timeOfDayColor) {
+) : Scene(time, gl, models, textures, things, timeOfDayColor) {
 
     private val snowPositions = arrayOf(
         Vector(0f, 20f, -20f),
@@ -32,24 +33,26 @@ class SceneSnow @Inject constructor(
     )
     private val particles = snowPositions.map { particle.get() }
 
-    override fun draw(time: GlobalTime) {
-        things.update(time.sTimeDelta)
+    override fun draw() {
+        things.update()
+
         gl.glDisable(GL10.GL_COLOR_BUFFER_BIT)
         gl.glDisable(GL10.GL_LIGHT1)
         gl.glDisable(GL10.GL_LIGHTING)
         gl.glMatrixMode(GL10.GL_MODELVIEW)
         gl.glLoadIdentity()
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA)
-        renderBackground(time.sTimeElapsed)
+        renderBackground(time.elapsedSeconds)
         gl.glTranslatef(0.0f, 0.0f, 40.0f)
 
         things.render()
-        renderSnow(time.sTimeDelta)
-        drawTree(time.sTimeDelta)
+
+        renderSnow()
+        drawTree()
     }
 
-    private fun renderSnow(timeDelta: Float) = particles.forEachIndexed { i, it ->
-        it.update(timeDelta)
+    private fun renderSnow() = particles.forEachIndexed { i, it ->
+        it.update(time.deltaSeconds)
         it.render(snowPositions[i])
     }
 

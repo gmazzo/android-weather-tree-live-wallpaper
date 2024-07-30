@@ -3,8 +3,8 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
-import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime.Companion.waveCos
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
+import io.github.gmazzo.android.livewallpaper.weather.engine.Wave
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.particles.ParticlesRain
@@ -22,6 +22,7 @@ import javax.microedition.khronos.opengles.GL11
 import kotlin.random.Random
 
 class SceneStorm @Inject constructor(
+    time: GlobalTime,
     gl: GL11,
     models: Models,
     textures: Textures,
@@ -29,7 +30,7 @@ class SceneStorm @Inject constructor(
     @Named("timeOfDay") timeOfDayColor: EngineColor,
     private val particles: ParticlesRain,
     private val lightningProvider: Provider<ThingLightning>,
-) : Scene(gl, models, textures, things, timeOfDayColor, raining = true, darkClouds = true) {
+) : Scene(time, gl, models, textures, things, timeOfDayColor, raining = true, darkClouds = true) {
     private val lightAmbientLight = FloatArray(4)
     private var lightFlashTime = 0f
     private var lightFlashX = 0f
@@ -42,6 +43,7 @@ class SceneStorm @Inject constructor(
     private val diffuseLight = floatArrayOf(1.5f, 1.5f, 1.5f, 1.0f)
     private val flashLights = true
     private val lightAmbientLightColor = EngineColor(0.5f, 0.5f, 0.5f, 1.0f)
+    private val wave = Wave(0.0, 500.0, 0.0, .005)
     private val stormBg = textures[R.drawable.storm_bg]
 
     override fun unload() {
@@ -60,19 +62,20 @@ class SceneStorm @Inject constructor(
         )
     }
 
-    override fun draw(time: GlobalTime) {
-        things.update(time.sTimeDelta)
+    override fun draw() {
+        things.update()
+
         gl.glMatrixMode(GL10.GL_MODELVIEW)
         gl.glLoadIdentity()
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA)
-        renderBackground(time.sTimeElapsed)
-        renderRain(time.sTimeDelta)
-        checkForLightning(time.sTimeDelta)
-        updateLightValues(time.sTimeDelta)
+        renderBackground(time.elapsedSeconds)
+        renderRain(time.deltaSeconds)
+        checkForLightning(time.deltaSeconds)
+        updateLightValues(time.deltaSeconds)
         gl.glTranslatef(0.0f, 0.0f, 40.0f)
 
         things.render()
-        drawTree(time.sTimeDelta)
+        drawTree()
     }
 
     private fun renderBackground(timeDelta: Float) = gl.pushMatrix {
@@ -144,7 +147,9 @@ class SceneStorm @Inject constructor(
     }
 
     private fun updateLightValues(timeDelta: Float) {
-        val lightPosX: Float = waveCos(0.0f, 500.0f, 0.0f, 0.005f)
+        wave.timeElapsed += timeDelta.toLong()
+
+        val lightPosX = wave.cos.toFloat()
 
         if (!flashLights || lightFlashTime <= 0.0f) {
             position[0] = lightPosX
@@ -160,7 +165,7 @@ class SceneStorm @Inject constructor(
         }
 
         position[1] = 50.0f
-        position[2] = GlobalTime.Companion.waveSin(0.0f, 500.0f, 0.0f, 0.005f)
+        position[2] = wave.sin.toFloat()
 
         gl.glLightfv(GL10.GL_COLOR_BUFFER_BIT, 4608, ambientLight, 0)
         gl.glLightfv(GL10.GL_COLOR_BUFFER_BIT, 4609, diffuseLight, 0)

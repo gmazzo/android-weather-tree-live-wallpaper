@@ -2,6 +2,7 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.things
 
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
+import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Texture
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
@@ -14,11 +15,12 @@ import javax.microedition.khronos.opengles.GL11
 import kotlin.math.roundToInt
 
 class ThingMoon @Inject constructor(
+    time: GlobalTime,
     gl: GL11,
     models: Models,
     private val textures: Textures,
     @Named("sunPosition") private val todSunPosition: MutableStateFlow<Float>,
-) : Thing(gl) {
+) : Thing(time, gl) {
 
     override val engineColor = EngineColor(1.0f, 1.0f, 1.0f, 1.0f)
 
@@ -37,8 +39,9 @@ class ThingMoon @Inject constructor(
         super.render()
     }
 
-    override fun update(timeDelta: Float) {
-        super.update(timeDelta)
+    override fun update() {
+        super.update()
+
         val position: Float = todSunPosition.value
         if (position >= 0.0f) {
             scale.set(0.0f)

@@ -5,6 +5,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
+import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
@@ -16,12 +17,13 @@ import kotlin.math.abs
 import kotlin.random.Random
 
 class ThingDarkCloud @AssistedInject constructor(
+    time: GlobalTime,
     gl: GL11,
     models: Models,
     textures: Textures,
     @Assisted which: Int,
     @Assisted private val withFlare: Boolean,
-) : ThingSimple(gl, models, textures, MODELS[which % MODELS.size], TEXTURES[which % TEXTURES.size]) {
+) : ThingSimple(time, gl, models, textures, MODELS[which % MODELS.size], TEXTURES[which % TEXTURES.size]) {
 
     override val engineColor = EngineColor(1.0f, 1.0f, 1.0f, 1.0f)
 
@@ -54,8 +56,9 @@ class ThingDarkCloud @AssistedInject constructor(
         gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
     }
 
-    override fun update(timeDelta: Float) {
-        super.update(timeDelta)
+    override fun update() {
+        super.update()
+
         val rangX = calculateCloudRangeX()
         if (origin.x > rangX) {
             origin.x = -rangX
@@ -72,9 +75,9 @@ class ThingDarkCloud @AssistedInject constructor(
         }
         if (withFlare) {
             if (flashIntensity > 0.0f) {
-                flashIntensity -= 1.25f * timeDelta
+                flashIntensity -= 1.25f * time.deltaSeconds
             }
-            if (flashIntensity <= 0.0f && Random.nextFloat(0.0f, 4.5f) < timeDelta) {
+            if (flashIntensity <= 0.0f && Random.nextFloat(0.0f, 4.5f) < time.deltaSeconds) {
                 flashIntensity = 0.5f
             }
         }

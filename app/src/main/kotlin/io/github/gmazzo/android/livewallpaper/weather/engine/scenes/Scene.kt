@@ -17,6 +17,7 @@ import javax.microedition.khronos.opengles.GL11
 import kotlin.random.Random
 
 sealed class Scene(
+    protected val time: GlobalTime,
     protected val gl: GL11,
     protected val models: Models,
     protected val textures: Textures,
@@ -40,7 +41,6 @@ sealed class Scene(
     protected var bgPadding: Float = 20f
     private var treeAnimateDelayMin: Float = 3f
     private var treeAnimateDelayRange: Float = 7f
-    private var globalTime: GlobalTime? = null
     protected var numClouds: Int = 0
     protected var numWisps: Int = 0
     private var treeAnim: Boolean = true
@@ -60,7 +60,7 @@ sealed class Scene(
         EngineColor(1f, .85f, .75f, 1f),
     )
 
-    abstract fun draw(time: GlobalTime)
+    abstract fun draw()
 
     @CallSuper
     open fun load(weather: WeatherType) {
@@ -86,10 +86,6 @@ sealed class Scene(
         }
     }
 
-    fun update(time: GlobalTime) {
-        this.globalTime = time
-    }
-
     open fun updateTimeOfDay(tod: TimeOfDay) {
         timeOfDayColor.blend(
             timeOfDayColors[tod.mainIndex],
@@ -98,9 +94,9 @@ sealed class Scene(
         )
     }
 
-    protected fun drawTree(timeDelta: Float) = gl.pushMatrix {
+    protected fun drawTree() = gl.pushMatrix {
         if (treeAnim && treesAnim.count > 0) {
-            treesAnimateDelay -= timeDelta
+            treesAnimateDelay -= time.deltaSeconds
 
             if (treesAnimateDelay <= 0f) {
                 treesAnimateDelay =
@@ -128,7 +124,7 @@ sealed class Scene(
         val tree = models[R.raw.trees_overlay] as AnimatedModel
         grass.animator = treesAnim
         tree.animator = treesAnim
-        treesAnim.update(timeDelta)
+        treesAnim.update(time.deltaSeconds)
         tree.render()
         grass.render()
     }

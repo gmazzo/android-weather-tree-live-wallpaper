@@ -5,6 +5,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
+import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import javax.inject.Named
@@ -12,12 +13,13 @@ import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 
 class ThingWispy @AssistedInject constructor(
+    time: GlobalTime,
     gl: GL11,
     models: Models,
     textures: Textures,
     @Named("timeOfDay") private val timeOfDayColor: EngineColor,
     @Assisted which: Int,
-) : ThingSimple(gl, models, textures, R.raw.plane_16x16, WISPY_TEXTURES[which % WISPY_TEXTURES.size]) {
+) : ThingSimple(time, gl, models, textures, R.raw.plane_16x16, WISPY_TEXTURES[which % WISPY_TEXTURES.size]) {
 
     override val engineColor: EngineColor? = null
 
@@ -33,8 +35,8 @@ class ThingWispy @AssistedInject constructor(
         super.render()
     }
 
-    override fun update(timeDelta: Float) {
-        super.update(timeDelta)
+    override fun update() {
+        super.update()
 
         if (origin.x > 123.75f) {
             origin.x -= 247.5f

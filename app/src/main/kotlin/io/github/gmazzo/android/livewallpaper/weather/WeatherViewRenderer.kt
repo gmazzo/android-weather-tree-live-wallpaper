@@ -51,6 +51,7 @@ import kotlin.random.Random
 internal class WeatherViewRenderer @AssistedInject constructor(
     private val openGLBuilder: OpenGLComponent.Builder,
     @Assisted private val view: GLSurfaceView,
+    private val time: GlobalTime,
     @Named("sunPosition") private val sunPosition: MutableStateFlow<Float>,
     @Named("homeOffset") private val homeOffset: MutableStateFlow<Float>,
     private val weatherConditions: MutableStateFlow<WeatherConditions>,
@@ -62,7 +63,6 @@ internal class WeatherViewRenderer @AssistedInject constructor(
     private val cameraPos = Vector(0.0f, 0.0f, 0.0f)
     private var currentScene: Scene? = null
     private val desiredCameraPos = Vector(0.0f, 0.0f, 0.0f)
-    private val globalTime = GlobalTime()
     private val cameraSpeed: Float = 1.0f
     var demoMode: Boolean = false
     private var screenHeight = 0f
@@ -156,13 +156,13 @@ internal class WeatherViewRenderer @AssistedInject constructor(
         val scene = currentScene ?: return
 
         if (!isPaused) {
-            globalTime.updateTime()
+            time.updateTime()
             calculateTimeOfDay()
 
-            updateCameraPosition(globalTime.sTimeDelta)
+            updateCameraPosition()
             gl.updateProjection()
 
-            scene.draw(globalTime)
+            scene.draw()
         }
     }
 
@@ -206,16 +206,16 @@ internal class WeatherViewRenderer @AssistedInject constructor(
         val cal = Calendar.getInstance()
         var minutes = (cal[Calendar.HOUR_OF_DAY] * 60) + cal[Calendar.MINUTE]
         if (this.demoMode) {
-            minutes = ((globalTime.msTimeCurrent / 10) % 1440).toInt()
+            minutes = ((time.currentMillis / 10) % 1440).toInt()
         }
         tod.update(minutes, true)
         currentScene?.updateTimeOfDay(this.tod)
         sunPosition.value = tod.sunPosition
     }
 
-    private fun updateCameraPosition(timeDelta: Float) {
+    private fun updateCameraPosition() {
         desiredCameraPos.set((28 * homeOffset.value) - 14, 0f, 0f)
-        val rate = (3.5f * timeDelta) * this.cameraSpeed
+        val rate = (3.5f * time.deltaSeconds) * this.cameraSpeed
         val dx = (desiredCameraPos.x - cameraPos.x) * rate
         val dy = (desiredCameraPos.y - cameraPos.y) * rate
         val dz = (desiredCameraPos.z - cameraPos.z) * rate
