@@ -10,6 +10,7 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things.Companion.WIND_SPEED
+import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDayTint
 import javax.inject.Inject
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL10.GL_AMBIENT
@@ -66,7 +67,6 @@ class SceneRain @Inject constructor(
     override fun draw() {
         super.draw()
 
-        timeOfDayTint.reset()
         timeOfDayTint.update(lightDiffuseColor)
         lightDiffuseColor.setToArray(lightDiffuse)
 

@@ -10,6 +10,7 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things
+import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDayTint
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 import kotlin.random.Random
@@ -40,7 +41,6 @@ sealed class Scene(
 
     @CallSuper
     open fun load() {
-        timeOfDayTint.reset()
         things.spawnSun()
         things.spawnMoon()
     }

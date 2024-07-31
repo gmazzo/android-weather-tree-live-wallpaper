@@ -1,5 +1,6 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 
+import android.content.res.Resources
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.WeatherState
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
@@ -9,11 +10,14 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things.Companion.WIND_SPEED
+import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDayColors
+import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDayTint
 import javax.inject.Inject
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 
 class SceneFog @Inject constructor(
+    resources: Resources,
     time: GlobalTime,
     gl: GL11,
     models: Models,
@@ -25,11 +29,11 @@ class SceneFog @Inject constructor(
     private val fogEngineColorFinal =
         EngineColor()
 
-    private val fogTimeOfDayColors = arrayOf(
-        EngineColor(0.2f, 0.2f, 0.2f, 1.0f),
-        EngineColor(0.5f, 0.5f, 0.5f, 1.0f),
-        EngineColor(0.8f, 0.8f, 0.8f, 1.0f),
-        EngineColor(0.5f, 0.5f, 0.5f, 1.0f),
+    private val fogTimeOfDayColors = TimeOfDayColors(
+        night = resources.getColor(R.color.timeOfDay_fog_night, null),
+        dawn = resources.getColor(R.color.timeOfDay_fog_dawn, null),
+        day = resources.getColor(R.color.timeOfDay_fog_day, null),
+        dusk = resources.getColor(R.color.timeOfDay_fog_dusk, null),
     )
 
     private val fogColors =

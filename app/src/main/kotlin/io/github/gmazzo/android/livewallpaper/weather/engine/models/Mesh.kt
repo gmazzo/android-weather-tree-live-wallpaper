@@ -10,8 +10,6 @@ import java.nio.FloatBuffer
 import java.nio.ShortBuffer
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
-import kotlin.math.max
-import kotlin.math.min
 
 class Mesh {
     private var bufIndex: ShortBuffer? = null
@@ -493,7 +491,7 @@ class Mesh {
     }
 
     fun renderFrame_gl11_setup(gl11: GL11, frameNum: Int) {
-        val frame = max(min(frameNum, frames.size - 1), 0)
+        val frame = frameNum.coerceIn(0, frames.size - 1)
         if (frame != frameNum) {
             Log.v(
                 TAG,

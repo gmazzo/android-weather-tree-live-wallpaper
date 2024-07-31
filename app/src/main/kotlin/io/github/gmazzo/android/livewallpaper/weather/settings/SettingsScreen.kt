@@ -76,6 +76,7 @@ private val sampleConditions = MutableStateFlow(WeatherState())
 fun SettingsScreen(
     updateLocationEnabled: Boolean = true,
     weatherState: WeatherState = sampleConditions.value,
+    sunPosition: Float = 0f,
     missingLocationPermission: Boolean = true,
     updateLocationEnabledChange: (Boolean) -> Unit = {},
     onSceneSelected: (SceneMode) -> Unit = {},
@@ -112,7 +113,7 @@ fun SettingsScreen(
                         }
                     })
                 Box(modifier = Modifier.padding(horizontal = margin)) {
-                    DayTimeProgression(weatherState.sunPosition + .5f)
+                    DayTimeProgression(sunPosition + .5f)
                 }
             }
         }) { innerPadding ->

@@ -3,6 +3,7 @@ package io.github.gmazzo.android.livewallpaper.weather
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.content.Context
 import android.content.pm.PackageManager.PERMISSION_GRANTED
+import android.content.res.Resources
 import android.location.Location
 import android.location.LocationManager
 import android.util.Log
@@ -37,7 +38,7 @@ object WeatherModule {
 
     @Provides
     @Singleton
-    fun resources(@ApplicationContext context: Context) = context.resources
+    fun resources(@ApplicationContext context: Context): Resources = context.resources
 
     @Provides
     @Singleton

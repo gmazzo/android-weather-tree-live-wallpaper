@@ -2,12 +2,13 @@ package io.github.gmazzo.android.livewallpaper.weather.engine
 
 import android.graphics.Color
 import androidx.annotation.ColorInt
+import androidx.annotation.FloatRange
 
 data class EngineColor(
-    var r: Float = 1f,
-    var g: Float = 1f,
-    var b: Float = 1f,
-    var a: Float = 1f
+    @param:FloatRange(from = 0.0, to = 1.0) var r: Float = 1f,
+    @param:FloatRange(from = 0.0, to = 1.0) var g: Float = 1f,
+    @param:FloatRange(from = 0.0, to = 1.0) var b: Float = 1f,
+    @param:FloatRange(from = 0.0, to = 1.0) var a: Float = 1f
 ) {
 
     operator fun timesAssign(scale: Float) {
@@ -17,10 +18,15 @@ data class EngineColor(
         this.a *= scale
     }
 
-    fun set(x: Float, y: Float, z: Float, a: Float): EngineColor {
-        this.r = x
-        this.g = y
-        this.b = z
+    fun set(
+        @FloatRange(from = 0.0, to = 1.0) r: Float,
+        @FloatRange(from = 0.0, to = 1.0) g: Float,
+        @FloatRange(from = 0.0, to = 1.0) b: Float,
+        @FloatRange(from = 0.0, to = 1.0) a: Float
+    ): EngineColor {
+        this.r = r
+        this.g = g
+        this.b = b
         this.a = a
         return this
     }

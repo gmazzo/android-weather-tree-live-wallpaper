@@ -1,7 +1,6 @@
 package io.github.gmazzo.android.livewallpaper.weather
 
 import android.content.Context
-import android.location.Location
 import androidx.hilt.work.HiltWorker
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -17,13 +16,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import java.util.concurrent.TimeUnit
 import javax.inject.Provider
+import android.location.Location as AndroidLocation
 
 @HiltWorker
 class WeatherUpdateWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
     private val state: MutableStateFlow<WeatherState>,
-    private val location: Provider<Location>,
+    private val location: Provider<AndroidLocation>,
     private val forecastAPI: LocationForecastAPI,
 ) : Worker(context, workerParams) {
 
@@ -37,7 +37,10 @@ class WeatherUpdateWorker @AssistedInject constructor(
         val series = response.properties.timeSeries.firstOrNull() ?: return Result.failure()
         state.update {
             it.copy(
-                location = location,
+                location = WeatherState.Location(
+                    latitude = location.latitude,
+                    longitude = location.longitude,
+                ),
                 weatherType = series.data.nextHour.weatherType
             )
         }

@@ -40,6 +40,8 @@ class SettingsActivity : ComponentActivity() {
             SettingsScreen(
                 updateLocationEnabled = viewModel.updateLocationEnabled.collectAsState().value,
                 weatherState = viewModel.weatherState.collectAsState().value,
+                // TODO compute this based on time
+                //  sunPosition = viewModel.sunPosition.collectAsState().value,
                 missingLocationPermission = viewModel.missingLocationPermission.collectAsState().value,
                 updateLocationEnabledChange = viewModel::updateLocationEnabled,
                 onSceneSelected = viewModel::updateSelectedScene,

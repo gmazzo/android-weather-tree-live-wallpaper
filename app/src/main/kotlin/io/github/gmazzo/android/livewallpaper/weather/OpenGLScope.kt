@@ -4,10 +4,10 @@ import android.opengl.GLSurfaceView
 import dagger.BindsInstance
 import dagger.Subcomponent
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
-import io.github.gmazzo.android.livewallpaper.weather.engine.TimeOfDay
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneComponent
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
+import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDay
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Named
 import javax.inject.Scope

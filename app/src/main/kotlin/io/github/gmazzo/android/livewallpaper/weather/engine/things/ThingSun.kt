@@ -1,15 +1,14 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.things
 
 import io.github.gmazzo.android.livewallpaper.weather.R
-import io.github.gmazzo.android.livewallpaper.weather.WeatherState
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
-import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.TimeOfDayTint
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
-import kotlinx.coroutines.flow.MutableStateFlow
+import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDay
+import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDayTint
 import javax.inject.Inject
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
@@ -20,8 +19,8 @@ class ThingSun @Inject constructor(
     gl: GL11,
     models: Models,
     textures: Textures,
+    private val timeOfDay: TimeOfDay,
     private val timeOfDayTint: TimeOfDayTint,
-    private val state: MutableStateFlow<WeatherState>,
 ) : ThingSimple(time, gl, models, textures, R.raw.plane_16x16, R.raw.sun) {
 
     override val engineColor = EngineColor(1.0f, 1.0f, 0.95f, 1.0f)
@@ -57,17 +56,14 @@ class ThingSun @Inject constructor(
     override fun update() {
         super.update()
 
-        val sunPos = state.value.sunPosition
+        val sunPos = timeOfDay.sunPosition
         var alpha = 0.0f
 
         if (sunPos > 0.0f) {
             scale = Vector(2.0f)
             val altitude = 175.0f * sunPos
 
-            alpha = altitude / 25.0f
-            if (alpha > 1.0f) {
-                alpha = 1.0f
-            }
+            alpha = (altitude / 25.0f).coerceIn(0.0f, 1.0f)
             origin = origin.copy(z = min(altitude - 50f, 40f))
 
         } else {

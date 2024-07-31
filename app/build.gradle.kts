@@ -15,7 +15,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        minSdk = 21
+        minSdk = 26
         targetSdk = 34
 
         versionCode = 1
@@ -57,6 +57,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.okhttp)
     implementation(libs.retrofit)
+    implementation(libs.solarevents)
 
     testImplementation(libs.hilt.testing)
     testImplementation(libs.junit)

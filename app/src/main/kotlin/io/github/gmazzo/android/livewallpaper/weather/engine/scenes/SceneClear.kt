@@ -1,14 +1,14 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 
 import io.github.gmazzo.android.livewallpaper.weather.R
-import io.github.gmazzo.android.livewallpaper.weather.WeatherState
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things.Companion.WIND_SPEED
-import kotlinx.coroutines.flow.MutableStateFlow
+import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDay
+import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDayTint
 import javax.inject.Inject
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
@@ -19,8 +19,8 @@ open class SceneClear @Inject constructor(
     models: Models,
     textures: Textures,
     things: Things,
+    private val timeOfDay: TimeOfDay,
     timeOfDayTint: TimeOfDayTint,
-    private val state: MutableStateFlow<WeatherState>,
 ) : Scene(time, gl, models, textures, things, timeOfDayTint) {
 
     open val backgroundId: Int = R.drawable.bg3
@@ -64,7 +64,7 @@ open class SceneClear @Inject constructor(
     }
 
     private fun renderStars(timeDelta: Float) {
-        val position = state.value.sunPosition
+        val position = timeOfDay.sunPosition
 
         if (position <= 0.0f) {
             gl.glColor4f(1.0f, 1.0f, 1.0f, position * -2.0f)

@@ -1,41 +1,41 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.things
 
+import androidx.annotation.DrawableRes
 import io.github.gmazzo.android.livewallpaper.weather.R
-import io.github.gmazzo.android.livewallpaper.weather.WeatherState
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
-import io.github.gmazzo.android.livewallpaper.weather.engine.SkyManager
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Texture
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
-import kotlinx.coroutines.flow.MutableStateFlow
+import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDay
+import org.shredzone.commons.suncalc.MoonPhase
+import java.time.Duration
+import java.time.ZonedDateTime
 import javax.inject.Inject
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 import kotlin.math.min
-import kotlin.math.roundToInt
 
 class ThingMoon @Inject constructor(
     time: GlobalTime,
     gl: GL11,
     models: Models,
     private val textures: Textures,
-    private val state: MutableStateFlow<WeatherState>,
+    private val timeOfDay: TimeOfDay,
 ) : Thing(time, gl) {
 
     override val engineColor = EngineColor(1.0f, 1.0f, 1.0f, 1.0f)
 
     override val model = models[R.raw.plane_16x16]
 
-    override var texture: Texture = reload
+    override lateinit var texture: Texture
 
-    private var phase = 0
+    private var recalculateAt: ZonedDateTime? = null
+
+    private lateinit var phases: List<Phase>
 
     override fun render() {
-        if (texture === reload) {
-            texture = textures[PHASES[phase]]
-        }
         gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA)
 
         super.render()
@@ -44,30 +44,44 @@ class ThingMoon @Inject constructor(
     override fun update() {
         super.update()
 
-        val position: Float = state.value.sunPosition
-        if (position >= 0f) {
-            scale = Vector()
+        val now = time.now
 
-        } else {
-            scale = Vector(2f)
-            val altitude = position * -175.0f
-            var alpha = altitude / 25.0f
-            if (alpha > 1.0f) {
-                alpha = 1.0f
-            }
-            engineColor.a = alpha
-            origin = origin.copy(z = min(altitude - 80f, 0f))
+        if (recalculateAt == null || now >= recalculateAt) {
+            recalculateAt = now + Duration.ofDays(1)
+
+            val builder = MoonPhase.compute().on(now).plusDays(-2 * 29 / PHASES.size)
+            phases = PHASES.mapIndexed { i, textureId ->
+                val phase = builder.phase(360.0 / PHASES.size * i).execute()
+                val scale = when {
+                    phase.isSuperMoon -> SIZE_SUPER_MOON
+                    phase.isMicroMoon -> SIZE_MICRO_MOON
+                    else -> SIZE_DEFAULT_MOON
+                }
+
+                Phase(phase.time, scale, textureId)
+            }.sortedBy { it.time }
         }
 
-        val currentPhase = phase
-        this.phase = ((SkyManager.getMoonPhase() * PHASES.size).roundToInt()) % PHASES.size
-        if (currentPhase != phase) {
-            texture = reload
-        }
+        val phase = phases.first { it.time <= now }
+
+        texture = textures[phase.textureId]
+        scale = Vector(phase.scale)
+
+        val altitude = timeOfDay.moonPosition * 175.0f
+        engineColor.a = (altitude / 25.0f).coerceIn(0f, 1f)
+        origin = origin.copy(z = min(altitude - 80f, 0f))
     }
 
+    private data class Phase(
+        val time: ZonedDateTime,
+        val scale: Float,
+        @get:DrawableRes val textureId: Int
+    )
+
     companion object {
-        private val reload = Texture(-1, -1)
+        private const val SIZE_DEFAULT_MOON = 2f
+        private const val SIZE_MICRO_MOON = 1.25f
+        private const val SIZE_SUPER_MOON = 2.75f
 
         private val PHASES = intArrayOf(
             R.drawable.moon_0, R.drawable.moon_1, R.drawable.moon_2, R.drawable.moon_3,
