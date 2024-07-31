@@ -37,8 +37,7 @@ class WeatherUpdateWorker @AssistedInject constructor(
         val series = response.properties.timeSeries.firstOrNull() ?: return Result.failure()
         state.update {
             it.copy(
-                latitude = location.latitude.toFloat(),
-                longitude = location.longitude.toFloat(),
+                location = location,
                 weatherType = series.data.nextHour.weatherType
             )
         }

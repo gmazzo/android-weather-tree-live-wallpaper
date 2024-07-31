@@ -1,8 +1,10 @@
 package io.github.gmazzo.android.livewallpaper.weather
 
+import android.location.Location
+import androidx.annotation.FloatRange
+
 data class WeatherState(
-    val latitude: Float = Float.NaN,
-    val longitude: Float = Float.NaN,
+    val location: Location? = null,
     val weatherType: WeatherType = WeatherType.SUNNY_DAY,
-    val sunPosition: Float = 0f,
+    @FloatRange(from = -1.0, to = 1.0) val sunPosition: Float = 0f,
 )

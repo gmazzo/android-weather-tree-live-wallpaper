@@ -25,9 +25,6 @@ class TimeOfDay @Inject constructor(
     var blendIndex: Int = 1
         private set
     private val _fakeSunArray = floatArrayOf(-1.0f, 0.0f, 1.0f, 0.0f)
-    private var fakeSunPosition = true
-    private var _latitude = 0.0f
-    private var _longitude = 0.0f
     var mainIndex = 0
         private set
     private val todTime = IntArray(4)
@@ -69,15 +66,12 @@ class TimeOfDay @Inject constructor(
     }
 
     private fun calculateTimeTable(state: WeatherState) {
-        val (latitude, longitude) = state
-
         var minOfSunrise = 360
         var minOfSunset = 1080
-        if (!latitude.isFinite() || !longitude.isFinite()) {
-            fakeSunPosition = true
-        } else {
-            val sunriseTime = SkyManager.GetSunrise(latitude.toDouble(), longitude.toDouble())
-            val sunsetTime = SkyManager.GetSunset(latitude.toDouble(), longitude.toDouble())
+
+        if (state.location != null) {
+            val sunriseTime = SkyManager.GetSunrise(state.location.latitude, state.location.longitude)
+            val sunsetTime = SkyManager.GetSunset(state.location.latitude, state.location.longitude)
             if (sunriseTime != null) {
                 minOfSunrise = (sunriseTime[11] * 60) + sunriseTime[12]
                 Log.v(TAG, "sunrise minutes of day is $minOfSunrise")
@@ -86,20 +80,15 @@ class TimeOfDay @Inject constructor(
                 minOfSunset = (sunsetTime[11] * 60) + sunsetTime[12]
                 Log.v(TAG, "sunset minutes of day is $minOfSunset")
             }
-            fakeSunPosition = false
         }
+
         val minOfNoon = deriveMidpoint(minOfSunrise, minOfSunset)
         val minOfMidnight = deriveMidpoint(minOfSunset, minOfSunrise)
+
         todTime[0] = minOfMidnight
         todTime[1] = minOfSunrise
         todTime[2] = minOfNoon
         todTime[3] = minOfSunset
-        _latitude = latitude
-        _longitude = longitude
-        Log.v(
-            TAG,
-            "calculateTimeTable @ " + latitude + "r" + longitude + ": " + minOfMidnight + "   " + minOfSunrise + "   " + minOfNoon + "   " + minOfSunset
-        )
     }
 
     fun update(useSunriseSunsetWeighting: Boolean = true) {
