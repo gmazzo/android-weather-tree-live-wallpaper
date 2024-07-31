@@ -6,7 +6,6 @@ import javax.microedition.khronos.opengles.GL10.GL_PROJECTION
 import javax.microedition.khronos.opengles.GL10.GL_TEXTURE
 import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D
 import javax.microedition.khronos.opengles.GL11
-import kotlin.random.Random
 
 @Retention(AnnotationRetention.SOURCE)
 @IntDef(GL_MODELVIEW, GL_PROJECTION, GL_TEXTURE)
@@ -15,8 +14,6 @@ annotation class GLMatrixMode
 @Retention(AnnotationRetention.SOURCE)
 @IntDef(GL_TEXTURE_2D)
 annotation class GLFlags
-
-fun Random.nextFloat(min: Float, max: Float) = (nextFloat() * (max - min)) + min
 
 fun <R> GL11.with(@GLFlags vararg flags: Int, block: GL11.() -> R): R {
     val currentFlags = flags.filterNot(::glIsEnabled)
