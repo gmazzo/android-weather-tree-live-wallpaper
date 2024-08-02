@@ -66,7 +66,7 @@ class TimeOfDay @Inject constructor(
         var sunset: Duration? = defaultSunset
         var midnight: Duration? = defaultMidnight
 
-        if (location != null && false) { // FIXME not working properly
+        if (location != null) {
             val times = SunTimes.compute()
                 .on(time.now)
                 .at(location.latitude, location.longitude)
@@ -86,11 +86,13 @@ class TimeOfDay @Inject constructor(
         )
 
         val (mainIndex, mainTime, mainColor) = colors.asSequence()
-            .mapIndexed { i, (time, color) -> Triple(i, time, color) }
+            .flatMapIndexed { i, (time, color) -> sequenceOf(Triple(i, time, color), Triple(i, time - 1.days, color)) }
             .minBy { (_, time) -> if (time <= minutes) minutes - time else Duration.INFINITE }
         val (blendTime, blendColor) = colors[(mainIndex + 1) % colors.size]
         val range = if (mainTime < blendTime) blendTime - mainTime else 1.days - mainTime + blendTime
         val amount = (minutes - mainTime) / range
+
+        check(amount in 0f..1f) { "Invalid blend amount: $amount" }
 
         tintMainColor = mainColor
         tintBlendColor = blendColor
@@ -101,7 +103,7 @@ class TimeOfDay @Inject constructor(
         get() = ChronoUnit.MINUTES.between(LocalTime.MIDNIGHT, this).minutes
 
     private enum class Event(
-        accessor: (TimeOfDayColors) -> Int
+        accessor: (TimeOfDayColors) -> Int,
     ) : (TimeOfDayColors) -> Int by accessor {
         Sunrise(TimeOfDayColors::dawn),
         Sunset(TimeOfDayColors::dusk),
