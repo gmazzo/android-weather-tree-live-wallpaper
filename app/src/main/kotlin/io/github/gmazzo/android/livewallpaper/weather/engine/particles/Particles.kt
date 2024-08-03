@@ -2,7 +2,6 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.particles
 
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
-import io.github.gmazzo.android.livewallpaper.weather.engine.models.Mesh
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Model
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
@@ -19,7 +18,7 @@ import kotlin.random.Random
 
 sealed class Particles(
     private val gl: GL11,
-    model: Model,
+    private val model: Model,
     private val texture: Texture,
     private val spawnRate: Float = 1f,
     private val spawnRateVariance: Float = .2f,
@@ -28,7 +27,6 @@ sealed class Particles(
     private val spawnRangeZ: Float = 0f,
     private val translucent: Boolean = false,
 ) {
-    private val mesh = model.asMesh()
     private var animCurrentFrame = 0
     private var animTimeElapsed = 0f
     private var nextSpawnRateVariance = 0f
@@ -64,7 +62,7 @@ sealed class Particles(
         lateinit var startScale: Vector
         lateinit var startVelocity: Vector
 
-        fun render(mesh: Mesh) = gl.pushMatrix {
+        fun render() = gl.pushMatrix {
             gl.glMatrixMode(GL_MODELVIEW)
             gl.glTranslatef(
                 position.x,
@@ -85,7 +83,8 @@ sealed class Particles(
             if (useAngles) {
                 gl.glRotatef(angle, 0f, 1f, 0f)
             }
-            mesh.renderFrame_gl11_render(gl)
+
+            model.render()
         }
 
         @Inject
@@ -173,15 +172,16 @@ sealed class Particles(
             handleOrientation(direction)
         }
         gl.glBlendFunc(if (translucent) GL_SRC_ALPHA else GL_ONE, GL_ONE_MINUS_SRC_ALPHA)
-        mesh.renderFrame_gl11_setup(gl, animCurrentFrame)
 
         particles.forEach {
             if (it.alive) {
-                it.render(mesh)
+                it.render()
             }
         }
 
-        mesh.renderFrame_gl11_clear(gl)
+
+        gl.glBindBuffer(GL11.GL_ARRAY_BUFFER, 0)
+        gl.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, 0)
         gl.glColor4f(1f, 1f, 1f, 1f)
     }
 

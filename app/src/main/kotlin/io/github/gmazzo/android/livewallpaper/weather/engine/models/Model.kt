@@ -29,14 +29,14 @@ open class Model internal constructor(
         renderFrame(0)
     }
 
-    internal fun renderFrame(frame: Int) {
+    fun renderFrame(frame: Int) {
         gl.glBindBuffer(GL_ARRAY_BUFFER, frames[frame].bufVertexHandle)
         gl.glVertexPointer(3, GL_FLOAT, 0, 0)
 
         renderFrameShared(frame)
     }
 
-    internal fun renderFrameShared(frame: Int) {
+    protected fun renderFrameShared(frame: Int) {
         gl.glBindBuffer(GL_ARRAY_BUFFER, frames[frame].bufNormalHandle)
         gl.glNormalPointer(GL_FLOAT, 0, 0)
 
@@ -92,20 +92,6 @@ open class Model internal constructor(
         val ids = (frames.flatMap { listOf(it.bufNormalHandle, it.bufVertexHandle) }
                 + bufIndexHandle + bufTCHandle).toIntArray()
         gl.glDeleteBuffers(ids.size, ids, 0)
-    }
-
-    // TODO this supposed to replace Mesh
-    open fun asMesh() = Mesh().also { mesh ->
-        mesh.meshName = "resource:$resId"
-        mesh.numIndices = indicesCount
-        mesh.bufIndexHandle = bufIndexHandle
-        mesh.bufTCHandle = bufTCHandle
-        mesh.frames = frames.map {
-            Mesh.Frame().apply {
-                bufNormalHandle = it.bufNormalHandle
-                bufVertexHandle = it.bufVertexHandle
-            }
-        }.toTypedArray()
     }
 
 }

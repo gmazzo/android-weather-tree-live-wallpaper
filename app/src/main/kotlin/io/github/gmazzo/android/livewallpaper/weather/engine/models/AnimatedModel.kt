@@ -52,10 +52,4 @@ class AnimatedModel internal constructor(
         renderFrameShared(frame)
     }
 
-    override fun asMesh() = super.asMesh().also {
-        it.numElements = elementsCount
-        it.originalVertexArray = vertices
-        it.bufScratch = bufScratch
-    }
-
 }
