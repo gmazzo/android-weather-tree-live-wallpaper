@@ -44,7 +44,7 @@ class ThingMoon @Inject constructor(
     override fun update() {
         super.update()
 
-        val now = time.now
+        val now = time.now.value
 
         if (recalculateAt == null || now >= recalculateAt) {
             recalculateAt = now + Duration.ofDays(1)

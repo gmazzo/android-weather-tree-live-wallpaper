@@ -4,18 +4,16 @@ import androidx.annotation.FloatRange
 import io.github.gmazzo.android.livewallpaper.weather.OpenGLScoped
 import io.github.gmazzo.android.livewallpaper.weather.WeatherState
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
+import io.github.gmazzo.android.livewallpaper.weather.minutesSinceMidnight
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.shredzone.commons.suncalc.SunPosition
 import org.shredzone.commons.suncalc.SunTimes
-import java.time.LocalTime
 import java.time.ZonedDateTime
-import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 import javax.inject.Named
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
-import kotlin.time.Duration.Companion.minutes
 
 @OpenGLScoped
 class TimeOfDay @Inject constructor(
@@ -36,18 +34,24 @@ class TimeOfDay @Inject constructor(
     var moonPosition: Float = 0f
 
     fun update() {
-        val minutes = time.now.minutesSinceMidnight
+        val now = time.now.value
+        val minutes = now.minutesSinceMidnight
         val location = state.value.location
 
-        computeSunProgress(minutes, location)
+        computeSunProgress(now, minutes, location)
         moonPosition = -sunPosition
-        computeAmbientColors(minutes, location)
+
+        computeAmbientColors(now, minutes, location)
     }
 
-    private fun computeSunProgress(minutes: Duration, location: WeatherState.Location?) {
+    private fun computeSunProgress(
+        now: ZonedDateTime,
+        minutes: Duration,
+        location: WeatherState.Location?,
+    ) {
         sunPosition = (if (location != null) {
             SunPosition.compute()
-                .on(time.now)
+                .on(now)
                 .at(location.latitude, location.longitude)
                 .execute()
                 .altitude / 90f
@@ -60,7 +64,11 @@ class TimeOfDay @Inject constructor(
         }).toFloat()
     }
 
-    private fun computeAmbientColors(minutes: Duration, location: WeatherState.Location?) {
+    private fun computeAmbientColors(
+        now: ZonedDateTime,
+        minutes: Duration,
+        location: WeatherState.Location?,
+    ) {
         var sunrise: Duration? = defaultSunrise
         var midday: Duration? = defaultMidday
         var sunset: Duration? = defaultSunset
@@ -68,7 +76,7 @@ class TimeOfDay @Inject constructor(
 
         if (location != null) {
             val times = SunTimes.compute()
-                .on(time.now)
+                .on(now)
                 .at(location.latitude, location.longitude)
                 .execute()
 
@@ -86,10 +94,16 @@ class TimeOfDay @Inject constructor(
         )
 
         val (mainIndex, mainTime, mainColor) = colors.asSequence()
-            .flatMapIndexed { i, (time, color) -> sequenceOf(Triple(i, time, color), Triple(i, time - 1.days, color)) }
+            .flatMapIndexed { i, (time, color) ->
+                sequenceOf(
+                    Triple(i, time, color),
+                    Triple(i, time - 1.days, color)
+                )
+            }
             .minBy { (_, time) -> if (time <= minutes) minutes - time else Duration.INFINITE }
         val (blendTime, blendColor) = colors[(mainIndex + 1) % colors.size]
-        val range = if (mainTime < blendTime) blendTime - mainTime else 1.days - mainTime + blendTime
+        val range =
+            if (mainTime < blendTime) blendTime - mainTime else 1.days - mainTime + blendTime
         val amount = (minutes - mainTime) / range
 
         check(amount in 0f..1f) { "Invalid blend amount: $amount" }
@@ -98,9 +112,6 @@ class TimeOfDay @Inject constructor(
         tintBlendColor = blendColor
         tintBlendAmount = amount.toFloat()
     }
-
-    private val ZonedDateTime.minutesSinceMidnight
-        get() = ChronoUnit.MINUTES.between(LocalTime.MIDNIGHT, this).minutes
 
     private enum class Event(
         accessor: (TimeOfDayColors) -> Int,

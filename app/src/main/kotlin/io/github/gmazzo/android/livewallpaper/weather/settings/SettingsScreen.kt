@@ -4,7 +4,6 @@ import android.graphics.Typeface
 import android.os.Build
 import android.text.Spanned
 import android.text.style.StyleSpan
-import androidx.annotation.FloatRange
 import androidx.annotation.StringRes
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
@@ -14,11 +13,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
@@ -49,6 +47,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -59,12 +58,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import com.example.compose.AppTheme
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.WeatherState
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode
+import io.github.gmazzo.android.livewallpaper.weather.minutesSinceMidnight
 import io.github.gmazzo.android.livewallpaper.weather.theme.WeatherIcons
 import kotlinx.coroutines.flow.MutableStateFlow
+import java.time.ZonedDateTime
+import kotlin.math.min
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.days
 
 private const val opacity = .6f
 private val margin = 8.dp
@@ -74,9 +80,9 @@ private val sampleConditions = MutableStateFlow(WeatherState())
 @Composable
 @Preview
 fun SettingsScreen(
+    now: ZonedDateTime = ZonedDateTime.now(),
     updateLocationEnabled: Boolean = true,
     weatherState: WeatherState = sampleConditions.value,
-    sunPosition: Float = 0f,
     missingLocationPermission: Boolean = true,
     updateLocationEnabledChange: (Boolean) -> Unit = {},
     onSceneSelected: (SceneMode) -> Unit = {},
@@ -112,9 +118,7 @@ fun SettingsScreen(
                             )
                         }
                     })
-                Box(modifier = Modifier.padding(horizontal = margin)) {
-                    DayTimeProgression(sunPosition + .5f)
-                }
+                DayTimeProgression(now.minutesSinceMidnight)
             }
         }) { innerPadding ->
             Column(
@@ -151,22 +155,98 @@ fun SettingsScreen(
 
 @Composable
 private fun DayTimeProgression(
-    @FloatRange(0.0, 1.0) sunFactor: Float,
-) = Row(
-    verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.spacedBy(margin, Alignment.CenterHorizontally)
+    minutes: Duration,
+) = ConstraintLayout(
+    modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = margin),
 ) {
     val color = MaterialTheme.colorScheme.primary.copy(alpha = opacity)
-    val track = Modifier.background(color, MaterialTheme.shapes.large).height(2.dp)
+    val track = Modifier
+        .height(2.dp)
+        .padding(horizontal = margin)
+        .background(color, MaterialTheme.shapes.large)
 
+    val progress = (1 - minutes / 1.days).toFloat()
+    val night = progress >= .5f
+    val startFraction = min(progress, (0.5f + progress) % 1)
+    val middleFraction = startFraction + 0.5f
+    val endFraction = min(startFraction + 1f, 1f)
+
+    val guidelineStart = createGuidelineFromStart(startFraction)
+    val guidelineMiddle = createGuidelineFromStart(middleFraction)
+    val guidelineEnd = createGuidelineFromStart(endFraction)
+
+    fun Float.asAlpha() = when {
+        this <= .1f -> this / .1f
+        this >= .9f -> (1f - this) / .1f
+        else -> 1f
+    }
+    val startAlpha = startFraction.asAlpha()
+    val middleAlpha = middleFraction.asAlpha()
+    val endAlpha = endFraction.asAlpha()
+
+    val (startIcon, middleIcon, endIcon) = createRefs()
+
+    Spacer(modifier = track.constrainAs(createRef()) {
+        start.linkTo(parent.start)
+        end.linkTo(startIcon.start)
+        top.linkTo(parent.top)
+        bottom.linkTo(parent.bottom)
+        width = Dimension.fillToConstraints
+    })
     Icon(
-        tint = color, imageVector = WeatherIcons.night, contentDescription = null
+        modifier = Modifier
+            .constrainAs(startIcon) {
+                start.linkTo(guidelineStart)
+                end.linkTo(guidelineStart)
+                top.linkTo(parent.top)
+                bottom.linkTo(parent.bottom)
+            }
+            .alpha(startAlpha),
+        tint = color,
+        imageVector = if (night) WeatherIcons.night else WeatherIcons.day,
+        contentDescription = null
     )
-    Spacer(modifier = if (sunFactor > 0f) track.weight(sunFactor) else track.size(0.dp))
-    Spacer(modifier = Modifier.size(8.dp).background(color, CircleShape))
-    Spacer(modifier = if (1 - sunFactor > 0f) track.weight(1 - sunFactor) else track.size(0.dp))
+    Spacer(modifier = track.constrainAs(createRef()) {
+        start.linkTo(startIcon.end)
+        end.linkTo(middleIcon.start)
+        top.linkTo(parent.top)
+        bottom.linkTo(parent.bottom)
+        width = Dimension.fillToConstraints
+    })
     Icon(
-        tint = color, imageVector = WeatherIcons.day, contentDescription = null
+        modifier = Modifier
+            .constrainAs(middleIcon) {
+                start.linkTo(guidelineMiddle)
+                end.linkTo(guidelineMiddle)
+                top.linkTo(parent.top)
+                bottom.linkTo(parent.bottom)
+            }
+            .alpha(middleAlpha),
+        tint = color,
+        imageVector =if (night) WeatherIcons.day else WeatherIcons.night,
+        contentDescription = null
+    )
+    Spacer(modifier = track.alpha(middleAlpha).constrainAs(createRef()) {
+        start.linkTo(middleIcon.end)
+        end.linkTo(endIcon.start)
+        top.linkTo(parent.top)
+        bottom.linkTo(parent.bottom)
+        width = Dimension.fillToConstraints
+    })
+    Icon(
+        modifier = Modifier
+            .constrainAs(endIcon) {
+                start.linkTo(guidelineEnd)
+                end.linkTo(guidelineEnd)
+                top.linkTo(parent.top)
+                bottom.linkTo(parent.bottom)
+            }
+            .alpha(endAlpha),
+        tint = color,
+        imageVector = if (night) WeatherIcons.night else WeatherIcons.day,
+        contentDescription = null
     )
 }
 
