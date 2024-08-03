@@ -39,6 +39,7 @@ class ThingDarkCloud @AssistedInject constructor(
         )).toFloat()
     }
 
+    // FIXME clouds are darker after 6399f93043745b9fb8797af48f4f6bcda294576f
     override fun render() = gl.pushMatrix {
         gl.glBindTexture(GL_TEXTURE_2D, texture.glId)
 
