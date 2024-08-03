@@ -8,6 +8,7 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things.Companion.WIND_SPEED
 import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDay
+import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDay.Companion.GOLDER_HOUR_FACTOR
 import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDayTint
 import javax.inject.Inject
 import javax.microedition.khronos.opengles.GL10
@@ -65,9 +66,10 @@ open class SceneClear @Inject constructor(
 
     private fun renderStars(timeDelta: Float) {
         val position = timeOfDay.sunPosition
+        val alpha = ((-position + GOLDER_HOUR_FACTOR / 2) / GOLDER_HOUR_FACTOR / 2).coerceIn(0f, 1f)
 
-        if (position <= 0.0f) {
-            gl.glColor4f(1.0f, 1.0f, 1.0f, position * -2.0f)
+        if (alpha > 0) {
+            gl.glColor4f(1.0f, 1.0f, 1.0f, alpha)
             gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE)
             val starMesh = models[R.raw.stars]
             val noise = textures[R.drawable.noise]
