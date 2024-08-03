@@ -8,7 +8,8 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.models.Model
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Texture
-import javax.microedition.khronos.opengles.GL10
+import javax.microedition.khronos.opengles.GL10.GL_MODELVIEW
+import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D
 import javax.microedition.khronos.opengles.GL11
 import kotlin.random.Random
 
@@ -35,10 +36,10 @@ sealed class Thing(
     }
 
     open fun render() = gl.pushMatrix {
-        gl.glMatrixMode(GL10.GL_MODELVIEW)
+        gl.glMatrixMode(GL_MODELVIEW)
         gl.glTranslatef(origin.x, origin.y, origin.z)
         gl.glScalef(scale.x, scale.y, scale.z)
-        gl.glBindTexture(GL10.GL_TEXTURE_2D, texture.glId)
+        gl.glBindTexture(GL_TEXTURE_2D, texture.glId)
 
         engineColor?.let { gl.glColor4f(it.r, it.g, it.b, it.a) }
 

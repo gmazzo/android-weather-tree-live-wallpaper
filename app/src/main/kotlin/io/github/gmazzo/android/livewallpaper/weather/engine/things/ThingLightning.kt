@@ -8,6 +8,8 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import javax.inject.Inject
 import javax.microedition.khronos.opengles.GL10
+import javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT
+import javax.microedition.khronos.opengles.GL10.GL_LIGHTING
 import javax.microedition.khronos.opengles.GL11
 import kotlin.random.Random
 
@@ -23,8 +25,8 @@ class ThingLightning @Inject constructor(
     private val glowTexture by lazy { textures[R.raw.lightning_pieces_glow] }
 
     override fun render() = gl.pushMatrix {
-        gl.glEnable(GL10.GL_LIGHTING)
-        gl.glEnable(GL10.GL_COLOR_BUFFER_BIT)
+        gl.glEnable(GL_LIGHTING)
+        gl.glEnable(GL_COLOR_BUFFER_BIT)
 
         gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE)
         gl.glTranslatef(origin.x, origin.y, origin.z)
@@ -32,8 +34,8 @@ class ThingLightning @Inject constructor(
         gl.glColor4f(engineColor.r, engineColor.g, engineColor.b, engineColor.a)
         model.renderFrameMultiTexture(glowTexture, texture, 260, false)
 
-        gl.glDisable(GL10.GL_COLOR_BUFFER_BIT)
-        gl.glDisable(GL10.GL_LIGHTING)
+        gl.glDisable(GL_COLOR_BUFFER_BIT)
+        gl.glDisable(GL_LIGHTING)
     }
 
     override fun update() {

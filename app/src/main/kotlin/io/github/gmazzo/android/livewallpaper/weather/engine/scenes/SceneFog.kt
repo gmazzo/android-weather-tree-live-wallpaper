@@ -14,6 +14,20 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDay
 import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDayTint
 import javax.inject.Inject
 import javax.microedition.khronos.opengles.GL10
+import javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT
+import javax.microedition.khronos.opengles.GL10.GL_FOG
+import javax.microedition.khronos.opengles.GL10.GL_FOG_COLOR
+import javax.microedition.khronos.opengles.GL10.GL_FOG_DENSITY
+import javax.microedition.khronos.opengles.GL10.GL_FOG_END
+import javax.microedition.khronos.opengles.GL10.GL_FOG_HINT
+import javax.microedition.khronos.opengles.GL10.GL_FOG_MODE
+import javax.microedition.khronos.opengles.GL10.GL_FOG_START
+import javax.microedition.khronos.opengles.GL10.GL_LIGHT1
+import javax.microedition.khronos.opengles.GL10.GL_LIGHTING
+import javax.microedition.khronos.opengles.GL10.GL_LINEAR
+import javax.microedition.khronos.opengles.GL10.GL_MODELVIEW
+import javax.microedition.khronos.opengles.GL10.GL_TEXTURE
+import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D
 import javax.microedition.khronos.opengles.GL11
 
 class SceneFog @Inject constructor(
@@ -49,34 +63,34 @@ class SceneFog @Inject constructor(
     override fun draw() {
         super.draw()
 
-        gl.glDisable(GL10.GL_COLOR_BUFFER_BIT)
-        gl.glDisable(GL10.GL_LIGHT1)
-        gl.glDisable(GL10.GL_LIGHTING)
-        gl.glMatrixMode(GL10.GL_MODELVIEW)
+        gl.glDisable(GL_COLOR_BUFFER_BIT)
+        gl.glDisable(GL_LIGHT1)
+        gl.glDisable(GL_LIGHTING)
+        gl.glMatrixMode(GL_MODELVIEW)
         gl.glLoadIdentity()
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA)
-        gl.glEnable(GL10.GL_FOG)
-        gl.glFogf(GL10.GL_FOG_MODE, GL10.GL_LINEAR.toFloat())
-        gl.glFogfv(GL10.GL_FOG_COLOR, fogColors, 0)
-        gl.glFogf(GL10.GL_FOG_DENSITY, FOG_DENSITY)
-        gl.glFogf(GL10.GL_FOG_START, -10.0f)
-        gl.glFogf(GL10.GL_FOG_END, 190.0f)
-        gl.glFogf(GL10.GL_FOG_HINT, 4352.0f)
+        gl.glEnable(GL_FOG)
+        gl.glFogf(GL_FOG_MODE, GL_LINEAR.toFloat())
+        gl.glFogfv(GL_FOG_COLOR, fogColors, 0)
+        gl.glFogf(GL_FOG_DENSITY, FOG_DENSITY)
+        gl.glFogf(GL_FOG_START, -10.0f)
+        gl.glFogf(GL_FOG_END, 190.0f)
+        gl.glFogf(GL_FOG_HINT, 4352.0f)
         renderBackground()
         gl.glTranslatef(0.0f, 0.0f, 40.0f)
-        gl.glDisable(GL10.GL_FOG)
+        gl.glDisable(GL_FOG)
 
         things.render()
         drawTree()
     }
 
     private fun renderBackground() = gl.pushMatrix {
-        gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[R.drawable.bg1].glId)
+        gl.glBindTexture(GL_TEXTURE_2D, textures[R.drawable.bg1].glId)
         gl.glColor4f(timeOfDayTint.color.r, timeOfDayTint.color.g, timeOfDayTint.color.b, 1f)
-        gl.glMatrixMode(GL10.GL_MODELVIEW)
+        gl.glMatrixMode(GL_MODELVIEW)
         gl.glTranslatef(0.0f, 250.0f, 35.0f)
         gl.glScalef(bgPadding * 2.0f, bgPadding, bgPadding)
-        gl.glMatrixMode(GL10.GL_TEXTURE)
+        gl.glMatrixMode(GL_TEXTURE)
 
         pushMatrix {
             gl.glTranslatef(
@@ -88,7 +102,7 @@ class SceneFog @Inject constructor(
             model.render()
         }
 
-        gl.glMatrixMode(GL10.GL_MODELVIEW)
+        gl.glMatrixMode(GL_MODELVIEW)
     }
 
     companion object {

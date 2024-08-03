@@ -11,6 +11,9 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDay
 import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDayTint
 import javax.inject.Inject
 import javax.microedition.khronos.opengles.GL10
+import javax.microedition.khronos.opengles.GL10.GL_MODELVIEW
+import javax.microedition.khronos.opengles.GL10.GL_MODULATE
+import javax.microedition.khronos.opengles.GL10.GL_TEXTURE
 import javax.microedition.khronos.opengles.GL11
 import kotlin.math.min
 
@@ -35,12 +38,12 @@ class ThingSun @Inject constructor(
             engineColor.b,
             engineColor.a
         )
-        gl.glMatrixMode(GL10.GL_MODELVIEW)
+        gl.glMatrixMode(GL_MODELVIEW)
         gl.glLoadIdentity()
         gl.glTranslatef(origin.x, origin.y, origin.z)
         gl.glScalef(scale.x, scale.y, scale.z)
         gl.glRotatef((timeElapsed * 12.0f) % 360.0f, 0.0f, 1.0f, 0.0f)
-        gl.glMatrixMode(GL10.GL_TEXTURE)
+        gl.glMatrixMode(GL_TEXTURE)
 
         pushMatrix {
             val angle = (timeElapsed * 18.0f) % 360.0f
@@ -48,9 +51,9 @@ class ThingSun @Inject constructor(
             gl.glTranslatef(0.5f, 0.5f, 0.0f)
             gl.glRotatef(angle, 0.0f, 0.0f, 1.0f)
             gl.glTranslatef(-0.5f, -0.5f, 0.0f)
-            model.renderFrameMultiTexture(sunBlend, texture, GL10.GL_MODULATE, false)
+            model.renderFrameMultiTexture(sunBlend, texture, GL_MODULATE, false)
         }
-        gl.glMatrixMode(GL10.GL_MODELVIEW)
+        gl.glMatrixMode(GL_MODELVIEW)
     }
 
     override fun update() {

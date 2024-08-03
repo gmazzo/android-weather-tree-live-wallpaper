@@ -14,7 +14,12 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDay
 import javax.inject.Inject
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL10.GL_AMBIENT
+import javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT
 import javax.microedition.khronos.opengles.GL10.GL_DIFFUSE
+import javax.microedition.khronos.opengles.GL10.GL_LIGHTING
+import javax.microedition.khronos.opengles.GL10.GL_MODELVIEW
+import javax.microedition.khronos.opengles.GL10.GL_TEXTURE
+import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D
 import javax.microedition.khronos.opengles.GL11
 
 class SceneRain @Inject constructor(
@@ -34,13 +39,13 @@ class SceneRain @Inject constructor(
     private fun renderBackground() = gl.pushMatrix {
         val stormBg = textures[R.drawable.storm_bg]
 
-        gl.glBindTexture(GL10.GL_TEXTURE_2D, stormBg.glId)
+        gl.glBindTexture(GL_TEXTURE_2D, stormBg.glId)
         gl.glColor4f(timeOfDayTint.color.r, timeOfDayTint.color.g, timeOfDayTint.color.b, 1f)
-        gl.glMatrixMode(GL10.GL_MODELVIEW)
+        gl.glMatrixMode(GL_MODELVIEW)
 
         gl.glTranslatef(0.0f, 250.0f, 35.0f)
         gl.glScalef(bgPadding * 2.0f, bgPadding, bgPadding)
-        gl.glMatrixMode(GL10.GL_TEXTURE)
+        gl.glMatrixMode(GL_TEXTURE)
 
         gl.pushMatrix {
             gl.glTranslatef(
@@ -52,11 +57,11 @@ class SceneRain @Inject constructor(
             mesh.render()
         }
 
-        gl.glMatrixMode(GL10.GL_MODELVIEW)
+        gl.glMatrixMode(GL_MODELVIEW)
     }
 
     private fun renderRain() = gl.pushMatrix {
-        gl.glMatrixMode(GL10.GL_MODELVIEW)
+        gl.glMatrixMode(GL_MODELVIEW)
         gl.glTranslatef(0.0f, 0.0f, -5.0f)
         gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
         particles.update(time.deltaSeconds)
@@ -70,18 +75,18 @@ class SceneRain @Inject constructor(
         timeOfDayTint.update(lightDiffuseColor)
         lightDiffuseColor.setToArray(lightDiffuse)
 
-        gl.glEnable(GL10.GL_LIGHTING)
-        gl.glEnable(GL10.GL_COLOR_BUFFER_BIT)
-        gl.glMatrixMode(GL10.GL_MODELVIEW)
+        gl.glEnable(GL_LIGHTING)
+        gl.glEnable(GL_COLOR_BUFFER_BIT)
+        gl.glMatrixMode(GL_MODELVIEW)
         gl.glLoadIdentity()
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA)
-        gl.glLightfv(GL10.GL_COLOR_BUFFER_BIT, GL_DIFFUSE, lightDiffuse, 0)
-        gl.glLightfv(GL10.GL_COLOR_BUFFER_BIT, GL_AMBIENT, lightDiffuse, 0)
+        gl.glLightfv(GL_COLOR_BUFFER_BIT, GL_DIFFUSE, lightDiffuse, 0)
+        gl.glLightfv(GL_COLOR_BUFFER_BIT, GL_AMBIENT, lightDiffuse, 0)
         renderBackground()
         renderRain()
         gl.glTranslatef(0f, 0f, 40f)
-        gl.glDisable(GL10.GL_COLOR_BUFFER_BIT)
-        gl.glDisable(GL10.GL_LIGHTING)
+        gl.glDisable(GL_COLOR_BUFFER_BIT)
+        gl.glDisable(GL_LIGHTING)
 
         things.render()
         drawTree()

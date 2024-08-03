@@ -12,6 +12,8 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things
 import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDayTint
 import javax.microedition.khronos.opengles.GL10
+import javax.microedition.khronos.opengles.GL10.GL_MODELVIEW
+import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D
 import javax.microedition.khronos.opengles.GL11
 import kotlin.random.Random
 
@@ -69,8 +71,8 @@ sealed class Scene(
 
         val treeTerrain = models[R.raw.trees_overlay_terrain]
         val treesOverlay = textures[R.drawable.trees_overlay]
-        gl.glBindTexture(GL10.GL_TEXTURE_2D, treesOverlay.glId)
-        gl.glMatrixMode(GL10.GL_MODELVIEW)
+        gl.glBindTexture(GL_TEXTURE_2D, treesOverlay.glId)
+        gl.glMatrixMode(GL_MODELVIEW)
 
         if (landscape) gl.glTranslatef(2f, 70f, -65f)
         else gl.glTranslatef(-8f, 70f, -70f)

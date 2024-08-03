@@ -9,6 +9,16 @@ import java.nio.ByteOrder
 import java.nio.FloatBuffer
 import java.nio.ShortBuffer
 import javax.microedition.khronos.opengles.GL10
+import javax.microedition.khronos.opengles.GL10.GL_FLOAT
+import javax.microedition.khronos.opengles.GL10.GL_MODULATE
+import javax.microedition.khronos.opengles.GL10.GL_TEXTURE0
+import javax.microedition.khronos.opengles.GL10.GL_TEXTURE1
+import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D
+import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_COORD_ARRAY
+import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_ENV
+import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_ENV_MODE
+import javax.microedition.khronos.opengles.GL10.GL_TRIANGLES
+import javax.microedition.khronos.opengles.GL10.GL_UNSIGNED_SHORT
 import javax.microedition.khronos.opengles.GL11
 
 class Mesh {
@@ -353,13 +363,13 @@ class Mesh {
             renderFrame_gl11(gl10, frameNum)
             return
         }
-        gl10.glVertexPointer(3, GL10.GL_FLOAT, 0, frames[frameNum]!!.bufVertex)
-        gl10.glNormalPointer(GL10.GL_FLOAT, 0, frames[frameNum]!!.bufNormal)
-        gl10.glTexCoordPointer(2, GL10.GL_FLOAT, 0, this.bufTC)
+        gl10.glVertexPointer(3, GL_FLOAT, 0, frames[frameNum]!!.bufVertex)
+        gl10.glNormalPointer(GL_FLOAT, 0, frames[frameNum]!!.bufNormal)
+        gl10.glTexCoordPointer(2, GL_FLOAT, 0, this.bufTC)
         gl10.glDrawElements(
-            GL10.GL_TRIANGLES,
+            GL_TRIANGLES,
             this.numIndices,
-            GL10.GL_UNSIGNED_SHORT,
+            GL_UNSIGNED_SHORT,
             this.bufIndex
         )
     }
@@ -410,26 +420,26 @@ class Mesh {
             }
             bufScratch!!.position(0)
 
-            gl.glVertexPointer(3, GL10.GL_FLOAT, 0, this.bufScratch)
+            gl.glVertexPointer(3, GL_FLOAT, 0, this.bufScratch)
             if (gl is GL11) {
                 gl.glBindBuffer(GL11.GL_ARRAY_BUFFER, frames[frameNum]!!.bufNormalHandle)
-                gl.glNormalPointer(GL10.GL_FLOAT, 0, 0)
+                gl.glNormalPointer(GL_FLOAT, 0, 0)
 
                 gl.glBindBuffer(GL11.GL_ARRAY_BUFFER, this.bufTCHandle)
-                gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, 0)
+                gl.glTexCoordPointer(2, GL_FLOAT, 0, 0)
 
                 gl.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, this.bufIndexHandle)
-                gl.glDrawElements(GL10.GL_TRIANGLES, this.numIndices, GL10.GL_UNSIGNED_SHORT, 0)
+                gl.glDrawElements(GL_TRIANGLES, this.numIndices, GL_UNSIGNED_SHORT, 0)
 
                 gl.glBindBuffer(GL11.GL_ARRAY_BUFFER, 0)
                 gl.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, 0)
             } else {
-                gl.glNormalPointer(GL10.GL_FLOAT, 0, frames[frameNum]!!.bufNormal)
-                gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, this.bufTC)
+                gl.glNormalPointer(GL_FLOAT, 0, frames[frameNum]!!.bufNormal)
+                gl.glTexCoordPointer(2, GL_FLOAT, 0, this.bufTC)
                 gl.glDrawElements(
-                    GL10.GL_TRIANGLES,
+                    GL_TRIANGLES,
                     this.numIndices,
-                    GL10.GL_UNSIGNED_SHORT,
+                    GL_UNSIGNED_SHORT,
                     this.bufIndex
                 )
             }
@@ -444,35 +454,35 @@ class Mesh {
         combine: Int,
         envMap: Boolean
     ) {
-        gl11.glActiveTexture(GL10.GL_TEXTURE0)
-        gl11.glBindTexture(GL10.GL_TEXTURE_2D, tex1)
+        gl11.glActiveTexture(GL_TEXTURE0)
+        gl11.glBindTexture(GL_TEXTURE_2D, tex1)
         if (envMap) {
             gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, frames[frameNum]!!.bufNormalHandle)
-            gl11.glTexCoordPointer(3, GL10.GL_FLOAT, 0, 0)
+            gl11.glTexCoordPointer(3, GL_FLOAT, 0, 0)
         } else {
             gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, this.bufTCHandle)
-            gl11.glTexCoordPointer(2, GL10.GL_FLOAT, 0, 0)
+            gl11.glTexCoordPointer(2, GL_FLOAT, 0, 0)
         }
-        gl11.glTexEnvi(GL10.GL_TEXTURE_ENV, GL10.GL_TEXTURE_ENV_MODE, GL10.GL_MODULATE)
-        gl11.glActiveTexture(GL10.GL_TEXTURE1)
-        gl11.glEnable(GL10.GL_TEXTURE_2D)
-        gl11.glClientActiveTexture(GL10.GL_TEXTURE1)
-        gl11.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY)
-        gl11.glBindTexture(GL10.GL_TEXTURE_2D, tex2)
+        gl11.glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE)
+        gl11.glActiveTexture(GL_TEXTURE1)
+        gl11.glEnable(GL_TEXTURE_2D)
+        gl11.glClientActiveTexture(GL_TEXTURE1)
+        gl11.glEnableClientState(GL_TEXTURE_COORD_ARRAY)
+        gl11.glBindTexture(GL_TEXTURE_2D, tex2)
         gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, this.bufTCHandle)
-        gl11.glTexCoordPointer(2, GL10.GL_FLOAT, 0, 0)
-        gl11.glTexEnvi(GL10.GL_TEXTURE_ENV, GL10.GL_TEXTURE_ENV_MODE, combine)
+        gl11.glTexCoordPointer(2, GL_FLOAT, 0, 0)
+        gl11.glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, combine)
         gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, frames[frameNum]!!.bufVertexHandle)
-        gl11.glVertexPointer(3, GL10.GL_FLOAT, 0, 0)
+        gl11.glVertexPointer(3, GL_FLOAT, 0, 0)
         gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, frames[frameNum]!!.bufNormalHandle)
-        gl11.glNormalPointer(GL10.GL_FLOAT, 0, 0)
+        gl11.glNormalPointer(GL_FLOAT, 0, 0)
         gl11.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, this.bufIndexHandle)
-        gl11.glDrawElements(GL10.GL_TRIANGLES, this.numIndices, GL10.GL_UNSIGNED_SHORT, 0)
+        gl11.glDrawElements(GL_TRIANGLES, this.numIndices, GL_UNSIGNED_SHORT, 0)
         gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, 0)
         gl11.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, 0)
-        gl11.glDisable(GL10.GL_TEXTURE_2D)
-        gl11.glActiveTexture(GL10.GL_TEXTURE0)
-        gl11.glClientActiveTexture(GL10.GL_TEXTURE0)
+        gl11.glDisable(GL_TEXTURE_2D)
+        gl11.glActiveTexture(GL_TEXTURE0)
+        gl11.glClientActiveTexture(GL_TEXTURE0)
     }
 
     fun renderFrame_gl11(gl11: GL11, frameNum: Int) {
@@ -487,7 +497,7 @@ class Mesh {
     }
 
     fun renderFrame_gl11_render(gl11: GL11) {
-        gl11.glDrawElements(GL10.GL_TRIANGLES, this.numIndices, GL10.GL_UNSIGNED_SHORT, 0)
+        gl11.glDrawElements(GL_TRIANGLES, this.numIndices, GL_UNSIGNED_SHORT, 0)
     }
 
     fun renderFrame_gl11_setup(gl11: GL11, frameNum: Int) {
@@ -500,11 +510,11 @@ class Mesh {
         }
 
         gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, frames[frame]!!.bufVertexHandle)
-        gl11.glVertexPointer(3, GL10.GL_FLOAT, 0, 0)
+        gl11.glVertexPointer(3, GL_FLOAT, 0, 0)
         gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, frames[frame]!!.bufNormalHandle)
-        gl11.glNormalPointer(GL10.GL_FLOAT, 0, 0)
+        gl11.glNormalPointer(GL_FLOAT, 0, 0)
         gl11.glBindBuffer(GL11.GL_ARRAY_BUFFER, this.bufTCHandle)
-        gl11.glTexCoordPointer(2, GL10.GL_FLOAT, 0, 0)
+        gl11.glTexCoordPointer(2, GL_FLOAT, 0, 0)
         gl11.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, this.bufIndexHandle)
     }
 

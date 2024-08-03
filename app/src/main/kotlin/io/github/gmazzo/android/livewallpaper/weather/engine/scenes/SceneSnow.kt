@@ -13,6 +13,12 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDay
 import javax.inject.Inject
 import javax.inject.Provider
 import javax.microedition.khronos.opengles.GL10
+import javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT
+import javax.microedition.khronos.opengles.GL10.GL_LIGHT1
+import javax.microedition.khronos.opengles.GL10.GL_LIGHTING
+import javax.microedition.khronos.opengles.GL10.GL_MODELVIEW
+import javax.microedition.khronos.opengles.GL10.GL_TEXTURE
+import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D
 import javax.microedition.khronos.opengles.GL11
 
 class SceneSnow @Inject constructor(
@@ -37,10 +43,10 @@ class SceneSnow @Inject constructor(
     override fun draw() {
         super.draw()
 
-        gl.glDisable(GL10.GL_COLOR_BUFFER_BIT)
-        gl.glDisable(GL10.GL_LIGHT1)
-        gl.glDisable(GL10.GL_LIGHTING)
-        gl.glMatrixMode(GL10.GL_MODELVIEW)
+        gl.glDisable(GL_COLOR_BUFFER_BIT)
+        gl.glDisable(GL_LIGHT1)
+        gl.glDisable(GL_LIGHTING)
+        gl.glMatrixMode(GL_MODELVIEW)
         gl.glLoadIdentity()
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA)
         renderBackground(time.elapsedSeconds)
@@ -58,13 +64,13 @@ class SceneSnow @Inject constructor(
     }
 
     private fun renderBackground(timeDelta: Float) = gl.pushMatrix {
-        gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[R.drawable.bg2].glId)
+        gl.glBindTexture(GL_TEXTURE_2D, textures[R.drawable.bg2].glId)
         gl.glColor4f(timeOfDayTint.color.r, timeOfDayTint.color.g, timeOfDayTint.color.b, 1f)
-        gl.glMatrixMode(GL10.GL_MODELVIEW)
+        gl.glMatrixMode(GL_MODELVIEW)
 
         gl.glTranslatef(0.0f, 250.0f, 35.0f)
         gl.glScalef(bgPadding * 2.0f, bgPadding, bgPadding)
-        gl.glMatrixMode(GL10.GL_TEXTURE)
+        gl.glMatrixMode(GL_TEXTURE)
 
         gl.pushMatrix {
             gl.glTranslatef(
@@ -76,7 +82,7 @@ class SceneSnow @Inject constructor(
             mesh.render()
         }
 
-        gl.glMatrixMode(GL10.GL_MODELVIEW)
+        gl.glMatrixMode(GL_MODELVIEW)
     }
 
 }

@@ -12,6 +12,8 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingCloud.Companion.CLOUD_X_RANGE
 import javax.microedition.khronos.opengles.GL10
+import javax.microedition.khronos.opengles.GL10.GL_LIGHTING
+import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D
 import javax.microedition.khronos.opengles.GL11
 import kotlin.math.abs
 import kotlin.random.Random
@@ -38,7 +40,7 @@ class ThingDarkCloud @AssistedInject constructor(
     }
 
     override fun render() = gl.pushMatrix {
-        gl.glBindTexture(GL10.GL_TEXTURE_2D, texture.glId)
+        gl.glBindTexture(GL_TEXTURE_2D, texture.glId)
 
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA)
         gl.glTranslatef(origin.x, origin.y, origin.z)
@@ -46,12 +48,12 @@ class ThingDarkCloud @AssistedInject constructor(
             model.render()
 
         if (withFlare && flashIntensity > 0.0f) {
-            gl.glDisable(GL10.GL_LIGHTING)
-            gl.glBindTexture(GL10.GL_TEXTURE_2D, texNameFlare.glId)
+            gl.glDisable(GL_LIGHTING)
+            gl.glBindTexture(GL_TEXTURE_2D, texNameFlare.glId)
             gl.glColor4f(1f,1f,1f, flashIntensity)
             gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE)
             model.render()
-            gl.glEnable(GL10.GL_LIGHTING)
+            gl.glEnable(GL_LIGHTING)
         }
         gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
     }
