@@ -18,34 +18,29 @@ import javax.microedition.khronos.opengles.GL11
 import kotlin.math.min
 
 class ThingSun @Inject constructor(
-    time: GlobalTime,
     gl: GL11,
     models: Models,
     textures: Textures,
+    private val time: GlobalTime,
     private val timeOfDay: TimeOfDay,
     private val timeOfDayTint: TimeOfDayTint,
-) : ThingSimple(time, gl, models, textures, R.raw.plane_16x16, R.raw.sun) {
+) : Thing(gl, models[R.raw.plane_16x16], textures[R.raw.sun]) {
 
     override val engineColor = EngineColor(1f, 1f, .95f, 1f)
 
-    private val sunBlend by lazy { textures[R.raw.sun_blend] }
+    private val sunBlend = textures[R.raw.sun_blend]
 
-    override fun render() = gl.pushMatrix {
+    override fun render() = gl.pushMatrix(GL_MODELVIEW) {
+        val timeElapsed = time.elapsedSeconds
+
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_COLOR)
-        gl.glColor4f(
-            engineColor.r,
-            engineColor.g,
-            engineColor.b,
-            engineColor.a
-        )
-        gl.glMatrixMode(GL_MODELVIEW)
+        gl.glColor4f(engineColor.r, engineColor.g, engineColor.b, engineColor.a)
         gl.glLoadIdentity()
         gl.glTranslatef(origin.x, origin.y, origin.z)
         gl.glScalef(scale.x, scale.y, scale.z)
         gl.glRotatef((timeElapsed * 12f) % 360f, 0f, 1f, 0f)
-        gl.glMatrixMode(GL_TEXTURE)
 
-        pushMatrix {
+        pushMatrix(GL_TEXTURE) {
             val angle = (timeElapsed * 18f) % 360f
 
             gl.glTranslatef(.5f, .5f, 0f)

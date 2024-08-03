@@ -10,48 +10,39 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
-import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingCloud.Companion.CLOUD_X_RANGE
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL10.GL_LIGHTING
 import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D
 import javax.microedition.khronos.opengles.GL11
-import kotlin.math.abs
 import kotlin.random.Random
 
 class ThingDarkCloud @AssistedInject constructor(
-    time: GlobalTime,
     gl: GL11,
     models: Models,
     textures: Textures,
+    time: GlobalTime,
     @Assisted which: Int,
     @Assisted private val withFlare: Boolean,
-) : ThingSimple(time, gl, models, textures, MODELS[which % MODELS.size], TEXTURES[which % TEXTURES.size]) {
+) : ThingCloud(
+    gl,
+    models[MODELS[which % MODELS.size]],
+    textures[TEXTURES[which % TEXTURES.size]],
+    time,
+    color = EngineColor(.2f, .2f, .2f, 1f)
+) {
 
-    override val engineColor = EngineColor(1f, 1f, 1f, 1f)
-
-    private val texNameFlare = textures[FLARES[which % MODELS.size]]
+    private val flare = textures[FLARES[which % MODELS.size]]
 
     private var flashIntensity = 0f
 
-    private fun calculateCloudRangeX(): Float {
-        return ((origin.y * CLOUD_X_RANGE) / 90f + abs(
-            scale.x.toDouble()
-        )).toFloat()
-    }
-
     // FIXME clouds are darker after 6399f93043745b9fb8797af48f4f6bcda294576f
     override fun render() = gl.pushMatrix {
-        gl.glBindTexture(GL_TEXTURE_2D, texture.glId)
-
-        gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA)
-        gl.glTranslatef(origin.x, origin.y, origin.z)
-        gl.glScalef(scale.x, scale.y, scale.z)
-            model.render()
+        super.render()
 
         if (withFlare && flashIntensity > 0f) {
             gl.glDisable(GL_LIGHTING)
-            gl.glBindTexture(GL_TEXTURE_2D, texNameFlare.glId)
-            gl.glColor4f(1f,1f,1f, flashIntensity)
+            gl.glBindTexture(GL_TEXTURE_2D, flare.glId)
+            gl.glColor4f(1f, 1f, 1f, flashIntensity)
             gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE)
             model.render()
             gl.glEnable(GL_LIGHTING)
@@ -62,21 +53,6 @@ class ThingDarkCloud @AssistedInject constructor(
     override fun update() {
         super.update()
 
-        val rangX = calculateCloudRangeX()
-        if (origin.x > rangX) {
-            origin = origin.copy(x = -rangX)
-
-        } else if (origin.x < (-rangX)) {
-            origin = origin.copy(x = rangX)
-        }
-        engineColor.r = .2f
-        engineColor.g = .2f
-        engineColor.b = .2f
-        if (timeElapsed < 2f) {
-            val alpha = timeElapsed * .5f
-            engineColor *= alpha
-            engineColor.a = alpha
-        }
         if (withFlare) {
             if (flashIntensity > 0f) {
                 flashIntensity -= 1.25f * time.deltaSeconds

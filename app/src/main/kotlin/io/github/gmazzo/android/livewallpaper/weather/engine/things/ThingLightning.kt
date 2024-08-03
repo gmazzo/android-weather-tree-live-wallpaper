@@ -10,21 +10,22 @@ import javax.inject.Inject
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT
 import javax.microedition.khronos.opengles.GL10.GL_LIGHTING
+import javax.microedition.khronos.opengles.GL10.GL_MODELVIEW
 import javax.microedition.khronos.opengles.GL11
 import kotlin.random.Random
 
 class ThingLightning @Inject constructor(
-    time: GlobalTime,
     gl: GL11,
     models: Models,
     textures: Textures,
-) : ThingSimple(time, gl, models, textures, MODELS[Random.nextInt(MODELS.size)], R.raw.lightning_pieces_core) {
+    private val time: GlobalTime,
+) : Thing(gl, models[MODELS[Random.nextInt(MODELS.size)]], textures[R.raw.lightning_pieces_core]) {
 
     override val engineColor = EngineColor(1f, 1f, 1f, 1f)
 
-    private val glowTexture by lazy { textures[R.raw.lightning_pieces_glow] }
+    private val glow = textures[R.raw.lightning_pieces_glow]
 
-    override fun render() = gl.pushMatrix {
+    override fun render() = gl.pushMatrix(GL_MODELVIEW) {
         gl.glEnable(GL_LIGHTING)
         gl.glEnable(GL_COLOR_BUFFER_BIT)
 
@@ -32,7 +33,7 @@ class ThingLightning @Inject constructor(
         gl.glTranslatef(origin.x, origin.y, origin.z)
         gl.glScalef(scale.x, scale.x, scale.x)
         gl.glColor4f(engineColor.r, engineColor.g, engineColor.b, engineColor.a)
-        model.renderFrameMultiTexture(glowTexture, texture, 260, false)
+        model.renderFrameMultiTexture(glow, texture, 260, false)
 
         gl.glDisable(GL_COLOR_BUFFER_BIT)
         gl.glDisable(GL_LIGHTING)

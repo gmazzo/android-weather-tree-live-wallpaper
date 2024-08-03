@@ -5,30 +5,37 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
-import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
+import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
+import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDayTint
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
+import kotlin.random.Random
 
 class ThingWispy @AssistedInject constructor(
-    time: GlobalTime,
     gl: GL11,
     models: Models,
     textures: Textures,
     private val timeOfDayTint: TimeOfDayTint,
     @Assisted which: Int,
-) : ThingSimple(
-    time,
-    gl,
-    models,
-    textures,
-    R.raw.plane_16x16,
-    WISPY_TEXTURES[which % WISPY_TEXTURES.size]
-) {
+) : Thing(gl, models[R.raw.plane_16x16], textures[WISPY_TEXTURES[which % WISPY_TEXTURES.size]]) {
 
     override val engineColor: EngineColor? = null
+
+    init {
+        scale = Vector(
+            x = Random.nextFloat(1f, 3f),
+            y = 1f,
+            z = Random.nextFloat(1f, 1.5f)
+        )
+        origin = Vector(
+            x = 0f,
+            y = Random.nextFloat(87.5f, 175f),
+            z = Random.nextFloat(-40f, -20f),
+        )
+    }
 
     override fun render() {
         gl.glColor4f(

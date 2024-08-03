@@ -18,16 +18,14 @@ import javax.microedition.khronos.opengles.GL11
 import kotlin.math.min
 
 class ThingMoon @Inject constructor(
-    time: GlobalTime,
     gl: GL11,
     models: Models,
     private val textures: Textures,
+    private val time: GlobalTime,
     private val timeOfDay: TimeOfDay,
-) : Thing(time, gl) {
+) : Thing(gl, models[R.raw.plane_16x16], textures[PHASES[0]]) {
 
     override val engineColor = EngineColor(1f, 1f, 1f, 1f)
-
-    override val model = models[R.raw.plane_16x16]
 
     override lateinit var texture: Texture
 

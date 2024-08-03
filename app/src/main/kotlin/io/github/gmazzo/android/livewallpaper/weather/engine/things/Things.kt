@@ -5,13 +5,12 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import javax.inject.Inject
 import javax.inject.Provider
 import kotlin.random.Random
-import kotlin.reflect.KClass
 
 class Things @Inject constructor(
     private val sunProvider: Provider<ThingSun>,
     private val moonProvider: Provider<ThingMoon>,
-    private val cloudFactory: ThingCloud.Factory,
-    private val darkCloudFactory: ThingDarkCloud.Factory,
+    private val cloudLightFactory: ThingLightCloud.Factory,
+    private val cloudDarkFactory: ThingDarkCloud.Factory,
     private val wispyFactory: ThingWispy.Factory,
 ) {
 
@@ -55,77 +54,70 @@ class Things @Inject constructor(
     }
 
     fun spawnClouds(numClouds: Int, dark: Boolean = false) {
-        val cloudDepthStep = 131.25f / numClouds
+        val factory: (Int) -> ThingCloud =
+            if (dark) cloudDarkFactory::create
+            else cloudLightFactory::create
 
-        val changed = syncInstances(
-            if (dark) ThingDarkCloud::class else ThingCloud::class,
-            numClouds
-        ) { which ->
-            val cloud =
-                if (dark) darkCloudFactory.create(which)
-                else cloudFactory.create(which)
-
-            cloud.randomizeScale()
-            if (Random.nextInt(2) == 0) {
-                cloud.scale.let { it.copy(x = it.x * -1f) }
-            }
-            cloud.origin = Vector(
-                x = ((which.toFloat()) * (90f / (numClouds.toFloat()))) - .099609375f,
+        val changed = syncInstances(numClouds, factory) { which ->
+            origin = Vector(
+                x = which * 90f / numClouds - 45,
                 z = Random.nextFloat(-20f, -10f)
             )
-            cloud.velocity = Vector(WIND_SPEED * 1.5f, 0f, 0f)
-            return@syncInstances cloud
         }
+
         if (changed) {
+            val cloudDepthStep = 130f / numClouds
+
             // positions the clouds randomly uniformly in the height
             items
-                .filter { if (dark) it is ThingDarkCloud else it is ThingCloud }
+                .filterIsInstance<ThingCloud>()
                 .shuffled()
                 .forEachIndexed { which, cloud ->
-                    cloud.origin =
-                        cloud.origin.copy(y = ((which.toFloat()) * cloudDepthStep) + 43.75f)
+                    cloud.origin = cloud.origin.copy(
+                        y = which * cloudDepthStep + 45f,
+                    )
                 }
         }
     }
 
-    fun spawnWisps(numWisps: Int) = syncInstances(ThingWispy::class, numWisps) { which ->
-        val wispy = wispyFactory.create(which)
+    fun spawnWisps(numWisps: Int) =
+        syncInstances(numWisps, wispyFactory::create) { which ->
+            origin = origin.copy(
+                x = which * 120f / numWisps - .0703125f,
+            )
+        }
 
-        wispy.velocity = Vector(WIND_SPEED * 1.5f, 0f, 0f)
-        wispy.scale = Vector(
-            x = Random.nextFloat(1f, 3f),
-            y = 1f,
-            z = Random.nextFloat(1f, 1.5f)
-        )
-        wispy.origin = Vector(
-            x = ((which.toFloat()) * (120f / (numWisps.toFloat()))) - .0703125f,
-            y = Random.nextFloat(87.5f, CLOUD_START_DISTANCE),
-            z = Random.nextFloat(-40f, -20f),
-        )
-        return@syncInstances wispy
-    }
-
-    private fun <Type : Thing> syncInstances(
-        type: KClass<out Type>,
+    private inline fun <reified Type : Thing> syncInstances(
         desiredCount: Int,
-        onCreate: (Int) -> Type
+        onCreate: (Int) -> Type,
+        noinline onEach: (Type.(Int) -> Unit)? = null,
     ): Boolean {
         var changed = false
         var count = 0
         val it = items.iterator()
 
         while (it.hasNext()) {
-            if (type.isInstance(it.next())) {
-                count++
+            val thing = it.next()
 
-                if (count > desiredCount) {
+            if (thing is Type) {
+                if (count >= desiredCount) {
                     it.remove()
                     changed = true
+
+                } else if (onEach != null) {
+                    onEach(thing, count)
                 }
+
+                count++
             }
         }
         (count until desiredCount).forEach {
-            add(onCreate(it))
+            val thing = onCreate(it)
+
+            if (onEach != null) {
+                thing.onEach(it)
+            }
+            add(thing)
             changed = true
         }
         return changed
@@ -140,7 +132,6 @@ class Things @Inject constructor(
 
     companion object {
         const val WIND_SPEED = 3 * .5f
-        private const val CLOUD_START_DISTANCE = 175f
     }
 
 }

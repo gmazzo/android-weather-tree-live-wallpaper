@@ -1,47 +1,32 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.things
 
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
-import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
-import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
+import io.github.gmazzo.android.livewallpaper.weather.engine.models.Model
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
-import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
-import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDayTint
+import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Texture
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
-import kotlin.math.abs
+import kotlin.math.absoluteValue
 import kotlin.random.Random
 
-class ThingCloud @AssistedInject constructor(
-    time: GlobalTime,
+sealed class ThingCloud(
     gl: GL11,
-    models: Models,
-    textures: Textures,
-    private val timeOfDayTint: TimeOfDayTint,
-    @Assisted which: Int,
-) : ThingSimple(
-    time,
-    gl,
-    models,
-    textures,
-    MODELS[which % MODELS.size],
-    TEXTURES[which % TEXTURES.size]
-) {
+    model: Model,
+    texture: Texture,
+    time: GlobalTime,
+    private val color: EngineColor,
+) : ThingMoving(gl, model, texture, time) {
 
     override val engineColor = EngineColor(1f, 1f, 1f, 1f)
 
     init {
-        origin = Vector(-100f, 15f, 50f)
-    }
-
-    private fun calculateCloudRangeX(): Float {
-        return ((origin.y * CLOUD_X_RANGE) / 90f + abs(
-            (scale.x * 6f).toDouble()
-        )).toFloat()
+        scale = Vector(
+            (3.5f + Random.nextFloat(0f, 2f)).let { if (Random.nextBoolean()) it else -it },
+            3f,
+            3.5f + Random.nextFloat(0f, 2f)
+        )
     }
 
     override fun render() {
@@ -52,40 +37,20 @@ class ThingCloud @AssistedInject constructor(
     override fun update() {
         super.update()
 
-        val rangX = calculateCloudRangeX()
+        val rangX = origin.y / 2 + (scale.x * 6).absoluteValue
         if (origin.x > rangX) {
             origin = origin.copy(x = Random.nextFloat((-rangX) - 5f, (-rangX) + 5f))
-            engineColor.set(0)
             timeElapsed = 0f
-            randomizeScale()
         }
 
-        engineColor.r = timeOfDayTint.color.r
-        engineColor.g = timeOfDayTint.color.g
-        engineColor.b = timeOfDayTint.color.b
+        engineColor.set(color)
+
         if (timeElapsed < 2f) {
             val alpha = timeElapsed * .5f
+
             engineColor *= alpha
             engineColor.a = alpha
         }
     }
 
-    @AssistedFactory
-    interface Factory {
-        fun create(which: Int): ThingCloud
-    }
-
-    companion object {
-        const val CLOUD_X_RANGE: Float = 45f
-
-        private val MODELS = intArrayOf(
-            R.raw.cloud1m, R.raw.cloud2m, R.raw.cloud3m,
-            R.raw.cloud4m, R.raw.cloud5m
-        )
-
-        private val TEXTURES = intArrayOf(
-            R.drawable.cloud1, R.drawable.cloud2, R.drawable.cloud3,
-            R.drawable.cloud4, R.drawable.cloud5
-        )
-    }
 }
