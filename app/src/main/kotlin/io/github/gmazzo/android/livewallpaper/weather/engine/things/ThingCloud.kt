@@ -32,16 +32,16 @@ class ThingCloud @AssistedInject constructor(
     TEXTURES[which % TEXTURES.size]
 ) {
 
-    override val engineColor = EngineColor(1.0f, 1.0f, 1.0f, 1.0f)
+    override val engineColor = EngineColor(1f, 1f, 1f, 1f)
 
     init {
-        visWidth = 0.0f
+        visWidth = 0f
         origin = Vector(-100f, 15f, 50f)
     }
 
     private fun calculateCloudRangeX(): Float {
-        return ((origin.y * CLOUD_X_RANGE) / 90.0f + abs(
-            (scale.x * 6.0f).toDouble()
+        return ((origin.y * CLOUD_X_RANGE) / 90f + abs(
+            (scale.x * 6f).toDouble()
         )).toFloat()
     }
 
@@ -55,17 +55,17 @@ class ThingCloud @AssistedInject constructor(
 
         val rangX = calculateCloudRangeX()
         if (origin.x > rangX) {
-            origin = origin.copy(x = Random.nextFloat((-rangX) - 5.0f, (-rangX) + 5.0f))
+            origin = origin.copy(x = Random.nextFloat((-rangX) - 5f, (-rangX) + 5f))
             engineColor.set(0)
-            timeElapsed = 0.0f
+            timeElapsed = 0f
             randomizeScale()
         }
 
         engineColor.r = timeOfDayTint.color.r
         engineColor.g = timeOfDayTint.color.g
         engineColor.b = timeOfDayTint.color.b
-        if (timeElapsed < 2.0f) {
-            val alpha = timeElapsed * 0.5f
+        if (timeElapsed < 2f) {
+            val alpha = timeElapsed * .5f
             engineColor *= alpha
             engineColor.a = alpha
         }
@@ -77,7 +77,7 @@ class ThingCloud @AssistedInject constructor(
     }
 
     companion object {
-        const val CLOUD_X_RANGE: Float = 45.0f
+        const val CLOUD_X_RANGE: Float = 45f
 
         private val MODELS = intArrayOf(
             R.raw.cloud1m, R.raw.cloud2m, R.raw.cloud3m,

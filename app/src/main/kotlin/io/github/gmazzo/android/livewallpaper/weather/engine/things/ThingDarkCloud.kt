@@ -27,14 +27,14 @@ class ThingDarkCloud @AssistedInject constructor(
     @Assisted private val withFlare: Boolean,
 ) : ThingSimple(time, gl, models, textures, MODELS[which % MODELS.size], TEXTURES[which % TEXTURES.size]) {
 
-    override val engineColor = EngineColor(1.0f, 1.0f, 1.0f, 1.0f)
+    override val engineColor = EngineColor(1f, 1f, 1f, 1f)
 
     private val texNameFlare = textures[FLARES[which % MODELS.size]]
 
-    private var flashIntensity = 0.0f
+    private var flashIntensity = 0f
 
     private fun calculateCloudRangeX(): Float {
-        return ((origin.y * CLOUD_X_RANGE) / 90.0f + abs(
+        return ((origin.y * CLOUD_X_RANGE) / 90f + abs(
             scale.x.toDouble()
         )).toFloat()
     }
@@ -47,7 +47,7 @@ class ThingDarkCloud @AssistedInject constructor(
         gl.glScalef(scale.x, scale.y, scale.z)
             model.render()
 
-        if (withFlare && flashIntensity > 0.0f) {
+        if (withFlare && flashIntensity > 0f) {
             gl.glDisable(GL_LIGHTING)
             gl.glBindTexture(GL_TEXTURE_2D, texNameFlare.glId)
             gl.glColor4f(1f,1f,1f, flashIntensity)
@@ -55,7 +55,7 @@ class ThingDarkCloud @AssistedInject constructor(
             model.render()
             gl.glEnable(GL_LIGHTING)
         }
-        gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
+        gl.glColor4f(1f, 1f, 1f, 1f)
     }
 
     override fun update() {
@@ -68,20 +68,20 @@ class ThingDarkCloud @AssistedInject constructor(
         } else if (origin.x < (-rangX)) {
             origin = origin.copy(x = rangX)
         }
-        engineColor.r = 0.2f
-        engineColor.g = 0.2f
-        engineColor.b = 0.2f
-        if (timeElapsed < 2.0f) {
-            val alpha = timeElapsed * 0.5f
+        engineColor.r = .2f
+        engineColor.g = .2f
+        engineColor.b = .2f
+        if (timeElapsed < 2f) {
+            val alpha = timeElapsed * .5f
             engineColor *= alpha
             engineColor.a = alpha
         }
         if (withFlare) {
-            if (flashIntensity > 0.0f) {
+            if (flashIntensity > 0f) {
                 flashIntensity -= 1.25f * time.deltaSeconds
             }
-            if (flashIntensity <= 0.0f && Random.nextFloat(0.0f, 4.5f) < time.deltaSeconds) {
-                flashIntensity = 0.5f
+            if (flashIntensity <= 0f && Random.nextFloat(0f, 4.5f) < time.deltaSeconds) {
+                flashIntensity = .5f
             }
         }
     }

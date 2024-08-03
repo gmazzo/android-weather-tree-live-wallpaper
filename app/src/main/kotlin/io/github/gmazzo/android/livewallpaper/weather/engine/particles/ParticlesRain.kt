@@ -24,15 +24,15 @@ class ParticlesRain @Inject constructor(
 
     override fun particleSetup(particle: Particle) {
         super.particleSetup(particle)
-        particle.lifetime = 1.0f
+        particle.lifetime = 1f
 
-        val startScale = Random.nextFloat(1.0f, 1.5f)
+        val startScale = Random.nextFloat(1f, 1.5f)
         particle.startScale = Vector(startScale)
         particle.destScale = Vector(startScale)
 
-        val velocity = Random.nextFloat(0.95f, 1.05f)
-        particle.startVelocity = Vector(8.0f, 0.0f, -15.0f)
-        particle.destVelocity = Vector(9.45f * velocity, 0.0f, -35.0f * velocity)
+        val velocity = Random.nextFloat(.95f, 1.05f)
+        particle.startVelocity = Vector(8f, 0f, -15f)
+        particle.destVelocity = Vector(9.45f * velocity, 0f, -35f * velocity)
     }
 
     companion object {

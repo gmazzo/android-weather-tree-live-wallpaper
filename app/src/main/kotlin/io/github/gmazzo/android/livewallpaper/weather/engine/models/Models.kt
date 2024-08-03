@@ -58,7 +58,7 @@ class Models @Inject constructor(
             input.assertChunk("NORM", buffer4)
             val normalsCount = input.readInt()
             val normalsMapper = if (version >= 3)
-                { _: Int -> input.readByte() / 127.0f } else { _ -> input.readFloat() }
+                { _: Int -> input.readByte() / 127f } else { _ -> input.readFloat() }
             input.skip(8)
             val normals = FloatArray(normalsCount * 3 * frames, init = normalsMapper)
 

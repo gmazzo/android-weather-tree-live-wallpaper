@@ -26,7 +26,7 @@ class ThingSun @Inject constructor(
     private val timeOfDayTint: TimeOfDayTint,
 ) : ThingSimple(time, gl, models, textures, R.raw.plane_16x16, R.raw.sun) {
 
-    override val engineColor = EngineColor(1.0f, 1.0f, 0.95f, 1.0f)
+    override val engineColor = EngineColor(1f, 1f, .95f, 1f)
 
     private val sunBlend by lazy { textures[R.raw.sun_blend] }
 
@@ -42,15 +42,15 @@ class ThingSun @Inject constructor(
         gl.glLoadIdentity()
         gl.glTranslatef(origin.x, origin.y, origin.z)
         gl.glScalef(scale.x, scale.y, scale.z)
-        gl.glRotatef((timeElapsed * 12.0f) % 360.0f, 0.0f, 1.0f, 0.0f)
+        gl.glRotatef((timeElapsed * 12f) % 360f, 0f, 1f, 0f)
         gl.glMatrixMode(GL_TEXTURE)
 
         pushMatrix {
-            val angle = (timeElapsed * 18.0f) % 360.0f
+            val angle = (timeElapsed * 18f) % 360f
 
-            gl.glTranslatef(0.5f, 0.5f, 0.0f)
-            gl.glRotatef(angle, 0.0f, 0.0f, 1.0f)
-            gl.glTranslatef(-0.5f, -0.5f, 0.0f)
+            gl.glTranslatef(.5f, .5f, 0f)
+            gl.glRotatef(angle, 0f, 0f, 1f)
+            gl.glTranslatef(-.5f, -.5f, 0f)
             model.renderFrameMultiTexture(sunBlend, texture, GL_MODULATE, false)
         }
         gl.glMatrixMode(GL_MODELVIEW)
@@ -60,17 +60,17 @@ class ThingSun @Inject constructor(
         super.update()
 
         val sunPos = timeOfDay.sunPosition
-        var alpha = 0.0f
+        var alpha = 0f
 
-        if (sunPos > 0.0f) {
-            scale = Vector(2.0f)
-            val altitude = 175.0f * sunPos
+        if (sunPos > 0f) {
+            scale = Vector(2f)
+            val altitude = 175f * sunPos
 
-            alpha = (altitude / 25.0f).coerceIn(0.0f, 1.0f)
+            alpha = (altitude / 25f).coerceIn(0f, 1f)
             origin = origin.copy(z = min(altitude - 50f, 40f))
 
         } else {
-            scale = Vector(0.0f)
+            scale = Vector(0f)
         }
 
         engineColor.set(timeOfDayTint.color)

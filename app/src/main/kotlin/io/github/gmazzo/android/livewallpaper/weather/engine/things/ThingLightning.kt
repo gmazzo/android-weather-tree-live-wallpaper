@@ -20,7 +20,7 @@ class ThingLightning @Inject constructor(
     textures: Textures,
 ) : ThingSimple(time, gl, models, textures, MODELS[Random.nextInt(MODELS.size)], R.raw.lightning_pieces_core) {
 
-    override val engineColor = EngineColor(1f, 1f, 1f, 1.0f)
+    override val engineColor = EngineColor(1f, 1f, 1f, 1f)
 
     private val glowTexture by lazy { textures[R.raw.lightning_pieces_glow] }
 
@@ -41,8 +41,8 @@ class ThingLightning @Inject constructor(
     override fun update() {
         super.update()
 
-        engineColor.a -= 2.0f * time.deltaSeconds
-        if (engineColor.a <= 0.0f) {
+        engineColor.a -= 2f * time.deltaSeconds
+        if (engineColor.a <= 0f) {
             delete()
         }
     }

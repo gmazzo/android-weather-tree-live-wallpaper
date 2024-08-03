@@ -32,9 +32,9 @@ class SceneRain @Inject constructor(
     private val particles: ParticlesRain,
 ) : Scene(time, gl, models, textures, things, timeOfDayTint) {
 
-    private val particleRainOrigin= Vector(0.0f, 25.0f, 10.0f)
-    private val lightDiffuse = floatArrayOf(0.1f, 0.1f, 0.1f, 1.0f)
-    private val lightDiffuseColor = EngineColor(0.5f, 0.5f, 0.5f, 1.0f)
+    private val particleRainOrigin= Vector(0f, 25f, 10f)
+    private val lightDiffuse = floatArrayOf(.1f, .1f, .1f, 1f)
+    private val lightDiffuseColor = EngineColor(.5f, .5f, .5f, 1f)
 
     private fun renderBackground() = gl.pushMatrix {
         val stormBg = textures[R.drawable.storm_bg]
@@ -43,15 +43,15 @@ class SceneRain @Inject constructor(
         gl.glColor4f(timeOfDayTint.color.r, timeOfDayTint.color.g, timeOfDayTint.color.b, 1f)
         gl.glMatrixMode(GL_MODELVIEW)
 
-        gl.glTranslatef(0.0f, 250.0f, 35.0f)
-        gl.glScalef(bgPadding * 2.0f, bgPadding, bgPadding)
+        gl.glTranslatef(0f, 250f, 35f)
+        gl.glScalef(bgPadding * 2f, bgPadding, bgPadding)
         gl.glMatrixMode(GL_TEXTURE)
 
         gl.pushMatrix {
             gl.glTranslatef(
-                ((WIND_SPEED * time.deltaSeconds) * -0.005f) % 1.0f,
-                0.0f,
-                0.0f
+                ((WIND_SPEED * time.deltaSeconds) * -.005f) % 1f,
+                0f,
+                0f
             )
             val mesh = models[R.raw.plane_16x16]
             mesh.render()
@@ -62,8 +62,8 @@ class SceneRain @Inject constructor(
 
     private fun renderRain() = gl.pushMatrix {
         gl.glMatrixMode(GL_MODELVIEW)
-        gl.glTranslatef(0.0f, 0.0f, -5.0f)
-        gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
+        gl.glTranslatef(0f, 0f, -5f)
+        gl.glColor4f(1f, 1f, 1f, 1f)
         particles.update(time.deltaSeconds)
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ZERO)
         particles.render(particleRainOrigin)

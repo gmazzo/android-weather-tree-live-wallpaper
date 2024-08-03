@@ -25,7 +25,7 @@ class ThingMoon @Inject constructor(
     private val timeOfDay: TimeOfDay,
 ) : Thing(time, gl) {
 
-    override val engineColor = EngineColor(1.0f, 1.0f, 1.0f, 1.0f)
+    override val engineColor = EngineColor(1f, 1f, 1f, 1f)
 
     override val model = models[R.raw.plane_16x16]
 
@@ -67,8 +67,8 @@ class ThingMoon @Inject constructor(
         texture = textures[phase.textureId]
         scale = Vector(phase.scale)
 
-        val altitude = timeOfDay.moonPosition * 175.0f
-        engineColor.a = (altitude / 25.0f).coerceIn(0f, 1f)
+        val altitude = timeOfDay.moonPosition * 175f
+        engineColor.a = (altitude / 25f).coerceIn(0f, 1f)
         origin = origin.copy(z = min(altitude - 80f, 0f))
     }
 

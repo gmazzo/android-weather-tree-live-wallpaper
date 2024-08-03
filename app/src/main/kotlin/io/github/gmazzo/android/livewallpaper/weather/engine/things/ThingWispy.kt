@@ -35,7 +35,7 @@ class ThingWispy @AssistedInject constructor(
             timeOfDayTint.color.r,
             timeOfDayTint.color.g,
             timeOfDayTint.color.b,
-            (timeOfDayTint.color.r + timeOfDayTint.color.g) + (timeOfDayTint.color.b / 3.0f)
+            (timeOfDayTint.color.r + timeOfDayTint.color.g) + (timeOfDayTint.color.b / 3f)
         )
         gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA)
 

@@ -169,8 +169,8 @@ private fun DayTimeProgression(
 
     val progress = (1 - minutes / 1.days).toFloat()
     val night = progress >= .5f
-    val startFraction = min(progress, (0.5f + progress) % 1)
-    val middleFraction = startFraction + 0.5f
+    val startFraction = min(progress, (.5f + progress) % 1)
+    val middleFraction = startFraction + .5f
     val endFraction = min(startFraction + 1f, 1f)
 
     val guidelineStart = createGuidelineFromStart(startFraction)

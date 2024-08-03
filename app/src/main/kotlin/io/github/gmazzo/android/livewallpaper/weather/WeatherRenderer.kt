@@ -42,13 +42,13 @@ internal class WeatherRenderer @AssistedInject constructor(
     private val weatherState: MutableStateFlow<WeatherState>,
 ) : Renderer {
     private var landscape: Boolean = false
-    private var cameraFOV = 65.0f
-    private var cameraPos = Vector(0.0f, 0.0f, 0.0f)
+    private var cameraFOV = 65f
+    private var cameraPos = Vector(0f, 0f, 0f)
     private var currentScene: SceneComponent? = null
-    private val cameraSpeed: Float = 1.0f
+    private val cameraSpeed: Float = 1f
     var demoMode = false
     private var screenHeight = 0f
-    private var screenRatio = 1.0f
+    private var screenRatio = 1f
     private var screenWidth = 0f
     private lateinit var glContext: OpenGLComponent
     private var watchWeatherChanges: Job? = null
@@ -99,7 +99,7 @@ internal class WeatherRenderer @AssistedInject constructor(
         screenWidth = w.toFloat()
         screenHeight = h.toFloat()
         screenRatio = screenWidth / screenHeight
-        landscape = screenRatio > 1.0f
+        landscape = screenRatio > 1f
 
         gl.glViewport(0, 0, w, h)
         gl.setRenderDefaults()
@@ -117,7 +117,7 @@ internal class WeatherRenderer @AssistedInject constructor(
         glShadeModel(GL_SMOOTH)
         glEnable(GL_TEXTURE_2D)
         glEnable(GL_BLEND)
-        glAlphaFunc(GL_GEQUAL, 0.02f)
+        glAlphaFunc(GL_GEQUAL, .02f)
         glDepthMask(false)
         glDepthFunc(GL_LEQUAL)
         glTexEnvx(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE)
@@ -147,11 +147,11 @@ internal class WeatherRenderer @AssistedInject constructor(
     private fun GL10.updateProjection() {
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
-        GLU.gluPerspective(this, cameraFOV, screenRatio, 1.0f, 400.0f)
+        GLU.gluPerspective(this, cameraFOV, screenRatio, 1f, 400f)
         GLU.gluLookAt(this,
             cameraPos.x, cameraPos.y, cameraPos.z,
-            cameraPos.x, 400.0f, cameraPos.z,
-            0.0f, 0.0f, 1.0f,
+            cameraPos.x, 400f, cameraPos.z,
+            0f, 0f, 1f,
         )
     }
 

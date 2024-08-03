@@ -22,29 +22,29 @@ class ParticlesSnow @Inject constructor(
     gl,
     models[R.raw.flakes],
     textures[if (Random.nextBoolean()) R.raw.p_snow1 else R.raw.p_snow2],
-    spawnRate = 0.25f,
-    spawnRateVariance = 0.05f,
-    spawnRangeX = 20.0f,
+    spawnRate = .25f,
+    spawnRateVariance = .05f,
+    spawnRangeX = 20f,
     translucent = true,
 ) {
 
     override fun particleSetup(particle: Particle) {
         super.particleSetup(particle)
 
-        val bias: Float = ((homeOffset.value * 2.0f) - 1.0f) * 4.0f
+        val bias: Float = ((homeOffset.value * 2f) - 1f) * 4f
         particle.lifetime = 4.5f
-        particle.startScale = Vector(Random.nextFloat(0.15f, 0.3f))
-        particle.destScale = Vector(Random.nextFloat(0.15f, 0.3f))
+        particle.startScale = Vector(Random.nextFloat(.15f, .3f))
+        particle.destScale = Vector(Random.nextFloat(.15f, .3f))
 
-        val randZ = Random.nextFloat(-(3.0f + (SNOW_GRAVITY * 1.5f)), -3.0f)
+        val randZ = Random.nextFloat(-(3f + (SNOW_GRAVITY * 1.5f)), -3f)
         particle.startVelocity = Vector(
-            x = (Random.nextFloat(-6.0f, 6.0f) * SNOW_NOISE) + bias,
-            y = Random.nextFloat(-2.0f, 2.0f),
+            x = (Random.nextFloat(-6f, 6f) * SNOW_NOISE) + bias,
+            y = Random.nextFloat(-2f, 2f),
             z = randZ
         )
         particle.destVelocity = Vector(
-            x = (Random.nextFloat(-8.0f, 8.0f) * SNOW_NOISE) + bias,
-            y = Random.nextFloat(-2.0f, 2.0f),
+            x = (Random.nextFloat(-8f, 8f) * SNOW_NOISE) + bias,
+            y = Random.nextFloat(-2f, 2f),
             z = randZ
         )
     }
@@ -53,13 +53,13 @@ class ParticlesSnow @Inject constructor(
         super.update(timeDelta)
 
         val color = timeOfDayTint.color
-        startEngineColor.set(color.r, color.g, color.b, 3.0f)
-        destEngineColor.set(color.r, color.g, color.b, 0.0f)
+        startEngineColor.set(color.r, color.g, color.b, 3f)
+        destEngineColor.set(color.r, color.g, color.b, 0f)
     }
 
     companion object {
-        private const val SNOW_NOISE = 7 * 0.1f
-        private const val SNOW_GRAVITY = 2 * 0.5f
+        private const val SNOW_NOISE = 7 * .1f
+        private const val SNOW_GRAVITY = 2 * .5f
     }
 
 }

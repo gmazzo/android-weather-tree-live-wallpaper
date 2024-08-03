@@ -21,11 +21,11 @@ sealed class Thing(
     var isDeleted: Boolean = false
         private set
     var origin = Vector()
-    protected var timeElapsed = 0.0f
+    protected var timeElapsed = 0f
     var scale: Vector = Vector(1f)
     var velocity: Vector? = null
     private val visScratch = Vector()
-    var visWidth = 3.0f
+    var visWidth = 3f
 
     protected abstract val model: Model
 
@@ -46,7 +46,7 @@ sealed class Thing(
         model.render()
 
         if (engineColor != null) {
-            gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
+            gl.glColor4f(1f, 1f, 1f, 1f)
         }
     }
 
@@ -60,9 +60,9 @@ sealed class Thing(
 
     fun randomizeScale() {
         scale = Vector(
-            3.5f + Random.nextFloat(0.0f, 2.0f),
-            3.0f,
-            3.5f + Random.nextFloat(0.0f, 2.0f)
+            3.5f + Random.nextFloat(0f, 2f),
+            3f,
+            3.5f + Random.nextFloat(0f, 2f)
         )
     }
 

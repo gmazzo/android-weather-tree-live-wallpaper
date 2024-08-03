@@ -27,7 +27,7 @@ data class Vector(
     val normalized: Vector
         get() {
             val magnitude = sqrt(x * x + y * y + z * z)
-            val reciprocal = 1.0f / magnitude
+            val reciprocal = 1f / magnitude
             return copy(x = x * reciprocal, y = y * reciprocal, z = z * reciprocal)
         }
 

@@ -30,21 +30,21 @@ sealed class Particles(
 ) {
     private val mesh = model.asMesh()
     private var animCurrentFrame = 0
-    private var animTimeElapsed = 0.0f
-    private var nextSpawnRateVariance = 0.0f
+    private var animTimeElapsed = 0f
+    private var nextSpawnRateVariance = 0f
     private var numParticles = 0
     private val particles = (0..MAX_PARTICLES).map { Particle() }.toTypedArray()
-    private var timeSinceLastSpawn = 0.0f
+    private var timeSinceLastSpawn = 0f
     private var useColor = true
     private var animFrameOffset = 0
-    private var animFrameRate = 20.0f
+    private var animFrameRate = 20f
     private var animLastFrame = 0
     private var enableSpawning = true
     private var flowDirection: Vector? = null
     private var orientScratch = Vector()
     private var spawnBurst = 0
     protected val destEngineColor = EngineColor(1f, 1f, 1f, 1f)
-    protected val startEngineColor = EngineColor(1.0f, 1.0f, 1.0f, 1.0f)
+    protected val startEngineColor = EngineColor(1f, 1f, 1f, 1f)
 
     inner class Particle {
         private var angle = 0f
@@ -83,7 +83,7 @@ sealed class Particles(
                 gl.glScalef(scale.x, scale.y, scale.z)
             }
             if (useAngles) {
-                gl.glRotatef(angle, 0.0f, 1.0f, 0.0f)
+                gl.glRotatef(angle, 0f, 1f, 0f)
             }
             mesh.renderFrame_gl11_render(gl)
         }
@@ -91,20 +91,20 @@ sealed class Particles(
         @Inject
         fun reset() {
             position = Vector()
-            timeElapsed = 0.0f
+            timeElapsed = 0f
             startVelocity = Vector()
             destVelocity = Vector()
             startScale = Vector(1f)
             destScale = Vector(1f)
-            startAngle = 0.0f
-            destAngle = 0.0f
-            lifetime = 1.0f
+            startAngle = 0f
+            destAngle = 0f
+            lifetime = 1f
         }
 
         fun setUsageFlags() {
-            useAngles = startAngle != 0.0f || destAngle != 0.0f
+            useAngles = startAngle != 0f || destAngle != 0f
             useScale =
-                (startScale.x != 1.0f) || (startScale.y != 1.0f) || (startScale.z != 1.0f) || (destScale.x != 1.0f) || (destScale.y != 1.0f) || (destScale.z != 1.0f)
+                (startScale.x != 1f) || (startScale.y != 1f) || (startScale.z != 1f) || (destScale.x != 1f) || (destScale.y != 1f) || (destScale.z != 1f)
         }
 
         fun update(timeDelta: Float): Boolean {
@@ -114,7 +114,7 @@ sealed class Particles(
                 return false
             }
             val percentage = timeElapsed / lifetime
-            val invPercentage = 1.0f - percentage
+            val invPercentage = 1f - percentage
             updateVelocity(percentage, invPercentage)
             if (useColor) {
                 color.set(
@@ -158,9 +158,9 @@ sealed class Particles(
     open fun particleSetup(particle: Particle) {
         particle.reset()
         particle.position += Vector(
-            if (spawnRangeX > 0.01f) Random.nextFloat(-spawnRangeX, spawnRangeX) else 0f,
-            if (spawnRangeY > 0.01f) Random.nextFloat(-spawnRangeY, spawnRangeY) else 0f,
-            if (spawnRangeZ > 0.01f) Random.nextFloat(-spawnRangeZ, spawnRangeZ) else 0f,
+            if (spawnRangeX > .01f) Random.nextFloat(-spawnRangeX, spawnRangeX) else 0f,
+            if (spawnRangeY > .01f) Random.nextFloat(-spawnRangeY, spawnRangeY) else 0f,
+            if (spawnRangeZ > .01f) Random.nextFloat(-spawnRangeZ, spawnRangeZ) else 0f,
         )
         particle.alive = true
     }
@@ -182,7 +182,7 @@ sealed class Particles(
         }
 
         mesh.renderFrame_gl11_clear(gl)
-        gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
+        gl.glColor4f(1f, 1f, 1f, 1f)
     }
 
     open fun update(timeDelta: Float) {
@@ -208,7 +208,7 @@ sealed class Particles(
                 }
 
             } else if (createNew > 0) {
-                var fakeTimeElapsed = 0.001f
+                var fakeTimeElapsed = .001f
 
                 if (createNew > 1 && spawnBurst == 0) {
                     fakeTimeElapsed = ((createNew - 1).toFloat()) * spawnRate

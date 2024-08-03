@@ -61,7 +61,7 @@ class WeatherWallpaperService : WallpaperService() {
             xPixelOffset: Int,
             yPixelOffset: Int
         ) {
-            surfaceView.scrollOffset(if (isPreview) 0.5f else xOffset)
+            surfaceView.scrollOffset(if (isPreview) .5f else xOffset)
         }
 
     }

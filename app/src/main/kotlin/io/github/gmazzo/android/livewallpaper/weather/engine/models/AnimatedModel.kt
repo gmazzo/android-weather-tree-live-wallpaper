@@ -36,7 +36,7 @@ class AnimatedModel internal constructor(
     private fun renderFrame(frame: Int, frameBlend: Int, blendAmount: Float) {
         val firstFrameOffset = elementsCount * frame * 3
         val blendFrameOffset = elementsCount * frameBlend * 3
-        val blendAmountInverse = 1.0f - blendAmount
+        val blendAmountInverse = 1f - blendAmount
 
         with(bufScratch) {
             for (i in 0 until capacity()) {

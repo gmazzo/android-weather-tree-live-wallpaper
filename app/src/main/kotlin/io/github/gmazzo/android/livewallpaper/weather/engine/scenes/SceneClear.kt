@@ -43,7 +43,7 @@ open class SceneClear @Inject constructor(
         gl.glLoadIdentity()
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA)
         renderBackground(time.elapsedSeconds)
-        gl.glTranslatef(0.0f, 0.0f, 40.0f)
+        gl.glTranslatef(0f, 0f, 40f)
 
         things.render()
         drawTree()
@@ -53,15 +53,15 @@ open class SceneClear @Inject constructor(
         gl.glBindTexture(GL_TEXTURE_2D, textures[backgroundId].glId)
         gl.glColor4f(timeOfDayTint.color.r, timeOfDayTint.color.g, timeOfDayTint.color.b, 1f)
         gl.glMatrixMode(GL_MODELVIEW)
-        gl.glTranslatef(0.0f, 250.0f, 35.0f)
-        gl.glScalef(bgPadding * 2.0f, bgPadding, bgPadding)
+        gl.glTranslatef(0f, 250f, 35f)
+        gl.glScalef(bgPadding * 2f, bgPadding, bgPadding)
         gl.glMatrixMode(GL_TEXTURE)
 
         pushMatrix {
             gl.glTranslatef(
-                ((WIND_SPEED * timeDelta) * -0.005f) % 1.0f,
-                0.0f,
-                0.0f
+                ((WIND_SPEED * timeDelta) * -.005f) % 1f,
+                0f,
+                0f
             )
             val mesh = models[R.raw.plane_16x16]
             mesh.render()
@@ -76,12 +76,12 @@ open class SceneClear @Inject constructor(
         val alpha = ((-position + GOLDER_HOUR_FACTOR / 2) / GOLDER_HOUR_FACTOR / 2).coerceIn(0f, 1f)
 
         if (alpha > 0) {
-            gl.glColor4f(1.0f, 1.0f, 1.0f, alpha)
+            gl.glColor4f(1f, 1f, 1f, alpha)
             gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE)
             val starMesh = models[R.raw.stars]
             val noise = textures[R.drawable.noise]
             val star = textures[R.drawable.stars]
-            gl.glTranslatef((0.1f * timeDelta) % 1.0f, 300.0f, -100.0f)
+            gl.glTranslatef((.1f * timeDelta) % 1f, 300f, -100f)
             starMesh.renderFrameMultiTexture(noise, star, GL_MODULATE, false)
         }
     }

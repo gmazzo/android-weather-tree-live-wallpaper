@@ -45,15 +45,15 @@ class SceneStorm @Inject constructor(
     private val lightAmbientLight = FloatArray(4)
     private var lightFlashTime = 0f
     private var lightFlashX = 0f
-    private val ambientLight = floatArrayOf(1.0f, 1.0f, 1.0f, 1.0f)
-    private val flashColor: FloatArray = floatArrayOf(1.0f, 1.0f, 1.0f, 1.0f)
-    private val position = floatArrayOf(0.0f, 0.0f, 0.0f, 1.0f)
-    private val specularLight = floatArrayOf(0.1f, 0.1f, 0.1f, 1.0f)
-    private val particleRainOrigin = Vector(0.0f, 25.0f, 10.0f)
+    private val ambientLight = floatArrayOf(1f, 1f, 1f, 1f)
+    private val flashColor: FloatArray = floatArrayOf(1f, 1f, 1f, 1f)
+    private val position = floatArrayOf(0f, 0f, 0f, 1f)
+    private val specularLight = floatArrayOf(.1f, .1f, .1f, 1f)
+    private val particleRainOrigin = Vector(0f, 25f, 10f)
     private val boltFrequency = 5f
-    private val diffuseLight = floatArrayOf(1.5f, 1.5f, 1.5f, 1.0f)
+    private val diffuseLight = floatArrayOf(1.5f, 1.5f, 1.5f, 1f)
     private val flashLights = true
-    private val lightAmbientLightColor = EngineColor(0.5f, 0.5f, 0.5f, 1.0f)
+    private val lightAmbientLightColor = EngineColor(.5f, .5f, .5f, 1f)
     private val wave = Wave(0.0, 500.0, 0.0, .005)
     private val stormBg = textures[R.drawable.storm_bg]
 
@@ -78,7 +78,7 @@ class SceneStorm @Inject constructor(
         renderRain(time.deltaSeconds)
         checkForLightning(time.deltaSeconds)
         updateLightValues(time.deltaSeconds)
-        gl.glTranslatef(0.0f, 0.0f, 40.0f)
+        gl.glTranslatef(0f, 0f, 40f)
 
         things.render()
         drawTree()
@@ -89,17 +89,17 @@ class SceneStorm @Inject constructor(
         gl.glColor4f(timeOfDayTint.color.r, timeOfDayTint.color.g, timeOfDayTint.color.b, 1f)
         gl.glMatrixMode(GL_MODELVIEW)
 
-        gl.glTranslatef(0.0f, 250.0f, 35.0f)
-        gl.glScalef(bgPadding * 2.0f, bgPadding, bgPadding)
+        gl.glTranslatef(0f, 250f, 35f)
+        gl.glScalef(bgPadding * 2f, bgPadding, bgPadding)
         gl.glMatrixMode(GL_TEXTURE)
 
         pushMatrix {
             gl.glTranslatef(
-                ((WIND_SPEED * timeDelta) * -0.005f) % 1.0f,
-                0.0f,
-                0.0f
+                ((WIND_SPEED * timeDelta) * -.005f) % 1f,
+                0f,
+                0f
             )
-            if (!flashLights || lightFlashTime <= 0.0f) {
+            if (!flashLights || lightFlashTime <= 0f) {
                 gl.glEnable(GL_LIGHTING)
                 gl.glEnable(GL_LIGHT1)
                 gl.glLightfv(GL_LIGHT1, GL_AMBIENT, lightAmbientLight, 0)
@@ -114,8 +114,8 @@ class SceneStorm @Inject constructor(
 
     private fun renderRain(timeDelta: Float) = gl.pushMatrix {
         gl.glMatrixMode(GL_MODELVIEW)
-        gl.glTranslatef(0.0f, 0.0f, -5.0f)
-        gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
+        gl.glTranslatef(0f, 0f, -5f)
+        gl.glColor4f(1f, 1f, 1f, 1f)
         particles.update(timeDelta)
         gl.glBlendFunc(GL_ONE, GL_ZERO)
         particles.render(particleRainOrigin)
@@ -125,20 +125,20 @@ class SceneStorm @Inject constructor(
         val lightning = lightningProvider.get()
 
         lightning.origin = Vector(
-            Random.nextFloat(-25.0f, 25.0f),
-            Random.nextFloat(95.0f, 168.0f),
-            20.0f
+            Random.nextFloat(-25f, 25f),
+            Random.nextFloat(95f, 168f),
+            20f
         )
         if (Random.nextInt(2) == 0) {
-            lightning.scale = lightning.scale.let { it.copy(z = it.z * -1.0f) }
+            lightning.scale = lightning.scale.let { it.copy(z = it.z * -1f) }
         }
         things.add(lightning)
-        lightFlashTime = 0.25f
+        lightFlashTime = .25f
         lightFlashX = lightning.origin.x
     }
 
     private fun checkForLightning(timeDelta: Float) {
-        if (Random.nextFloat(0.0f, boltFrequency * 0.75f) < timeDelta) {
+        if (Random.nextFloat(0f, boltFrequency * .75f) < timeDelta) {
             spawnLightning()
         }
     }
@@ -148,20 +148,20 @@ class SceneStorm @Inject constructor(
 
         val lightPosX = wave.cos.toFloat()
 
-        if (!flashLights || lightFlashTime <= 0.0f) {
+        if (!flashLights || lightFlashTime <= 0f) {
             position[0] = lightPosX
             gl.glLightfv(GL_COLOR_BUFFER_BIT, 4610, specularLight, 0)
 
         } else {
-            val flashRemaining = lightFlashTime / 0.25f
+            val flashRemaining = lightFlashTime / .25f
             position[0] =
-                (lightFlashX * flashRemaining) + ((1.0f - flashRemaining) * lightPosX)
+                (lightFlashX * flashRemaining) + ((1f - flashRemaining) * lightPosX)
 
             gl.glLightfv(GL_COLOR_BUFFER_BIT, 4610, flashColor, 0)
             lightFlashTime -= timeDelta
         }
 
-        position[1] = 50.0f
+        position[1] = 50f
         position[2] = wave.sin.toFloat()
 
         gl.glLightfv(GL_COLOR_BUFFER_BIT, GL_AMBIENT, ambientLight, 0)

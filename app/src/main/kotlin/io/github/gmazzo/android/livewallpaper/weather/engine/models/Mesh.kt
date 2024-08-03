@@ -273,13 +273,13 @@ class Mesh {
                                                     if (fileVersion >= 3) {
                                                         normalList[curReadIndex] =
                                                             (dataInputStream.readByte()
-                                                                .toFloat()) / 127.0f
+                                                                .toFloat()) / 127f
                                                         normalList[curReadIndex + 1] =
                                                             (dataInputStream.readByte()
-                                                                .toFloat()) / 127.0f
+                                                                .toFloat()) / 127f
                                                         normalList[curReadIndex + 2] =
                                                             (dataInputStream.readByte()
-                                                                .toFloat()) / 127.0f
+                                                                .toFloat()) / 127f
                                                         curReadIndex += 3
                                                     } else {
                                                         normalList[curReadIndex] =
@@ -407,7 +407,7 @@ class Mesh {
             }
             val firstFrameOffset = (this.numElements * frameNum) * 3
             val blendFrameOffset = (this.numElements * frameBlendNum) * 3
-            val oneminusblend = 1.0f - blendAmount
+            val oneminusblend = 1f - blendAmount
             var i = 0
             val c = bufScratch!!.capacity()
             while (i < c) {

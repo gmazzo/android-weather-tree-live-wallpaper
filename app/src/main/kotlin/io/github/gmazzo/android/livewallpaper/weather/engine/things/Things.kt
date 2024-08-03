@@ -70,10 +70,10 @@ class Things @Inject constructor(
                 cloud.scale.let { it.copy(x = it.x * -1f) }
             }
             cloud.origin = Vector(
-                x = ((which.toFloat()) * (90.0f / (numClouds.toFloat()))) - 0.099609375f,
-                z = Random.nextFloat(-20.0f, -10.0f)
+                x = ((which.toFloat()) * (90f / (numClouds.toFloat()))) - .099609375f,
+                z = Random.nextFloat(-20f, -10f)
             )
-            cloud.velocity = Vector(WIND_SPEED * 1.5f, 0.0f, 0.0f)
+            cloud.velocity = Vector(WIND_SPEED * 1.5f, 0f, 0f)
             return@syncInstances cloud
         }
         if (changed) {
@@ -91,16 +91,16 @@ class Things @Inject constructor(
     fun spawnWisps(numWisps: Int) = syncInstances(ThingWispy::class, numWisps) { which ->
         val wispy = wispyFactory.create(which)
 
-        wispy.velocity = Vector(WIND_SPEED * 1.5f, 0.0f, 0.0f)
+        wispy.velocity = Vector(WIND_SPEED * 1.5f, 0f, 0f)
         wispy.scale = Vector(
-            x = Random.nextFloat(1.0f, 3.0f),
-            y = 1.0f,
-            z = Random.nextFloat(1.0f, 1.5f)
+            x = Random.nextFloat(1f, 3f),
+            y = 1f,
+            z = Random.nextFloat(1f, 1.5f)
         )
         wispy.origin = Vector(
-            x = ((which.toFloat()) * (120.0f / (numWisps.toFloat()))) - 0.0703125f,
+            x = ((which.toFloat()) * (120f / (numWisps.toFloat()))) - .0703125f,
             y = Random.nextFloat(87.5f, CLOUD_START_DISTANCE),
-            z = Random.nextFloat(-40.0f, -20.0f),
+            z = Random.nextFloat(-40f, -20f),
         )
         return@syncInstances wispy
     }
@@ -140,7 +140,7 @@ class Things @Inject constructor(
 
     companion object {
         const val WIND_SPEED = 3 * .5f
-        private const val CLOUD_START_DISTANCE = 175.0f
+        private const val CLOUD_START_DISTANCE = 175f
     }
 
 }

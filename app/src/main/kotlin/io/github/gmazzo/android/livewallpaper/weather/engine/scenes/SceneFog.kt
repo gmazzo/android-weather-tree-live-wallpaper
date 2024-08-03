@@ -51,7 +51,7 @@ class SceneFog @Inject constructor(
     )
 
     private val fogColors =
-        floatArrayOf(0.8f, 0.8f, 0.8f, 1.0f)
+        floatArrayOf(.8f, .8f, .8f, 1f)
 
     override fun update(state: WeatherState) {
         super.update(state)
@@ -73,11 +73,11 @@ class SceneFog @Inject constructor(
         gl.glFogf(GL_FOG_MODE, GL_LINEAR.toFloat())
         gl.glFogfv(GL_FOG_COLOR, fogColors, 0)
         gl.glFogf(GL_FOG_DENSITY, FOG_DENSITY)
-        gl.glFogf(GL_FOG_START, -10.0f)
-        gl.glFogf(GL_FOG_END, 190.0f)
-        gl.glFogf(GL_FOG_HINT, 4352.0f)
+        gl.glFogf(GL_FOG_START, -10f)
+        gl.glFogf(GL_FOG_END, 190f)
+        gl.glFogf(GL_FOG_HINT, 4352f)
         renderBackground()
-        gl.glTranslatef(0.0f, 0.0f, 40.0f)
+        gl.glTranslatef(0f, 0f, 40f)
         gl.glDisable(GL_FOG)
 
         things.render()
@@ -88,15 +88,15 @@ class SceneFog @Inject constructor(
         gl.glBindTexture(GL_TEXTURE_2D, textures[R.drawable.bg1].glId)
         gl.glColor4f(timeOfDayTint.color.r, timeOfDayTint.color.g, timeOfDayTint.color.b, 1f)
         gl.glMatrixMode(GL_MODELVIEW)
-        gl.glTranslatef(0.0f, 250.0f, 35.0f)
-        gl.glScalef(bgPadding * 2.0f, bgPadding, bgPadding)
+        gl.glTranslatef(0f, 250f, 35f)
+        gl.glScalef(bgPadding * 2f, bgPadding, bgPadding)
         gl.glMatrixMode(GL_TEXTURE)
 
         pushMatrix {
             gl.glTranslatef(
-                ((WIND_SPEED * time.deltaSeconds) * -0.005f) % 1.0f,
-                0.0f,
-                0.0f
+                ((WIND_SPEED * time.deltaSeconds) * -.005f) % 1f,
+                0f,
+                0f
             )
             val model = models[R.raw.plane_16x16]
             model.render()
