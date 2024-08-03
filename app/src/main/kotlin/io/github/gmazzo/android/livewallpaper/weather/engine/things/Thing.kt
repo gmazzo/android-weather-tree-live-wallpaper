@@ -18,21 +18,19 @@ sealed class Thing(
     protected val gl: GL11,
 ) {
     protected abstract val engineColor: EngineColor?
-    var isDeleted: Boolean = false
+    var deleted: Boolean = false
         private set
     var origin = Vector()
     protected var timeElapsed = 0f
     var scale: Vector = Vector(1f)
     var velocity: Vector? = null
-    private val visScratch = Vector()
-    var visWidth = 3f
 
     protected abstract val model: Model
 
     protected abstract val texture: Texture
 
     fun delete() {
-        isDeleted = true
+        deleted = true
     }
 
     open fun render() = gl.pushMatrix {

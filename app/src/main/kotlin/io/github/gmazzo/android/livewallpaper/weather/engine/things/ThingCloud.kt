@@ -35,7 +35,6 @@ class ThingCloud @AssistedInject constructor(
     override val engineColor = EngineColor(1f, 1f, 1f, 1f)
 
     init {
-        visWidth = 0f
         origin = Vector(-100f, 15f, 50f)
     }
 

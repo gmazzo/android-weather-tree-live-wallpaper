@@ -37,7 +37,7 @@ class Things @Inject constructor(
         while (hasNext()) {
             val thing = next()
 
-            if (thing.isDeleted) {
+            if (thing.deleted) {
                 remove()
 
             } else {
