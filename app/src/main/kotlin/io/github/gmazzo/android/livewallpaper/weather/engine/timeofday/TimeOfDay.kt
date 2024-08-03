@@ -34,7 +34,7 @@ class TimeOfDay @Inject constructor(
     var moonPosition: Float = 0f
 
     fun update() {
-        val now = time.now.value
+        val now = time.time.value
         val minutes = now.minutesSinceMidnight
         val location = state.value.location
 

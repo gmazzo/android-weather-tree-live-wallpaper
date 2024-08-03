@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -25,13 +26,20 @@ open class GlobalTime(
     var elapsedSeconds = 0f
         private set
 
-    fun update(delta: Long = System.currentTimeMillis() - currentMillis) {
+    fun update() {
+        val now = ZonedDateTime.now()
+        val delta = ChronoUnit.MILLIS.between(this.time.value, now)
+
+        update(now, delta)
+    }
+
+    private fun update(now: ZonedDateTime, delta: Long) {
         currentMillis += delta * timeScale
         deltaSeconds = (delta / 1000f).coerceIn(0f, 1f / 3f)
         elapsedSeconds += deltaSeconds
-        now.value = computeNow()
+        time.value = computeNow()
 
-        derived?.update(delta)
+        derived?.update(now, delta)
     }
 
     private val zoneId = ZoneId.systemDefault()
@@ -39,7 +47,7 @@ open class GlobalTime(
     private fun computeNow() =
         ZonedDateTime.ofInstant(Instant.ofEpochMilli(currentMillis), zoneId)
 
-    val now = MutableStateFlow<ZonedDateTime>(computeNow())
+    val time = MutableStateFlow<ZonedDateTime>(computeNow())
 
     @Singleton
     class Fast @Inject constructor(
