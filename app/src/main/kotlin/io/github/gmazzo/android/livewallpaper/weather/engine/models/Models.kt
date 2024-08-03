@@ -83,7 +83,7 @@ class Models @Inject constructor(
         elementsCount: Int,
         framesCount: Int
     ) = models.getOrPut(rawId) {
-        val animated = framesCount > 0
+        val animated = framesCount > 1
 
         val frames = Array(framesCount) { i ->
             val bufVertex = (elementsCount * 3).asDirectFloatBuffer().apply {

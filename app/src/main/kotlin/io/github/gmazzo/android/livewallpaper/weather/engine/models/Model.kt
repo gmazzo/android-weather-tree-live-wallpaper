@@ -94,6 +94,7 @@ open class Model internal constructor(
         gl.glDeleteBuffers(ids.size, ids, 0)
     }
 
+    // TODO this supposed to replace Mesh
     open fun asMesh() = Mesh().also { mesh ->
         mesh.meshName = "resource:$resId"
         mesh.numIndices = indicesCount

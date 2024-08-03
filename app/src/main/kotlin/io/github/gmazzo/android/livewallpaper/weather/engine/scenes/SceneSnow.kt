@@ -13,9 +13,6 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDay
 import javax.inject.Inject
 import javax.inject.Provider
 import javax.microedition.khronos.opengles.GL10
-import javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT
-import javax.microedition.khronos.opengles.GL10.GL_LIGHT1
-import javax.microedition.khronos.opengles.GL10.GL_LIGHTING
 import javax.microedition.khronos.opengles.GL10.GL_MODELVIEW
 import javax.microedition.khronos.opengles.GL10.GL_TEXTURE
 import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D
@@ -43,9 +40,6 @@ class SceneSnow @Inject constructor(
     override fun draw() {
         super.draw()
 
-        gl.glDisable(GL_COLOR_BUFFER_BIT)
-        gl.glDisable(GL_LIGHT1)
-        gl.glDisable(GL_LIGHTING)
         gl.glMatrixMode(GL_MODELVIEW)
         gl.glLoadIdentity()
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA)

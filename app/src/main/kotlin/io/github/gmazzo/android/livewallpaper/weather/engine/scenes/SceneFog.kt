@@ -2,7 +2,6 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 
 import android.content.res.Resources
 import io.github.gmazzo.android.livewallpaper.weather.R
-import io.github.gmazzo.android.livewallpaper.weather.WeatherState
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
@@ -14,7 +13,6 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDay
 import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDayTint
 import javax.inject.Inject
 import javax.microedition.khronos.opengles.GL10
-import javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT
 import javax.microedition.khronos.opengles.GL10.GL_FOG
 import javax.microedition.khronos.opengles.GL10.GL_FOG_COLOR
 import javax.microedition.khronos.opengles.GL10.GL_FOG_DENSITY
@@ -22,8 +20,6 @@ import javax.microedition.khronos.opengles.GL10.GL_FOG_END
 import javax.microedition.khronos.opengles.GL10.GL_FOG_HINT
 import javax.microedition.khronos.opengles.GL10.GL_FOG_MODE
 import javax.microedition.khronos.opengles.GL10.GL_FOG_START
-import javax.microedition.khronos.opengles.GL10.GL_LIGHT1
-import javax.microedition.khronos.opengles.GL10.GL_LIGHTING
 import javax.microedition.khronos.opengles.GL10.GL_LINEAR
 import javax.microedition.khronos.opengles.GL10.GL_MODELVIEW
 import javax.microedition.khronos.opengles.GL10.GL_TEXTURE
@@ -53,19 +49,12 @@ class SceneFog @Inject constructor(
     private val fogColors =
         floatArrayOf(.8f, .8f, .8f, 1f)
 
-    override fun update(state: WeatherState) {
-        super.update(state)
-
-        timeOfDayTint.update(fogEngineColorFinal, fogTimeOfDayColors)
-        fogEngineColorFinal.setToArray(fogColors)
-    }
-
     override fun draw() {
         super.draw()
 
-        gl.glDisable(GL_COLOR_BUFFER_BIT)
-        gl.glDisable(GL_LIGHT1)
-        gl.glDisable(GL_LIGHTING)
+        timeOfDayTint.update(fogEngineColorFinal, fogTimeOfDayColors)
+        fogEngineColorFinal.setToArray(fogColors)
+
         gl.glMatrixMode(GL_MODELVIEW)
         gl.glLoadIdentity()
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA)
@@ -78,10 +67,13 @@ class SceneFog @Inject constructor(
         gl.glFogf(GL_FOG_HINT, 4352f)
         renderBackground()
         gl.glTranslatef(0f, 0f, 40f)
-        gl.glDisable(GL_FOG)
 
+        gl.glDisable(GL_FOG)
         things.render()
+
+        gl.glEnable(GL_FOG)
         drawTree()
+        gl.glDisable(GL_FOG)
     }
 
     private fun renderBackground() = gl.pushMatrix {
