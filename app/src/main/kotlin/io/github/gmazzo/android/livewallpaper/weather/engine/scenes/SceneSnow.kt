@@ -44,6 +44,8 @@ class SceneSnow @Inject constructor(
         gl.glLoadIdentity()
         gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA)
         renderBackground(time.elapsedSeconds)
+
+        gl.glMatrixMode(GL_MODELVIEW)
         gl.glTranslatef(0f, 0f, 40f)
 
         things.render()
@@ -57,16 +59,14 @@ class SceneSnow @Inject constructor(
         it.render(snowPositions[i])
     }
 
-    private fun renderBackground(timeDelta: Float) = gl.pushMatrix {
+    private fun renderBackground(timeDelta: Float) = gl.pushMatrix(GL_MODELVIEW) {
         gl.glBindTexture(GL_TEXTURE_2D, textures[R.drawable.bg2].glId)
         gl.glColor4f(timeOfDayTint.color.r, timeOfDayTint.color.g, timeOfDayTint.color.b, 1f)
-        gl.glMatrixMode(GL_MODELVIEW)
 
         gl.glTranslatef(0f, 250f, 35f)
         gl.glScalef(bgPadding * 2f, bgPadding, bgPadding)
-        gl.glMatrixMode(GL_TEXTURE)
 
-        gl.pushMatrix {
+        gl.pushMatrix(GL_TEXTURE) {
             gl.glTranslatef(
                 ((WIND_SPEED * timeDelta) * -.005f) % 1f,
                 0f,
@@ -75,8 +75,6 @@ class SceneSnow @Inject constructor(
             val mesh = models[R.raw.plane_16x16]
             mesh.render()
         }
-
-        gl.glMatrixMode(GL_MODELVIEW)
     }
 
 }

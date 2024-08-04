@@ -76,6 +76,8 @@ class SceneStorm @Inject constructor(
         gl.glLoadIdentity()
         gl.glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA)
         renderBackground(time.elapsedSeconds)
+
+        gl.glMatrixMode(GL_MODELVIEW)
         renderRain(time.deltaSeconds)
         checkForLightning(time.deltaSeconds)
         updateLightValues(time.deltaSeconds)
@@ -85,16 +87,14 @@ class SceneStorm @Inject constructor(
         drawTree()
     }
 
-    private fun renderBackground(timeDelta: Float) = gl.pushMatrix {
+    private fun renderBackground(timeDelta: Float) = gl.pushMatrix(GL_MODELVIEW) {
         gl.glBindTexture(GL_TEXTURE_2D, stormBg.glId)
         gl.glColor4f(timeOfDayTint.color.r, timeOfDayTint.color.g, timeOfDayTint.color.b, 1f)
-        gl.glMatrixMode(GL_MODELVIEW)
 
         gl.glTranslatef(0f, 250f, 35f)
         gl.glScalef(bgPadding * 2f, bgPadding, bgPadding)
-        gl.glMatrixMode(GL_TEXTURE)
 
-        pushMatrix {
+        pushMatrix(GL_TEXTURE) {
             gl.glTranslatef(
                 ((WIND_SPEED * timeDelta) * -.005f) % 1f,
                 0f,
@@ -109,12 +109,9 @@ class SceneStorm @Inject constructor(
             mesh.render()
             gl.glDisable(GL_LIGHT1)
         }
-
-        gl.glMatrixMode(GL_MODELVIEW)
     }
 
-    private fun renderRain(timeDelta: Float) = gl.pushMatrix {
-        gl.glMatrixMode(GL_MODELVIEW)
+    private fun renderRain(timeDelta: Float) = gl.pushMatrix(GL_MODELVIEW) {
         gl.glTranslatef(0f, 0f, -5f)
         gl.glColor4f(1f, 1f, 1f, 1f)
         particles.update(timeDelta)

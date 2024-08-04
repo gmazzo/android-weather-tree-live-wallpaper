@@ -48,7 +48,7 @@ class ThingSun @Inject constructor(
             gl.glTranslatef(-.5f, -.5f, 0f)
             model.renderFrameMultiTexture(sunBlend, texture, GL_MODULATE, false)
         }
-        gl.glMatrixMode(GL_MODELVIEW)
+        //gl.glMatrixMode(GL_MODELVIEW)
     }
 
     override fun update() {

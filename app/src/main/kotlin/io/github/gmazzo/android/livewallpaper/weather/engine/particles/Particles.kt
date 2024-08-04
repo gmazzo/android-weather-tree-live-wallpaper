@@ -62,20 +62,10 @@ sealed class Particles(
         lateinit var startScale: Vector
         lateinit var startVelocity: Vector
 
-        fun render() = gl.pushMatrix {
-            gl.glMatrixMode(GL_MODELVIEW)
-            gl.glTranslatef(
-                position.x,
-                position.y,
-                position.z
-            )
+        fun render() = gl.pushMatrix(GL_MODELVIEW) {
+            gl.glTranslatef(position.x, position.y, position.z)
             if (useColor) {
-                gl.glColor4f(
-                    color.r,
-                    color.g,
-                    color.b,
-                    color.a
-                )
+                gl.glColor4f(color.r, color.g, color.b, color.a)
             }
             if (useScale) {
                 gl.glScalef(scale.x, scale.y, scale.z)
@@ -164,9 +154,8 @@ sealed class Particles(
         particle.alive = true
     }
 
-    fun render(systemOrigin: Vector?, direction: Vector? = null) = gl.pushMatrix {
+    fun render(systemOrigin: Vector?, direction: Vector? = null) = gl.pushMatrix(GL_MODELVIEW) {
         gl.glBindTexture(GL_TEXTURE_2D, texture.glId)
-        gl.glMatrixMode(GL_MODELVIEW)
         gl.glTranslatef(systemOrigin!!.x, systemOrigin.y, systemOrigin.z)
         if (!(direction == null || flowDirection == null)) {
             handleOrientation(direction)

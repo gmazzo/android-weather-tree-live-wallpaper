@@ -12,6 +12,7 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL10.GL_LIGHTING
+import javax.microedition.khronos.opengles.GL10.GL_MODELVIEW
 import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D
 import javax.microedition.khronos.opengles.GL11
 import kotlin.random.Random
@@ -35,8 +36,7 @@ class ThingDarkCloud @AssistedInject constructor(
 
     private var flashIntensity = 0f
 
-    // FIXME clouds are darker after 6399f93043745b9fb8797af48f4f6bcda294576f
-    override fun render() = gl.pushMatrix {
+     override fun render() = gl.pushMatrix(GL_MODELVIEW) {
         super.render()
 
         if (withFlare && flashIntensity > 0f) {

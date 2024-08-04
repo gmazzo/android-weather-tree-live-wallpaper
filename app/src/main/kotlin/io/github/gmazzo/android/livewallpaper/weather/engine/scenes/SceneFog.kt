@@ -66,6 +66,8 @@ class SceneFog @Inject constructor(
         gl.glFogf(GL_FOG_END, 190f)
         gl.glFogf(GL_FOG_HINT, 4352f)
         renderBackground()
+
+        gl.glMatrixMode(GL_MODELVIEW)
         gl.glTranslatef(0f, 0f, 40f)
 
         gl.glDisable(GL_FOG)
@@ -76,15 +78,14 @@ class SceneFog @Inject constructor(
         gl.glDisable(GL_FOG)
     }
 
-    private fun renderBackground() = gl.pushMatrix {
+    private fun renderBackground() = gl.pushMatrix(GL_MODELVIEW) {
         gl.glBindTexture(GL_TEXTURE_2D, textures[R.drawable.bg1].glId)
         gl.glColor4f(timeOfDayTint.color.r, timeOfDayTint.color.g, timeOfDayTint.color.b, 1f)
-        gl.glMatrixMode(GL_MODELVIEW)
+
         gl.glTranslatef(0f, 250f, 35f)
         gl.glScalef(bgPadding * 2f, bgPadding, bgPadding)
-        gl.glMatrixMode(GL_TEXTURE)
 
-        pushMatrix {
+        pushMatrix(GL_TEXTURE) {
             gl.glTranslatef(
                 ((WIND_SPEED * time.deltaSeconds) * -.005f) % 1f,
                 0f,
@@ -93,8 +94,6 @@ class SceneFog @Inject constructor(
             val model = models[R.raw.plane_16x16]
             model.render()
         }
-
-        gl.glMatrixMode(GL_MODELVIEW)
     }
 
     companion object {

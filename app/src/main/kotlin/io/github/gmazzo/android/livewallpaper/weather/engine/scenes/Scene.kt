@@ -58,7 +58,7 @@ sealed class Scene(
         things.spawnWisps(state.weatherType.wisps)
     }
 
-    protected fun drawTree() = gl.pushMatrix {
+    protected fun drawTree() = gl.pushMatrix(GL_MODELVIEW) {
         if (treeAnim && treesAnim.count > 0) {
             treesAnimateDelay -= time.deltaSeconds
 
@@ -72,7 +72,6 @@ sealed class Scene(
         val treeTerrain = models[R.raw.trees_overlay_terrain]
         val treesOverlay = textures[R.drawable.trees_overlay]
         gl.glBindTexture(GL_TEXTURE_2D, treesOverlay.glId)
-        gl.glMatrixMode(GL_MODELVIEW)
 
         if (landscape) gl.glTranslatef(2f, 70f, -65f)
         else gl.glTranslatef(-8f, 70f, -70f)
