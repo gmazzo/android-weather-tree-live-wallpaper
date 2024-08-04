@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="timeOfDay_dawn">#ffba94</color>
-    <color name="timeOfDay_day">#ffffff</color>
-    <color name="timeOfDay_dusk">#ffd9bf</color>
-    <color name="timeOfDay_night">#8080bf</color>
+    <color name="timeOfDay_sunrise">#ffba94</color>
+    <color name="timeOfDay_midday">#ffffff</color>
+    <color name="timeOfDay_noon">#ffd9bf</color>
+    <color name="timeOfDay_sunset">#8080bf</color>
 
-    <color name="timeOfDay_rain_dawn">#999999</color>
-    <color name="timeOfDay_rain_day">#e6e6e6</color>
-    <color name="timeOfDay_rain_dusk">#a69999</color>
-    <color name="timeOfDay_rain_night">#403333</color>
+    <color name="timeOfDay_rain_sunrise">#999999</color>
+    <color name="timeOfDay_rain_midday">#e6e6e6</color>
+    <color name="timeOfDay_rain_noon">#a69999</color>
+    <color name="timeOfDay_rain_sunset">#403333</color>
 
-    <color name="timeOfDay_fog_dawn">#808080</color>
-    <color name="timeOfDay_fog_day">#cccccc</color>
-    <color name="timeOfDay_fog_dusk">#808080</color>
-    <color name="timeOfDay_fog_night">#333333</color>
+    <color name="timeOfDay_fog_sunrise">#808080</color>
+    <color name="timeOfDay_fog_midday">#cccccc</color>
+    <color name="timeOfDay_fog_noon">#808080</color>
+    <color name="timeOfDay_fog_sunset">#333333</color>
 
 </resources>

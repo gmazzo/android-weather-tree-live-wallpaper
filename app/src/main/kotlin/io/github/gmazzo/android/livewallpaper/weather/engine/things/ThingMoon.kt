@@ -2,7 +2,6 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.things
 
 import androidx.annotation.DrawableRes
 import io.github.gmazzo.android.livewallpaper.weather.R
-import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
@@ -13,7 +12,8 @@ import org.shredzone.commons.suncalc.MoonPhase
 import java.time.Duration
 import java.time.ZonedDateTime
 import javax.inject.Inject
-import javax.microedition.khronos.opengles.GL10
+import javax.microedition.khronos.opengles.GL10.GL_ONE_MINUS_SRC_ALPHA
+import javax.microedition.khronos.opengles.GL10.GL_SRC_ALPHA
 import javax.microedition.khronos.opengles.GL11
 import kotlin.math.min
 
@@ -25,19 +25,14 @@ class ThingMoon @Inject constructor(
     private val timeOfDay: TimeOfDay,
 ) : Thing(gl, models[R.raw.plane_16x16], textures[PHASES[0]]) {
 
-    override val engineColor = EngineColor(1f, 1f, 1f, 1f)
-
     override lateinit var texture: Texture
 
     private var recalculateAt: ZonedDateTime? = null
 
     private lateinit var phases: List<Phase>
 
-    override fun render() {
-        gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA)
-
-        super.render()
-    }
+    override fun render() =
+        super.render(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
     override fun update() {
         super.update()
@@ -66,7 +61,7 @@ class ThingMoon @Inject constructor(
         scale = Vector(phase.scale)
 
         val altitude = timeOfDay.moonPosition * 175f
-        engineColor.a = (altitude / 25f).coerceIn(0f, 1f)
+        color.a = (altitude / 25f).coerceIn(0f, 1f)
         origin = origin.copy(z = min(altitude - 80f, 0f))
     }
 

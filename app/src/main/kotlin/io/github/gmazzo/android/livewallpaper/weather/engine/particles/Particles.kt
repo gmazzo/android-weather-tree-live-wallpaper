@@ -1,11 +1,13 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.particles
 
+import android.graphics.Color
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Model
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Texture
+import io.github.gmazzo.android.livewallpaper.weather.engine.withColor
 import javax.inject.Inject
 import javax.microedition.khronos.opengles.GL10.GL_MODELVIEW
 import javax.microedition.khronos.opengles.GL10.GL_ONE
@@ -33,7 +35,6 @@ sealed class Particles(
     private var numParticles = 0
     private val particles = (0..MAX_PARTICLES).map { Particle() }.toTypedArray()
     private var timeSinceLastSpawn = 0f
-    private var useColor = true
     private var animFrameOffset = 0
     private var animFrameRate = 20f
     private var animLastFrame = 0
@@ -41,8 +42,8 @@ sealed class Particles(
     private var flowDirection: Vector? = null
     private var orientScratch = Vector()
     private var spawnBurst = 0
-    protected val destEngineColor = EngineColor(1f, 1f, 1f, 1f)
-    protected val startEngineColor = EngineColor(1f, 1f, 1f, 1f)
+    protected val destEngineColor = EngineColor(Color.WHITE)
+    protected val startEngineColor = EngineColor(Color.WHITE)
 
     inner class Particle {
         private var angle = 0f
@@ -64,9 +65,6 @@ sealed class Particles(
 
         fun render() = gl.pushMatrix(GL_MODELVIEW) {
             gl.glTranslatef(position.x, position.y, position.z)
-            if (useColor) {
-                gl.glColor4f(color.r, color.g, color.b, color.a)
-            }
             if (useScale) {
                 gl.glScalef(scale.x, scale.y, scale.z)
             }
@@ -74,7 +72,9 @@ sealed class Particles(
                 gl.glRotatef(angle, 0f, 1f, 0f)
             }
 
-            model.render()
+            withColor(color) {
+                model.render()
+            }
         }
 
         @Inject
@@ -105,14 +105,13 @@ sealed class Particles(
             val percentage = timeElapsed / lifetime
             val invPercentage = 1f - percentage
             updateVelocity(percentage, invPercentage)
-            if (useColor) {
-                color.set(
-                    (startEngineColor.r * invPercentage) + (destEngineColor.r * percentage),
-                    (startEngineColor.g * invPercentage) + (destEngineColor.g * percentage),
-                    (startEngineColor.b * invPercentage) + (destEngineColor.b * percentage),
-                    (startEngineColor.a * invPercentage) + (destEngineColor.a * percentage)
-                )
-            }
+
+            color.set(
+                (startEngineColor.r * invPercentage) + (destEngineColor.r * percentage),
+                (startEngineColor.g * invPercentage) + (destEngineColor.g * percentage),
+                (startEngineColor.b * invPercentage) + (destEngineColor.b * percentage),
+                (startEngineColor.a * invPercentage) + (destEngineColor.a * percentage)
+            )
             if (useScale) {
                 scale = Vector(
                     (startScale.x * invPercentage) + (destScale.x * percentage),
@@ -168,10 +167,8 @@ sealed class Particles(
             }
         }
 
-
         gl.glBindBuffer(GL11.GL_ARRAY_BUFFER, 0)
         gl.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, 0)
-        gl.glColor4f(1f, 1f, 1f, 1f)
     }
 
     open fun update(timeDelta: Float) {

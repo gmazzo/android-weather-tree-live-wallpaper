@@ -5,12 +5,15 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
+import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
-import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDayTint
-import javax.microedition.khronos.opengles.GL10
+import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things.Companion.WIND_SPEED
+import javax.inject.Named
+import javax.microedition.khronos.opengles.GL10.GL_ONE_MINUS_SRC_ALPHA
+import javax.microedition.khronos.opengles.GL10.GL_SRC_ALPHA
 import javax.microedition.khronos.opengles.GL11
 import kotlin.random.Random
 
@@ -18,36 +21,28 @@ class ThingWispy @AssistedInject constructor(
     gl: GL11,
     models: Models,
     textures: Textures,
-    private val timeOfDayTint: TimeOfDayTint,
+    time: GlobalTime,
+    @Named("clouds") override val color: EngineColor,
     @Assisted which: Int,
-) : Thing(gl, models[R.raw.plane_16x16], textures[WISPY_TEXTURES[which % WISPY_TEXTURES.size]]) {
-
-    override val engineColor: EngineColor? = null
+) : ThingMoving(
+    gl,
+    models[R.raw.plane_16x16],
+    textures[WISPY_TEXTURES[which % WISPY_TEXTURES.size]],
+    time,
+    velocity = Vector(WIND_SPEED / 2, 0f, 0f),
+) {
 
     init {
+        foreground = true
         scale = Vector(
             x = Random.nextFloat(1f, 3f),
             y = 1f,
             z = Random.nextFloat(1f, 1.5f)
         )
-        origin = Vector(
-            x = 0f,
-            y = Random.nextFloat(87.5f, 175f),
-            z = Random.nextFloat(-40f, -20f),
-        )
     }
 
-    override fun render() {
-        gl.glColor4f(
-            timeOfDayTint.color.r,
-            timeOfDayTint.color.g,
-            timeOfDayTint.color.b,
-            (timeOfDayTint.color.r + timeOfDayTint.color.g) + (timeOfDayTint.color.b / 3f)
-        )
-        gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA)
-
-        super.render()
-    }
+    override fun render() =
+        super.render(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
     override fun update() {
         super.update()

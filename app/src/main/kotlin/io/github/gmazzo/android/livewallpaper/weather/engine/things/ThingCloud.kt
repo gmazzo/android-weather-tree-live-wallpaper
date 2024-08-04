@@ -7,8 +7,7 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Model
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Texture
-import javax.microedition.khronos.opengles.GL10.GL_ONE
-import javax.microedition.khronos.opengles.GL10.GL_ONE_MINUS_SRC_ALPHA
+import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things.Companion.WIND_SPEED
 import javax.microedition.khronos.opengles.GL11
 import kotlin.math.absoluteValue
 import kotlin.random.Random
@@ -18,10 +17,11 @@ sealed class ThingCloud(
     model: Model,
     texture: Texture,
     time: GlobalTime,
-    private val cloudColor: EngineColor,
-) : ThingMoving(gl, model, texture, time) {
-
-    final override val engineColor = EngineColor()
+    private val cloudsColor: EngineColor,
+) : ThingMoving(
+    gl, model, texture, time,
+    velocity = Vector(WIND_SPEED * 1.5f, 0f, 0f),
+) {
 
     init {
         scale = Vector(
@@ -29,12 +29,6 @@ sealed class ThingCloud(
             3f,
             3.5f + Random.nextFloat(0f, 2f)
         )
-    }
-
-    override fun render() {
-        gl.glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA)
-
-        super.render()
     }
 
     override fun update() {
@@ -46,14 +40,18 @@ sealed class ThingCloud(
             timeElapsed = 0f
         }
 
-        engineColor.set(cloudColor)
+        color.set(cloudsColor, color.a)
 
         if (timeElapsed < 2f) {
-            val alpha = timeElapsed * .5f
+            val alpha = (timeElapsed * .5f).coerceIn(0f, 1f)
 
-            engineColor *= alpha
-            engineColor.a = alpha
+            color *= alpha
+            color.a = alpha
         }
+    }
+
+    interface Factory<Type : ThingCloud> {
+        fun create(which: Int): Type
     }
 
     companion object {

@@ -4,10 +4,11 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.github.gmazzo.android.livewallpaper.weather.R
+import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
-import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDayTint
+import javax.inject.Named
 import javax.microedition.khronos.opengles.GL11
 
 open class ThingLightCloud @AssistedInject constructor(
@@ -15,20 +16,18 @@ open class ThingLightCloud @AssistedInject constructor(
     models: Models,
     textures: Textures,
     time: GlobalTime,
-    private val timeOfDayTint: TimeOfDayTint,
+    @Named("clouds") cloudsColor: EngineColor,
     @Assisted which: Int,
 ) : ThingCloud(
     gl,
     models[MODELS[which % MODELS.size]],
     textures[TEXTURES[which % TEXTURES.size]],
     time,
-    cloudColor = timeOfDayTint.color
+    cloudsColor,
 ) {
 
     @AssistedFactory
-    interface Factory {
-        fun create(which: Int): ThingLightCloud
-    }
+    interface Factory : ThingCloud.Factory<ThingLightCloud>
 
     companion object {
         private val TEXTURES = intArrayOf(

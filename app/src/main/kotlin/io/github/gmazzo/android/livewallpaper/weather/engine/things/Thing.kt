@@ -2,21 +2,29 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.things
 
 import androidx.annotation.CallSuper
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
+import io.github.gmazzo.android.livewallpaper.weather.engine.GLBlendFactor
+import io.github.gmazzo.android.livewallpaper.weather.engine.GLFlags
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Model
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Texture
+import io.github.gmazzo.android.livewallpaper.weather.engine.withColor
 import javax.microedition.khronos.opengles.GL10.GL_MODELVIEW
+import javax.microedition.khronos.opengles.GL10.GL_ONE
+import javax.microedition.khronos.opengles.GL10.GL_ONE_MINUS_SRC_ALPHA
+import javax.microedition.khronos.opengles.GL10.GL_TEXTURE
 import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D
 import javax.microedition.khronos.opengles.GL11
 
 sealed class Thing(
     protected val gl: GL11,
-    val model: Model,
-    open val texture: Texture,
+    protected val model: Model,
+    protected open val texture: Texture,
 ) {
 
-    protected abstract val engineColor: EngineColor?
+    var foreground: Boolean = false
+
+    open val color: EngineColor = EngineColor()
 
     var deleted: Boolean = false
         private set
@@ -29,16 +37,23 @@ sealed class Thing(
         deleted = true
     }
 
-    open fun render() = gl.pushMatrix(GL_MODELVIEW) {
+    open fun render() =
+        render(GL_ONE, GL_ONE_MINUS_SRC_ALPHA)
+
+    protected fun render(
+        @GLFlags sourceBlendFactor: Int,
+        @GLBlendFactor destBlendFactor: Int,
+    ) = gl.pushMatrix(GL_MODELVIEW) {
         gl.glTranslatef(origin.x, origin.y, origin.z)
         gl.glScalef(scale.x, scale.y, scale.z)
 
-        engineColor?.let { gl.glColor4f(it.r, it.g, it.b, it.a) }
-        gl.glBindTexture(GL_TEXTURE_2D, texture.glId)
-        model.render()
+        pushMatrix(GL_TEXTURE) {
+            gl.glBlendFunc(sourceBlendFactor, destBlendFactor)
+            gl.glBindTexture(GL_TEXTURE_2D, texture.glId)
 
-        if (engineColor != null) {
-            gl.glColor4f(1f, 1f, 1f, 1f)
+            withColor(color) {
+                model.render()
+            }
         }
     }
 

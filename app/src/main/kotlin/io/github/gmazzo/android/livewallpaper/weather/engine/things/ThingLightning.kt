@@ -1,16 +1,18 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.things
 
 import io.github.gmazzo.android.livewallpaper.weather.R
-import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
+import io.github.gmazzo.android.livewallpaper.weather.engine.withColor
+import io.github.gmazzo.android.livewallpaper.weather.engine.withFlags
 import javax.inject.Inject
-import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT
 import javax.microedition.khronos.opengles.GL10.GL_LIGHTING
 import javax.microedition.khronos.opengles.GL10.GL_MODELVIEW
+import javax.microedition.khronos.opengles.GL10.GL_ONE
+import javax.microedition.khronos.opengles.GL10.GL_SRC_ALPHA
 import javax.microedition.khronos.opengles.GL11
 import kotlin.random.Random
 
@@ -21,29 +23,25 @@ class ThingLightning @Inject constructor(
     private val time: GlobalTime,
 ) : Thing(gl, models[MODELS[Random.nextInt(MODELS.size)]], textures[R.raw.lightning_pieces_core]) {
 
-    override val engineColor = EngineColor(1f, 1f, 1f, 1f)
-
     private val glow = textures[R.raw.lightning_pieces_glow]
 
-    override fun render() = gl.pushMatrix(GL_MODELVIEW) {
-        gl.glEnable(GL_LIGHTING)
-        gl.glEnable(GL_COLOR_BUFFER_BIT)
+    override fun render() = gl.withFlags(GL_LIGHTING, GL_COLOR_BUFFER_BIT) {
+        pushMatrix(GL_MODELVIEW) {
+            gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE)
+            gl.glTranslatef(origin.x, origin.y, origin.z)
+            gl.glScalef(scale.x, scale.x, scale.x)
 
-        gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE)
-        gl.glTranslatef(origin.x, origin.y, origin.z)
-        gl.glScalef(scale.x, scale.x, scale.x)
-        gl.glColor4f(engineColor.r, engineColor.g, engineColor.b, engineColor.a)
-        model.renderFrameMultiTexture(glow, texture, 260, false)
-
-        gl.glDisable(GL_COLOR_BUFFER_BIT)
-        gl.glDisable(GL_LIGHTING)
+            withColor(color) {
+                model.renderFrameMultiTexture(glow, texture, 260, false)
+            }
+        }
     }
 
     override fun update() {
         super.update()
 
-        engineColor.a -= 2f * time.deltaSeconds
-        if (engineColor.a <= 0f) {
+        color.a -= 2f * time.deltaSeconds
+        if (color.a <= 0f) {
             delete()
         }
     }

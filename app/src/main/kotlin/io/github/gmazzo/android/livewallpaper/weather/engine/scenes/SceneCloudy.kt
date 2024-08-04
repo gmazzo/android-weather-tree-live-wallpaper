@@ -18,8 +18,8 @@ class SceneCloudy @Inject constructor(
     things: Things,
     timeOfDay: TimeOfDay,
     timeOfDayTint: TimeOfDayTint,
-) : SceneClear(time, gl, models, textures, things, timeOfDay, timeOfDayTint) {
-
-    override val backgroundId = R.drawable.bg1
-
-}
+) : Scene(
+    time, gl, models, textures, things, timeOfDay, timeOfDayTint, R.drawable.bg1,
+    withSunAndMoon = true,
+    withStars = true
+)

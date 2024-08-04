@@ -9,8 +9,7 @@ import kotlin.random.Random
 class Things @Inject constructor(
     private val sunProvider: Provider<ThingSun>,
     private val moonProvider: Provider<ThingMoon>,
-    private val cloudLightFactory: ThingLightCloud.Factory,
-    private val cloudDarkFactory: ThingDarkCloud.Factory,
+    private val cloudFactory: ThingCloud.Factory<*>,
     private val wispyFactory: ThingWispy.Factory,
 ) {
 
@@ -29,8 +28,11 @@ class Things @Inject constructor(
         noinline init: ((Type) -> Unit)? = null
     ) = items.firstOrNull { it is Type } ?: provider().also { init?.invoke(it); add(it) }
 
-    fun render() =
-        items.forEach(Thing::render)
+    fun render(foreground: Boolean? = null) = items.forEach {
+        if (foreground == null || it.foreground == foreground) {
+            it.render()
+        }
+    }
 
     fun update() = with(items.iterator()) {
         while (hasNext()) {
@@ -53,15 +55,11 @@ class Things @Inject constructor(
         sun.origin = Vector(30f, 100f, 0f)
     }
 
-    fun spawnClouds(numClouds: Int, dark: Boolean = false) {
-        val factory: (Int) -> ThingCloud =
-            if (dark) cloudDarkFactory::create
-            else cloudLightFactory::create
-
+    fun spawnClouds(numClouds: Int) {
         // positions the clouds randomly uniformly in the height
         val yPositions = (0 until numClouds).shuffled().map { it * 130f / numClouds + 45f }
 
-        syncInstances(numClouds, factory) { which ->
+        syncInstances<ThingCloud>(numClouds, cloudFactory::create) { which ->
             origin = Vector(
                 x = which * 90f / numClouds - 45,
                 y = yPositions[which],
@@ -73,7 +71,9 @@ class Things @Inject constructor(
     fun spawnWisps(numWisps: Int) =
         syncInstances(numWisps, wispyFactory::create) { which ->
             origin = origin.copy(
-                x = which * 120f / numWisps - .0703125f,
+                x = which * 90f / numWisps - 45,
+                y = Random.nextFloat(87.5f, 175f),
+                z = Random.nextFloat(-80f, -20f),
             )
         }
 

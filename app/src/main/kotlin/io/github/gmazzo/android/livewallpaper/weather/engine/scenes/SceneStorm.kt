@@ -1,5 +1,6 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 
+import android.graphics.Color
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
@@ -12,8 +13,9 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingLightning
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things
-import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things.Companion.WIND_SPEED
+import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDay
 import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDayTint
+import io.github.gmazzo.android.livewallpaper.weather.engine.withFlags
 import javax.inject.Inject
 import javax.inject.Provider
 import javax.microedition.khronos.opengles.GL10.GL_AMBIENT
@@ -22,12 +24,7 @@ import javax.microedition.khronos.opengles.GL10.GL_DIFFUSE
 import javax.microedition.khronos.opengles.GL10.GL_LIGHT1
 import javax.microedition.khronos.opengles.GL10.GL_LIGHTING
 import javax.microedition.khronos.opengles.GL10.GL_MODELVIEW
-import javax.microedition.khronos.opengles.GL10.GL_ONE
-import javax.microedition.khronos.opengles.GL10.GL_ONE_MINUS_SRC_ALPHA
 import javax.microedition.khronos.opengles.GL10.GL_POSITION
-import javax.microedition.khronos.opengles.GL10.GL_TEXTURE
-import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D
-import javax.microedition.khronos.opengles.GL10.GL_ZERO
 import javax.microedition.khronos.opengles.GL11
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.seconds
@@ -38,10 +35,14 @@ class SceneStorm @Inject constructor(
     models: Models,
     textures: Textures,
     things: Things,
+    timeOfDay: TimeOfDay,
     timeOfDayTint: TimeOfDayTint,
     private val particles: ParticlesRain,
     private val lightningProvider: Provider<ThingLightning>,
-) : Scene(time, gl, models, textures, things, timeOfDayTint, darkClouds = true) {
+) : Scene(
+    time, gl, models, textures, things, timeOfDay, timeOfDayTint, R.drawable.storm_bg,
+    backgroundTint = EngineColor(Color.WHITE),
+) {
 
     private val lightAmbientLight = FloatArray(4)
     private var lightFlashTime = 0f
@@ -53,69 +54,37 @@ class SceneStorm @Inject constructor(
     private val particleRainOrigin = Vector(0f, 25f, 10f)
     private val boltFrequency = 5f
     private val diffuseLight = floatArrayOf(1.5f, 1.5f, 1.5f, 1f)
-    private val flashLights = true
-    private val lightAmbientLightColor = EngineColor(.5f, .5f, .5f, 1f)
     private val wave = Wave(0.0, 500.0, 0.0, .005)
-    private val stormBg = textures[R.drawable.storm_bg]
-
-    override fun unload() {
-        super.unload()
-
-        gl.glDisable(GL_COLOR_BUFFER_BIT)
-        gl.glDisable(GL_LIGHT1)
-        gl.glDisable(GL_LIGHTING)
-    }
 
     override fun draw() {
         super.draw()
 
-        timeOfDayTint.update(lightAmbientLightColor)
-        lightAmbientLightColor.setToArray(lightAmbientLight)
-
-        gl.glMatrixMode(GL_MODELVIEW)
-        gl.glLoadIdentity()
-        gl.glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA)
-        renderBackground(time.elapsedSeconds)
-
-        gl.glMatrixMode(GL_MODELVIEW)
-        renderRain(time.deltaSeconds)
-        checkForLightning(time.deltaSeconds)
-        updateLightValues(time.deltaSeconds)
-        gl.glTranslatef(0f, 0f, 40f)
-
-        things.render()
-        drawTree()
-    }
-
-    private fun renderBackground(timeDelta: Float) = gl.pushMatrix(GL_MODELVIEW) {
-        gl.glBindTexture(GL_TEXTURE_2D, stormBg.glId)
-        gl.glColor4f(timeOfDayTint.color.r, timeOfDayTint.color.g, timeOfDayTint.color.b, 1f)
-
-        gl.glTranslatef(0f, 250f, 35f)
-        gl.glScalef(bgPadding * 2f, bgPadding, bgPadding)
-
-        pushMatrix(GL_TEXTURE) {
-            gl.glTranslatef(
-                ((WIND_SPEED * timeDelta) * -.005f) % 1f,
-                0f,
-                0f
-            )
-            if (!flashLights || lightFlashTime <= 0f) {
-                gl.glEnable(GL_LIGHTING)
-                gl.glEnable(GL_LIGHT1)
-                gl.glLightfv(GL_LIGHT1, GL_AMBIENT, lightAmbientLight, 0)
-            }
-            val mesh = models[R.raw.plane_16x16]
-            mesh.render()
-            gl.glDisable(GL_LIGHT1)
+        timeOfDayTint.color.toArray(lightAmbientLight)
+        if (Random.nextFloat(0f, boltFrequency * .75f) < time.deltaSeconds) {
+            spawnLightning()
         }
     }
 
-    private fun renderRain(timeDelta: Float) = gl.pushMatrix(GL_MODELVIEW) {
+    override fun drawBackground() {
+        updateLightValues()
+
+        if (lightFlashTime <= 0f) {
+            gl.withFlags(GL_LIGHTING, GL_LIGHT1) {
+                gl.glLightfv(GL_LIGHT1, GL_AMBIENT, lightAmbientLight, 0)
+                super.drawBackground()
+            }
+
+        } else {
+            super.drawBackground()
+        }
+
+        renderRain()
+    }
+
+    private fun renderRain() = gl.pushMatrix(GL_MODELVIEW) {
         gl.glTranslatef(0f, 0f, -5f)
-        gl.glColor4f(1f, 1f, 1f, 1f)
-        particles.update(timeDelta)
-        gl.glBlendFunc(GL_ONE, GL_ZERO)
+
+        particles.update(time.deltaSeconds)
         particles.render(particleRainOrigin)
     }
 
@@ -135,18 +104,14 @@ class SceneStorm @Inject constructor(
         lightFlashX = lightning.origin.x
     }
 
-    private fun checkForLightning(timeDelta: Float) {
-        if (Random.nextFloat(0f, boltFrequency * .75f) < timeDelta) {
-            spawnLightning()
-        }
-    }
+    private fun updateLightValues() {
+        val timeDelta = time.deltaSeconds.toInt()
 
-    private fun updateLightValues(timeDelta: Float) {
-        wave.timeElapsed += timeDelta.toLong().seconds
+        wave.timeElapsed += timeDelta.seconds
 
         val lightPosX = wave.cos.toFloat()
 
-        if (!flashLights || lightFlashTime <= 0f) {
+        if (lightFlashTime <= 0f) {
             position[0] = lightPosX
             gl.glLightfv(GL_COLOR_BUFFER_BIT, 4610, specularLight, 0)
 

@@ -4,16 +4,16 @@ import androidx.annotation.FloatRange
 import io.github.gmazzo.android.livewallpaper.weather.OpenGLScoped
 import io.github.gmazzo.android.livewallpaper.weather.WeatherState
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
-import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDayTintMode.Blend
-import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDayTintMode.Day
-import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDayTintMode.Night
 import io.github.gmazzo.android.livewallpaper.weather.minutesSinceMidnight
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.shredzone.commons.suncalc.MoonPosition
 import org.shredzone.commons.suncalc.SunPosition
+import org.shredzone.commons.suncalc.SunTimes
 import java.time.ZonedDateTime
 import javax.inject.Inject
 import javax.inject.Named
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 
 @OpenGLScoped
@@ -28,25 +28,22 @@ class TimeOfDay @Inject constructor(
     @FloatRange(from = 0.0, to = 1.0)
     var moonPosition: Float = 0f
 
-    val isNight: Boolean
-        get() = sunPosition < 0
+    lateinit var tintSpec: TintSpec
 
-    val isDay: Boolean
-        get() = sunPosition >= 0
-
-    lateinit var tintMode: TimeOfDayTintMode
-
+    @Inject
     fun update() {
         val now = time.time.value
+        val minutes = now.minutesSinceMidnight
         val location = state.value.location
 
-        sunPosition = computeSunProgress(now, location)
+        sunPosition = computeSunProgress(now, minutes, location)
         moonPosition = computeMoonPosition(now, location)
-        tintMode = computeAmbientColors()
+        tintSpec = computeAmbientTintColors(now, minutes, location)
     }
 
     private fun computeSunProgress(
         now: ZonedDateTime,
+        minutes: Duration,
         location: WeatherState.Location?,
     ) = if (location != null) {
         SunPosition.compute()
@@ -56,12 +53,10 @@ class TimeOfDay @Inject constructor(
             .altitude.toFloat() / 90f
 
     } else {
-        val minutes = now.minutesSinceMidnight
-
         // TODO can it be simplified?
         when {
-            minutes >= 12.hours -> 1 - (minutes - 12.hours) / 6.hours
-            else -> (minutes - 6.hours) / 6.hours
+            minutes >= defaultMidday -> 1 - (minutes - defaultMidday) / (defaultSunset - defaultMidday)
+            else -> (minutes - defaultSunrise) / (defaultMidday - defaultSunrise)
         }.toFloat()
     }
 
@@ -79,14 +74,67 @@ class TimeOfDay @Inject constructor(
         -sunPosition
     }
 
-    private fun computeAmbientColors() = when {
-        sunPosition > GOLDER_HOUR_FACTOR -> Day
-        sunPosition < -GOLDER_HOUR_FACTOR -> Night
-        sunPosition >= 0 -> Blend(TimeOfDayColors::dawn, Day, sunPosition / GOLDER_HOUR_FACTOR)
-        else -> Blend(TimeOfDayColors::dawn, Night, sunPosition / -GOLDER_HOUR_FACTOR)
+    private fun computeAmbientTintColors(
+        now: ZonedDateTime,
+        minutes: Duration,
+        location: WeatherState.Location?,
+    ): TintSpec {
+        var sunrise: Duration? = defaultSunrise
+        var midday: Duration? = defaultMidday
+        var sunset: Duration? = defaultSunset
+        var midnight: Duration? = defaultMidnight
+
+        if (location != null) {
+            val times = SunTimes.compute()
+                .on(now)
+                .at(location.latitude, location.longitude)
+                .execute()
+
+            sunrise = times.rise?.minutesSinceMidnight
+            midday = times.noon?.minutesSinceMidnight
+            sunset = times.set?.minutesSinceMidnight
+            midnight = times.nadir?.minutesSinceMidnight
+        }
+
+        val colors = listOfNotNull(
+            sunrise?.to(TintColor.SUNRISE),
+            midday?.to(TintColor.MIDDAY),
+            sunset?.to(TintColor.NOON),
+            midnight?.to(TintColor.SUNSET),
+        )
+
+        val (mainColor, sinceDelta) = colors.asSequence()
+            .map { (time, color) -> color to if (minutes > time) minutes - time else 1.days - time + minutes }
+            .minBy { (_, delta) -> delta }
+
+        val (blendColor, nextDelta) = colors.asSequence()
+            .map { (time, color) -> color to if (minutes <= time) time - minutes else 1.days - minutes + time }
+            .minBy { (_, delta) -> delta }
+
+        val amount = (sinceDelta / (sinceDelta + nextDelta)).toFloat()
+
+        check(amount in 0f..1f) { "Invalid blend amount: $amount" }
+
+        return TintSpec(
+            main = mainColor,
+            blend = blendColor,
+            amount = amount
+        )
     }
 
+    enum class TintColor { SUNRISE, MIDDAY, NOON, SUNSET }
+
+    data class TintSpec(
+        val main: TintColor,
+        val blend: TintColor,
+        @FloatRange(from = 0.0, to = 1.0) val amount: Float,
+    )
+
     companion object {
+        private val defaultSunrise = 6.hours
+        private val defaultSunset = 18.hours
+        private val defaultMidday = 12.hours
+        private val defaultMidnight = 0.hours
         const val GOLDER_HOUR_FACTOR = .2f
     }
 

@@ -26,6 +26,7 @@ open class GlobalTime(
     var elapsedSeconds = 0f
         private set
 
+    @Inject
     fun update() {
         val now = ZonedDateTime.now()
         val delta = ChronoUnit.MILLIS.between(this.time.value, now)
@@ -51,6 +52,6 @@ open class GlobalTime(
 
     @Singleton
     class Fast @Inject constructor(
-    ) : GlobalTime(timeScale = DateUtils.DAY_IN_MILLIS / (10 * DateUtils.SECOND_IN_MILLIS))
+    ) : GlobalTime(timeScale = DateUtils.DAY_IN_MILLIS / (15 * DateUtils.SECOND_IN_MILLIS))
 
 }

@@ -5,17 +5,12 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.particles.ParticlesSnow
-import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things
-import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things.Companion.WIND_SPEED
+import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDay
 import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDayTint
 import javax.inject.Inject
 import javax.inject.Provider
-import javax.microedition.khronos.opengles.GL10
-import javax.microedition.khronos.opengles.GL10.GL_MODELVIEW
-import javax.microedition.khronos.opengles.GL10.GL_TEXTURE
-import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D
 import javax.microedition.khronos.opengles.GL11
 
 class SceneSnow @Inject constructor(
@@ -24,9 +19,10 @@ class SceneSnow @Inject constructor(
     models: Models,
     textures: Textures,
     things: Things,
+    timeOfDay: TimeOfDay,
     timeOfDayTint: TimeOfDayTint,
     private val particle: Provider<ParticlesSnow>,
-) : Scene(time, gl, models, textures, things, timeOfDayTint) {
+) : Scene(time, gl, models, textures, things, timeOfDay, timeOfDayTint, R.drawable.bg2) {
 
     private val snowPositions = arrayOf(
         Vector(0f, 20f, -20f),
@@ -37,44 +33,15 @@ class SceneSnow @Inject constructor(
     private val particles =
         snowPositions.map { particle.get() }
 
-    override fun draw() {
-        super.draw()
-
-        gl.glMatrixMode(GL_MODELVIEW)
-        gl.glLoadIdentity()
-        gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA)
-        renderBackground(time.elapsedSeconds)
-
-        gl.glMatrixMode(GL_MODELVIEW)
-        gl.glTranslatef(0f, 0f, 40f)
-
-        things.render()
+    override fun drawForeground() {
+        super.drawForeground()
 
         renderSnow()
-        drawTree()
     }
 
     private fun renderSnow() = particles.forEachIndexed { i, it ->
         it.update(time.deltaSeconds)
         it.render(snowPositions[i])
-    }
-
-    private fun renderBackground(timeDelta: Float) = gl.pushMatrix(GL_MODELVIEW) {
-        gl.glBindTexture(GL_TEXTURE_2D, textures[R.drawable.bg2].glId)
-        gl.glColor4f(timeOfDayTint.color.r, timeOfDayTint.color.g, timeOfDayTint.color.b, 1f)
-
-        gl.glTranslatef(0f, 250f, 35f)
-        gl.glScalef(bgPadding * 2f, bgPadding, bgPadding)
-
-        gl.pushMatrix(GL_TEXTURE) {
-            gl.glTranslatef(
-                ((WIND_SPEED * timeDelta) * -.005f) % 1f,
-                0f,
-                0f
-            )
-            val mesh = models[R.raw.plane_16x16]
-            mesh.render()
-        }
     }
 
 }

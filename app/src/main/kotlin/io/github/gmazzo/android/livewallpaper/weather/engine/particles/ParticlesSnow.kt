@@ -53,8 +53,8 @@ class ParticlesSnow @Inject constructor(
         super.update(timeDelta)
 
         val color = timeOfDayTint.color
-        startEngineColor.set(color.r, color.g, color.b, 3f)
-        destEngineColor.set(color.r, color.g, color.b, 0f)
+        startEngineColor.set(color, 1f)
+        destEngineColor.set(color, 0f)
     }
 
     companion object {

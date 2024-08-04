@@ -1,6 +1,5 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.things
 
-import android.graphics.Color
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -9,12 +8,13 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
-import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
+import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
-import javax.microedition.khronos.opengles.GL10
+import io.github.gmazzo.android.livewallpaper.weather.engine.withoutFlags
+import javax.inject.Named
 import javax.microedition.khronos.opengles.GL10.GL_LIGHTING
-import javax.microedition.khronos.opengles.GL10.GL_MODELVIEW
-import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D
+import javax.microedition.khronos.opengles.GL10.GL_ONE
+import javax.microedition.khronos.opengles.GL10.GL_SRC_ALPHA
 import javax.microedition.khronos.opengles.GL11
 import kotlin.random.Random
 
@@ -23,38 +23,40 @@ class ThingDarkCloud @AssistedInject constructor(
     models: Models,
     textures: Textures,
     time: GlobalTime,
+    sceneMode: SceneMode,
+    @Named("clouds") cloudsColor: EngineColor,
     @Assisted which: Int,
-    @Assisted private val withFlare: Boolean,
 ) : ThingCloud(
     gl,
     models[MODELS[which % MODELS.size]],
     textures[TEXTURES[which % TEXTURES.size]],
     time,
-    cloudColor = EngineColor().set(Color.WHITE)
+    cloudsColor,
 ) {
 
-    private val flare = textures[FLARES[which % MODELS.size]]
+    private val flare = when (sceneMode) {
+        SceneMode.STORM -> textures[FLARES[which % MODELS.size]]
+        else -> null
+    }
 
     private var flashIntensity = 0f
 
-    override fun render() = gl.pushMatrix(GL_MODELVIEW) {
+    override fun render() {
         super.render()
 
-        if (withFlare && flashIntensity > 0f) {
-            gl.glDisable(GL_LIGHTING)
-            gl.glBindTexture(GL_TEXTURE_2D, flare.glId)
-            gl.glColor4f(1f, 1f, 1f, flashIntensity)
-            gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE)
-            model.render()
-            gl.glEnable(GL_LIGHTING)
+        if (flare != null && flashIntensity > 0f) {
+            gl.withoutFlags(GL_LIGHTING) {
+                color.a = flashIntensity
+                super.render(GL_SRC_ALPHA, GL_ONE)
+                color.a = 1f
+            }
         }
-        gl.glColor4f(1f, 1f, 1f, 1f)
     }
 
     override fun update() {
         super.update()
 
-        if (withFlare) {
+        if (flare != null) {
             if (flashIntensity > 0f) {
                 flashIntensity -= 1.25f * time.deltaSeconds
             }
@@ -65,9 +67,7 @@ class ThingDarkCloud @AssistedInject constructor(
     }
 
     @AssistedFactory
-    interface Factory {
-        fun create(which: Int, withFlare: Boolean = true): ThingDarkCloud
-    }
+    interface Factory : ThingCloud.Factory<ThingDarkCloud>
 
     companion object {
         private val TEXTURES = intArrayOf(
