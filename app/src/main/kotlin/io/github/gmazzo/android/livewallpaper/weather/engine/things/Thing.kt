@@ -33,13 +33,13 @@ sealed class Thing(
         gl.glTranslatef(origin.x, origin.y, origin.z)
         gl.glScalef(scale.x, scale.y, scale.z)
 
-            engineColor?.let { gl.glColor4f(it.r, it.g, it.b, it.a) }
-            gl.glBindTexture(GL_TEXTURE_2D, texture.glId)
-            model.render()
+        engineColor?.let { gl.glColor4f(it.r, it.g, it.b, it.a) }
+        gl.glBindTexture(GL_TEXTURE_2D, texture.glId)
+        model.render()
 
-            if (engineColor != null) {
-                gl.glColor4f(1f, 1f, 1f, 1f)
-            }
+        if (engineColor != null) {
+            gl.glColor4f(1f, 1f, 1f, 1f)
+        }
     }
 
     @CallSuper

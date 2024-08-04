@@ -58,25 +58,15 @@ class Things @Inject constructor(
             if (dark) cloudDarkFactory::create
             else cloudLightFactory::create
 
-        val changed = syncInstances(numClouds, factory) { which ->
+        // positions the clouds randomly uniformly in the height
+        val yPositions = (0 until numClouds).shuffled().map { it * 130f / numClouds + 45f }
+
+        syncInstances(numClouds, factory) { which ->
             origin = Vector(
                 x = which * 90f / numClouds - 45,
+                y = yPositions[which],
                 z = Random.nextFloat(-20f, -10f)
             )
-        }
-
-        if (changed) {
-            val cloudDepthStep = 130f / numClouds
-
-            // positions the clouds randomly uniformly in the height
-            items
-                .filterIsInstance<ThingCloud>()
-                .shuffled()
-                .forEachIndexed { which, cloud ->
-                    cloud.origin = cloud.origin.copy(
-                        y = which * cloudDepthStep + 45f,
-                    )
-                }
         }
     }
 

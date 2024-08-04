@@ -15,14 +15,14 @@ open class ThingLightCloud @AssistedInject constructor(
     models: Models,
     textures: Textures,
     time: GlobalTime,
-    timeOfDayTint: TimeOfDayTint,
+    private val timeOfDayTint: TimeOfDayTint,
     @Assisted which: Int,
 ) : ThingCloud(
     gl,
     models[MODELS[which % MODELS.size]],
     textures[TEXTURES[which % TEXTURES.size]],
     time,
-    timeOfDayTint.color
+    cloudColor = timeOfDayTint.color
 ) {
 
     @AssistedFactory
@@ -31,11 +31,6 @@ open class ThingLightCloud @AssistedInject constructor(
     }
 
     companion object {
-        private val MODELS = intArrayOf(
-            R.raw.cloud1m, R.raw.cloud2m, R.raw.cloud3m,
-            R.raw.cloud4m, R.raw.cloud5m
-        )
-
         private val TEXTURES = intArrayOf(
             R.drawable.cloud1, R.drawable.cloud2, R.drawable.cloud3,
             R.drawable.cloud4, R.drawable.cloud5

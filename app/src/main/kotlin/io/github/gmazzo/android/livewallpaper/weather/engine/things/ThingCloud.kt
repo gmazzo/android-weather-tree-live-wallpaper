@@ -1,12 +1,14 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.things
 
+import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Model
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Texture
-import javax.microedition.khronos.opengles.GL10
+import javax.microedition.khronos.opengles.GL10.GL_ONE
+import javax.microedition.khronos.opengles.GL10.GL_ONE_MINUS_SRC_ALPHA
 import javax.microedition.khronos.opengles.GL11
 import kotlin.math.absoluteValue
 import kotlin.random.Random
@@ -16,10 +18,10 @@ sealed class ThingCloud(
     model: Model,
     texture: Texture,
     time: GlobalTime,
-    private val color: EngineColor,
+    private val cloudColor: EngineColor,
 ) : ThingMoving(gl, model, texture, time) {
 
-    override val engineColor = EngineColor(1f, 1f, 1f, 1f)
+    final override val engineColor = EngineColor()
 
     init {
         scale = Vector(
@@ -30,7 +32,8 @@ sealed class ThingCloud(
     }
 
     override fun render() {
-        gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA)
+        gl.glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA)
+
         super.render()
     }
 
@@ -43,7 +46,7 @@ sealed class ThingCloud(
             timeElapsed = 0f
         }
 
-        engineColor.set(color)
+        engineColor.set(cloudColor)
 
         if (timeElapsed < 2f) {
             val alpha = timeElapsed * .5f
@@ -51,6 +54,14 @@ sealed class ThingCloud(
             engineColor *= alpha
             engineColor.a = alpha
         }
+    }
+
+    companion object {
+        @JvmStatic
+        protected val MODELS = intArrayOf(
+            R.raw.cloud1m, R.raw.cloud2m, R.raw.cloud3m,
+            R.raw.cloud4m, R.raw.cloud5m
+        )
     }
 
 }

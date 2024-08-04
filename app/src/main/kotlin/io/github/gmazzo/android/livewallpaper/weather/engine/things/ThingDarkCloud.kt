@@ -1,5 +1,6 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.things
 
+import android.graphics.Color
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -29,14 +30,14 @@ class ThingDarkCloud @AssistedInject constructor(
     models[MODELS[which % MODELS.size]],
     textures[TEXTURES[which % TEXTURES.size]],
     time,
-    color = EngineColor(.2f, .2f, .2f, 1f)
+    cloudColor = EngineColor().set(Color.WHITE)
 ) {
 
     private val flare = textures[FLARES[which % MODELS.size]]
 
     private var flashIntensity = 0f
 
-     override fun render() = gl.pushMatrix(GL_MODELVIEW) {
+    override fun render() = gl.pushMatrix(GL_MODELVIEW) {
         super.render()
 
         if (withFlare && flashIntensity > 0f) {
@@ -69,10 +70,6 @@ class ThingDarkCloud @AssistedInject constructor(
     }
 
     companion object {
-        private val MODELS = intArrayOf(
-            R.raw.cloud1m, R.raw.cloud2m, R.raw.cloud3m,
-            R.raw.cloud4m, R.raw.cloud5m
-        )
         private val TEXTURES = intArrayOf(
             R.drawable.clouddark1, R.drawable.clouddark2, R.drawable.clouddark3,
             R.drawable.clouddark4, R.drawable.clouddark5
