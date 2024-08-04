@@ -6,7 +6,7 @@ import android.opengl.GLUtils
 import androidx.annotation.DrawableRes
 import androidx.annotation.RawRes
 import io.github.gmazzo.android.livewallpaper.weather.OpenGLScoped
-import io.github.gmazzo.android.livewallpaper.weather.engine.with
+import io.github.gmazzo.android.livewallpaper.weather.engine.withFlags
 import java.io.Closeable
 import java.io.IOException
 import java.nio.ByteBuffer
@@ -35,7 +35,7 @@ class Textures @Inject constructor(
     private val textures = mutableMapOf<Int, Texture>()
 
     operator fun get(@DrawableRes @RawRes resId: Int) = textures.getOrPut(resId) {
-        gl.with(GL_TEXTURE_2D) {
+        gl.withFlags(GL_TEXTURE_2D) {
             val buffer = IntBuffer.allocate(1)
             gl.glGenTextures(1, buffer)
 

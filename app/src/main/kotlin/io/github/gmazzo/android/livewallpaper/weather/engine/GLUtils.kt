@@ -15,7 +15,7 @@ annotation class GLMatrixMode
 @IntDef(GL_TEXTURE_2D)
 annotation class GLFlags
 
-fun <R> GL11.with(@GLFlags vararg flags: Int, block: GL11.() -> R): R {
+fun <R> GL11.withFlags(@GLFlags vararg flags: Int, block: GL11.() -> R): R {
     val currentFlags = flags.filterNot(::glIsEnabled)
 
     currentFlags.forEach(::glEnable)

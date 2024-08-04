@@ -54,12 +54,11 @@ class ThingSun @Inject constructor(
     override fun update() {
         super.update()
 
-        val sunPos = timeOfDay.sunPosition
         var alpha = 0f
 
-        if (sunPos > 0f) {
+        if (timeOfDay.isDay) {
             scale = Vector(2f)
-            val altitude = 175f * sunPos
+            val altitude = 175f * timeOfDay.sunPosition
 
             alpha = (altitude / 25f).coerceIn(0f, 1f)
             origin = origin.copy(z = min(altitude - 50f, 40f))

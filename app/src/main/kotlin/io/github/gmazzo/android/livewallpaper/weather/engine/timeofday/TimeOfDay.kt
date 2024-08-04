@@ -28,6 +28,12 @@ class TimeOfDay @Inject constructor(
     @FloatRange(from = 0.0, to = 1.0)
     var moonPosition: Float = 0f
 
+    val isNight: Boolean
+        get() = sunPosition < 0
+
+    val isDay: Boolean
+        get() = sunPosition >= 0
+
     lateinit var tintMode: TimeOfDayTintMode
 
     fun update() {

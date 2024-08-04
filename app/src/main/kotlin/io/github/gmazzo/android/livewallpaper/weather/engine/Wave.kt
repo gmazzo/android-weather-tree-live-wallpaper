@@ -2,23 +2,20 @@ package io.github.gmazzo.android.livewallpaper.weather.engine
 
 import kotlin.math.cos
 import kotlin.math.sin
+import kotlin.time.Duration
 
 data class Wave(
     val base: Double,
     val amplitude: Double,
     val phase: Double,
     val frequency: Double,
-    var timeElapsed: Long = 0,
+    var timeElapsed: Duration = Duration.ZERO,
 ) {
 
-    val cos get() = cos(timeElapsed)
+    val cos: Double
+        get() = base + (amplitude * cos((timeElapsed.inWholeSeconds * frequency) + phase))
 
-    val sin get() = sin(timeElapsed)
-
-    fun cos(time: Long) =
-        base + (amplitude * cos((time * frequency) + phase))
-
-    fun sin(time: Long = timeElapsed) =
-        base + (amplitude * sin((time * frequency) + phase))
+    val sin: Double
+        get() = base + (amplitude * sin((timeElapsed.inWholeSeconds * frequency) + phase))
 
 }
