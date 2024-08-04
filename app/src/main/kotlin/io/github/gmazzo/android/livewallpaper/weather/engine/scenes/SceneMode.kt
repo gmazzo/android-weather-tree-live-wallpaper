@@ -2,8 +2,8 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.vector.ImageVector
-import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.WeatherIcons
+import io.github.gmazzo.android.livewallpaper.weather2.R
 
 enum class SceneMode(@StringRes val textId: Int, val icon: ImageVector) {
     CLEAR(R.string.scene_clear, WeatherIcons.sunny),

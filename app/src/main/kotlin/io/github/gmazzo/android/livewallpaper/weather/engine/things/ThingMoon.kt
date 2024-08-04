@@ -1,12 +1,12 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.things
 
-import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneBase.Companion.todSunPosition
 import io.github.gmazzo.android.livewallpaper.weather.sky_manager.SkyManager
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Texture
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures
+import io.github.gmazzo.android.livewallpaper.weather2.R
 import javax.microedition.khronos.opengles.GL10
 import kotlin.math.roundToInt
 

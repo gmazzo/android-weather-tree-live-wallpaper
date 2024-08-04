@@ -1,6 +1,6 @@
 package io.github.gmazzo.android.livewallpaper.weather.api
 
-import io.github.gmazzo.android.livewallpaper.weather.BuildConfig
+import io.github.gmazzo.android.livewallpaper.weather2.BuildConfig
 import okhttp3.Interceptor
 import java.util.Locale
 

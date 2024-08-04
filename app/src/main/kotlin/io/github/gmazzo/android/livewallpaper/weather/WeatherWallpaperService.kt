@@ -3,6 +3,7 @@ package io.github.gmazzo.android.livewallpaper.weather
 import android.service.wallpaper.WallpaperService
 import android.view.SurfaceHolder
 import dagger.hilt.android.AndroidEntryPoint
+import io.github.gmazzo.android.livewallpaper.weather2.BuildConfig
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 

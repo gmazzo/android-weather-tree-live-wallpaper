@@ -42,9 +42,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.compose.AppTheme
-import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.WeatherConditions
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode
+import io.github.gmazzo.android.livewallpaper.weather2.R
 import kotlinx.coroutines.flow.MutableStateFlow
 
 private const val opacity = .6f

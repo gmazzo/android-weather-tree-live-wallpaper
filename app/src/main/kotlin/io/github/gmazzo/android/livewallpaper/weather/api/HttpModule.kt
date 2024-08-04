@@ -5,7 +5,7 @@ import dagger.Provides
 import dagger.Reusable
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import io.github.gmazzo.android.livewallpaper.weather.BuildConfig
+import io.github.gmazzo.android.livewallpaper.weather2.BuildConfig
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient

@@ -1,7 +1,6 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 
 import androidx.annotation.DrawableRes
-import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.WeatherType
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalRand
@@ -14,6 +13,7 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingWispy
 import io.github.gmazzo.android.livewallpaper.weather.sky_manager.TimeOfDay
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Models
 import io.github.gmazzo.android.livewallpaper.weather.wallpaper.Textures
+import io.github.gmazzo.android.livewallpaper.weather2.R
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL11
 

@@ -11,14 +11,14 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name=".WeatherApplication"
+        android:name="io.github.gmazzo.android.livewallpaper.weather.WeatherApplication"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@android:style/Theme.Material.NoActionBar">
 
         <activity
-            android:name=".settings.SettingsActivity"
+            android:name="io.github.gmazzo.android.livewallpaper.weather.settings.SettingsActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,7 +27,7 @@
         </activity>
 
         <service
-            android:name=".WeatherWallpaperService"
+            android:name="io.github.gmazzo.android.livewallpaper.weather.WeatherWallpaperService"
             android:exported="true"
             android:label="@string/app_name"
             android:permission="android.permission.BIND_WALLPAPER">
