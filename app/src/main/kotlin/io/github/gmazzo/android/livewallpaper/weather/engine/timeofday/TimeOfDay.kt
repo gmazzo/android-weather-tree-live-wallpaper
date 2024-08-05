@@ -6,7 +6,6 @@ import io.github.gmazzo.android.livewallpaper.weather.WeatherState
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.minutesSinceMidnight
 import kotlinx.coroutines.flow.MutableStateFlow
-import org.shredzone.commons.suncalc.MoonPosition
 import org.shredzone.commons.suncalc.SunPosition
 import org.shredzone.commons.suncalc.SunTimes
 import java.time.ZonedDateTime
@@ -25,9 +24,6 @@ class TimeOfDay @Inject constructor(
     @FloatRange(from = 0.0, to = 1.0)
     var sunPosition: Float = 0f
 
-    @FloatRange(from = 0.0, to = 1.0)
-    var moonPosition: Float = 0f
-
     lateinit var tintSpec: TintSpec
 
     @Inject
@@ -37,7 +33,6 @@ class TimeOfDay @Inject constructor(
         val location = state.value.location
 
         sunPosition = computeSunProgress(now, minutes, location)
-        moonPosition = computeMoonPosition(now, location)
         tintSpec = computeAmbientTintColors(now, minutes, location)
     }
 
@@ -58,20 +53,6 @@ class TimeOfDay @Inject constructor(
             minutes >= defaultMidday -> 1 - (minutes - defaultMidday) / (defaultSunset - defaultMidday)
             else -> (minutes - defaultSunrise) / (defaultMidday - defaultSunrise)
         }.toFloat()
-    }
-
-    private fun computeMoonPosition(
-        now: ZonedDateTime,
-        location: WeatherState.Location?,
-    ) = if (location != null && false) { // FIXME doesn't look well
-        MoonPosition.compute()
-            .on(now)
-            .at(location.latitude, location.longitude)
-            .execute()
-            .altitude.toFloat() / 90f
-
-    } else {
-        -sunPosition
     }
 
     private fun computeAmbientTintColors(
