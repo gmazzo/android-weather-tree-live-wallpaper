@@ -1,14 +1,7 @@
 package io.github.gmazzo.android.livewallpaper.weather
 
-import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.content.Context
-import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.content.res.Resources
-import android.location.Location
-import android.location.LocationManager
-import android.util.Log
-import androidx.core.content.ContextCompat.checkSelfPermission
-import androidx.core.content.getSystemService
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -46,20 +39,23 @@ object WeatherModule {
     @Provides
     @Singleton
     @Named("fastTimeSpeed")
-    fun fastTimeSpeed(): MutableStateFlow<Float> =
-        MutableStateFlow((1.days / 15.seconds).toFloat())
+    fun fastTimeSpeed() = MutableStateFlow((1.days / 15.seconds).toFloat())
 
     @Provides
     @Singleton
-    fun state(dataStore: DataStore<Preferences>): MutableStateFlow<WeatherState> = runBlocking {
+    fun location() = MutableStateFlow<Location?>(null)
+
+    @Provides
+    @Singleton
+    fun weatherType(dataStore: DataStore<Preferences>): MutableStateFlow<WeatherType> = runBlocking {
         val current =
             dataStore.data.firstOrNull()?.get(settingLastWeather)?.let(WeatherType::valueOf)
         val flow =
-            MutableStateFlow(WeatherState(weatherType = current ?: WeatherType.SUNNY_DAY))
+            MutableStateFlow(current ?: WeatherType.SUNNY_DAY)
 
         MainScope().launch {
-            flow.collectLatest { state ->
-                dataStore.edit { it[settingLastWeather] = state.weatherType.name }
+            flow.collectLatest { weather ->
+                dataStore.edit { it[settingLastWeather] = weather.name }
             }
         }
         return@runBlocking flow
@@ -78,20 +74,6 @@ object WeatherModule {
                 .build()
         )
         return WorkManager.getInstance(context)
-    }
-
-    @Provides
-    fun location(@ApplicationContext context: Context): Location? {
-        if (checkSelfPermission(context, ACCESS_COARSE_LOCATION) != PERMISSION_GRANTED) {
-            Log.e(TAG, "Missing $ACCESS_COARSE_LOCATION to access location")
-            return null
-        }
-
-        val manager: LocationManager = context.getSystemService() ?: return null
-        return manager.allProviders.asSequence()
-            .mapNotNull(manager::getLastKnownLocation)
-            .firstOrNull()
-            ?.also { Log.i(TAG, "LastKnownLocation: lat=${it.latitude}, lng=${it.longitude}") }
     }
 
 }

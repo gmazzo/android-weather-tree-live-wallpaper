@@ -41,7 +41,7 @@ class SettingsActivity : ComponentActivity() {
                 now = viewModel.time.time.collectAsState().value,
                 timeSpeed = viewModel.timeSpeed.collectAsState().value,
                 updateLocationEnabled = viewModel.updateLocationEnabled.collectAsState().value,
-                weatherState = viewModel.weatherState.collectAsState().value,
+                weather = viewModel.weather.collectAsState().value,
                 missingLocationPermission = viewModel.missingLocationPermission.collectAsState().value,
                 updateLocationEnabledChange = viewModel::updateLocationEnabled,
                 onSpeedSelected = viewModel.timeSpeed::value::set,

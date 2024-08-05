@@ -39,7 +39,7 @@ import javax.microedition.khronos.opengles.GL11
 internal class WeatherRenderer @AssistedInject constructor(
     private val openGLFactory: OpenGLComponent.Factory,
     @Assisted private val view: GLSurfaceView,
-    private val weatherState: MutableStateFlow<WeatherState>,
+    private val weather: MutableStateFlow<WeatherType>,
 ) : Renderer {
     private var landscape: Boolean = false
     private var cameraFOV = 65f
@@ -71,13 +71,13 @@ internal class WeatherRenderer @AssistedInject constructor(
     private fun watchWeatherChanges() {
         watchWeatherChanges?.cancel()
         watchWeatherChanges = CoroutineScope(glContext.dispatcher).launch {
-            weatherState.collectLatest(::onSceneChanged)
+            weather.collectLatest(::onSceneChanged)
         }
     }
 
     @Synchronized
-    private fun onSceneChanged(state: WeatherState) {
-        val mode = state.weatherType.scene
+    private fun onSceneChanged(weather: WeatherType) {
+        val mode = weather.scene
 
         if (currentScene?.mode != mode) {
             currentScene?.scene?.unload()
@@ -86,9 +86,9 @@ internal class WeatherRenderer @AssistedInject constructor(
                 it.scene.load()
             }
         }
-        currentScene!!.scene.update(state)
+        currentScene!!.scene.update(weather)
 
-        Log.i(TAG, "Weather changed to $state, isDemoMode=$demoMode")
+        Log.i(TAG, "Weather changed to $weather, isDemoMode=$demoMode")
     }
 
     override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {

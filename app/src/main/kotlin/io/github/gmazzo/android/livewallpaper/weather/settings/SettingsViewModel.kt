@@ -11,7 +11,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.work.WorkManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.github.gmazzo.android.livewallpaper.weather.WeatherState
 import io.github.gmazzo.android.livewallpaper.weather.WeatherType
 import io.github.gmazzo.android.livewallpaper.weather.WeatherUpdateWorker.Companion.disableWeatherConditionsUpdate
 import io.github.gmazzo.android.livewallpaper.weather.WeatherUpdateWorker.Companion.enableWeatherConditionsUpdate
@@ -21,7 +20,6 @@ import io.github.gmazzo.android.livewallpaper.weather.hasBackgroundLocationPermi
 import io.github.gmazzo.android.livewallpaper.weather.hasLocationPermission
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Named
@@ -32,7 +30,7 @@ class SettingsViewModel @Inject constructor(
     private val preferences: DataStore<Preferences>,
     val time: GlobalTime.Fast,
     @Named("fastTimeSpeed") val timeSpeed: MutableStateFlow<Float>,
-    val weatherState: MutableStateFlow<WeatherState>,
+    val weather: MutableStateFlow<WeatherType>,
     private val workManager: WorkManager,
 ) : ViewModel(), DefaultLifecycleObserver {
 
@@ -73,8 +71,8 @@ class SettingsViewModel @Inject constructor(
         preferences.edit { it[settingLocationOn] = enabled }
     }
 
-    fun updateSelectedScene(scene: SceneMode) = weatherState.update { prefs ->
-        prefs.copy(weatherType = WeatherType.entries.first { it.scene == scene })
+    fun updateSelectedScene(scene: SceneMode) {
+        weather.value = WeatherType.entries.first { it.scene == scene }
     }
 
 }

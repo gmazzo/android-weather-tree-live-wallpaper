@@ -65,7 +65,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.example.compose.AppTheme
 import io.github.gmazzo.android.livewallpaper.weather.R
-import io.github.gmazzo.android.livewallpaper.weather.WeatherState
+import io.github.gmazzo.android.livewallpaper.weather.WeatherType
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode
 import io.github.gmazzo.android.livewallpaper.weather.minutesSinceMidnight
 import io.github.gmazzo.android.livewallpaper.weather.theme.WeatherIcons
@@ -77,7 +77,7 @@ import kotlin.time.Duration.Companion.seconds
 
 private const val opacity = .6f
 private val margin = 8.dp
-private val sampleConditions = MutableStateFlow(WeatherState())
+private val sampleConditions = MutableStateFlow(WeatherType.SUNNY_DAY)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -86,7 +86,7 @@ fun SettingsScreen(
     now: ZonedDateTime = ZonedDateTime.now(),
     timeSpeed: Float = 1f,
     updateLocationEnabled: Boolean = true,
-    weatherState: WeatherState = sampleConditions.value,
+    weather: WeatherType = sampleConditions.value,
     missingLocationPermission: Boolean = true,
     updateLocationEnabledChange: (Boolean) -> Unit = {},
     onSpeedSelected: (Float) -> Unit = {},
@@ -104,7 +104,7 @@ fun SettingsScreen(
         Box(Modifier.fillMaxSize()) { surfaceView() }
         Scaffold(containerColor = Color.Transparent, topBar = {
             Column {
-                CenterAlignedTopAppBar(title = { Text(text = stringResource(id = weatherState.weatherType.scene.textId)) },
+                CenterAlignedTopAppBar(title = { Text(text = stringResource(id = weather.scene.textId)) },
                     colors = TopAppBarDefaults.topAppBarColors()
                         .copy(containerColor = Color.Transparent),
                     navigationIcon = {
@@ -154,7 +154,7 @@ fun SettingsScreen(
                 if (missingLocationPermission) {
                     MissingLocationPermissionPanel(onRequestLocationPermission)
                 }
-                WeathersGallery(weatherState, onSceneSelected)
+                WeathersGallery(weather.scene, onSceneSelected)
             }
         }
     }
@@ -345,11 +345,11 @@ private fun TimeSpeedSelector(
 
 @Composable
 private fun WeathersGallery(
-    weatherState: WeatherState,
+    selected: SceneMode,
     onSceneSelected: (SceneMode) -> Unit,
 ) = Selector(
     entries = SceneMode.entries,
-    selected = weatherState.weatherType.scene,
+    selected = selected,
     onSelection = onSceneSelected,
 ) { scene ->
     Icon(

@@ -1,7 +1,7 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.things
 
+import io.github.gmazzo.android.livewallpaper.weather.Location
 import io.github.gmazzo.android.livewallpaper.weather.R
-import io.github.gmazzo.android.livewallpaper.weather.WeatherState
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
@@ -24,7 +24,7 @@ class ThingMoon @Inject constructor(
     private val textures: Textures,
     @Named("scaled") private val time: GlobalTime,
     private val timeOfDay: TimeOfDay,
-    private val state: MutableStateFlow<WeatherState>,
+    private val location: MutableStateFlow<Location?>,
 ) : Thing(gl, models[R.raw.plane_16x16], textures[PHASES[0]]) {
 
     override lateinit var texture: Texture
@@ -40,7 +40,7 @@ class ThingMoon @Inject constructor(
         super.update()
 
         val now = time.time.value
-        val location = state.value.location
+        val location = location.value
 
         val position = if (location != null) {
             MoonPosition.compute()

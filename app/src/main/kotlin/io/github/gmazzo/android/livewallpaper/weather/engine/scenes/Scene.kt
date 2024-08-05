@@ -3,7 +3,7 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 import androidx.annotation.CallSuper
 import androidx.annotation.DrawableRes
 import io.github.gmazzo.android.livewallpaper.weather.R
-import io.github.gmazzo.android.livewallpaper.weather.WeatherState
+import io.github.gmazzo.android.livewallpaper.weather.WeatherType
 import io.github.gmazzo.android.livewallpaper.weather.engine.AnimPlayer
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
@@ -91,9 +91,9 @@ sealed class Scene(
     }
 
     @CallSuper
-    open fun update(state: WeatherState) {
-        things.spawnClouds(state.weatherType.clouds)
-        things.spawnWisps(state.weatherType.wisps)
+    open fun update(weather: WeatherType) {
+        things.spawnClouds(weather.clouds)
+        things.spawnWisps(weather.wisps)
     }
 
     @CallSuper

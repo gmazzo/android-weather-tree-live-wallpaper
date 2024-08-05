@@ -1,8 +1,8 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.timeofday
 
 import androidx.annotation.FloatRange
+import io.github.gmazzo.android.livewallpaper.weather.Location
 import io.github.gmazzo.android.livewallpaper.weather.OpenGLScoped
-import io.github.gmazzo.android.livewallpaper.weather.WeatherState
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.minutesSinceMidnight
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +19,7 @@ import kotlin.time.Duration.Companion.hours
 @OpenGLScoped
 class TimeOfDay @Inject constructor(
     @Named("scaled") private val time: GlobalTime,
-    private val state: MutableStateFlow<WeatherState>,
+    private val location: MutableStateFlow<Location?>,
 ) {
 
     @FloatRange(from = 0.0, to = 1.0)
@@ -31,7 +31,7 @@ class TimeOfDay @Inject constructor(
     fun update() {
         val now = time.time.value
         val minutes = now.minutesSinceMidnight
-        val location = state.value.location
+        val location = location.value
 
         sunPosition = computeSunProgress(now, minutes, location)
         tintSpec = computeAmbientTintColors(now, minutes, location)
@@ -40,7 +40,7 @@ class TimeOfDay @Inject constructor(
     private fun computeSunProgress(
         now: ZonedDateTime,
         minutes: Duration,
-        location: WeatherState.Location?,
+        location: Location?,
     ) = if (location != null) {
         SunPosition.compute()
             .on(now)
@@ -58,7 +58,7 @@ class TimeOfDay @Inject constructor(
     private fun computeAmbientTintColors(
         now: ZonedDateTime,
         minutes: Duration,
-        location: WeatherState.Location?,
+        location: Location?,
     ): TintSpec {
         var sunrise: Duration? = defaultSunrise
         var midday: Duration? = defaultMidday
