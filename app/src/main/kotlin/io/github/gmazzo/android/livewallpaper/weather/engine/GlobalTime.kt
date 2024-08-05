@@ -1,24 +1,21 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine
 
-import android.text.format.DateUtils
 import kotlinx.coroutines.flow.MutableStateFlow
-import java.time.Instant
-import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
-open class GlobalTime(
-    private val timeScale: Long,
+open class GlobalTime protected constructor(
     private val derived: GlobalTime? = null,
 ) {
 
-    @Inject constructor(derived: Fast) : this(timeScale = 1, derived)
+    @Inject
+    constructor(fast: Fast) : this(derived = fast)
 
-    private var currentMillis =
-        System.currentTimeMillis()
+    val time = MutableStateFlow<ZonedDateTime>(ZonedDateTime.now())
 
     var deltaSeconds = 0f
         private set
@@ -26,32 +23,34 @@ open class GlobalTime(
     var elapsedSeconds = 0f
         private set
 
+    protected open val Long.scaled
+        get() = this
+
     @Inject
     fun update() {
         val now = ZonedDateTime.now()
-        val delta = ChronoUnit.MILLIS.between(this.time.value, now)
+        val delta = ChronoUnit.MILLIS.between(time.value, now)
 
-        update(now, delta)
+        update(delta)
+        derived?.update(delta)
     }
 
-    private fun update(now: ZonedDateTime, delta: Long) {
-        currentMillis += delta * timeScale
-        deltaSeconds = (delta / 1000f).coerceIn(0f, 1f / 3f)
+    private fun update(delta: Long) {
+        val scaledDelta = delta.scaled
+
+        time.value = time.value.plus(scaledDelta, ChronoUnit.MILLIS)
+        deltaSeconds = (scaledDelta / 1000f).coerceIn(0f, 1f / 3f)
         elapsedSeconds += deltaSeconds
-        time.value = computeNow()
-
-        derived?.update(now, delta)
     }
-
-    private val zoneId = ZoneId.systemDefault()
-
-    private fun computeNow() =
-        ZonedDateTime.ofInstant(Instant.ofEpochMilli(currentMillis), zoneId)
-
-    val time = MutableStateFlow<ZonedDateTime>(computeNow())
 
     @Singleton
     class Fast @Inject constructor(
-    ) : GlobalTime(timeScale = DateUtils.DAY_IN_MILLIS / (15 * DateUtils.SECOND_IN_MILLIS))
+        @Named("fastTimeSpeed") private val speed: MutableStateFlow<Float>,
+    ) : GlobalTime() {
+
+        override val Long.scaled
+            get() = (this * speed.value).toLong()
+
+    }
 
 }

@@ -39,10 +39,12 @@ class SettingsActivity : ComponentActivity() {
         setContent {
             SettingsScreen(
                 now = viewModel.time.time.collectAsState().value,
+                timeSpeed = viewModel.timeSpeed.collectAsState().value,
                 updateLocationEnabled = viewModel.updateLocationEnabled.collectAsState().value,
                 weatherState = viewModel.weatherState.collectAsState().value,
                 missingLocationPermission = viewModel.missingLocationPermission.collectAsState().value,
                 updateLocationEnabledChange = viewModel::updateLocationEnabled,
+                onSpeedSelected = viewModel.timeSpeed::value::set,
                 onSceneSelected = viewModel::updateSelectedScene,
                 onRequestLocationPermission = { checkPermissions(null) },
                 onSetAsWallpaper = ::openWallpaperChooser,

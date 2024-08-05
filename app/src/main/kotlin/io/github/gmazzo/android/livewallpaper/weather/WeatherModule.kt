@@ -27,7 +27,10 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import javax.inject.Named
 import javax.inject.Singleton
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.seconds
 
 @Module(subcomponents = [OpenGLComponent::class])
 @InstallIn(SingletonComponent::class)
@@ -39,6 +42,12 @@ object WeatherModule {
     @Provides
     @Singleton
     fun resources(@ApplicationContext context: Context): Resources = context.resources
+
+    @Provides
+    @Singleton
+    @Named("fastTimeSpeed")
+    fun fastTimeSpeed(): MutableStateFlow<Float> =
+        MutableStateFlow((1.days / 15.seconds).toFloat())
 
     @Provides
     @Singleton

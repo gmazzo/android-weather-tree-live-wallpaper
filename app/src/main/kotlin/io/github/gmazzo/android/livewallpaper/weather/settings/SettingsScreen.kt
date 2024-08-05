@@ -71,6 +71,7 @@ import java.time.ZonedDateTime
 import kotlin.math.min
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.seconds
 
 private const val opacity = .6f
 private val margin = 8.dp
@@ -81,10 +82,12 @@ private val sampleConditions = MutableStateFlow(WeatherState())
 @Preview
 fun SettingsScreen(
     now: ZonedDateTime = ZonedDateTime.now(),
+    timeSpeed: Float = 1f,
     updateLocationEnabled: Boolean = true,
     weatherState: WeatherState = sampleConditions.value,
     missingLocationPermission: Boolean = true,
     updateLocationEnabledChange: (Boolean) -> Unit = {},
+    onSpeedSelected: (Float) -> Unit = {},
     onSceneSelected: (SceneMode) -> Unit = {},
     onRequestLocationPermission: () -> Unit = {},
     onSetAsWallpaper: () -> Unit = {},
@@ -127,8 +130,10 @@ fun SettingsScreen(
                     .padding(margin)
                     .fillMaxSize()
                     .animateContentSize(),
-                verticalArrangement = Arrangement.spacedBy(margin, Alignment.Bottom),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(margin / 2, Alignment.Bottom),
             ) {
+                TimeSpeedSelector(timeSpeed, onSpeedSelected)
                 SettingsItem(
                     icon = {
                         Icon(
@@ -182,6 +187,7 @@ private fun DayTimeProgression(
         this >= .9f -> (1f - this) / .1f
         else -> 1f
     }
+
     val startAlpha = startFraction.asAlpha()
     val middleAlpha = middleFraction.asAlpha()
     val endAlpha = endFraction.asAlpha()
@@ -225,16 +231,18 @@ private fun DayTimeProgression(
             }
             .alpha(middleAlpha),
         tint = color,
-        imageVector =if (night) WeatherIcons.day else WeatherIcons.night,
+        imageVector = if (night) WeatherIcons.day else WeatherIcons.night,
         contentDescription = null
     )
-    Spacer(modifier = track.alpha(middleAlpha).constrainAs(createRef()) {
-        start.linkTo(middleIcon.end)
-        end.linkTo(endIcon.start)
-        top.linkTo(parent.top)
-        bottom.linkTo(parent.bottom)
-        width = Dimension.fillToConstraints
-    })
+    Spacer(modifier = track
+        .alpha(middleAlpha)
+        .constrainAs(createRef()) {
+            start.linkTo(middleIcon.end)
+            end.linkTo(endIcon.start)
+            top.linkTo(parent.top)
+            bottom.linkTo(parent.bottom)
+            width = Dimension.fillToConstraints
+        })
     Icon(
         modifier = Modifier
             .constrainAs(endIcon) {
@@ -295,11 +303,47 @@ private fun SettingsItem(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+private val timeSpeeds = listOf(
+    1f to "1:1",
+    (1.days / 15.seconds).toFloat() to "1d:15s",
+    (1.days / 3.seconds).toFloat() to "1d:3s",
+)
+
+@Composable
+private fun TimeSpeedSelector(
+    timeSpeed: Float,
+    onSpeedSelected: (Float) -> Unit,
+) = Selector(
+    entries = timeSpeeds,
+    selected = timeSpeeds.first { (factor) -> factor == timeSpeed },
+    onSelection = { (factor) -> onSpeedSelected(factor) },
+) { (_, label) ->
+    Text(text = label)
+}
+
 @Composable
 private fun WeathersGallery(
     weatherState: WeatherState,
     onSceneSelected: (SceneMode) -> Unit,
+) = Selector(
+    entries = SceneMode.entries,
+    selected = weatherState.weatherType.scene,
+    onSelection = onSceneSelected,
+) { scene ->
+    Icon(
+        modifier = Modifier.fillMaxSize(.6f),
+        imageVector = scene.icon,
+        contentDescription = scene.name,
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun <Value> Selector(
+    entries: List<Value>,
+    selected: Value,
+    onSelection: (Value) -> Unit,
+    label: @Composable (Value) -> Unit,
 ) {
     val noSize = CornerSize(0.dp)
     val shape = MaterialTheme.shapes.extraLarge
@@ -314,24 +358,18 @@ private fun WeathersGallery(
     }
 
     SingleChoiceSegmentedButtonRow {
-        SceneMode.entries.forEachIndexed { index, scene ->
+        entries.forEachIndexed { index, value ->
             SegmentedButton(
-                selected = scene == weatherState.weatherType.scene,
+                selected = value == selected,
                 shape = when (index) {
                     0 -> shapeStart
-                    SceneMode.entries.size - 1 -> shapeEnd
+                    entries.size - 1 -> shapeEnd
                     else -> shapeMiddle
                 },
                 colors = colors,
                 icon = {},
-                onClick = { onSceneSelected(scene) },
-            ) {
-                Icon(
-                    modifier = Modifier.fillMaxSize(.6f),
-                    imageVector = scene.icon,
-                    contentDescription = scene.name,
-                )
-            }
+                onClick = { onSelection(value) },
+            ) { label(value) }
         }
     }
 }
