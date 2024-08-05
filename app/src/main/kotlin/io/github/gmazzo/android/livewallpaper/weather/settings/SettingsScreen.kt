@@ -3,6 +3,8 @@ package io.github.gmazzo.android.livewallpaper.weather.settings
 import android.graphics.Typeface
 import android.os.Build
 import android.text.Spanned
+import android.text.format.DateUtils
+import android.text.format.DateUtils.formatDateTime
 import android.text.style.StyleSpan
 import androidx.annotation.StringRes
 import androidx.compose.animation.animateContentSize
@@ -16,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.icons.Icons
@@ -69,7 +72,6 @@ import io.github.gmazzo.android.livewallpaper.weather.theme.WeatherIcons
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.time.ZonedDateTime
 import kotlin.math.min
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
 
@@ -121,7 +123,7 @@ fun SettingsScreen(
                             )
                         }
                     })
-                DayTimeProgression(now.minutesSinceMidnight)
+                DayTimeProgression(now)
             }
         }) { innerPadding ->
             Column(
@@ -160,27 +162,20 @@ fun SettingsScreen(
 
 @Composable
 private fun DayTimeProgression(
-    minutes: Duration,
-) = ConstraintLayout(
+    now: ZonedDateTime,
+) = Column(
     modifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = margin),
+    horizontalAlignment = Alignment.CenterHorizontally,
 ) {
+    val iconSize = 24.dp
     val color = MaterialTheme.colorScheme.primary.copy(alpha = opacity)
-    val track = Modifier
-        .height(2.dp)
-        .padding(horizontal = margin)
-        .background(color, MaterialTheme.shapes.large)
-
-    val progress = (1 - minutes / 1.days).toFloat()
+    val progress = (1 - now.minutesSinceMidnight / 1.days).toFloat()
     val night = progress >= .5f
     val startFraction = min(progress, (.5f + progress) % 1)
     val middleFraction = startFraction + .5f
     val endFraction = min(startFraction + 1f, 1f)
-
-    val guidelineStart = createGuidelineFromStart(startFraction)
-    val guidelineMiddle = createGuidelineFromStart(middleFraction)
-    val guidelineEnd = createGuidelineFromStart(endFraction)
 
     fun Float.asAlpha() = when {
         this <= .1f -> this / .1f
@@ -192,71 +187,98 @@ private fun DayTimeProgression(
     val middleAlpha = middleFraction.asAlpha()
     val endAlpha = endFraction.asAlpha()
 
-    val (startIcon, middleIcon, endIcon) = createRefs()
+    ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
+        val track = Modifier
+            .height(2.dp)
+            .padding(horizontal = margin)
+            .background(color, MaterialTheme.shapes.large)
 
-    Spacer(modifier = track.constrainAs(createRef()) {
-        start.linkTo(parent.start)
-        end.linkTo(startIcon.start)
-        top.linkTo(parent.top)
-        bottom.linkTo(parent.bottom)
-        width = Dimension.fillToConstraints
-    })
-    Icon(
-        modifier = Modifier
-            .constrainAs(startIcon) {
-                start.linkTo(guidelineStart)
-                end.linkTo(guidelineStart)
-                top.linkTo(parent.top)
-                bottom.linkTo(parent.bottom)
-            }
-            .alpha(startAlpha),
-        tint = color,
-        imageVector = if (night) WeatherIcons.night else WeatherIcons.day,
-        contentDescription = null
-    )
-    Spacer(modifier = track.constrainAs(createRef()) {
-        start.linkTo(startIcon.end)
-        end.linkTo(middleIcon.start)
-        top.linkTo(parent.top)
-        bottom.linkTo(parent.bottom)
-        width = Dimension.fillToConstraints
-    })
-    Icon(
-        modifier = Modifier
-            .constrainAs(middleIcon) {
-                start.linkTo(guidelineMiddle)
-                end.linkTo(guidelineMiddle)
-                top.linkTo(parent.top)
-                bottom.linkTo(parent.bottom)
-            }
-            .alpha(middleAlpha),
-        tint = color,
-        imageVector = if (night) WeatherIcons.day else WeatherIcons.night,
-        contentDescription = null
-    )
-    Spacer(modifier = track
-        .alpha(middleAlpha)
-        .constrainAs(createRef()) {
-            start.linkTo(middleIcon.end)
-            end.linkTo(endIcon.start)
+        val guidelineStart = createGuidelineFromStart(startFraction)
+        val guidelineMiddle = createGuidelineFromStart(middleFraction)
+        val guidelineEnd = createGuidelineFromStart(endFraction)
+
+        val (spacerStart, startIcon, spacerMiddle, middleIcon, spacerEnd, endIcon) = createRefs()
+
+        Spacer(modifier = track.constrainAs(spacerStart) {
+            start.linkTo(parent.start, margin = iconSize / 2)
+            end.linkTo(startIcon.start)
             top.linkTo(parent.top)
             bottom.linkTo(parent.bottom)
             width = Dimension.fillToConstraints
         })
-    Icon(
-        modifier = Modifier
-            .constrainAs(endIcon) {
-                start.linkTo(guidelineEnd)
-                end.linkTo(guidelineEnd)
+        Icon(
+            modifier = Modifier
+                .size(iconSize)
+                .alpha(startAlpha)
+                .constrainAs(startIcon) {
+                    start.linkTo(guidelineStart)
+                    end.linkTo(guidelineStart)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                },
+            tint = color,
+            imageVector = if (night) WeatherIcons.night else WeatherIcons.day,
+            contentDescription = null
+        )
+        Spacer(modifier = track.constrainAs(spacerMiddle) {
+            start.linkTo(startIcon.end)
+            end.linkTo(middleIcon.start)
+            top.linkTo(parent.top)
+            bottom.linkTo(parent.bottom)
+            width = Dimension.fillToConstraints
+        })
+        Icon(
+            modifier = Modifier
+                .size(iconSize)
+                .alpha(middleAlpha)
+                .constrainAs(middleIcon) {
+                    start.linkTo(guidelineMiddle)
+                    end.linkTo(guidelineMiddle)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                },
+            tint = color,
+            imageVector = if (night) WeatherIcons.day else WeatherIcons.night,
+            contentDescription = null
+        )
+        Spacer(modifier = track
+            .alpha(middleAlpha)
+            .constrainAs(spacerEnd) {
+                start.linkTo(middleIcon.end)
+                end.linkTo(endIcon.start)
                 top.linkTo(parent.top)
                 bottom.linkTo(parent.bottom)
-            }
-            .alpha(endAlpha),
-        tint = color,
-        imageVector = if (night) WeatherIcons.night else WeatherIcons.day,
-        contentDescription = null
+                width = Dimension.fillToConstraints
+            })
+        Icon(
+            modifier = Modifier
+                .size(iconSize)
+                .alpha(endAlpha)
+                .constrainAs(endIcon) {
+                    start.linkTo(guidelineEnd)
+                    end.linkTo(guidelineEnd)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                },
+            tint = color,
+            imageVector = if (night) WeatherIcons.night else WeatherIcons.day,
+            contentDescription = null
+        )
+    }
+    Text(
+        modifier = Modifier.padding(top = margin),
+        color = color,
+        style = MaterialTheme.typography.titleMedium,
+        text = formatDateTime(
+            LocalContext.current, now.toEpochSecond() * 1000,
+            DateUtils.FORMAT_SHOW_DATE or
+                    DateUtils.FORMAT_SHOW_TIME or
+                    DateUtils.FORMAT_ABBREV_ALL or
+                    DateUtils.FORMAT_NO_YEAR
+        )
     )
 }
+
 
 @Composable
 private fun SettingsItem(

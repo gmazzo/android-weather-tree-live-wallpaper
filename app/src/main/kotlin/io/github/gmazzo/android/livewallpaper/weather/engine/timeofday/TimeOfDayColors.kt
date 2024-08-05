@@ -8,20 +8,20 @@ typealias TimeOfDayColors = Array<Int>
 
 fun Resources.timeOfDayColors(
     @ColorRes sunrise: Int,
-    @ColorRes midday: Int,
-    @ColorRes noon: Int,
+    @ColorRes day: Int,
     @ColorRes sunset: Int,
+    @ColorRes night: Int,
 ) = arrayOf(
     getColor(sunrise, null),
-    getColor(midday, null),
-    getColor(noon, null),
+    getColor(day, null),
     getColor(sunset, null),
+    getColor(night, null),
 )
 
 @ColorInt
 operator fun TimeOfDayColors.get(color: TimeOfDay.TintColor) = this[when (color) {
     TimeOfDay.TintColor.SUNRISE -> 0
-    TimeOfDay.TintColor.MIDDAY -> 1
-    TimeOfDay.TintColor.NOON -> 2
-    TimeOfDay.TintColor.SUNSET -> 3
+    TimeOfDay.TintColor.DAY -> 1
+    TimeOfDay.TintColor.SUNSET -> 2
+    TimeOfDay.TintColor.NIGHT -> 3
 }]

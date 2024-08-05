@@ -47,21 +47,21 @@ internal object ScenesModule {
     ): TimeOfDayColors = when (mode) {
         SceneMode.RAIN, SceneMode.STORM -> resources.timeOfDayColors(
             sunrise = R.color.timeOfDay_rain_sunrise,
-            midday = R.color.timeOfDay_rain_midday,
-            noon = R.color.timeOfDay_rain_noon,
+            day = R.color.timeOfDay_rain_day,
             sunset = R.color.timeOfDay_rain_sunset,
+            night = R.color.timeOfDay_rain_night,
         )
         SceneMode.FOG -> resources.timeOfDayColors(
             sunrise = R.color.timeOfDay_fog_sunrise,
-            midday = R.color.timeOfDay_fog_midday,
-            noon = R.color.timeOfDay_fog_noon,
+            day = R.color.timeOfDay_fog_day,
             sunset = R.color.timeOfDay_fog_sunset,
+            night = R.color.timeOfDay_fog_night,
         )
         else -> resources.timeOfDayColors(
             sunrise = R.color.timeOfDay_sunrise,
-            midday = R.color.timeOfDay_midday,
-            noon = R.color.timeOfDay_noon,
+            day = R.color.timeOfDay_day,
             sunset = R.color.timeOfDay_sunset,
+            night = R.color.timeOfDay_night,
         )
     }
 

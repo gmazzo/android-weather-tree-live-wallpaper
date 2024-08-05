@@ -11,6 +11,7 @@ import org.shredzone.commons.suncalc.SunTimes
 import java.time.ZonedDateTime
 import javax.inject.Inject
 import javax.inject.Named
+import kotlin.math.max
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
@@ -48,7 +49,6 @@ class TimeOfDay @Inject constructor(
             .altitude.toFloat() / 90f
 
     } else {
-        // TODO can it be simplified?
         when {
             minutes >= defaultMidday -> 1 - (minutes - defaultMidday) / (defaultSunset - defaultMidday)
             else -> (minutes - defaultSunrise) / (defaultMidday - defaultSunrise)
@@ -79,9 +79,9 @@ class TimeOfDay @Inject constructor(
 
         val colors = listOfNotNull(
             sunrise?.to(TintColor.SUNRISE),
-            midday?.to(TintColor.MIDDAY),
-            sunset?.to(TintColor.NOON),
-            midnight?.to(TintColor.SUNSET),
+            midday?.to(TintColor.DAY),
+            sunset?.to(TintColor.SUNSET),
+            midnight?.to(TintColor.NIGHT),
         )
 
         val (mainColor, sinceDelta) = colors.asSequence()
@@ -99,11 +99,14 @@ class TimeOfDay @Inject constructor(
         return TintSpec(
             main = mainColor,
             blend = blendColor,
-            amount = amount
+            amount = (when(blendColor) {
+                TintColor.SUNSET, TintColor.SUNRISE -> max(amount - .5f, 0f)
+                else -> amount
+            } * 2).coerceIn(0f, 1f)
         )
     }
 
-    enum class TintColor { SUNRISE, MIDDAY, NOON, SUNSET }
+    enum class TintColor { SUNRISE, DAY, SUNSET, NIGHT }
 
     data class TintSpec(
         val main: TintColor,
