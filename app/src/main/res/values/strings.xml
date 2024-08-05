@@ -10,6 +10,10 @@
     <string name="settings_missing_location_permission_summary_instructions">When prompted, select the option:</string>
     <string name="settings_missing_location_permission_grant">Grant</string>
     <string name="settings_set_as_wallpaper">Set as device wallpaper</string>
+    <string name="settings_speed">Time speed</string>
+    <string name="settings_speed_realtime">Realtime</string>
+    <string name="settings_speed_day_in_15secs">Day in 15s</string>
+    <string name="settings_speed_day_in_3secs">Day in 3s</string>
 
     <string name="scene_clear">Clear</string>
     <string name="scene_cloudy">Cloudy</string>

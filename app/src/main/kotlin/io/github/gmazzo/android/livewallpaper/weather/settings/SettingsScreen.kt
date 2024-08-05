@@ -12,6 +12,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,6 +28,7 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults.ContentPadding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -76,7 +78,6 @@ import io.github.gmazzo.android.livewallpaper.weather.WeatherType
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode
 import io.github.gmazzo.android.livewallpaper.weather.minutesSinceMidnight
 import io.github.gmazzo.android.livewallpaper.weather.theme.WeatherIcons
-import kotlinx.coroutines.flow.MutableStateFlow
 import java.time.ZonedDateTime
 import kotlin.math.min
 import kotlin.time.Duration.Companion.days
@@ -84,12 +85,10 @@ import kotlin.time.Duration.Companion.seconds
 
 private const val opacity = .6f
 private val margin = 8.dp
-private val sampleConditions = MutableStateFlow(WeatherType.SUNNY_DAY)
-
 private val timeSpeeds = listOf(
-    1f to "1:1",
-    (1.days / 15.seconds).toFloat() to "1d:15s",
-    (1.days / 3.seconds).toFloat() to "1d:3s",
+    1f to R.string.settings_speed_realtime,
+    (1.days / 15.seconds).toFloat() to R.string.settings_speed_day_in_15secs,
+    (1.days / 3.seconds).toFloat() to R.string.settings_speed_day_in_3secs,
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -99,7 +98,7 @@ fun SettingsScreen(
     now: ZonedDateTime = ZonedDateTime.now(),
     timeSpeed: Float = 1f,
     updateLocationEnabled: Boolean = true,
-    weather: WeatherType = sampleConditions.value,
+    weather: WeatherType = WeatherType.SUNNY_DAY,
     missingLocationPermission: Boolean = true,
     updateLocationEnabledChange: (Boolean) -> Unit = {},
     onSpeedSelected: (Float) -> Unit = {},
@@ -175,27 +174,54 @@ fun SettingsScreen(
 
 @Composable
 private fun TimeSpeedMenu(
-    timeSpeed: Float,
+    selectedSpeed: Float,
     onSpeedSelected: (Float) -> Unit,
 ) {
     var showMenu by remember { mutableStateOf(false) }
-    val selectedIndex =
-        timeSpeeds.indexOfFirst { (speed) -> speed == timeSpeed }
+    val selected = timeSpeeds.find { it.first == selectedSpeed }
 
-    OutlinedIconButton(onClick = { showMenu = !showMenu }) {
-        Icon(imageVector = WeatherIcons.speed, contentDescription = null)
-        // TODO show the selection
-        //  Text(text = timeSpeeds[selectedIndex].second)
+    @Composable
+    fun SpeedIcon() = Icon(
+        imageVector = WeatherIcons.speed,
+        contentDescription = stringResource(R.string.settings_speed)
+    )
+
+    Box(modifier = Modifier.animateContentSize()) {
+        if (showMenu) {
+            Button(
+                contentPadding = PaddingValues(ContentPadding.calculateTopPadding()),
+                onClick = { showMenu = !showMenu },
+            ) {
+                SpeedIcon()
+                if (selected != null) {
+                    Text(
+                        text = stringResource(selected.second),
+                        modifier = Modifier.padding(start = margin)
+                    )
+                }
+            }
+
+        } else {
+            OutlinedIconButton(onClick = { showMenu = !showMenu }) {
+                SpeedIcon()
+            }
+        }
     }
     DropdownMenu(
         expanded = showMenu,
         onDismissRequest = { showMenu = false }
     ) {
-
-        timeSpeeds.forEachIndexed { i, it ->
+        timeSpeeds.forEach {
             DropdownMenuItem(
-                text = { Text(text = it.second) },
-                enabled = i != selectedIndex,
+                text = { Text(text = stringResource(it.second)) },
+                trailingIcon = {
+                    if (it == selected) {
+                        Icon(
+                            imageVector = Icons.Outlined.Check,
+                            contentDescription = null,
+                        )
+                    }
+                },
                 onClick = { onSpeedSelected(it.first) })
         }
     }
