@@ -30,6 +30,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
@@ -37,6 +39,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -48,6 +51,10 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -78,6 +85,12 @@ import kotlin.time.Duration.Companion.seconds
 private const val opacity = .6f
 private val margin = 8.dp
 private val sampleConditions = MutableStateFlow(WeatherType.SUNNY_DAY)
+
+private val timeSpeeds = listOf(
+    1f to "1:1",
+    (1.days / 15.seconds).toFloat() to "1d:15s",
+    (1.days / 3.seconds).toFloat() to "1d:3s",
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -116,6 +129,7 @@ fun SettingsScreen(
                         }
                     },
                     actions = {
+                        TimeSpeedMenu(timeSpeed, onSpeedSelected)
                         FilledIconButton(onClick = onSetAsWallpaper) {
                             Icon(
                                 imageVector = Icons.Outlined.Check,
@@ -133,9 +147,8 @@ fun SettingsScreen(
                     .fillMaxSize()
                     .animateContentSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(margin / 2, Alignment.Bottom),
+                verticalArrangement = Arrangement.spacedBy(margin, Alignment.Bottom),
             ) {
-                TimeSpeedSelector(timeSpeed, onSpeedSelected)
                 SettingsItem(
                     icon = {
                         Icon(
@@ -156,6 +169,34 @@ fun SettingsScreen(
                 }
                 WeathersGallery(weather.scene, onSceneSelected)
             }
+        }
+    }
+}
+
+@Composable
+private fun TimeSpeedMenu(
+    timeSpeed: Float,
+    onSpeedSelected: (Float) -> Unit,
+) {
+    var showMenu by remember { mutableStateOf(false) }
+    val selectedIndex =
+        timeSpeeds.indexOfFirst { (speed) -> speed == timeSpeed }
+
+    OutlinedIconButton(onClick = { showMenu = !showMenu }) {
+        Icon(imageVector = WeatherIcons.speed, contentDescription = null)
+        // TODO show the selection
+        //  Text(text = timeSpeeds[selectedIndex].second)
+    }
+    DropdownMenu(
+        expanded = showMenu,
+        onDismissRequest = { showMenu = false }
+    ) {
+
+        timeSpeeds.forEachIndexed { i, it ->
+            DropdownMenuItem(
+                text = { Text(text = it.second) },
+                enabled = i != selectedIndex,
+                onClick = { onSpeedSelected(it.first) })
         }
     }
 }
@@ -323,24 +364,6 @@ private fun SettingsItem(
         }
         widget?.invoke()
     }
-}
-
-private val timeSpeeds = listOf(
-    1f to "1:1",
-    (1.days / 15.seconds).toFloat() to "1d:15s",
-    (1.days / 3.seconds).toFloat() to "1d:3s",
-)
-
-@Composable
-private fun TimeSpeedSelector(
-    timeSpeed: Float,
-    onSpeedSelected: (Float) -> Unit,
-) = Selector(
-    entries = timeSpeeds,
-    selected = timeSpeeds.first { (factor) -> factor == timeSpeed },
-    onSelection = { (factor) -> onSpeedSelected(factor) },
-) { (_, label) ->
-    Text(text = label)
 }
 
 @Composable
