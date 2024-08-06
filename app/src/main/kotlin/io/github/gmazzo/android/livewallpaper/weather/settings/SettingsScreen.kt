@@ -77,7 +77,8 @@ import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.WeatherType
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode
 import io.github.gmazzo.android.livewallpaper.weather.minutesSinceMidnight
-import io.github.gmazzo.android.livewallpaper.weather.theme.WeatherIcons
+import io.github.gmazzo.android.livewallpaper.weather.theme.Speed
+import io.github.gmazzo.android.livewallpaper.weather.theme.TimeOfDay
 import java.time.ZonedDateTime
 import kotlin.math.min
 import kotlin.time.Duration.Companion.days
@@ -182,7 +183,7 @@ private fun TimeSpeedMenu(
 
     @Composable
     fun SpeedIcon() = Icon(
-        imageVector = WeatherIcons.speed,
+        imageVector = Icons.Speed,
         contentDescription = stringResource(R.string.settings_speed)
     )
 
@@ -284,7 +285,7 @@ private fun DayTimeProgression(
                     bottom.linkTo(parent.bottom)
                 },
             tint = color,
-            imageVector = if (night) WeatherIcons.night else WeatherIcons.day,
+            imageVector = if (night) Icons.TimeOfDay.Night else Icons.TimeOfDay.Day,
             contentDescription = null
         )
         Spacer(modifier = track.constrainAs(spacerMiddle) {
@@ -305,7 +306,7 @@ private fun DayTimeProgression(
                     bottom.linkTo(parent.bottom)
                 },
             tint = color,
-            imageVector = if (night) WeatherIcons.day else WeatherIcons.night,
+            imageVector = if (night) Icons.TimeOfDay.Day else Icons.TimeOfDay.Night,
             contentDescription = null
         )
         Spacer(modifier = track
@@ -328,7 +329,7 @@ private fun DayTimeProgression(
                     bottom.linkTo(parent.bottom)
                 },
             tint = color,
-            imageVector = if (night) WeatherIcons.night else WeatherIcons.day,
+            imageVector = if (night) Icons.TimeOfDay.Night else Icons.TimeOfDay.Day,
             contentDescription = null
         )
     }
