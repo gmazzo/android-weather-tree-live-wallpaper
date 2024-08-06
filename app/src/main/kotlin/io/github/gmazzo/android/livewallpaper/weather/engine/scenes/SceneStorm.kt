@@ -3,18 +3,12 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 import android.graphics.Color
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
-import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.Wave
-import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.particles.ParticlesRain
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
-import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingLightning
-import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things
-import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDay
-import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDayTint
 import io.github.gmazzo.android.livewallpaper.weather.engine.withFlags
 import javax.inject.Inject
 import javax.inject.Provider
@@ -25,22 +19,16 @@ import javax.microedition.khronos.opengles.GL10.GL_LIGHT1
 import javax.microedition.khronos.opengles.GL10.GL_LIGHTING
 import javax.microedition.khronos.opengles.GL10.GL_MODELVIEW
 import javax.microedition.khronos.opengles.GL10.GL_POSITION
-import javax.microedition.khronos.opengles.GL11
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.seconds
 
 class SceneStorm @Inject constructor(
-    time: GlobalTime,
-    gl: GL11,
-    models: Models,
-    textures: Textures,
-    things: Things,
-    timeOfDay: TimeOfDay,
-    timeOfDayTint: TimeOfDayTint,
+    dependencies: SceneDependencies,
     private val particles: ParticlesRain,
     private val lightningProvider: Provider<ThingLightning>,
 ) : Scene(
-    time, gl, models, textures, things, timeOfDay, timeOfDayTint, R.drawable.storm_bg,
+    dependencies,
+    background = R.drawable.storm_bg,
     backgroundTint = EngineColor(Color.WHITE),
 ) {
 

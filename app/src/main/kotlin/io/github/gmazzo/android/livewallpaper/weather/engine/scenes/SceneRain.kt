@@ -3,15 +3,9 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 import android.graphics.Color
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
-import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
-import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.particles.ParticlesRain
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
-import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
-import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things
-import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDay
-import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDayTint
 import io.github.gmazzo.android.livewallpaper.weather.engine.withFlags
 import javax.inject.Inject
 import javax.microedition.khronos.opengles.GL10.GL_AMBIENT
@@ -19,19 +13,13 @@ import javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT
 import javax.microedition.khronos.opengles.GL10.GL_DIFFUSE
 import javax.microedition.khronos.opengles.GL10.GL_LIGHTING
 import javax.microedition.khronos.opengles.GL10.GL_MODELVIEW
-import javax.microedition.khronos.opengles.GL11
 
 class SceneRain @Inject constructor(
-    time: GlobalTime,
-    gl: GL11,
-    models: Models,
-    textures: Textures,
-    things: Things,
-    timeOfDay: TimeOfDay,
-    timeOfDayTint: TimeOfDayTint,
+    dependencies: SceneDependencies,
     private val particles: ParticlesRain,
 ) : Scene(
-    time, gl, models, textures, things, timeOfDay, timeOfDayTint, R.drawable.storm_bg,
+    dependencies,
+    background = R.drawable.storm_bg,
     backgroundTint = EngineColor(Color.WHITE),
 ) {
 
@@ -44,7 +32,7 @@ class SceneRain @Inject constructor(
         timeOfDayTint.color.toArray(lightDiffuse)
         gl.glLightfv(GL_COLOR_BUFFER_BIT, GL_DIFFUSE, lightDiffuse, 0)
         gl.glLightfv(GL_COLOR_BUFFER_BIT, GL_AMBIENT, lightDiffuse, 0)
- }
+    }
 
     override fun drawBackground() {
         super.drawBackground()

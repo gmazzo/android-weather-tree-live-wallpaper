@@ -2,6 +2,7 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 
 import android.content.res.Resources
 import android.graphics.Color
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.migration.DisableInstallInCheck
@@ -16,7 +17,7 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.timeOfDay
 import javax.inject.Named
 import javax.inject.Provider
 
-@Module
+@Module(includes = [ScenesModule.Bindings::class])
 @DisableInstallInCheck
 internal object ScenesModule {
 
@@ -86,6 +87,15 @@ internal object ScenesModule {
         SceneMode.STORM -> EngineColor(.2f, .2f, .2f)
         SceneMode.RAIN -> EngineColor(Color.WHITE)
         else -> timeOfDayTint.color
+    }
+
+    @Module
+    @DisableInstallInCheck
+    interface Bindings {
+
+        @Binds
+        fun dependencies(impl: SceneDependencies.Impl): SceneDependencies
+
     }
 
 }

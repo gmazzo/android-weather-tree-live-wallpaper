@@ -1,7 +1,9 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 
 import dagger.BindsInstance
+import dagger.Lazy
 import dagger.Subcomponent
+import javax.inject.Named
 import javax.inject.Scope
 
 @Scope
@@ -15,11 +17,15 @@ interface SceneComponent {
 
     val mode: SceneMode
 
-    val scene: Scene
+    // Lazy to delay instantiation until OpenGL is properly switched (at draw phase)
+    val scene: Lazy<Scene>
 
     @Subcomponent.Factory
     fun interface Factory {
-        fun create(@BindsInstance mode: SceneMode): SceneComponent
+        fun create(
+            @BindsInstance mode: SceneMode,
+            @BindsInstance @Named("landscape") landscape: Boolean,
+        ): SceneComponent
     }
 
 }

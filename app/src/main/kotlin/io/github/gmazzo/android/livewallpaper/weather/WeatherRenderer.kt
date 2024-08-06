@@ -80,13 +80,9 @@ internal class WeatherRenderer @AssistedInject constructor(
         val mode = weather.scene
 
         if (currentScene?.mode != mode) {
-            currentScene?.scene?.unload()
-            currentScene = glContext.sceneFactory.create(mode).also {
-                it.scene.landscape = landscape
-                it.scene.load()
-            }
+            currentScene?.scene?.get()?.unload()
+            currentScene = glContext.sceneFactory.create(mode, landscape)
         }
-        currentScene!!.scene.update(weather)
 
         Log.i(TAG, "Weather changed to $weather, isDemoMode=$demoMode")
     }
@@ -104,7 +100,7 @@ internal class WeatherRenderer @AssistedInject constructor(
         gl.glViewport(0, 0, w, h)
         gl.setRenderDefaults()
 
-        currentScene?.scene?.unload()
+        currentScene?.scene?.get()?.unload()
         currentScene = null
         glContext.models.close()
         glContext.textures.close()
@@ -140,7 +136,7 @@ internal class WeatherRenderer @AssistedInject constructor(
             updateCameraPosition()
             gl.updateProjection()
 
-            scene.draw()
+            scene.get().draw()
         }
     }
 

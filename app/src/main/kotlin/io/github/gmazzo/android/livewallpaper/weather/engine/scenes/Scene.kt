@@ -1,22 +1,21 @@
+@file:Suppress("LeakingThis")
+
 package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 
 import androidx.annotation.CallSuper
 import androidx.annotation.DrawableRes
 import io.github.gmazzo.android.livewallpaper.weather.R
-import io.github.gmazzo.android.livewallpaper.weather.WeatherType
 import io.github.gmazzo.android.livewallpaper.weather.engine.AnimPlayer
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
-import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.AnimatedModel
-import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
-import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
-import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things.Companion.WIND_SPEED
-import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDay
 import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDay.Companion.GOLDER_HOUR_FACTOR
-import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDayTint
 import io.github.gmazzo.android.livewallpaper.weather.engine.withColor
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 import javax.microedition.khronos.opengles.GL10.GL_MODELVIEW
 import javax.microedition.khronos.opengles.GL10.GL_MODULATE
 import javax.microedition.khronos.opengles.GL10.GL_ONE
@@ -24,30 +23,20 @@ import javax.microedition.khronos.opengles.GL10.GL_ONE_MINUS_SRC_ALPHA
 import javax.microedition.khronos.opengles.GL10.GL_SRC_ALPHA
 import javax.microedition.khronos.opengles.GL10.GL_TEXTURE
 import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D
-import javax.microedition.khronos.opengles.GL11
 import kotlin.random.Random
 
 sealed class Scene(
-    protected val time: GlobalTime,
-    protected val gl: GL11,
-    protected val models: Models,
-    protected val textures: Textures,
-    protected val things: Things,
-    protected val timeOfDay: TimeOfDay,
-    protected val timeOfDayTint: TimeOfDayTint,
-    @DrawableRes backgroundId: Int,
-    private val backgroundTint: EngineColor = timeOfDayTint.color,
+    dependencies: SceneDependencies,
+    @DrawableRes background: Int,
+    private val backgroundTint: EngineColor = dependencies.timeOfDayTint.color,
     private val withSunAndMoon: Boolean = false,
     private val withStars: Boolean = false,
-) {
-
-    var landscape = false
-
+) : SceneDependencies by dependencies {
     private val treesAnim = AnimPlayer(0, 19, 5f, false)
     private var treesAnimateDelay = 5f
 
     private val backgroundModel = models[R.raw.plane_16x16]
-    private val backgroundTexture = textures[backgroundId]
+    private val backgroundTexture = textures[background]
 
     private val starModel = models[R.raw.stars]
     private val starTexture = textures[R.drawable.stars]
@@ -77,23 +66,24 @@ sealed class Scene(
         things.render(foreground = true)
     }
 
+    @Inject
     @CallSuper
     open fun load() {
         if (withSunAndMoon) {
             things.spawnSun()
             things.spawnMoon()
         }
+        CoroutineScope(dispatcher).launch {
+            weather.collectLatest {
+                things.spawnClouds(it.clouds)
+                things.spawnWisps(it.wisps)
+            }
+        }
     }
 
     @CallSuper
     open fun unload() {
         things.clear()
-    }
-
-    @CallSuper
-    open fun update(weather: WeatherType) {
-        things.spawnClouds(weather.clouds)
-        things.spawnWisps(weather.wisps)
     }
 
     @CallSuper
