@@ -9,16 +9,18 @@ import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.core.content.getSystemService
 import androidx.hilt.work.HiltWorker
 import androidx.work.Constraints
+import androidx.work.CoroutineWorker
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import androidx.work.Worker
 import androidx.work.WorkerParameters
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.github.gmazzo.android.livewallpaper.weather.api.LocationForecastAPI
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 import android.location.Location as AndroidLocation
 
@@ -29,33 +31,35 @@ class WeatherUpdateWorker @AssistedInject constructor(
     private val location: MutableStateFlow<Location>,
     private val weather: MutableStateFlow<WeatherType>,
     private val forecastAPI: LocationForecastAPI,
-) : Worker(context, workerParams) {
+) : CoroutineWorker(context, workerParams) {
 
-    override fun doWork(): Result {
+    override suspend fun doWork(): Result {
         val location = applicationContext.location ?: return Result.retry()
         this.location.value = Location(location.latitude, location.longitude)
 
-        val response = forecastAPI
-            .getForecast(location.latitude.toFloat(), location.longitude.toFloat(), null)
-            .execute().body() ?: return Result.retry()
+        val response =
+            withContext(Dispatchers.IO) {
+                forecastAPI.getForecast(location.latitude, location.longitude, null)
+            }
 
         val series = response.properties.timeSeries.firstOrNull() ?: return Result.failure()
         weather.value = series.data.nextHour.weatherType
         return Result.success()
     }
 
-    private val Context.location: AndroidLocation? get() {
-        if (checkSelfPermission(this, ACCESS_COARSE_LOCATION) != PERMISSION_GRANTED) {
-            Log.e(TAG, "Missing $ACCESS_COARSE_LOCATION to access location")
-            return null
-        }
+    private val Context.location: AndroidLocation?
+        get() {
+            if (checkSelfPermission(this, ACCESS_COARSE_LOCATION) != PERMISSION_GRANTED) {
+                Log.e(TAG, "Missing $ACCESS_COARSE_LOCATION to access location")
+                return null
+            }
 
-        val manager: LocationManager = getSystemService() ?: return null
-        return manager.allProviders.asSequence()
-            .mapNotNull(manager::getLastKnownLocation)
-            .firstOrNull()
-            ?.also { Log.i(TAG, "LastKnownLocation: lat=${it.latitude}, lng=${it.longitude}") }
-    }
+            val manager: LocationManager = getSystemService() ?: return null
+            return manager.allProviders.asSequence()
+                .mapNotNull(manager::getLastKnownLocation)
+                .firstOrNull()
+                ?.also { Log.i(TAG, "LastKnownLocation: lat=${it.latitude}, lng=${it.longitude}") }
+        }
 
     companion object {
         private const val TAG = "weatherUpdate"

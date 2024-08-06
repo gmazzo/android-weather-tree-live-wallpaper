@@ -23,6 +23,7 @@ android {
 
         buildConfigField("boolean", "DEMO_MODE", "DEBUG")
         buildConfigField("String", "FORECAST_ENDPOINT", "\"https://api.met.no/weatherapi/\"")
+        buildConfigField("String", "REVERSE_GEOCODING_ENDPOINT", "\"https://api.bigdatacloud.net/data/\"")
     }
 
     buildTypes {
@@ -55,6 +56,7 @@ dependencies {
     implementation(libs.androidx.startUp)
     implementation(libs.androidx.workManager)
     implementation(libs.hilt)
+    implementation(platform(libs.kotlinx.coroutines))
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.okhttp)
     implementation(libs.retrofit)
@@ -62,4 +64,5 @@ dependencies {
 
     testImplementation(libs.hilt.testing)
     testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
 }

@@ -73,6 +73,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.example.compose.AppTheme
+import io.github.gmazzo.android.livewallpaper.weather.Location
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.WeatherType
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode
@@ -80,6 +81,7 @@ import io.github.gmazzo.android.livewallpaper.weather.minutesSinceMidnight
 import io.github.gmazzo.android.livewallpaper.weather.theme.Speed
 import io.github.gmazzo.android.livewallpaper.weather.theme.TimeOfDay
 import java.time.ZonedDateTime
+import java.util.Locale
 import kotlin.math.min
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
@@ -98,6 +100,7 @@ private val timeSpeeds = listOf(
 fun SettingsScreen(
     now: ZonedDateTime = ZonedDateTime.now(),
     timeSpeed: Float = 1f,
+    location: Location? = Location(41.3825, 2.176944, "Barcelona"),
     updateLocationEnabled: Boolean = true,
     weather: WeatherType = WeatherType.SUNNY_DAY,
     missingLocationPermission: Boolean = true,
@@ -137,7 +140,7 @@ fun SettingsScreen(
                             )
                         }
                     })
-                DayTimeProgression(now)
+                DayTimeProgression(now, location)
             }
         }) { innerPadding ->
             Column(
@@ -149,21 +152,7 @@ fun SettingsScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(margin, Alignment.Bottom),
             ) {
-                SettingsItem(
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Filled.LocationOn,
-                            contentDescription = null,
-                        )
-                    },
-                    title = { Text(text = stringResource(id = R.string.settings_use_location)) },
-                    summary = { Text(text = stringResource(id = R.string.settings_use_location_summary)) },
-                ) {
-                    Switch(
-                        checked = updateLocationEnabled,
-                        onCheckedChange = updateLocationEnabledChange
-                    )
-                }
+                UseDeviceLocationPanel(updateLocationEnabled, updateLocationEnabledChange)
                 if (missingLocationPermission) {
                     MissingLocationPermissionPanel(onRequestLocationPermission)
                 }
@@ -231,6 +220,7 @@ private fun TimeSpeedMenu(
 @Composable
 private fun DayTimeProgression(
     now: ZonedDateTime,
+    location: Location?,
 ) = Column(
     modifier = Modifier
         .fillMaxWidth()
@@ -333,8 +323,21 @@ private fun DayTimeProgression(
             contentDescription = null
         )
     }
+    if (location != null) {
+        Text(
+            modifier = Modifier.padding(top = margin),
+            color = color,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.ExtraBold,
+            text = location.city ?: String.format(
+                Locale.getDefault(),
+                "%.3f lat, %.3f lng",
+                location.latitude,
+                location.longitude
+            )
+        )
+    }
     Text(
-        modifier = Modifier.padding(top = margin),
         color = color,
         style = MaterialTheme.typography.titleMedium,
         text = formatDateTime(
@@ -347,7 +350,6 @@ private fun DayTimeProgression(
     )
 }
 
-
 @Composable
 private fun SettingsItem(
     containerColor: Color? = null,
@@ -358,8 +360,9 @@ private fun SettingsItem(
     widget: @Composable (() -> Unit)? = null,
 ) = Card(
     colors = CardDefaults.cardColors().let {
-        it.copy(containerColor = (containerColor ?: it.containerColor).copy(alpha = .6f))
-    }, onClick = onClick
+        it.copy(containerColor = (containerColor ?: it.containerColor).copy(alpha = opacity))
+    },
+    onClick = onClick
 ) {
     Row(
         modifier = Modifier.padding(margin),
@@ -447,7 +450,29 @@ private fun <Value> Selector(
 }
 
 @Composable
-private fun MissingLocationPermissionPanel(onRequestLocationPermission: () -> Unit) = SettingsItem(
+private fun UseDeviceLocationPanel(
+    updateLocationEnabled: Boolean,
+    updateLocationEnabledChange: (Boolean) -> Unit,
+) = SettingsItem(
+    icon = {
+        Icon(
+            imageVector = Icons.Filled.LocationOn,
+            contentDescription = null,
+        )
+    },
+    title = { Text(text = stringResource(id = R.string.settings_use_location)) },
+    summary = { Text(text = stringResource(id = R.string.settings_use_location_summary)) },
+) {
+    Switch(
+        checked = updateLocationEnabled,
+        onCheckedChange = updateLocationEnabledChange
+    )
+}
+
+@Composable
+private fun MissingLocationPermissionPanel(
+    onRequestLocationPermission: () -> Unit,
+) = SettingsItem(
     containerColor = MaterialTheme.colorScheme.errorContainer,
     icon = { Icon(imageVector = Icons.Outlined.Warning, contentDescription = null) },
     title = { Text(textResource(R.string.settings_missing_location_permission_title)) },

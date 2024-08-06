@@ -1,6 +1,7 @@
 package io.github.gmazzo.android.livewallpaper.weather.forecast
 
 import io.github.gmazzo.android.livewallpaper.weather.api.HttpModule
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertNotNull
 import org.junit.Test
 
@@ -14,8 +15,8 @@ class LocationForecastAPITest {
     ) }
 
     @Test
-    fun `api call returns expected forecast`() {
-        val response = api.getForecast(59.93f, 10.72f, 90).execute().body()!!
+    fun `api call returns expected forecast`() = runTest {
+        val response = api.getForecast(41.3825, 2.176944, 0)
         val data = response.properties.timeSeries.first().data
 
         assertNotNull(data.nextHour.summary.symbolCode)

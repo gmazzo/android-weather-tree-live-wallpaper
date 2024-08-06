@@ -32,15 +32,18 @@ internal object HttpModule {
 
     @Provides
     @Reusable
-    fun retrofit(client: OkHttpClient, json: Json): Retrofit = Retrofit.Builder()
+    fun retrofit(client: OkHttpClient, json: Json): Retrofit.Builder = Retrofit.Builder()
         .client(client)
-        .baseUrl(BuildConfig.FORECAST_ENDPOINT)
         .addConverterFactory(json.asConverterFactory("application/json; charset=UTF8".toMediaType()))
-        .build()
 
     @Provides
     @Reusable
-    fun locationForecast(retrofit: Retrofit): LocationForecastAPI =
-        retrofit.create()
+    fun locationForecast(retrofit: Retrofit.Builder): LocationForecastAPI =
+        retrofit.baseUrl(BuildConfig.FORECAST_ENDPOINT).build().create()
+
+    @Provides
+    @Reusable
+    fun reverseGeocoding(retrofit: Retrofit.Builder): ReverseGeocodingAPI =
+        retrofit.baseUrl(BuildConfig.REVERSE_GEOCODING_ENDPOINT).build().create()
 
 }

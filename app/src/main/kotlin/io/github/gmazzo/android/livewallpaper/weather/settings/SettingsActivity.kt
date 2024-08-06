@@ -40,6 +40,7 @@ class SettingsActivity : ComponentActivity() {
             SettingsScreen(
                 now = viewModel.time.time.collectAsState().value,
                 timeSpeed = viewModel.timeSpeed.collectAsState().value,
+                location = viewModel.location.collectAsState().value,
                 updateLocationEnabled = viewModel.updateLocationEnabled.collectAsState().value,
                 weather = viewModel.weather.collectAsState().value,
                 missingLocationPermission = viewModel.missingLocationPermission.collectAsState().value,
@@ -70,6 +71,7 @@ class SettingsActivity : ComponentActivity() {
             !hasLocationPermission -> requestPermissionLauncher.launch(ACCESS_COARSE_LOCATION)
             !hasBackgroundLocationPermission ->
                 requestPermissionLauncher.launch(ACCESS_BACKGROUND_LOCATION)
+            granted == true -> viewModel.enableWeatherConditionsUpdate()
         }
     }
 

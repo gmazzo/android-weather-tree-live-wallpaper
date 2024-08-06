@@ -7,7 +7,6 @@ package io.github.gmazzo.android.livewallpaper.weather.api
 import io.github.gmazzo.android.livewallpaper.weather.WeatherType
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
 import java.util.Date
@@ -15,11 +14,11 @@ import java.util.Date
 interface LocationForecastAPI {
 
     @GET("locationforecast/2.0/mini")
-    fun getForecast(
-        @Query("lat") lat: Float,
-        @Query("lon") lon: Float,
+    suspend fun getForecast(
+        @Query("lat") latitude: Double,
+        @Query("lon") longitude: Double,
         @Query("altitude") altitude: Int? = null,
-    ): Call<Forecast>
+    ): Forecast
 
     @Serializable
     data class Forecast(
