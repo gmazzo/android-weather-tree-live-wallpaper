@@ -2,7 +2,7 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.models
 
 import android.content.res.Resources
 import androidx.annotation.RawRes
-import io.github.gmazzo.android.livewallpaper.weather.OpenGLScoped
+import io.github.gmazzo.android.livewallpaper.weather.GLScoped
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.asDirectFloatBuffer
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.asDirectShortBuffer
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.sizeInBytes
@@ -16,7 +16,7 @@ import javax.microedition.khronos.opengles.GL11.GL_ARRAY_BUFFER
 import javax.microedition.khronos.opengles.GL11.GL_ELEMENT_ARRAY_BUFFER
 import javax.microedition.khronos.opengles.GL11.GL_STATIC_DRAW
 
-@OpenGLScoped
+@GLScoped
 class Models @Inject constructor(
     private val gl: GL11,
     private val resources: Resources,

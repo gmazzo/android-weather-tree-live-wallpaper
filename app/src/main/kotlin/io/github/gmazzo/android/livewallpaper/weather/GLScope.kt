@@ -16,11 +16,11 @@ import javax.microedition.khronos.opengles.GL11
 @Scope
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
-annotation class OpenGLScoped
+annotation class GLScoped
 
-@OpenGLScoped
+@GLScoped
 @Subcomponent(modules = [WeatherRendererModule::class])
-interface OpenGLComponent {
+interface GLComponent {
 
     val time: GlobalTime
 
@@ -30,7 +30,7 @@ interface OpenGLComponent {
 
     val models: Models
 
-    val dispatcher: OpenGLDispatcher
+    val dispatcher: GLDispatcher
 
     val sceneFactory: SceneComponent.Factory
 
@@ -41,7 +41,7 @@ interface OpenGLComponent {
             @BindsInstance gl: GL11,
             @BindsInstance @Named("fastTime") fastTime: Boolean,
             @BindsInstance @Named("homeOffset") homeOffset: MutableStateFlow<Float>,
-        ): OpenGLComponent
+        ): GLComponent
     }
 
 }

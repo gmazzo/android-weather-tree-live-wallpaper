@@ -13,7 +13,7 @@ import javax.inject.Provider
 object WeatherRendererModule {
 
     @Provides
-    @OpenGLScoped
+    @GLScoped
     @Named("scaled")
     fun fastTime(
         @Named("fastTime") fastTime: Boolean,

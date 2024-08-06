@@ -5,8 +5,8 @@ import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
-@OpenGLScoped
-class OpenGLDispatcher @Inject constructor(
+@GLScoped
+class GLDispatcher @Inject constructor(
     private val view: GLSurfaceView,
 ) : CoroutineDispatcher() {
 

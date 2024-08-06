@@ -1,6 +1,6 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 
-import io.github.gmazzo.android.livewallpaper.weather.OpenGLDispatcher
+import io.github.gmazzo.android.livewallpaper.weather.GLDispatcher
 import io.github.gmazzo.android.livewallpaper.weather.WeatherType
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
@@ -20,7 +20,7 @@ interface SceneDependencies {
     val landscape: Boolean
     val time: GlobalTime
     val gl: GL11
-    val dispatcher: OpenGLDispatcher
+    val dispatcher: GLDispatcher
     val weather: MutableStateFlow<WeatherType>
     val models: Models
     val textures: Textures
@@ -32,7 +32,7 @@ interface SceneDependencies {
         @Named("landscape") override val landscape: Boolean,
         override val time: GlobalTime,
         override val gl: GL11,
-        override val dispatcher: OpenGLDispatcher,
+        override val dispatcher: GLDispatcher,
         override val weather: MutableStateFlow<WeatherType>,
         override val models: Models,
         override val textures: Textures,

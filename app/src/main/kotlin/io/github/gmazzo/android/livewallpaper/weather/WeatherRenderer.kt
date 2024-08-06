@@ -37,7 +37,7 @@ import javax.microedition.khronos.opengles.GL10.GL_VERTEX_ARRAY
 import javax.microedition.khronos.opengles.GL11
 
 internal class WeatherRenderer @AssistedInject constructor(
-    private val openGLFactory: OpenGLComponent.Factory,
+    private val openGLFactory: GLComponent.Factory,
     @Assisted private val view: GLSurfaceView,
     private val weather: MutableStateFlow<WeatherType>,
 ) : Renderer {
@@ -50,7 +50,7 @@ internal class WeatherRenderer @AssistedInject constructor(
     private var screenHeight = 0f
     private var screenRatio = 1f
     private var screenWidth = 0f
-    private lateinit var glContext: OpenGLComponent
+    private lateinit var glContext: GLComponent
     private var watchWeatherChanges: Job? = null
     private val homeOffset = MutableStateFlow(.5f)
     private val isPaused get() = watchWeatherChanges == null
