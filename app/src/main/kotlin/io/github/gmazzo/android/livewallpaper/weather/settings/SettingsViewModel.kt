@@ -66,9 +66,11 @@ class SettingsViewModel @Inject constructor(
                     val city = reverseGeocodingAPI
                         .findCity(it.latitude, it.longitude, Locale.getDefault().language)
 
-                    if (city.name.isNotBlank()) {
-                        location.value = it.copy(city = city.name)
-                    }
+                    val cityName = sequenceOf(city.name, city.locality, city.region, city.country)
+                        .filter(String::isNotBlank)
+                        .firstOrNull()
+
+                    location.value = it.copy(city = cityName)
                 }
             }
         }
