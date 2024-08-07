@@ -23,12 +23,23 @@ android {
 
         buildConfigField("boolean", "DEMO_MODE", "DEBUG")
         buildConfigField("String", "FORECAST_ENDPOINT", "\"https://api.met.no/weatherapi/\"")
-        buildConfigField("String", "REVERSE_GEOCODING_ENDPOINT", "\"https://api.bigdatacloud.net/data/\"")
+        buildConfigField(
+            "String",
+            "REVERSE_GEOCODING_ENDPOINT",
+            "\"https://api.bigdatacloud.net/data/\""
+        )
     }
 
     buildTypes {
         release {
             signingConfig = signingConfigs["debug"]
+            isMinifyEnabled = true
+            isShrinkResources = true
+            isEmbedMicroApp
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
         }
     }
 

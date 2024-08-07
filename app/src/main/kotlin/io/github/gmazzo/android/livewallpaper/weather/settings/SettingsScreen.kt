@@ -152,10 +152,10 @@ fun SettingsScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(margin, Alignment.Bottom),
             ) {
-                UseDeviceLocationPanel(updateLocationEnabled, updateLocationEnabledChange)
                 if (missingLocationPermission) {
                     MissingLocationPermissionPanel(onRequestLocationPermission)
                 }
+                UseDeviceLocationPanel(updateLocationEnabled, updateLocationEnabledChange)
                 WeathersGallery(weather.scene, onSceneSelected)
             }
         }
