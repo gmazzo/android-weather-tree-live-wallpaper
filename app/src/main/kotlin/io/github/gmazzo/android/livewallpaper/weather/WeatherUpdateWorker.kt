@@ -56,9 +56,15 @@ class WeatherUpdateWorker @AssistedInject constructor(
 
             val manager: LocationManager = getSystemService() ?: return null
             return manager.allProviders.asSequence()
+                .sortedBy { when(it) {
+                    LocationManager.FUSED_PROVIDER -> 0
+                    LocationManager.GPS_PROVIDER -> 1
+                    LocationManager.NETWORK_PROVIDER -> 2
+                    else -> 3
+                } }
                 .mapNotNull(manager::getLastKnownLocation)
                 .firstOrNull()
-                ?.also { Log.i(TAG, "LastKnownLocation: lat=${it.latitude}, lng=${it.longitude}") }
+                ?.also { Log.i(TAG, "lastKnownLocation: provider=${it.provider}, lat=${it.latitude}, lng=${it.longitude}") }
         }
 
     companion object {
