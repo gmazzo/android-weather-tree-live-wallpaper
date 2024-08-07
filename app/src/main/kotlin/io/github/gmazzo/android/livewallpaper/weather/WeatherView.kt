@@ -33,7 +33,6 @@ class WeatherView @AssistedInject internal constructor(
         if (holder !== this.externalSurfaceHolder) {
             this.externalSurfaceHolder = holder
         }
-        onResume()
     }
 
     override fun onResume() {

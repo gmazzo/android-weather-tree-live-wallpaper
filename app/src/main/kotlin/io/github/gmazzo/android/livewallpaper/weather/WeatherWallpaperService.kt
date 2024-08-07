@@ -21,7 +21,6 @@ class WeatherWallpaperService : WallpaperService() {
             super.onVisibilityChanged(visible)
 
             if (visible) {
-                surfaceView.isDemoMode = BuildConfig.DEMO_MODE || isPreview
                 surfaceView.onResume()
 
             } else {
@@ -38,6 +37,7 @@ class WeatherWallpaperService : WallpaperService() {
         override fun onSurfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
             super.onSurfaceChanged(holder, format, width, height)
 
+            surfaceView.isDemoMode = BuildConfig.DEMO_MODE || isPreview
             surfaceView.surfaceChanged(holder, format, width, height)
         }
 
