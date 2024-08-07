@@ -11,7 +11,9 @@ Partially migrated to a modern stack (WIP):
   - DataStore
   - WorkManager
 - Retrofit
-- And using Norway's [MET Weather API](https://api.met.no/) for fetching weather conditions
+- External Services
+  - Norway's [MET Weather API](https://api.met.no/) for fetching weather conditions
+  - Bigdatacloud's [Reverse Geocoding](https://www.bigdatacloud.com/free-api/free-reverse-geocode-to-city-api) for getting current city's name for a given location coordinates
 
 ## Scenes
 |                                  |                                |                            |
