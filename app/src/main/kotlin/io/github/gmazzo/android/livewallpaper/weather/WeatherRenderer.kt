@@ -51,7 +51,7 @@ internal class WeatherRenderer @AssistedInject constructor(
     private var screenRatio = 1f
     private var screenWidth = 0f
     private val homeOffset = MutableStateFlow(.5f)
-    private lateinit var component: WeatherRendererComponent
+    private var component: WeatherRendererComponent? = null
 
     private fun log(message: String, logger: (String?, String) -> Int = Log::d) {
         logger(
@@ -63,22 +63,20 @@ internal class WeatherRenderer @AssistedInject constructor(
     fun onPause() {
         log("onPause:")
 
-        component.coroutineJob.cancelChildren()
+        component?.coroutineJob?.cancelChildren()
         unloadScene()
     }
 
     fun onResume() {
         log("onResume:")
 
-        if (::component.isInitialized) {
-            watchWeatherChanges()
-        }
+        component?.watchWeatherChanges()
     }
 
-    private fun watchWeatherChanges() {
+    private fun WeatherRendererComponent.watchWeatherChanges() {
         log("watchWeatherChanges:")
 
-        component.coroutineScope.launch {
+        coroutineScope.launch {
             weather.collectLatest(::onSceneChanged)
         }
     }
@@ -90,7 +88,7 @@ internal class WeatherRenderer @AssistedInject constructor(
 
         if (currentScene?.mode != mode) {
             unloadScene()
-            currentScene = component.sceneFactory.create(mode, landscape)
+            currentScene = component?.sceneFactory?.create(mode, landscape)
         }
     }
 
@@ -110,10 +108,11 @@ internal class WeatherRenderer @AssistedInject constructor(
         gl.setRenderDefaults()
 
         unloadScene()
+
+        val component = component!!
         component.models.close()
         component.textures.close()
-
-        watchWeatherChanges()
+        component.watchWeatherChanges()
     }
 
     private fun unloadScene() {
@@ -143,15 +142,15 @@ internal class WeatherRenderer @AssistedInject constructor(
     }
 
     override fun onDrawFrame(gl: GL10) {
-        val scene = currentScene?.scene?.value ?: return
+        val scene = currentScene ?: return
 
+        val component = component!!
         component.time.update()
         component.timeOfDay.update()
-
-        updateCameraPosition()
+        component.updateCameraPosition()
         gl.updateProjection()
 
-        scene.draw()
+        scene.scene.value.draw()
     }
 
     private fun GL10.updateProjection() {
@@ -170,8 +169,8 @@ internal class WeatherRenderer @AssistedInject constructor(
         homeOffset.value = offset
     }
 
-    private fun updateCameraPosition() {
-        val rate = (3.5f * component.time.deltaSeconds) * cameraSpeed
+    private fun WeatherRendererComponent.updateCameraPosition() {
+        val rate = (3.5f * time.deltaSeconds) * cameraSpeed
         val diff = (Vector(28 * homeOffset.value - 14, 0f, 0f) - cameraPos) * rate
 
         cameraPos += diff

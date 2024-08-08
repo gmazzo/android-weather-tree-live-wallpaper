@@ -15,12 +15,13 @@ class WeatherWallpaperService : WallpaperService() {
 
     open inner class GLEngine : Engine() {
 
-        private val surfaceView =
+        private val surfaceView by lazy {
             weatherViewFactory.create(
                 context = this@WeatherWallpaperService,
                 tag = "WeatherService",
-                demoMode = BuildConfig.DEMO_MODE || isPreview
+                demoMode = isPreview
             )
+        }
 
         override fun onVisibilityChanged(visible: Boolean) {
             super.onVisibilityChanged(visible)

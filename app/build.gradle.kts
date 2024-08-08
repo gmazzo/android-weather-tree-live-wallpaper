@@ -21,7 +21,6 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        buildConfigField("boolean", "DEMO_MODE", "DEBUG")
         buildConfigField("String", "FORECAST_ENDPOINT", "\"https://api.met.no/weatherapi/\"")
         buildConfigField(
             "String",
