@@ -5,7 +5,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
-@GLScoped
+@WeatherRendererScoped
 class GLDispatcher @Inject constructor(
     private val view: GLSurfaceView,
 ) : CoroutineDispatcher() {

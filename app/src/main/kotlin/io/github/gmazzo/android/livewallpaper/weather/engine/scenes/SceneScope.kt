@@ -1,7 +1,6 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 
 import dagger.BindsInstance
-import dagger.Lazy
 import dagger.Subcomponent
 import javax.inject.Named
 import javax.inject.Scope

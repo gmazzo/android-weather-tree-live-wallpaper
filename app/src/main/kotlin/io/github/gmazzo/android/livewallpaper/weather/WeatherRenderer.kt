@@ -9,8 +9,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneComponent
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -37,61 +36,71 @@ import javax.microedition.khronos.opengles.GL10.GL_VERTEX_ARRAY
 import javax.microedition.khronos.opengles.GL11
 
 internal class WeatherRenderer @AssistedInject constructor(
-    private val openGLFactory: GLComponent.Factory,
-    @Assisted private val view: GLSurfaceView,
+    private val openGLFactory: WeatherRendererComponent.Factory,
     private val weather: MutableStateFlow<WeatherType>,
+    @Assisted private val view: GLSurfaceView,
+    @Assisted private val tag: String,
+    @Assisted private val demoMode: Boolean,
 ) : Renderer {
     private var landscape: Boolean = false
     private var cameraFOV = 65f
     private var cameraPos = Vector(0f, 0f, 0f)
     private var currentScene: SceneComponent? = null
     private val cameraSpeed: Float = 1f
-    var demoMode = false
     private var screenHeight = 0f
     private var screenRatio = 1f
     private var screenWidth = 0f
-    private lateinit var glContext: GLComponent
-    private var watchWeatherChanges: Job? = null
     private val homeOffset = MutableStateFlow(.5f)
-    private val isPaused get() = watchWeatherChanges == null
+    private lateinit var component: WeatherRendererComponent
 
-    @Synchronized
-    fun onPause() {
-        watchWeatherChanges?.cancel()
-        watchWeatherChanges = null
+    private fun log(message: String, logger: (String?, String) -> Int = Log::d) {
+        logger(
+            tag,
+            "$message demoMode=$demoMode, thread=${Thread.currentThread().name}"
+        )
     }
 
-    @Synchronized
+    fun onPause() {
+        log("onPause:")
+
+        component.coroutineJob.cancelChildren()
+        unloadScene()
+    }
+
     fun onResume() {
-        if (::glContext.isInitialized) {
+        log("onResume:")
+
+        if (::component.isInitialized) {
             watchWeatherChanges()
         }
     }
 
     private fun watchWeatherChanges() {
-        watchWeatherChanges?.cancel()
-        watchWeatherChanges = CoroutineScope(glContext.dispatcher).launch {
+        log("watchWeatherChanges:")
+
+        component.coroutineScope.launch {
             weather.collectLatest(::onSceneChanged)
         }
     }
 
-    @Synchronized
     private fun onSceneChanged(weather: WeatherType) {
+        log("onSceneChanged: weather=$weather,")
+
         val mode = weather.scene
 
         if (currentScene?.mode != mode) {
-            currentScene?.scene?.get()?.unload()
-            currentScene = glContext.sceneFactory.create(mode, landscape)
+            unloadScene()
+            currentScene = component.sceneFactory.create(mode, landscape)
         }
-
-        Log.i(TAG, "Weather changed to $weather, isDemoMode=$demoMode")
     }
 
     override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
-        glContext = openGLFactory.create(view, gl as GL11, demoMode, homeOffset)
+        component = openGLFactory.create(view, gl as GL11, demoMode, homeOffset)
     }
 
     override fun onSurfaceChanged(gl: GL10, w: Int, h: Int) {
+        log("onSurfaceChanged:")
+
         screenWidth = w.toFloat()
         screenHeight = h.toFloat()
         screenRatio = screenWidth / screenHeight
@@ -100,12 +109,20 @@ internal class WeatherRenderer @AssistedInject constructor(
         gl.glViewport(0, 0, w, h)
         gl.setRenderDefaults()
 
-        currentScene?.scene?.get()?.unload()
-        currentScene = null
-        glContext.models.close()
-        glContext.textures.close()
+        unloadScene()
+        component.models.close()
+        component.textures.close()
 
         watchWeatherChanges()
+    }
+
+    private fun unloadScene() {
+        val scene = currentScene ?: return
+        currentScene = null
+
+        if (scene.scene.isInitialized()) {
+            scene.scene.value.close()
+        }
     }
 
     private fun GL10.setRenderDefaults() {
@@ -125,26 +142,24 @@ internal class WeatherRenderer @AssistedInject constructor(
         glEnable(GL_COLOR_MATERIAL)
     }
 
-    @Synchronized
     override fun onDrawFrame(gl: GL10) {
-        val scene = currentScene?.scene ?: return
+        val scene = currentScene?.scene?.value ?: return
 
-        if (!isPaused) {
-            glContext.time.update()
-            glContext.timeOfDay.update()
+        component.time.update()
+        component.timeOfDay.update()
 
-            updateCameraPosition()
-            gl.updateProjection()
+        updateCameraPosition()
+        gl.updateProjection()
 
-            scene.get().draw()
-        }
+        scene.draw()
     }
 
     private fun GL10.updateProjection() {
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
         GLU.gluPerspective(this, cameraFOV, screenRatio, 1f, 400f)
-        GLU.gluLookAt(this,
+        GLU.gluLookAt(
+            this,
             cameraPos.x, cameraPos.y, cameraPos.z,
             cameraPos.x, 400f, cameraPos.z,
             0f, 0f, 1f,
@@ -156,7 +171,7 @@ internal class WeatherRenderer @AssistedInject constructor(
     }
 
     private fun updateCameraPosition() {
-        val rate = (3.5f * glContext.time.deltaSeconds) * cameraSpeed
+        val rate = (3.5f * component.time.deltaSeconds) * cameraSpeed
         val diff = (Vector(28 * homeOffset.value - 14, 0f, 0f) - cameraPos) * rate
 
         cameraPos += diff
@@ -165,10 +180,7 @@ internal class WeatherRenderer @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(view: GLSurfaceView): WeatherRenderer
+        fun create(view: GLSurfaceView, tag: String, demoMode: Boolean): WeatherRenderer
     }
 
-    companion object {
-        private const val TAG = "IsolatedRenderer"
-    }
 }

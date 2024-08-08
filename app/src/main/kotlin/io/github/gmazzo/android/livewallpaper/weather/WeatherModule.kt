@@ -25,7 +25,7 @@ import javax.inject.Singleton
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
 
-@Module(subcomponents = [GLComponent::class])
+@Module(subcomponents = [WeatherRendererComponent::class])
 @InstallIn(SingletonComponent::class)
 object WeatherModule {
     private const val TAG = "WeatherModule"

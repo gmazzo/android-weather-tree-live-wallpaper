@@ -12,9 +12,10 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things.Companion.WIND_SPEED
 import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDay.Companion.GOLDER_HOUR_FACTOR
 import io.github.gmazzo.android.livewallpaper.weather.engine.withColor
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.io.Closeable
 import javax.inject.Inject
 import javax.microedition.khronos.opengles.GL10.GL_MODELVIEW
 import javax.microedition.khronos.opengles.GL10.GL_MODULATE
@@ -31,7 +32,8 @@ sealed class Scene(
     private val backgroundTint: EngineColor = dependencies.timeOfDayTint.color,
     private val withSunAndMoon: Boolean = false,
     private val withStars: Boolean = false,
-) : SceneDependencies by dependencies {
+) : SceneDependencies by dependencies, Closeable {
+
     private val treesAnim = AnimPlayer(0, 19, 5f, false)
     private var treesAnimateDelay = 5f
 
@@ -67,13 +69,13 @@ sealed class Scene(
     }
 
     @Inject
-    @CallSuper
-    open fun load() {
+    fun load() {
         if (withSunAndMoon) {
             things.spawnSun()
             things.spawnMoon()
         }
-        CoroutineScope(dispatcher).launch {
+
+        sceneScope.launch {
             weather.collectLatest {
                 things.spawnClouds(it.clouds)
                 things.spawnWisps(it.wisps)
@@ -81,9 +83,8 @@ sealed class Scene(
         }
     }
 
-    @CallSuper
-    open fun unload() {
-        things.clear()
+    override fun close() {
+        sceneScope.cancel()
     }
 
     @CallSuper

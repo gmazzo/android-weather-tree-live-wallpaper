@@ -26,7 +26,7 @@ import javax.inject.Inject
 class SettingsActivity : ComponentActivity() {
 
     @Inject
-    internal lateinit var weatherViewFactory: WeatherView.Factory
+    internal lateinit var viewFactory: WeatherView.Factory
 
     private val viewModel: SettingsViewModel by viewModels()
 
@@ -52,7 +52,7 @@ class SettingsActivity : ComponentActivity() {
                 onNavigateBack = ::finish,
             ) {
                 AndroidView(factory = { context ->
-                    weatherViewFactory.create(context).also { it.isDemoMode = true }
+                    viewFactory.create(context, "WeatherSettings", demoMode = true)
                 })
             }
         }

@@ -5,7 +5,7 @@ import android.graphics.BitmapFactory
 import android.opengl.GLUtils
 import androidx.annotation.DrawableRes
 import androidx.annotation.RawRes
-import io.github.gmazzo.android.livewallpaper.weather.GLScoped
+import io.github.gmazzo.android.livewallpaper.weather.WeatherRendererScoped
 import io.github.gmazzo.android.livewallpaper.weather.engine.withFlags
 import java.io.Closeable
 import java.io.IOException
@@ -26,7 +26,7 @@ import javax.microedition.khronos.opengles.GL10.GL_UNSIGNED_BYTE
 import javax.microedition.khronos.opengles.GL11
 import kotlin.math.absoluteValue
 
-@GLScoped
+@WeatherRendererScoped
 class Textures @Inject constructor(
     private val gl: GL11,
     private val resources: Resources,

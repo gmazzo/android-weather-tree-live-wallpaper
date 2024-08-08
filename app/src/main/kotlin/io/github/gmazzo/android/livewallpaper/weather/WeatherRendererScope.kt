@@ -8,6 +8,8 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneComponent
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDay
+import kotlinx.coroutines.CompletableJob
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Named
 import javax.inject.Scope
@@ -16,11 +18,11 @@ import javax.microedition.khronos.opengles.GL11
 @Scope
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
-annotation class GLScoped
+annotation class WeatherRendererScoped
 
-@GLScoped
+@WeatherRendererScoped
 @Subcomponent(modules = [WeatherRendererModule::class])
-interface GLComponent {
+interface WeatherRendererComponent {
 
     val time: GlobalTime
 
@@ -30,7 +32,9 @@ interface GLComponent {
 
     val models: Models
 
-    val dispatcher: GLDispatcher
+    val coroutineJob: CompletableJob
+
+    val coroutineScope: CoroutineScope
 
     val sceneFactory: SceneComponent.Factory
 
@@ -41,7 +45,7 @@ interface GLComponent {
             @BindsInstance gl: GL11,
             @BindsInstance @Named("fastTime") fastTime: Boolean,
             @BindsInstance @Named("homeOffset") homeOffset: MutableStateFlow<Float>,
-        ): GLComponent
+        ): WeatherRendererComponent
     }
 
 }

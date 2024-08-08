@@ -15,7 +15,12 @@ class WeatherWallpaperService : WallpaperService() {
 
     open inner class GLEngine : Engine() {
 
-        private val surfaceView = weatherViewFactory.create(this@WeatherWallpaperService)
+        private val surfaceView =
+            weatherViewFactory.create(
+                context = this@WeatherWallpaperService,
+                tag = "WeatherService",
+                demoMode = BuildConfig.DEMO_MODE || isPreview
+            )
 
         override fun onVisibilityChanged(visible: Boolean) {
             super.onVisibilityChanged(visible)
@@ -37,7 +42,6 @@ class WeatherWallpaperService : WallpaperService() {
         override fun onSurfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
             super.onSurfaceChanged(holder, format, width, height)
 
-            surfaceView.isDemoMode = BuildConfig.DEMO_MODE || isPreview
             surfaceView.surfaceChanged(holder, format, width, height)
         }
 

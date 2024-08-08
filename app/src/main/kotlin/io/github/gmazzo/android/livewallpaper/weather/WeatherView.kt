@@ -11,12 +11,12 @@ import dagger.assisted.AssistedInject
 @SuppressLint("ViewConstructor") // we'll never inflate this view
 class WeatherView @AssistedInject internal constructor(
     @Assisted context: Context,
+    @Assisted tag: String,
+    @Assisted demoMode: Boolean,
     rendererFactory: WeatherRenderer.Factory
 ) : GLSurfaceView(context) {
 
-    private val renderer = rendererFactory.create(this)
-
-    var isDemoMode by renderer::demoMode
+    private val renderer = rendererFactory.create(this, tag, demoMode)
 
     private var externalSurfaceHolder: SurfaceHolder? = null
 
@@ -57,7 +57,7 @@ class WeatherView @AssistedInject internal constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(context: Context): WeatherView
+        fun create(context: Context, tag: String, demoMode: Boolean): WeatherView
     }
 
 }

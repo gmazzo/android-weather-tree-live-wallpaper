@@ -31,13 +31,15 @@ internal object ScenesModule {
         snow: Provider<SceneSnow>,
         storm: Provider<SceneStorm>,
         fog: Provider<SceneFog>
-    ): Scene = when (mode) {
-        SceneMode.CLEAR -> clear.get()
-        SceneMode.CLOUDY -> cloudy.get()
-        SceneMode.RAIN -> rain.get()
-        SceneMode.SNOW -> snow.get()
-        SceneMode.STORM -> storm.get()
-        SceneMode.FOG -> fog.get()
+    ): Lazy<Scene> = lazy {
+        when (mode) {
+            SceneMode.CLEAR -> clear.get()
+            SceneMode.CLOUDY -> cloudy.get()
+            SceneMode.RAIN -> rain.get()
+            SceneMode.SNOW -> snow.get()
+            SceneMode.STORM -> storm.get()
+            SceneMode.FOG -> fog.get()
+        }
     }
 
     @Provides
@@ -52,12 +54,14 @@ internal object ScenesModule {
             sunset = R.color.timeOfDay_rain_sunset,
             night = R.color.timeOfDay_rain_night,
         )
+
         SceneMode.FOG -> resources.timeOfDayColors(
             sunrise = R.color.timeOfDay_fog_sunrise,
             day = R.color.timeOfDay_fog_day,
             sunset = R.color.timeOfDay_fog_sunset,
             night = R.color.timeOfDay_fog_night,
         )
+
         else -> resources.timeOfDayColors(
             sunrise = R.color.timeOfDay_sunrise,
             day = R.color.timeOfDay_day,
@@ -72,7 +76,7 @@ internal object ScenesModule {
         mode: SceneMode,
         cloudLightFactory: ThingLightCloud.Factory,
         cloudDarkFactory: ThingDarkCloud.Factory,
-    ) : ThingCloud.Factory<*> = when (mode) {
+    ): ThingCloud.Factory<*> = when (mode) {
         SceneMode.STORM, SceneMode.RAIN -> cloudDarkFactory
         else -> cloudLightFactory
     }
