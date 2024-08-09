@@ -49,27 +49,21 @@ class Models @Inject constructor(
             input.assertChunk("VERT", buffer4)
             val verticesCount = input.readInt()
             val verticesScale = input.readInt().let { if (it == 0) 128 else it }.toFloat()
-            val verticesMapper = if (version >= 4)
-                { _: Int -> input.readShort() / verticesScale } else { _ -> input.readFloat() }
+            val verticesMapper =
+                if (version >= 4) { _: Int -> input.readShort() / verticesScale } else { _ -> input.readFloat() }
             input.skip(4)
             val vertices = FloatArray(verticesCount * 3 * frames, init = verticesMapper)
 
             input.skip(4)
             input.assertChunk("NORM", buffer4)
             val normalsCount = input.readInt()
-            val normalsMapper = if (version >= 3)
-                { _: Int -> input.readByte() / 127f } else { _ -> input.readFloat() }
+            val normalsMapper =
+                if (version >= 3) { _: Int -> input.readByte() / 127f } else { _ -> input.readFloat() }
             input.skip(8)
             val normals = FloatArray(normalsCount * 3 * frames, init = normalsMapper)
 
             return@getOrPut loadWithArrays(
-                rawId,
-                vertices,
-                normals,
-                texts,
-                indices,
-                elements,
-                frames
+                rawId, vertices, normals, texts, indices, elements, frames
             )
         }
     }
@@ -83,9 +77,9 @@ class Models @Inject constructor(
         elementsCount: Int,
         framesCount: Int
     ) = models.getOrPut(rawId) {
-        val animated = framesCount > 1
+        val name = resources.getResourceName(rawId)
 
-        val frames = Array(framesCount) { i ->
+        val frames = (0 until framesCount).map { i ->
             val bufVertex = (elementsCount * 3).asDirectFloatBuffer().apply {
                 val length = capacity()
                 put(vertices, i * length, length)
@@ -110,7 +104,8 @@ class Models @Inject constructor(
             gl.glBufferData(GL_ARRAY_BUFFER, bufNormal.sizeInBytes, bufNormal, GL_STATIC_DRAW)
 
             gl.glBindBuffer(GL_ARRAY_BUFFER, 0)
-            return@Array Model.Frame(bufNormalHandle, bufVertexHandle)
+
+            Model.Frame(bufNormalHandle, bufVertexHandle)
         }
 
         val bufTC = (elementsCount * 2).asDirectFloatBuffer().apply {
@@ -137,20 +132,21 @@ class Models @Inject constructor(
         gl.glBufferData(GL_ARRAY_BUFFER, bufTC.sizeInBytes, bufTC, GL_STATIC_DRAW)
         gl.glBindBuffer(GL_ARRAY_BUFFER, 0)
 
-        if (animated) {
-            val bufScratch = (elementsCount * 3).asDirectFloatBuffer()
-
-            return@getOrPut AnimatedModel(
-                gl, rawId, frames, indicesCount, bufTCHandle, bufIndexHandle,
-                elementsCount, vertices, bufScratch
-            )
-        } else {
-            return@getOrPut Model(gl, rawId, frames, indicesCount, bufTCHandle, bufIndexHandle)
-        }
+        if (framesCount > 1) AnimatedModel(
+            name, rawId,
+            gl, indicesCount, bufTCHandle, bufIndexHandle,
+            elementsCount, vertices,
+            (elementsCount * 3).asDirectFloatBuffer(),
+            frames,
+        ) else StaticModel(
+            name, rawId,
+            gl, indicesCount, bufTCHandle, bufIndexHandle,
+            frames.single(),
+        )
     }
 
     override fun close() {
-        models.values.forEach(Model::unload)
+        models.values.forEach(Model::close)
         models.clear()
     }
 

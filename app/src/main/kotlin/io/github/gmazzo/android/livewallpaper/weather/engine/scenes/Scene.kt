@@ -8,6 +8,7 @@ import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.AnimPlayer
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.AnimatedModel
+import io.github.gmazzo.android.livewallpaper.weather.engine.models.StaticModel
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things.Companion.WIND_SPEED
 import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDay.Companion.GOLDER_HOUR_FACTOR
@@ -40,7 +41,7 @@ sealed class Scene(
     private val backgroundModel = models[R.raw.plane_16x16]
     private val backgroundTexture = textures[background]
 
-    private val starModel = models[R.raw.stars]
+    private val starModel = models[R.raw.stars] as StaticModel
     private val starTexture = textures[R.drawable.stars]
     private val starNoiseTexture = textures[R.drawable.noise]
 
@@ -116,7 +117,7 @@ sealed class Scene(
             gl.glTranslatef((.1f * time.elapsedSeconds) % 1f, 300f, -100f)
 
             gl.withColor(1f, 1f, 1f, alpha) {
-                starModel.renderFrameMultiTexture(starNoiseTexture, starTexture, GL_MODULATE, false)
+                starModel.render(starNoiseTexture, starTexture, GL_MODULATE)
             }
         }
     }

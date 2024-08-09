@@ -3,11 +3,13 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.things
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
+import io.github.gmazzo.android.livewallpaper.weather.engine.models.StaticModel
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.withColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.withFlags
 import javax.inject.Inject
+import javax.microedition.khronos.opengles.GL10.GL_ADD
 import javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT
 import javax.microedition.khronos.opengles.GL10.GL_LIGHTING
 import javax.microedition.khronos.opengles.GL10.GL_MODELVIEW
@@ -21,7 +23,11 @@ class ThingLightning @Inject constructor(
     models: Models,
     textures: Textures,
     private val time: GlobalTime,
-) : Thing(gl, models[MODELS[Random.nextInt(MODELS.size)]], textures[R.raw.lightning_pieces_core]) {
+) : Thing(
+    gl,
+    model = models[MODELS[Random.nextInt(MODELS.size)]] as StaticModel,
+    texture = textures[R.raw.lightning_pieces_core],
+) {
 
     private val glow = textures[R.raw.lightning_pieces_glow]
 
@@ -32,7 +38,7 @@ class ThingLightning @Inject constructor(
             gl.glScalef(scale.x, scale.x, scale.x)
 
             withColor(color) {
-                model.renderFrameMultiTexture(glow, texture, 260, false)
+                model.render(glow, texture, GL_ADD)
             }
         }
     }

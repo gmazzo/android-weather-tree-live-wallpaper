@@ -8,16 +8,17 @@ import javax.microedition.khronos.opengles.GL10.GL_FLOAT
 import javax.microedition.khronos.opengles.GL11
 
 class AnimatedModel internal constructor(
-    gl: GL11,
+    name: String,
     @RawRes resId: Int,
-    frames: Array<Frame>,
+    gl: GL11,
     indicesCount: Int,
     bufTCHandle: Int,
     bufIndexHandle: Int,
     private val elementsCount: Int,
     private val vertices: FloatArray,
-    private val bufScratch: FloatBuffer
-) : Model(gl, resId, frames, indicesCount, bufTCHandle, bufIndexHandle) {
+    private val bufScratch: FloatBuffer,
+    private val frames: List<Frame>,
+) : Model(name, resId, gl, indicesCount, bufTCHandle, bufIndexHandle) {
 
     var animator: AnimPlayer? = null
 
@@ -26,16 +27,8 @@ class AnimatedModel internal constructor(
         val frameBlendNum = animator?.blendFrame ?: 0
         val blendAmount = animator?.blendFrameAmount ?: 0f
 
-        when {
-            blendAmount < 0.01 -> renderFrame(frameNum)
-            blendAmount > 0.99 -> renderFrame(frameBlendNum)
-            else -> renderFrame(frameNum, frameBlendNum, blendAmount)
-        }
-    }
-
-    private fun renderFrame(frame: Int, frameBlend: Int, blendAmount: Float) {
-        val firstFrameOffset = elementsCount * frame * 3
-        val blendFrameOffset = elementsCount * frameBlend * 3
+        val firstFrameOffset = elementsCount * frameNum * 3
+        val blendFrameOffset = elementsCount * frameBlendNum * 3
         val blendAmountInverse = 1f - blendAmount
 
         with(bufScratch) {
@@ -49,7 +42,10 @@ class AnimatedModel internal constructor(
             gl.glVertexPointer(3, GL_FLOAT, 0, this)
         }
 
-        renderFrameShared(frame)
+        render(frames[frameNum])
     }
+
+    override fun collectBufferIds() =
+        frames.asSequence().flatMap { sequenceOf(it.bufNormalHandle, it.bufVertexHandle) }
 
 }

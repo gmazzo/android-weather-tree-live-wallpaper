@@ -7,6 +7,7 @@ import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
+import io.github.gmazzo.android.livewallpaper.weather.engine.models.StaticModel
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
@@ -28,8 +29,8 @@ class ThingDarkCloud @AssistedInject constructor(
     @Assisted which: Int,
 ) : ThingCloud(
     gl,
-    models[MODELS[which % MODELS.size]],
-    textures[TEXTURES[which % TEXTURES.size]],
+    model = models[MODELS[which % MODELS.size]] as StaticModel,
+   texture = textures[TEXTURES[which % TEXTURES.size]],
     time,
     cloudsColor,
 ) {

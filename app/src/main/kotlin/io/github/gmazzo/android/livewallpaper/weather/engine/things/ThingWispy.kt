@@ -8,6 +8,7 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
+import io.github.gmazzo.android.livewallpaper.weather.engine.models.StaticModel
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things.Companion.WIND_SPEED
@@ -26,8 +27,8 @@ class ThingWispy @AssistedInject constructor(
     @Assisted which: Int,
 ) : ThingMoving(
     gl,
-    models[R.raw.plane_16x16],
-    textures[WISPY_TEXTURES[which % WISPY_TEXTURES.size]],
+    model = models[R.raw.plane_16x16] as StaticModel,
+    texture = textures[WISPY_TEXTURES[which % WISPY_TEXTURES.size]],
     time,
     velocity = Vector(WIND_SPEED / 2, 0f, 0f),
 ) {

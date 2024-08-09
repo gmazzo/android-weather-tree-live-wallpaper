@@ -56,7 +56,11 @@ class Textures @Inject constructor(
                 else -> error("Unsupported resource '$type' for resId=$resId")
             }
 
-            Texture(resId, glId)
+            Texture(
+                name = resources.getResourceName(resId),
+                resId = resId,
+                glId = glId
+            )
         }
     }
 

@@ -4,6 +4,7 @@ import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
+import io.github.gmazzo.android.livewallpaper.weather.engine.models.StaticModel
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDay
@@ -23,7 +24,11 @@ class ThingSun @Inject constructor(
     textures: Textures,
     private val time: GlobalTime,
     private val timeOfDay: TimeOfDay,
-) : Thing(gl, models[R.raw.plane_16x16], textures[R.raw.sun]) {
+) : Thing(
+    gl,
+    model = models[R.raw.plane_16x16] as StaticModel,
+    texture = textures[R.raw.sun]
+) {
 
     private val sunBlend = textures[R.raw.sun_blend]
 
@@ -48,7 +53,7 @@ class ThingSun @Inject constructor(
             gl.glTranslatef(-.5f, -.5f, 0f)
 
             withColor(color) {
-                model.renderFrameMultiTexture(sunBlend, texture, GL_MODULATE, false)
+                model.render(sunBlend, texture, GL_MODULATE)
             }
         }
     }
