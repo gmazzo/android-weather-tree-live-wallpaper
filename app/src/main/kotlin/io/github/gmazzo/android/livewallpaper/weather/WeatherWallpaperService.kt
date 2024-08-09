@@ -1,15 +1,22 @@
 package io.github.gmazzo.android.livewallpaper.weather
 
 import android.service.wallpaper.WallpaperService
+import android.util.Log
 import android.view.SurfaceHolder
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
+import javax.inject.Named
 
 @AndroidEntryPoint
 class WeatherWallpaperService : WallpaperService() {
 
     @Inject
     internal lateinit var weatherViewFactory: WeatherView.Factory
+
+    @Inject
+    @Named("homeOffset")
+    internal lateinit var homeOffset: MutableStateFlow<Float>
 
     override fun onCreateEngine() = GLEngine()
 
@@ -18,7 +25,7 @@ class WeatherWallpaperService : WallpaperService() {
         private val surfaceView by lazy {
             weatherViewFactory.create(
                 context = this@WeatherWallpaperService,
-                tag = "WeatherService",
+                logTag = TAG,
                 demoMode = isPreview
             )
         }
@@ -66,9 +73,15 @@ class WeatherWallpaperService : WallpaperService() {
             xPixelOffset: Int,
             yPixelOffset: Int
         ) {
-            surfaceView.scrollOffset(if (isPreview) .5f else xOffset)
+            Log.d(TAG, "onOffsetsChanged: xOffset=$xOffset, yOffset=$yOffset")
+
+            homeOffset.value = xOffset
         }
 
+    }
+
+    companion object {
+        private const val TAG = "WallpaperService"
     }
 
 }

@@ -47,6 +47,11 @@ object WeatherModule {
 
     @Provides
     @Singleton
+    @Named("homeOffset")
+    fun homeOffset() = MutableStateFlow(.5f)
+
+    @Provides
+    @Singleton
     fun weatherType(dataStore: DataStore<Preferences>): MutableStateFlow<WeatherType> = runBlocking {
         val current =
             dataStore.data.firstOrNull()?.get(settingLastWeather)?.let(WeatherType::valueOf)

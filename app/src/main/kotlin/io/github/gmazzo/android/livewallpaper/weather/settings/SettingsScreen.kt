@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+
 package io.github.gmazzo.android.livewallpaper.weather.settings
 
 import android.graphics.Typeface
@@ -8,7 +10,12 @@ import android.text.format.DateUtils.formatDateTime
 import android.text.style.StyleSpan
 import androidx.annotation.StringRes
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,7 +53,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -54,6 +60,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -61,7 +68,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -94,7 +104,6 @@ private val timeSpeeds = listOf(
     (1.days / 3.seconds).toFloat() to R.string.settings_speed_day_in_3secs,
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Preview
 fun SettingsScreen(
@@ -110,39 +119,61 @@ fun SettingsScreen(
     onRequestLocationPermission: () -> Unit = {},
     onSetAsWallpaper: () -> Unit = {},
     onNavigateBack: () -> Unit = {},
+    onDragGesture: (forward: Boolean) -> Unit = {},
     surfaceView: @Composable () -> Unit = {
-        Surface(
-            color = MaterialTheme.colorScheme.onBackground, modifier = Modifier.fillMaxSize()
-        ) {}
+        Image(
+            painter = painterResource(R.drawable.bg3),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop,
+        )
     },
 ) {
+    var width by remember { mutableIntStateOf(0) }
+
     AppTheme {
         Box(Modifier.fillMaxSize()) { surfaceView() }
-        Scaffold(containerColor = Color.Transparent, topBar = {
-            Column {
-                CenterAlignedTopAppBar(title = { Text(text = stringResource(id = weather.scene.textId)) },
-                    colors = TopAppBarDefaults.topAppBarColors()
-                        .copy(containerColor = Color.Transparent),
-                    navigationIcon = {
-                        IconButton(onClick = onNavigateBack) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                                contentDescription = null,
-                            )
+        Scaffold(
+            modifier = Modifier
+                .onGloballyPositioned { width = it.size.width }
+                .draggable(
+                    state = rememberDraggableState {},
+                    orientation = Orientation.Horizontal,
+                    onDragStopped = { velocity ->
+                        if (velocity > width / 3f) {
+                            onDragGesture(false)
+
+                        } else if (velocity < -width / 3f) {
+                            onDragGesture(true)
                         }
-                    },
-                    actions = {
-                        TimeSpeedMenu(timeSpeed, onSpeedSelected)
-                        FilledIconButton(onClick = onSetAsWallpaper) {
-                            Icon(
-                                imageVector = Icons.Outlined.Check,
-                                contentDescription = stringResource(id = R.string.settings_set_as_wallpaper),
-                            )
-                        }
-                    })
-                DayTimeProgression(now, location)
-            }
-        }) { innerPadding ->
+                    }
+                ),
+            containerColor = Color.Transparent,
+            topBar = {
+                Column {
+                    CenterAlignedTopAppBar(title = { Text(text = stringResource(id = weather.scene.textId)) },
+                        colors = TopAppBarDefaults.topAppBarColors()
+                            .copy(containerColor = Color.Transparent),
+                        navigationIcon = {
+                            IconButton(onClick = onNavigateBack) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                                    contentDescription = null,
+                                )
+                            }
+                        },
+                        actions = {
+                            TimeSpeedMenu(timeSpeed, onSpeedSelected)
+                            FilledIconButton(onClick = onSetAsWallpaper) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Check,
+                                    contentDescription = stringResource(id = R.string.settings_set_as_wallpaper),
+                                )
+                            }
+                        })
+                    DayTimeProgression(now, location)
+                }
+            }) { innerPadding ->
             Column(
                 modifier = Modifier
                     .padding(innerPadding)

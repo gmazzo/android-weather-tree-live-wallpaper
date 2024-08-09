@@ -10,7 +10,6 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDay
 import kotlinx.coroutines.CompletableJob
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Named
 import javax.inject.Scope
 import javax.microedition.khronos.opengles.GL11
@@ -44,7 +43,6 @@ interface WeatherRendererComponent {
             @BindsInstance view: GLSurfaceView,
             @BindsInstance gl: GL11,
             @BindsInstance @Named("fastTime") fastTime: Boolean,
-            @BindsInstance @Named("homeOffset") homeOffset: MutableStateFlow<Float>,
         ): WeatherRendererComponent
     }
 

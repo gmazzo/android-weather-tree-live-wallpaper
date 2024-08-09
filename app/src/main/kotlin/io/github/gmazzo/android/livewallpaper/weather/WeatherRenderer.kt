@@ -13,6 +13,7 @@ import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import javax.inject.Named
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 import javax.microedition.khronos.opengles.GL10.GL_BACK
@@ -38,24 +39,24 @@ import javax.microedition.khronos.opengles.GL11
 internal class WeatherRenderer @AssistedInject constructor(
     private val openGLFactory: WeatherRendererComponent.Factory,
     private val weather: MutableStateFlow<WeatherType>,
+    @Named("homeOffset") private val homeOffset: MutableStateFlow<Float>,
     @Assisted private val view: GLSurfaceView,
-    @Assisted private val tag: String,
+    @Assisted private val logTag: String,
     @Assisted private val demoMode: Boolean,
 ) : Renderer {
-    private var landscape: Boolean = false
+    private var screenWidth = 0f
+    private var screenHeight = 0f
+    private val screenRatio get() = screenWidth / screenHeight
+    private val landscape get() = screenRatio > 1
     private var cameraFOV = 65f
     private var cameraPos = Vector(0f, 0f, 0f)
-    private var currentScene: SceneComponent? = null
     private val cameraSpeed: Float = 1f
-    private var screenHeight = 0f
-    private var screenRatio = 1f
-    private var screenWidth = 0f
-    private val homeOffset = MutableStateFlow(.5f)
     private var component: WeatherRendererComponent? = null
+    private var scene: SceneComponent? = null
 
     private fun log(message: String, logger: (String?, String) -> Int = Log::d) {
         logger(
-            tag,
+            logTag,
             "$message demoMode=$demoMode, thread=${Thread.currentThread().name}"
         )
     }
@@ -86,14 +87,14 @@ internal class WeatherRenderer @AssistedInject constructor(
 
         val mode = weather.scene
 
-        if (currentScene?.mode != mode) {
+        if (scene?.mode != mode) {
             unloadScene()
-            currentScene = component?.sceneFactory?.create(mode, landscape)
+            scene = component?.sceneFactory?.create(mode, landscape)
         }
     }
 
     override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
-        component = openGLFactory.create(view, gl as GL11, demoMode, homeOffset)
+        component = openGLFactory.create(view, gl as GL11, demoMode)
     }
 
     override fun onSurfaceChanged(gl: GL10, w: Int, h: Int) {
@@ -101,8 +102,6 @@ internal class WeatherRenderer @AssistedInject constructor(
 
         screenWidth = w.toFloat()
         screenHeight = h.toFloat()
-        screenRatio = screenWidth / screenHeight
-        landscape = screenRatio > 1f
 
         gl.glViewport(0, 0, w, h)
         gl.setRenderDefaults()
@@ -116,8 +115,8 @@ internal class WeatherRenderer @AssistedInject constructor(
     }
 
     private fun unloadScene() {
-        val scene = currentScene ?: return
-        currentScene = null
+        val scene = scene ?: return
+        this.scene = null
 
         if (scene.scene.isInitialized()) {
             scene.scene.value.close()
@@ -142,7 +141,7 @@ internal class WeatherRenderer @AssistedInject constructor(
     }
 
     override fun onDrawFrame(gl: GL10) {
-        val scene = currentScene ?: return
+        val scene = scene ?: return
 
         val component = component!!
         component.time.update()
@@ -165,10 +164,6 @@ internal class WeatherRenderer @AssistedInject constructor(
         )
     }
 
-    fun updateOffset(offset: Float) {
-        homeOffset.value = offset
-    }
-
     private fun WeatherRendererComponent.updateCameraPosition() {
         val rate = (3.5f * time.deltaSeconds) * cameraSpeed
         val diff = (Vector(28 * homeOffset.value - 14, 0f, 0f) - cameraPos) * rate
@@ -179,7 +174,7 @@ internal class WeatherRenderer @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(view: GLSurfaceView, tag: String, demoMode: Boolean): WeatherRenderer
+        fun create(view: GLSurfaceView, logTag: String, demoMode: Boolean): WeatherRenderer
     }
 
 }

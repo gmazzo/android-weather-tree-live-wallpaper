@@ -50,10 +50,11 @@ class SettingsActivity : ComponentActivity() {
                 onRequestLocationPermission = { checkPermissions(null) },
                 onSetAsWallpaper = ::openWallpaperChooser,
                 onNavigateBack = ::finish,
+                onDragGesture = viewModel::updateHomeOffset,
             ) {
-                AndroidView(factory = { context ->
-                    viewFactory.create(context, "WeatherSettings", demoMode = true)
-                })
+                AndroidView(
+                    factory = { context -> viewFactory.create(context, TAG, demoMode = true) },
+                )
             }
         }
     }
@@ -71,6 +72,7 @@ class SettingsActivity : ComponentActivity() {
             !hasLocationPermission -> requestPermissionLauncher.launch(ACCESS_COARSE_LOCATION)
             !hasBackgroundLocationPermission ->
                 requestPermissionLauncher.launch(ACCESS_BACKGROUND_LOCATION)
+
             granted == true -> viewModel.enableWeatherConditionsUpdate()
         }
     }
@@ -97,6 +99,10 @@ class SettingsActivity : ComponentActivity() {
             )
         )
         finish()
+    }
+
+    companion object {
+        private const val TAG = "SettingsActivity"
     }
 
 }

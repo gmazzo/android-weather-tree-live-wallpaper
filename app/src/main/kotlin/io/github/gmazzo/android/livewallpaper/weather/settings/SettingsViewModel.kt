@@ -23,6 +23,7 @@ import io.github.gmazzo.android.livewallpaper.weather.hasLocationPermission
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Locale
 import javax.inject.Inject
@@ -34,6 +35,7 @@ class SettingsViewModel @Inject constructor(
     private val preferences: DataStore<Preferences>,
     val time: GlobalTime.Fast,
     @Named("fastTimeSpeed") val timeSpeed: MutableStateFlow<Float>,
+    @Named("homeOffset") private val homeOffset: MutableStateFlow<Float>,
     val weather: MutableStateFlow<WeatherType>,
     private val workManager: WorkManager,
     val location: MutableStateFlow<Location?>,
@@ -63,12 +65,16 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             location.collectLatest {
                 if (it != null) {
-                    val city = reverseGeocodingAPI
-                        .findCity(it.latitude, it.longitude, Locale.getDefault().language)
+                    val city = reverseGeocodingAPI.findCity(
+                            it.latitude,
+                            it.longitude,
+                            Locale.getDefault().language
+                        )
 
-                    val cityName = sequenceOf(city.name, city.locality, city.region, city.country)
-                        .filter(String::isNotBlank)
-                        .firstOrNull()
+                    val cityName =
+                        sequenceOf(city.name, city.locality, city.region, city.country).filter(
+                                String::isNotBlank
+                            ).firstOrNull()
 
                     location.value = it.copy(city = cityName)
                 }
@@ -81,8 +87,8 @@ class SettingsViewModel @Inject constructor(
     }
 
     private fun computeMissingLocationPermission(locationOn: Boolean) {
-        missingLocationPermission.value = locationOn &&
-                !(context.hasLocationPermission && context.hasBackgroundLocationPermission)
+        missingLocationPermission.value =
+            locationOn && !(context.hasLocationPermission && context.hasBackgroundLocationPermission)
     }
 
     fun enableWeatherConditionsUpdate(enabled: Boolean = updateLocationEnabled.value) {
@@ -96,6 +102,10 @@ class SettingsViewModel @Inject constructor(
 
     fun updateSelectedScene(scene: SceneMode) {
         weather.value = WeatherType.entries.first { it.scene == scene }
+    }
+
+    fun updateHomeOffset(forward: Boolean) = homeOffset.update {
+        (if (forward) it + .5f else it - .5f).coerceIn(0f, 1f)
     }
 
 }
