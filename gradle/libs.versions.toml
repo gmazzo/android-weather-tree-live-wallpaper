@@ -14,7 +14,7 @@ androidx-datastore = { module = "androidx.datastore:datastore-preferences", vers
 androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "androidx-hilt" }
 androidx-hilt-workManager = { module = "androidx.hilt:hilt-work", version.ref = "androidx-hilt" }
 androidx-startUp = { module = "androidx.startup:startup-runtime", version = "1.1.1" }
-androidx-workManager = { module = "androidx.work:work-runtime-ktx", version = "2.9.0" }
+androidx-workManager = { module = "androidx.work:work-runtime-ktx", version = "2.9.1" }
 hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
 hilt-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt" }
