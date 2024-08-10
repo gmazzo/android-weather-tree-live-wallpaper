@@ -1,1 +1,2 @@
 README_*.gif filter=lfs diff=lfs merge=lfs -text
+**/screenshotTest/reference/**/*.png filter=lfs diff=lfs merge=lfs -text

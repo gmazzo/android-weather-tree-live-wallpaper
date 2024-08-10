@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android)
+    alias(libs.plugins.android.compose.screenshot)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.kapt)
@@ -13,6 +14,8 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 android {
     namespace = "io.github.gmazzo.android.livewallpaper.weather"
     compileSdk = 34
+
+    experimentalProperties["android.experimental.enableScreenshotTest"] = true
 
     defaultConfig {
         minSdk = 26
@@ -60,7 +63,6 @@ dependencies {
     implementation(libs.androidx.compose.constraintLayout)
     implementation(libs.androidx.compose.material)
     implementation(libs.androidx.compose.uiToolingPreview)
-    debugImplementation(libs.androidx.compose.uiTooling)
     implementation(libs.androidx.datastore)
     implementation(libs.androidx.hilt.workManager)
     implementation(libs.androidx.startUp)
@@ -73,7 +75,12 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.solarevents)
 
+    debugImplementation(libs.androidx.compose.uiTooling)
+    screenshotTestImplementation((libs.androidx.compose.uiTooling))
+
     testImplementation(libs.hilt.testing)
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
 }
+
+tasks.check { dependsOn(tasks.validateScreenshotTest) }
