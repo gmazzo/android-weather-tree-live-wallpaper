@@ -1,6 +1,6 @@
 [versions]
 androidx-hilt = "1.2.0"
-hilt = "2.51.1"
+hilt = "2.52"
 kotlin = "2.0.0"
 
 [libraries]
