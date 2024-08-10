@@ -27,7 +27,7 @@ retrofit = { module = "com.squareup.retrofit2:converter-kotlinx-serialization", 
 solarevents = { module = "org.shredzone.commons:commons-suncalc", version = "3.11" }
 
 [plugins]
-android = { id = "com.android.application", version = "8.5.1" }
+android = { id = "com.android.application", version = "8.5.2" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
