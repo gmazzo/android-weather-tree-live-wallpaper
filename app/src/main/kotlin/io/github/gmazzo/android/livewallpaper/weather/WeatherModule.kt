@@ -90,4 +90,17 @@ object WeatherModule {
         return WorkManager.getInstance(context)
     }
 
+    @Module
+    @InstallIn(SingletonComponent::class)
+    object Nondeterministic {
+
+        @Provides
+        @Singleton
+        fun random(): Random = Random
+
+        @Provides
+        @Singleton
+        fun now(): () -> ZonedDateTime = ZonedDateTime::now
+
+    }
 }
