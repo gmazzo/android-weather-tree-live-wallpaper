@@ -1,21 +1,19 @@
 package io.github.gmazzo.android.livewallpaper.weather
 
+import androidx.test.filters.SmallTest
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.test.runTest
 import org.junit.AfterClass
 import org.junit.Assert.assertEquals
-import org.junit.Before
 import org.junit.Test
 import java.util.concurrent.CopyOnWriteArraySet
 import java.util.concurrent.Executors
 
+@SmallTest
 class DeterministicRandomTest {
 
-    @Before
-    fun setUp() {
-        DeterministicRandom.reset()
-    }
+    private val random = DeterministicRandom()
 
     /**
      * Validates random is deterministic when invoked from multiple threads
@@ -27,19 +25,13 @@ class DeterministicRandomTest {
             async(executor.asCoroutineDispatcher()) {
                 Thread.sleep(100)
                 seenThreads.add(Thread.currentThread())
-                expectedValues.indices.map { DeterministicRandom.nextInt(10) }
+                expectedValues.indices.map { random.nextInt(10) }
             }
         }.map { it.await() }
 
         assertEquals(THREADS, seenThreads.size)
         assertEquals((0 until THREADS).map { expectedValues }, values)
     }
-
-    /**
-     * Validates random sequence restarts after reset, for the same thread
-     */
-    @Test
-    fun andAfterReset() = isDeterministic()
 
     companion object {
 

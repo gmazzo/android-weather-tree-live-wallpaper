@@ -28,7 +28,7 @@ class SettingsActivity : ComponentActivity() {
     @Inject
     internal lateinit var viewFactory: WeatherView.Factory
 
-    private val viewModel: SettingsViewModel by viewModels()
+    internal val viewModel: SettingsViewModel by viewModels()
 
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission(), ::checkPermissions)
