@@ -1,8 +1,10 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.models
 
 import androidx.annotation.RawRes
+import io.github.gmazzo.android.livewallpaper.weather.engine.withFlags
 import java.io.Closeable
 import javax.microedition.khronos.opengles.GL10.GL_FLOAT
+import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D
 import javax.microedition.khronos.opengles.GL10.GL_TRIANGLES
 import javax.microedition.khronos.opengles.GL10.GL_UNSIGNED_SHORT
 import javax.microedition.khronos.opengles.GL11
@@ -22,7 +24,7 @@ sealed class Model(
 
     internal abstract fun collectBufferIds(): Sequence<Int>
 
-    internal fun render(frame: Frame) {
+    internal fun render(frame: Frame) = gl.withFlags(GL_TEXTURE_2D) {
         gl.glBindBuffer(GL_ARRAY_BUFFER, frame.bufNormalHandle)
         gl.glNormalPointer(GL_FLOAT, 0, 0)
 

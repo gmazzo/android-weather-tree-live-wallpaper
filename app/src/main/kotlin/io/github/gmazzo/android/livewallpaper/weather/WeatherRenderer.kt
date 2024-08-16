@@ -29,7 +29,6 @@ import javax.microedition.khronos.opengles.GL10.GL_PERSPECTIVE_CORRECTION_HINT
 import javax.microedition.khronos.opengles.GL10.GL_PROJECTION
 import javax.microedition.khronos.opengles.GL10.GL_SMOOTH
 import javax.microedition.khronos.opengles.GL10.GL_TEXTURE0
-import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D
 import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_COORD_ARRAY
 import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_ENV
 import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_ENV_MODE
@@ -126,7 +125,6 @@ internal class WeatherRenderer @AssistedInject constructor(
     private fun GL10.setRenderDefaults() {
         glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST)
         glShadeModel(GL_SMOOTH)
-        glEnable(GL_TEXTURE_2D)
         glEnable(GL_BLEND)
         glAlphaFunc(GL_GEQUAL, .02f)
         glDepthMask(false)
