@@ -20,7 +20,7 @@ import javax.microedition.khronos.opengles.GL10.GL_LIGHTING
 import javax.microedition.khronos.opengles.GL10.GL_MODELVIEW
 import javax.microedition.khronos.opengles.GL10.GL_POSITION
 import kotlin.random.Random
-import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Duration.Companion.milliseconds
 
 class SceneStorm @Inject constructor(
     dependencies: SceneDependencies,
@@ -93,9 +93,9 @@ class SceneStorm @Inject constructor(
     }
 
     private fun updateLightValues() {
-        val timeDelta = time.deltaSeconds.toInt()
+        val timeDelta = time.deltaSeconds
 
-        wave.timeElapsed += timeDelta.seconds
+        wave.timeElapsed += (timeDelta * 1000).toInt().milliseconds
 
         val lightPosX = wave.cos.toFloat()
 
