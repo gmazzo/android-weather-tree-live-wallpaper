@@ -3,10 +3,15 @@ package io.github.gmazzo.android.livewallpaper.weather.engine
 import androidx.annotation.FloatRange
 import androidx.annotation.IntDef
 import java.nio.FloatBuffer
+import javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT
+import javax.microedition.khronos.opengles.GL10.GL_FOG
+import javax.microedition.khronos.opengles.GL10.GL_LIGHT1
+import javax.microedition.khronos.opengles.GL10.GL_LIGHTING
 import javax.microedition.khronos.opengles.GL10.GL_MODELVIEW
 import javax.microedition.khronos.opengles.GL10.GL_ONE
 import javax.microedition.khronos.opengles.GL10.GL_ONE_MINUS_SRC_ALPHA
 import javax.microedition.khronos.opengles.GL10.GL_PROJECTION
+import javax.microedition.khronos.opengles.GL10.GL_SRC_ALPHA
 import javax.microedition.khronos.opengles.GL10.GL_TEXTURE
 import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D
 import javax.microedition.khronos.opengles.GL10.GL_ZERO
@@ -18,11 +23,11 @@ import javax.microedition.khronos.opengles.GL11.GL_CURRENT_COLOR
 annotation class GLMatrixMode
 
 @Retention(AnnotationRetention.SOURCE)
-@IntDef(GL_TEXTURE_2D)
+@IntDef(GL_TEXTURE_2D, GL_FOG, GL_LIGHTING, GL_LIGHT1, GL_COLOR_BUFFER_BIT)
 annotation class GLFlags
 
 @Retention(AnnotationRetention.SOURCE)
-@IntDef(GL_ZERO, GL_ONE, GL_ONE_MINUS_SRC_ALPHA)
+@IntDef(GL_ZERO, GL_ONE, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 annotation class GLBlendFactor
 
 fun <R> GL11.withFlags(@GLFlags vararg flags: Int, block: GL11.() -> R): R {

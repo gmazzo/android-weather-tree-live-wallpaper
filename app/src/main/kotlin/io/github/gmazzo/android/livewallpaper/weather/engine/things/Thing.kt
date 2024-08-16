@@ -3,7 +3,6 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.things
 import androidx.annotation.CallSuper
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GLBlendFactor
-import io.github.gmazzo.android.livewallpaper.weather.engine.GLFlags
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.StaticModel
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
@@ -41,7 +40,7 @@ sealed class Thing(
         render(GL_ONE, GL_ONE_MINUS_SRC_ALPHA)
 
     protected fun render(
-        @GLFlags sourceBlendFactor: Int,
+        @GLBlendFactor sourceBlendFactor: Int,
         @GLBlendFactor destBlendFactor: Int,
     ) = gl.pushMatrix(GL_MODELVIEW) {
         gl.glTranslatef(origin.x, origin.y, origin.z)
