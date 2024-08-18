@@ -11,9 +11,7 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.models.StaticModel
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
-import io.github.gmazzo.android.livewallpaper.weather.engine.withoutFlags
 import javax.inject.Named
-import javax.microedition.khronos.opengles.GL10.GL_LIGHTING
 import javax.microedition.khronos.opengles.GL10.GL_ONE
 import javax.microedition.khronos.opengles.GL10.GL_SRC_ALPHA
 import javax.microedition.khronos.opengles.GL11
@@ -46,11 +44,9 @@ class ThingDarkCloud @AssistedInject constructor(
         super.render()
 
         if (flare != null && flashIntensity > 0f) {
-            gl.withoutFlags(GL_LIGHTING) {
-                color.a = flashIntensity
-                super.render(GL_SRC_ALPHA, GL_ONE)
-                color.a = 1f
-            }
+            color.a = flashIntensity
+            super.render(GL_SRC_ALPHA, GL_ONE)
+            color.a = 1f
         }
     }
 

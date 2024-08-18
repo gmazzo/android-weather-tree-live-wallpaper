@@ -36,32 +36,35 @@ class StaticModel(
         texture1: Texture,
         texture2: Texture,
         combine: Int,
-    ) {
-        gl.glActiveTexture(GL_TEXTURE0)
-        gl.glBindTexture(GL_TEXTURE_2D, texture1.glId)
-        gl.glBindBuffer(GL_ARRAY_BUFFER, bufTCHandle)
-        gl.glTexCoordPointer(2, GL_FLOAT, 0, 0)
-        gl.glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE)
-        gl.glActiveTexture(GL_TEXTURE1)
+    ) = with(gl) {
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, texture1.glId)
+        glBindBuffer(GL_ARRAY_BUFFER, bufTCHandle)
+        glTexCoordPointer(2, GL_FLOAT, 0, 0)
+        glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE)
 
-        gl.withFlags(GL_TEXTURE_2D) {
-            gl.glClientActiveTexture(GL_TEXTURE1)
-            gl.glEnableClientState(GL_TEXTURE_COORD_ARRAY)
-            gl.glBindTexture(GL_TEXTURE_2D, texture2.glId)
-            gl.glBindBuffer(GL_ARRAY_BUFFER, bufTCHandle)
-            gl.glTexCoordPointer(2, GL_FLOAT, 0, 0)
-            gl.glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, combine)
-            gl.glBindBuffer(GL_ARRAY_BUFFER, frame.bufVertexHandle)
-            gl.glVertexPointer(3, GL_FLOAT, 0, 0)
-            gl.glBindBuffer(GL_ARRAY_BUFFER, frame.bufNormalHandle)
-            gl.glNormalPointer(GL_FLOAT, 0, 0)
-            gl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufIndexHandle)
-            gl.glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_SHORT, 0)
-            gl.glBindBuffer(GL_ARRAY_BUFFER, 0)
-            gl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
+        glActiveTexture(GL_TEXTURE1)
+        withFlags(GL_TEXTURE_2D) {
+            glClientActiveTexture(GL_TEXTURE1)
+            glEnableClientState(GL_TEXTURE_COORD_ARRAY)
+            glBindTexture(GL_TEXTURE_2D, texture2.glId)
+
+            glBindBuffer(GL_ARRAY_BUFFER, bufTCHandle)
+            glTexCoordPointer(2, GL_FLOAT, 0, 0)
+            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, combine)
+            glBindBuffer(GL_ARRAY_BUFFER, frame.bufVertexHandle)
+            glVertexPointer(3, GL_FLOAT, 0, 0)
+            glBindBuffer(GL_ARRAY_BUFFER, frame.bufNormalHandle)
+            glNormalPointer(GL_FLOAT, 0, 0)
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufIndexHandle)
+            glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_SHORT, 0)
+
+            glBindBuffer(GL_ARRAY_BUFFER, 0)
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
         }
-        gl.glActiveTexture(GL_TEXTURE0)
-        gl.glClientActiveTexture(GL_TEXTURE0)
+
+        glActiveTexture(GL_TEXTURE0)
+        glClientActiveTexture(GL_TEXTURE0)
     }
 
     override fun collectBufferIds() = sequenceOf(

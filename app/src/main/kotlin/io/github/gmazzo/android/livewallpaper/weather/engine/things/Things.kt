@@ -12,11 +12,10 @@ class Things @Inject constructor(
     private val moonProvider: Provider<ThingMoon>,
     private val cloudFactory: ThingCloud.Factory<*>,
     private val wispyFactory: ThingWispy.Factory,
-    sceneMode: SceneMode,
+    private val sceneMode: SceneMode,
 ) {
 
     private val items = mutableListOf<Thing>()
-    private val cloudsBaseline = if (sceneMode == SceneMode.FOG) -40 else 0
 
     fun add(thing: Thing) {
         items.add(thing)
@@ -63,7 +62,7 @@ class Things @Inject constructor(
             origin = Vector(
                 x = which * 90f / numClouds - 45,
                 y = yPositions[which],
-                z = cloudsBaseline + Random.nextFloat(-20f, -10f)
+                z = Random.nextFloat(-20f, -10f)
             )
         }
     }
@@ -73,7 +72,9 @@ class Things @Inject constructor(
             origin = origin.copy(
                 x = which * 90f / numWisps - 45,
                 y = Random.nextFloat(87.5f, 175f),
-                z = cloudsBaseline + Random.nextFloat(-40f, -20f),
+                z = Random.nextFloat(
+                    if (sceneMode == SceneMode.FOG) -80f else -40f,
+                    if (sceneMode == SceneMode.FOG) -40f else -20f),
             )
         }
 

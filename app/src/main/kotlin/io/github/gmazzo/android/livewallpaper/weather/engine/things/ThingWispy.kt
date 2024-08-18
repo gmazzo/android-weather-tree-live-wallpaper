@@ -1,5 +1,6 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.things
 
+import android.graphics.Color
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -23,7 +24,7 @@ class ThingWispy @AssistedInject constructor(
     models: Models,
     textures: Textures,
     time: GlobalTime,
-    @Named("clouds") override val color: EngineColor,
+    @Named("clouds") private val cloudsColor: EngineColor,
     @Assisted which: Int,
 ) : ThingMoving(
     gl,
@@ -47,6 +48,8 @@ class ThingWispy @AssistedInject constructor(
 
     override fun update() {
         super.update()
+
+        color.set(Color.WHITE).a = ((cloudsColor.r + cloudsColor.g + cloudsColor.b) / 3).coerceIn(.2f, 1f)
 
         if (origin.x > 123.75f) {
             origin = origin.let { it.copy(x = it.x - 247.5f) }

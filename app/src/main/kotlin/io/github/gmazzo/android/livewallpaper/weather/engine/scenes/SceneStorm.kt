@@ -58,7 +58,7 @@ class SceneStorm @Inject constructor(
 
         if (lightFlashTime <= 0f) {
             gl.withFlags(GL_LIGHTING, GL_LIGHT1) {
-                gl.glLightfv(GL_LIGHT1, GL_AMBIENT, lightAmbientLight, 0)
+                glLightfv(GL_LIGHT1, GL_AMBIENT, lightAmbientLight, 0)
                 super.drawBackground()
             }
 

@@ -30,12 +30,12 @@ class SceneFog @Inject constructor(
         super.draw()
 
         timeOfDayTint.color.toArray(fogColors)
-        gl.glFogf(GL_FOG_MODE, GL_LINEAR.toFloat())
-        gl.glFogfv(GL_FOG_COLOR, fogColors, 0)
-        gl.glFogf(GL_FOG_DENSITY, FOG_DENSITY)
-        gl.glFogf(GL_FOG_START, -10f)
-        gl.glFogf(GL_FOG_END, 190f)
-        gl.glHint(GL_FOG_HINT, GL_DONT_CARE)
+        glFogf(GL_FOG_MODE, GL_LINEAR.toFloat())
+        glFogfv(GL_FOG_COLOR, fogColors, 0)
+        glFogf(GL_FOG_DENSITY, FOG_DENSITY)
+        glFogf(GL_FOG_START, -10f)
+        glFogf(GL_FOG_END, 190f)
+        glHint(GL_FOG_HINT, GL_DONT_CARE)
     }
 
     companion object {

@@ -30,8 +30,8 @@ class SceneRain @Inject constructor(
         super.draw()
 
         timeOfDayTint.color.toArray(lightDiffuse)
-        gl.glLightfv(GL_COLOR_BUFFER_BIT, GL_DIFFUSE, lightDiffuse, 0)
-        gl.glLightfv(GL_COLOR_BUFFER_BIT, GL_AMBIENT, lightDiffuse, 0)
+        glLightfv(GL_COLOR_BUFFER_BIT, GL_DIFFUSE, lightDiffuse, 0)
+        glLightfv(GL_COLOR_BUFFER_BIT, GL_AMBIENT, lightDiffuse, 0)
     }
 
     override fun drawBackground() {

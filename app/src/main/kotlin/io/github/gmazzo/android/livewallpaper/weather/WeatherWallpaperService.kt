@@ -75,7 +75,7 @@ class WeatherWallpaperService : WallpaperService() {
         ) {
             Log.d(TAG, "onOffsetsChanged: xOffset=$xOffset, yOffset=$yOffset")
 
-            homeOffset.value = xOffset
+            homeOffset.value = xOffset.coerceIn(0f, 1f)
         }
 
     }

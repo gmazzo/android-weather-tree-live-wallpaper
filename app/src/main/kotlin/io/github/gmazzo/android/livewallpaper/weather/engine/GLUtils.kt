@@ -31,26 +31,12 @@ annotation class GLFlags
 annotation class GLBlendFactor
 
 fun <R> GL11.withFlags(@GLFlags vararg flags: Int, block: GL11.() -> R): R {
-    val currentFlags = flags.filterNot(::glIsEnabled)
-
-    currentFlags.forEach(::glEnable)
+    flags.forEach(::glEnable)
     try {
         return block()
 
     } finally {
-        currentFlags.forEach(::glDisable)
-    }
-}
-
-fun <R> GL11.withoutFlags(@GLFlags vararg flags: Int, block: GL11.() -> R): R {
-    val currentFlags = flags.filter(::glIsEnabled)
-
-    currentFlags.forEach(::glDisable)
-    try {
-        return block()
-
-    } finally {
-        currentFlags.forEach(::glEnable)
+        flags.forEach(::glDisable)
     }
 }
 

@@ -31,11 +31,11 @@ class ThingLightning @Inject constructor(
 
     private val glow = textures[R.raw.lightning_pieces_glow]
 
-    override fun render() = gl.withFlags(GL_LIGHTING, GL_COLOR_BUFFER_BIT) {
-        pushMatrix(GL_MODELVIEW) {
-            gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE)
-            gl.glTranslatef(origin.x, origin.y, origin.z)
-            gl.glScalef(scale.x, scale.x, scale.x)
+    override fun render() = gl.pushMatrix(GL_MODELVIEW) {
+        withFlags(GL_LIGHTING, GL_COLOR_BUFFER_BIT) {
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE)
+            glTranslatef(origin.x, origin.y, origin.z)
+            glScalef(scale.x, scale.x, scale.x)
 
             withColor(color) {
                 model.render(glow, texture, GL_ADD)
