@@ -4,7 +4,6 @@ import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
-import io.github.gmazzo.android.livewallpaper.weather.engine.models.StaticModel
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDay
@@ -26,7 +25,7 @@ class ThingSun @Inject constructor(
     private val timeOfDay: TimeOfDay,
 ) : Thing(
     gl,
-    model = models[R.raw.plane_16x16] as StaticModel,
+    model = models[R.raw.plane_16x16],
     texture = textures[R.raw.sun]
 ) {
 

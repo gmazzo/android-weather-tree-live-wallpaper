@@ -3,7 +3,6 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.things
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
-import io.github.gmazzo.android.livewallpaper.weather.engine.models.StaticModel
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.withColor
@@ -25,7 +24,7 @@ class ThingLightning @Inject constructor(
     private val time: GlobalTime,
 ) : Thing(
     gl,
-    model = models[MODELS[Random.nextInt(MODELS.size)]] as StaticModel,
+    model = models[MODELS[Random.nextInt(MODELS.size)]],
     texture = textures[R.raw.lightning_pieces_core],
 ) {
 

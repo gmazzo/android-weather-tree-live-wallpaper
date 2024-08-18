@@ -132,16 +132,16 @@ class Models @Inject constructor(
         gl.glBufferData(GL_ARRAY_BUFFER, bufTC.sizeInBytes, bufTC, GL_STATIC_DRAW)
         gl.glBindBuffer(GL_ARRAY_BUFFER, 0)
 
-        if (framesCount > 1) AnimatedModel(
-            name, rawId,
-            gl, indicesCount, bufTCHandle, bufIndexHandle,
-            elementsCount, vertices,
-            (elementsCount * 3).asDirectFloatBuffer(),
+        return@getOrPut Model(
+            name= name,
+            resId = rawId,
+            gl,
+            indicesCount = indicesCount,
+            bufTCHandle=bufTCHandle,
+            bufIndexHandle=bufIndexHandle,
+            elementsCount= elementsCount,
+            vertices=vertices,
             frames,
-        ) else StaticModel(
-            name, rawId,
-            gl, indicesCount, bufTCHandle, bufIndexHandle,
-            frames.single(),
         )
     }
 

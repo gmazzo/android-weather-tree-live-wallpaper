@@ -4,7 +4,7 @@ import androidx.annotation.CallSuper
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GLBlendFactor
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
-import io.github.gmazzo.android.livewallpaper.weather.engine.models.StaticModel
+import io.github.gmazzo.android.livewallpaper.weather.engine.models.Model
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Texture
 import io.github.gmazzo.android.livewallpaper.weather.engine.withColor
@@ -17,7 +17,7 @@ import javax.microedition.khronos.opengles.GL11
 
 sealed class Thing(
     protected val gl: GL11,
-    protected val model: StaticModel,
+    protected val model: Model,
     protected open val texture: Texture,
 ) {
 

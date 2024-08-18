@@ -7,8 +7,6 @@ import androidx.annotation.DrawableRes
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.AnimPlayer
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
-import io.github.gmazzo.android.livewallpaper.weather.engine.models.AnimatedModel
-import io.github.gmazzo.android.livewallpaper.weather.engine.models.StaticModel
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things.Companion.WIND_SPEED
 import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDay.Companion.GOLDER_HOUR_FACTOR
@@ -41,13 +39,13 @@ sealed class Scene(
     private val backgroundModel = models[R.raw.plane_16x16]
     private val backgroundTexture = textures[background]
 
-    private val starModel = models[R.raw.stars] as StaticModel
+    private val starModel = models[R.raw.stars]
     private val starTexture = textures[R.drawable.stars]
     private val starNoiseTexture = textures[R.drawable.noise]
 
     private val treesTerrainModel = models[R.raw.trees_overlay_terrain]
-    private val treesGrassModel = models[R.raw.grass_overlay] as AnimatedModel
-    private val treesTreeModel = models[R.raw.trees_overlay] as AnimatedModel
+    private val treesGrassModel = models[R.raw.grass_overlay]
+    private val treesTreeModel = models[R.raw.trees_overlay]
     private val treesTexture = textures[R.drawable.trees_overlay]
 
     @CallSuper

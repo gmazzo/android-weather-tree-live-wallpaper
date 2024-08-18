@@ -7,7 +7,6 @@ import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
-import io.github.gmazzo.android.livewallpaper.weather.engine.models.StaticModel
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import javax.inject.Named
 import javax.microedition.khronos.opengles.GL11
@@ -21,7 +20,7 @@ open class ThingLightCloud @AssistedInject constructor(
     @Assisted which: Int,
 ) : ThingCloud(
     gl,
-    model = models[MODELS[which % MODELS.size]] as StaticModel,
+    model = models[MODELS[which % MODELS.size]],
     texture = textures[TEXTURES[which % TEXTURES.size]],
     time,
     cloudsColor,
