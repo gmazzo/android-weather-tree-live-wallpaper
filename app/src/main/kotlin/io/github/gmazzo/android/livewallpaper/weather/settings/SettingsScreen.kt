@@ -243,7 +243,10 @@ private fun TimeSpeedMenu(
                         )
                     }
                 },
-                onClick = { onSpeedSelected(it.first) })
+                onClick = {
+                    showMenu = false
+                    onSpeedSelected(it.first)
+                })
         }
     }
 }
