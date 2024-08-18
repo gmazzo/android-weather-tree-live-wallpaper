@@ -13,6 +13,7 @@ import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.util.concurrent.ConcurrentLinkedQueue
 import javax.inject.Named
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
@@ -39,20 +40,24 @@ import javax.microedition.khronos.opengles.GL10.GL_VERTEX_ARRAY
 import javax.microedition.khronos.opengles.GL11
 
 internal class WeatherRenderer @AssistedInject constructor(
-    private val openGLFactory: WeatherRendererComponent.Factory,
+    private val componentFactory: WeatherRendererComponent.Factory,
     private val weather: MutableStateFlow<WeatherType>,
     @Named("homeOffset") private val homeOffset: MutableStateFlow<Float>,
     @Assisted private val view: GLSurfaceView,
     @Assisted private val logTag: String,
     @Assisted private val demoMode: Boolean,
 ) : Renderer {
-    private var screenWidth = 0f
-    private var screenHeight = 0f
+    var screenWidth = 0f
+        private set
+    var screenHeight = 0f
+        private set
+
     private val screenRatio get() = screenWidth / screenHeight
     private val landscape get() = screenRatio > 1
     private var cameraFOV = 65f
     private var cameraPos = Vector(0f, 0f, 0f)
     private val cameraSpeed: Float = 1f
+    private val postRenderActions = ConcurrentLinkedQueue<() -> Unit>()
     private var component: WeatherRendererComponent? = null
     private var scene: SceneComponent? = null
 
@@ -96,7 +101,8 @@ internal class WeatherRenderer @AssistedInject constructor(
     }
 
     override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
-        component = openGLFactory.create(view, gl as GL11, demoMode)
+        log("onSurfaceCreated:")
+        component = componentFactory.create(view, gl as GL11, demoMode)
     }
 
     override fun onSurfaceChanged(gl: GL10, w: Int, h: Int) {
@@ -117,9 +123,10 @@ internal class WeatherRenderer @AssistedInject constructor(
     }
 
     private fun unloadScene() {
+        log("onSurfaceCreated: scene=$scene, ")
         val scene = scene ?: return
-        this.scene = null
 
+        this.scene = null
         if (scene.scene.isInitialized()) {
             scene.scene.value.close()
         }
@@ -150,6 +157,7 @@ internal class WeatherRenderer @AssistedInject constructor(
     }
 
     override fun onDrawFrame(gl: GL10) {
+        log("onDrawFrame:")
         val scene = scene ?: return
 
         val component = component!!
@@ -159,6 +167,16 @@ internal class WeatherRenderer @AssistedInject constructor(
         gl.updateProjection()
 
         scene.scene.value.draw()
+
+        if (postRenderActions.isNotEmpty()) {
+            view.queueEvent {
+                Log.d(logTag, "Running ${postRenderActions.size} postRenderActions")
+
+                while (postRenderActions.isNotEmpty()) {
+                    postRenderActions.poll()!!()
+                }
+            }
+        }
     }
 
     private fun GL10.updateProjection() {
@@ -181,8 +199,12 @@ internal class WeatherRenderer @AssistedInject constructor(
         cameraFOV = if (landscape) 45f else 70f
     }
 
+    fun postRender(action: () -> Unit) {
+        postRenderActions.add(action)
+    }
+
     @AssistedFactory
-    interface Factory {
+    fun interface Factory {
         fun create(view: GLSurfaceView, logTag: String, demoMode: Boolean): WeatherRenderer
     }
 

@@ -23,7 +23,6 @@ import javax.microedition.khronos.opengles.GL10.GL_ONE_MINUS_SRC_ALPHA
 import javax.microedition.khronos.opengles.GL10.GL_SRC_ALPHA
 import javax.microedition.khronos.opengles.GL10.GL_TEXTURE
 import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D
-import kotlin.random.Random
 
 sealed class Scene(
     dependencies: SceneDependencies,
@@ -125,7 +124,7 @@ sealed class Scene(
             treesAnimateDelay -= time.deltaSeconds
 
             if (treesAnimateDelay <= 0f) {
-                treesAnimateDelay = 3f + (7f * Random.nextFloat())
+                treesAnimateDelay = 3f + (7f * random.nextFloat())
                 treesAnim.reset()
             }
         }

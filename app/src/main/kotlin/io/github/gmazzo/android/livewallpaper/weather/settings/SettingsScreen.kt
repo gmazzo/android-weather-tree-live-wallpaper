@@ -11,7 +11,6 @@ import android.text.style.StyleSpan
 import androidx.annotation.StringRes
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
@@ -68,10 +67,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -104,8 +101,8 @@ private val timeSpeeds = listOf(
     (1.days / 3.seconds).toFloat() to R.string.settings_speed_day_in_3secs,
 )
 
-@Composable
 @Preview
+@Composable
 fun SettingsScreen(
     now: ZonedDateTime = ZonedDateTime.now(),
     timeSpeed: Float = 1f,
@@ -120,14 +117,7 @@ fun SettingsScreen(
     onSetAsWallpaper: () -> Unit = {},
     onNavigateBack: () -> Unit = {},
     onDragGesture: (forward: Boolean) -> Unit = {},
-    surfaceView: @Composable () -> Unit = {
-        Image(
-            painter = painterResource(R.drawable.bg3),
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop,
-        )
-    },
+    surfaceView: @Composable () -> Unit = {},
 ) {
     var width by remember { mutableIntStateOf(0) }
 

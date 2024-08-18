@@ -17,6 +17,7 @@ import javax.microedition.khronos.opengles.GL11
 import kotlin.random.Random
 
 class ThingDarkCloud @AssistedInject constructor(
+    random: Random,
     gl: GL11,
     models: Models,
     textures: Textures,
@@ -25,9 +26,9 @@ class ThingDarkCloud @AssistedInject constructor(
     @Named("clouds") cloudsColor: EngineColor,
     @Assisted which: Int,
 ) : ThingCloud(
-    gl,
+    random, gl,
     model = models[MODELS[which % MODELS.size]],
-   texture = textures[TEXTURES[which % TEXTURES.size]],
+    texture = textures[TEXTURES[which % TEXTURES.size]],
     time,
     cloudsColor,
 ) {
@@ -56,14 +57,14 @@ class ThingDarkCloud @AssistedInject constructor(
             if (flashIntensity > 0f) {
                 flashIntensity -= 1.25f * time.deltaSeconds
             }
-            if (flashIntensity <= 0f && Random.nextFloat(0f, 4.5f) < time.deltaSeconds) {
+            if (flashIntensity <= 0f && random.nextFloat(0f, 4.5f) < time.deltaSeconds) {
                 flashIntensity = .5f
             }
         }
     }
 
     @AssistedFactory
-    interface Factory : ThingCloud.Factory<ThingDarkCloud>
+    fun interface Factory : ThingCloud.Factory<ThingDarkCloud>
 
     companion object {
         private val TEXTURES = intArrayOf(

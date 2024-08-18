@@ -13,6 +13,7 @@ import kotlin.math.absoluteValue
 import kotlin.random.Random
 
 sealed class ThingCloud(
+    protected val random: Random,
     gl: GL11,
     model: Model,
     texture: Texture,
@@ -25,9 +26,9 @@ sealed class ThingCloud(
 
     init {
         scale = Vector(
-            (3.5f + Random.nextFloat(0f, 2f)).let { if (Random.nextBoolean()) it else -it },
+            (3.5f + random.nextFloat(0f, 2f)).let { if (random.nextBoolean()) it else -it },
             3f,
-            3.5f + Random.nextFloat(0f, 2f)
+            3.5f + random.nextFloat(0f, 2f)
         )
     }
 
@@ -36,7 +37,7 @@ sealed class ThingCloud(
 
         val rangX = origin.y / 2 + (scale.x * 6).absoluteValue
         if (origin.x > rangX) {
-            origin = origin.copy(x = Random.nextFloat((-rangX) - 5f, (-rangX) + 5f))
+            origin = origin.copy(x = random.nextFloat((-rangX) - 5f, (-rangX) + 5f))
             timeElapsed = 0f
         }
 
@@ -50,7 +51,7 @@ sealed class ThingCloud(
         }
     }
 
-    interface Factory<Type : ThingCloud> {
+    fun interface Factory<Type : ThingCloud> {
         fun create(which: Int): Type
     }
 

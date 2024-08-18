@@ -2,8 +2,12 @@ package io.github.gmazzo.android.livewallpaper.weather
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Bitmap
 import android.opengl.GLSurfaceView
+import android.view.PixelCopy
 import android.view.SurfaceHolder
+import androidx.annotation.MainThread
+import androidx.annotation.VisibleForTesting
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -16,7 +20,8 @@ class WeatherView @AssistedInject internal constructor(
     rendererFactory: WeatherRenderer.Factory
 ) : GLSurfaceView(context) {
 
-    private val renderer = rendererFactory.create(this, logTag, demoMode)
+    @VisibleForTesting
+    internal val renderer = rendererFactory.create(this, logTag, demoMode)
 
     private var externalSurfaceHolder: SurfaceHolder? = null
 
@@ -51,8 +56,20 @@ class WeatherView @AssistedInject internal constructor(
         super.onDetachedFromWindow()
     }
 
+    fun takeSnapshot(@MainThread onSnapshot: (Bitmap?) -> Unit): Unit = renderer.postRender {
+        val bitmap = Bitmap.createBitmap(
+            renderer.screenWidth.toInt(),
+            renderer.screenHeight.toInt(),
+            Bitmap.Config.ARGB_8888
+        )
+
+        PixelCopy.request(this, bitmap, { result ->
+            onSnapshot(bitmap.takeIf { result == PixelCopy.SUCCESS })
+        }, handler)
+    }
+
     @AssistedFactory
-    interface Factory {
+    fun interface Factory {
         fun create(context: Context, logTag: String, demoMode: Boolean): WeatherView
     }
 

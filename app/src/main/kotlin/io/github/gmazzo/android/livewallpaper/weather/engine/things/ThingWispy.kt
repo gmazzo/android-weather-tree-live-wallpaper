@@ -19,6 +19,7 @@ import javax.microedition.khronos.opengles.GL11
 import kotlin.random.Random
 
 class ThingWispy @AssistedInject constructor(
+    random: Random,
     gl: GL11,
     models: Models,
     textures: Textures,
@@ -36,9 +37,9 @@ class ThingWispy @AssistedInject constructor(
     init {
         foreground = true
         scale = Vector(
-            x = Random.nextFloat(1f, 3f),
+            x = random.nextFloat(1f, 3f),
             y = 1f,
-            z = Random.nextFloat(1f, 1.5f)
+            z = random.nextFloat(1f, 1.5f)
         )
     }
 
@@ -56,7 +57,7 @@ class ThingWispy @AssistedInject constructor(
     }
 
     @AssistedFactory
-    interface Factory {
+    fun interface Factory {
         fun create(which: Int): ThingWispy
     }
 

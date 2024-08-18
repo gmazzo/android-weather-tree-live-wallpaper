@@ -18,13 +18,14 @@ import javax.microedition.khronos.opengles.GL11
 import kotlin.random.Random
 
 class ThingLightning @Inject constructor(
+    random: Random,
     gl: GL11,
     models: Models,
     textures: Textures,
     private val time: GlobalTime,
 ) : Thing(
     gl,
-    model = models[MODELS[Random.nextInt(MODELS.size)]],
+    model = models[MODELS[random.nextInt(MODELS.size)]],
     texture = textures[R.raw.lightning_pieces_core],
 ) {
 

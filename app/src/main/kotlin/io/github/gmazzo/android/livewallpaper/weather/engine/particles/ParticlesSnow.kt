@@ -13,15 +13,16 @@ import javax.microedition.khronos.opengles.GL11
 import kotlin.random.Random
 
 class ParticlesSnow @Inject constructor(
+    random: Random,
     gl: GL11,
     models: Models,
     textures: Textures,
     private val timeOfDayTint: TimeOfDayTint,
     @Named("homeOffset") private val homeOffset: MutableStateFlow<Float>,
 ) : Particles(
-    gl,
-    models[R.raw.flakes],
-    textures[if (Random.nextBoolean()) R.raw.p_snow1 else R.raw.p_snow2],
+    random, gl,
+    model = models[R.raw.flakes],
+    texture = textures[if (random.nextBoolean()) R.raw.p_snow1 else R.raw.p_snow2],
     spawnRate = .25f,
     spawnRateVariance = .05f,
     spawnRangeX = 20f,
@@ -33,18 +34,18 @@ class ParticlesSnow @Inject constructor(
 
         val bias: Float = ((homeOffset.value * 2f) - 1f) * 4f
         particle.lifetime = 4.5f
-        particle.startScale = Vector(Random.nextFloat(.15f, .3f))
-        particle.destScale = Vector(Random.nextFloat(.15f, .3f))
+        particle.startScale = Vector(random.nextFloat(.15f, .3f))
+        particle.destScale = Vector(random.nextFloat(.15f, .3f))
 
-        val randZ = Random.nextFloat(-(3f + (SNOW_GRAVITY * 1.5f)), -3f)
+        val randZ = random.nextFloat(-(3f + (SNOW_GRAVITY * 1.5f)), -3f)
         particle.startVelocity = Vector(
-            x = (Random.nextFloat(-6f, 6f) * SNOW_NOISE) + bias,
-            y = Random.nextFloat(-2f, 2f),
+            x = (random.nextFloat(-6f, 6f) * SNOW_NOISE) + bias,
+            y = random.nextFloat(-2f, 2f),
             z = randZ
         )
         particle.destVelocity = Vector(
-            x = (Random.nextFloat(-8f, 8f) * SNOW_NOISE) + bias,
-            y = Random.nextFloat(-2f, 2f),
+            x = (random.nextFloat(-8f, 8f) * SNOW_NOISE) + bias,
+            y = random.nextFloat(-2f, 2f),
             z = randZ
         )
     }

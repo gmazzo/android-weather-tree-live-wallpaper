@@ -10,8 +10,10 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import javax.inject.Named
 import javax.microedition.khronos.opengles.GL11
+import kotlin.random.Random
 
 open class ThingLightCloud @AssistedInject constructor(
+    random: Random,
     gl: GL11,
     models: Models,
     textures: Textures,
@@ -19,7 +21,7 @@ open class ThingLightCloud @AssistedInject constructor(
     @Named("clouds") cloudsColor: EngineColor,
     @Assisted which: Int,
 ) : ThingCloud(
-    gl,
+    random, gl,
     model = models[MODELS[which % MODELS.size]],
     texture = textures[TEXTURES[which % TEXTURES.size]],
     time,
@@ -27,7 +29,7 @@ open class ThingLightCloud @AssistedInject constructor(
 ) {
 
     @AssistedFactory
-    interface Factory : ThingCloud.Factory<ThingLightCloud>
+    fun interface Factory : ThingCloud.Factory<ThingLightCloud>
 
     companion object {
         private val TEXTURES = intArrayOf(

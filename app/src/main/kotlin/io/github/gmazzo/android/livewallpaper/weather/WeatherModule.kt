@@ -20,21 +20,29 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.time.ZonedDateTime
 import javax.inject.Named
 import javax.inject.Singleton
+import kotlin.random.Random
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
 
 @Module(subcomponents = [WeatherRendererComponent::class])
 @InstallIn(SingletonComponent::class)
 object WeatherModule {
-    private const val TAG = "WeatherModule"
-
     private val settingLastWeather = stringPreferencesKey("weather")
 
     @Provides
     @Singleton
     fun resources(@ApplicationContext context: Context): Resources = context.resources
+
+    @Provides
+    @Singleton
+    fun random(): Random = Random
+
+    @Provides
+    @Singleton
+    fun now(): () -> ZonedDateTime = ZonedDateTime::now
 
     @Provides
     @Singleton
@@ -52,19 +60,20 @@ object WeatherModule {
 
     @Provides
     @Singleton
-    fun weatherType(dataStore: DataStore<Preferences>): MutableStateFlow<WeatherType> = runBlocking {
-        val current =
-            dataStore.data.firstOrNull()?.get(settingLastWeather)?.let(WeatherType::valueOf)
-        val flow =
-            MutableStateFlow(current ?: WeatherType.SUNNY_DAY)
+    fun weatherType(dataStore: DataStore<Preferences>): MutableStateFlow<WeatherType> =
+        runBlocking {
+            val current =
+                dataStore.data.firstOrNull()?.get(settingLastWeather)?.let(WeatherType::valueOf)
+            val flow =
+                MutableStateFlow(current ?: WeatherType.SUNNY_DAY)
 
-        MainScope().launch {
-            flow.collectLatest { weather ->
-                dataStore.edit { it[settingLastWeather] = weather.name }
+            MainScope().launch {
+                flow.collectLatest { weather ->
+                    dataStore.edit { it[settingLastWeather] = weather.name }
+                }
             }
+            return@runBlocking flow
         }
-        return@runBlocking flow
-    }
 
     @Provides
     @Singleton

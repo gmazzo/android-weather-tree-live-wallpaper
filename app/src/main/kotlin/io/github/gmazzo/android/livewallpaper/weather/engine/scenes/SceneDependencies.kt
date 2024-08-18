@@ -13,12 +13,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 import javax.inject.Named
 import javax.microedition.khronos.opengles.GL11
+import kotlin.random.Random
 
 /**
  * Helper class to reduce the boilerplate of passing dependencies to the scene hierarchy.
  */
 interface SceneDependencies {
     val landscape: Boolean
+    val random: Random
     val time: GlobalTime
     val gl: GL11
     val sceneScope: CoroutineScope
@@ -31,6 +33,7 @@ interface SceneDependencies {
 
     class Impl @Inject constructor(
         @Named("landscape") override val landscape: Boolean,
+        override val random: Random,
         override val time: GlobalTime,
         override val gl: GL11,
         dispatcher: GLDispatcher,

@@ -19,7 +19,6 @@ import javax.microedition.khronos.opengles.GL10.GL_LIGHT1
 import javax.microedition.khronos.opengles.GL10.GL_LIGHTING
 import javax.microedition.khronos.opengles.GL10.GL_MODELVIEW
 import javax.microedition.khronos.opengles.GL10.GL_POSITION
-import kotlin.random.Random
 import kotlin.time.Duration.Companion.milliseconds
 
 class SceneStorm @Inject constructor(
@@ -48,7 +47,7 @@ class SceneStorm @Inject constructor(
         super.draw()
 
         timeOfDayTint.color.toArray(lightAmbientLight)
-        if (Random.nextFloat(0f, boltFrequency * .75f) < time.deltaSeconds) {
+        if (random.nextFloat(0f, boltFrequency * .75f) < time.deltaSeconds) {
             spawnLightning()
         }
     }
@@ -80,11 +79,11 @@ class SceneStorm @Inject constructor(
         val lightning = lightningProvider.get()
 
         lightning.origin = Vector(
-            Random.nextFloat(-25f, 25f),
-            Random.nextFloat(95f, 168f),
+            random.nextFloat(-25f, 25f),
+            random.nextFloat(95f, 168f),
             20f
         )
-        if (Random.nextInt(2) == 0) {
+        if (random.nextInt(2) == 0) {
             lightning.scale = lightning.scale.let { it.copy(z = it.z * -1f) }
         }
         things.add(lightning)

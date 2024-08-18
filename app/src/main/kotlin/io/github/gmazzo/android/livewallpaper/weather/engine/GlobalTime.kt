@@ -9,13 +9,14 @@ import javax.inject.Singleton
 
 @Singleton
 open class GlobalTime protected constructor(
+    private val now: () -> ZonedDateTime,
     private val derived: GlobalTime? = null,
 ) {
 
     @Inject
-    constructor(fast: Fast) : this(derived = fast)
+    constructor(now: () -> ZonedDateTime, fast: Fast) : this(now, derived = fast)
 
-    val time = MutableStateFlow<ZonedDateTime>(ZonedDateTime.now())
+    val time = MutableStateFlow(now())
 
     var deltaSeconds = 0f
         private set
@@ -28,8 +29,7 @@ open class GlobalTime protected constructor(
 
     @Inject
     fun update() {
-        val now = ZonedDateTime.now()
-        val delta = ChronoUnit.MILLIS.between(time.value, now)
+        val delta = ChronoUnit.MILLIS.between(time.value, now())
 
         update(delta)
         derived?.update(delta)
@@ -39,14 +39,15 @@ open class GlobalTime protected constructor(
         val scaledDelta = delta.scaled
 
         time.value = time.value.plus(scaledDelta, ChronoUnit.MILLIS)
-        deltaSeconds = (scaledDelta / 1000f).coerceIn(0f, 1f / 3f)
+        deltaSeconds = scaledDelta / 1000f
         elapsedSeconds += deltaSeconds
     }
 
     @Singleton
     class Fast @Inject constructor(
+        now: () -> ZonedDateTime,
         @Named("fastTimeSpeed") private val speed: MutableStateFlow<Float>,
-    ) : GlobalTime() {
+    ) : GlobalTime(now) {
 
         override val Long.scaled
             get() = (this * speed.value).toLong()

@@ -101,7 +101,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun updateSelectedScene(scene: SceneMode) {
-        weather.value = WeatherType.entries.first { it.scene == scene }
+        weather.value = WeatherType.valueOf(scene)
     }
 
     fun updateHomeOffset(forward: Boolean) = homeOffset.update {

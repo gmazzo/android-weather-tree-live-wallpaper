@@ -43,5 +43,9 @@ enum class WeatherType(
     PARTLY_CLOUDY_WITH_THUNDER_STORMS_NIGHT(SceneMode.STORM, 15, 5),
     MOSTLY_CLOUDY_WITH_THUNDER_STORMS_NIGHT(SceneMode.STORM, 25, 5),
     MOSTLY_CLOUDY_WITH_FLURRIES_NIGHT(SceneMode.SNOW, 20, 5),
-    MOSTLY_CLOUDY_WITH_SNOW_NIGHT(SceneMode.SNOW, 20, 5),
+    MOSTLY_CLOUDY_WITH_SNOW_NIGHT(SceneMode.SNOW, 20, 5);
+
+    companion object {
+        fun valueOf(scene: SceneMode) = WeatherType.entries.first { it.scene == scene }
+    }
 }

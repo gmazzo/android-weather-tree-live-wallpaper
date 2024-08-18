@@ -19,6 +19,7 @@ import kotlin.math.acos
 import kotlin.random.Random
 
 sealed class Particles(
+    protected val random: Random,
     private val gl: GL11,
     private val model: Model,
     private val texture: Texture,
@@ -146,9 +147,9 @@ sealed class Particles(
     open fun particleSetup(particle: Particle) {
         particle.reset()
         particle.position += Vector(
-            if (spawnRangeX > .01f) Random.nextFloat(-spawnRangeX, spawnRangeX) else 0f,
-            if (spawnRangeY > .01f) Random.nextFloat(-spawnRangeY, spawnRangeY) else 0f,
-            if (spawnRangeZ > .01f) Random.nextFloat(-spawnRangeZ, spawnRangeZ) else 0f,
+            if (spawnRangeX > .01f) random.nextFloat(-spawnRangeX, spawnRangeX) else 0f,
+            if (spawnRangeY > .01f) random.nextFloat(-spawnRangeY, spawnRangeY) else 0f,
+            if (spawnRangeZ > .01f) random.nextFloat(-spawnRangeZ, spawnRangeZ) else 0f,
         )
         particle.alive = true
     }
@@ -183,7 +184,7 @@ sealed class Particles(
             while (timeSinceLastSpawn + nextSpawnRateVariance > spawnRate) {
                 timeSinceLastSpawn -= spawnRate + nextSpawnRateVariance
                 nextSpawnRateVariance =
-                    Random.nextFloat(-spawnRateVariance, spawnRateVariance)
+                    random.nextFloat(-spawnRateVariance, spawnRateVariance)
                 createNew++
             }
         }
