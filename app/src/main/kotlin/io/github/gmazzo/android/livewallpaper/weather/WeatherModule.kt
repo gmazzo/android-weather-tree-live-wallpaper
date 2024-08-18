@@ -38,14 +38,6 @@ object WeatherModule {
 
     @Provides
     @Singleton
-    fun random(): Random = Random
-
-    @Provides
-    @Singleton
-    fun now(): () -> ZonedDateTime = ZonedDateTime::now
-
-    @Provides
-    @Singleton
     @Named("fastTimeSpeed")
     fun fastTimeSpeed() = MutableStateFlow((1.days / 15.seconds).toFloat())
 
@@ -75,19 +67,33 @@ object WeatherModule {
             return@runBlocking flow
         }
 
-    @Provides
-    @Singleton
-    fun workManager(
-        @ApplicationContext context: Context,
-        workerFactory: HiltWorkerFactory,
-    ): WorkManager {
-        WorkManager.initialize(
-            context,
-            Configuration.Builder()
-                .setWorkerFactory(workerFactory)
-                .build()
-        )
-        return WorkManager.getInstance(context)
+    @Module
+    @InstallIn(SingletonComponent::class)
+    object ReplaceableDependencies {
+
+        @Provides
+        @Singleton
+        fun random(): Random = Random
+
+        @Provides
+        @Singleton
+        fun now(): () -> ZonedDateTime = ZonedDateTime::now
+
+        @Provides
+        @Singleton
+        fun workManager(
+            @ApplicationContext context: Context,
+            workerFactory: HiltWorkerFactory,
+        ): WorkManager {
+            WorkManager.initialize(
+                context,
+                Configuration.Builder()
+                    .setWorkerFactory(workerFactory)
+                    .build()
+            )
+            return WorkManager.getInstance(context)
+        }
+
     }
 
 }

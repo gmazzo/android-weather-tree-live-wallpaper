@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android)
+    alias(libs.plugins.dropshots)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.kapt)
@@ -27,6 +28,8 @@ android {
             "REVERSE_GEOCODING_ENDPOINT",
             "\"https://api.bigdatacloud.net/data/\""
         )
+
+        testInstrumentationRunner = "io.github.gmazzo.android.livewallpaper.weather.HiltJUnitRunner"
     }
 
     buildTypes {
@@ -46,6 +49,12 @@ android {
         buildConfig = true
         compose = true
     }
+
+    testOptions.managedDevices.localDevices.register("emulator") {
+        device = "Pixel 6 Pro"
+        apiLevel = 33
+        systemImageSource = "aosp-atd"
+    }
 }
 
 kapt.correctErrorTypes = true
@@ -53,7 +62,7 @@ kapt.correctErrorTypes = true
 dependencies {
     kapt(libs.androidx.hilt.compiler)
     kapt(libs.hilt.compiler)
-    kaptTest(libs.hilt.compiler)
+    kaptAndroidTest(libs.hilt.compiler)
 
     implementation(platform(libs.androidx.compose))
     implementation(libs.androidx.compose.activity)
@@ -76,4 +85,17 @@ dependencies {
     testImplementation(libs.hilt.testing)
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
+
+    androidTestImplementation(libs.androidx.test.core)
+    androidTestImplementation(libs.androidx.test.espresso)
+    androidTestImplementation(libs.androidx.test.junit)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.work.test)
+    androidTestImplementation(libs.junit)
+    androidTestImplementation(libs.hilt.testing)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
 }
+
+// FIXME does not renders well on emulator
+//  tasks.check { dependsOn("emulatorCheck") }
+tasks.connectedCheck { finalizedBy("installRelease") }
