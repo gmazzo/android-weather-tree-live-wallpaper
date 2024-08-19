@@ -68,14 +68,6 @@ internal class WeatherRenderer @AssistedInject constructor(
         )
     }
 
-    private fun WeatherRendererComponent.watchWeatherChanges() {
-        log("watchWeatherChanges:")
-
-        coroutineScope.launch {
-            weather.collectLatest(::onSceneChanged)
-        }
-    }
-
     private fun onSceneChanged(weather: WeatherType) {
         val mode = weather.scene
 
@@ -89,9 +81,6 @@ internal class WeatherRenderer @AssistedInject constructor(
 
     override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
         log("onSurfaceCreated:")
-
-        component?.close()
-        component = componentFactory.create(view, gl as GL11, demoMode)
     }
 
     override fun onSurfaceChanged(gl: GL10, w: Int, h: Int) {
@@ -104,7 +93,11 @@ internal class WeatherRenderer @AssistedInject constructor(
         gl.setRenderDefaults()
 
         component?.close()
-        component?.watchWeatherChanges()
+        component = componentFactory.create(view, gl as GL11, demoMode).apply {
+            coroutineScope.launch {
+                weather.collectLatest(::onSceneChanged)
+            }
+        }
     }
 
     private fun WeatherRendererComponent.close() {
