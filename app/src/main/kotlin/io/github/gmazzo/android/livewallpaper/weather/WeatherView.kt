@@ -42,13 +42,13 @@ class WeatherView @AssistedInject internal constructor(
 
     override fun onResume() {
         super.onResume()
-        renderer.onResume()
+
         renderMode = RENDERMODE_CONTINUOUSLY
     }
 
     override fun onPause() {
         super.onPause()
-        renderer.onPause()
+
         renderMode = RENDERMODE_WHEN_DIRTY
     }
 

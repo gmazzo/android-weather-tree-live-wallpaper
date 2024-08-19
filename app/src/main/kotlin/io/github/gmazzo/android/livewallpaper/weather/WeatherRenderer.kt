@@ -68,19 +68,6 @@ internal class WeatherRenderer @AssistedInject constructor(
         )
     }
 
-    fun onPause() {
-        log("onPause:")
-
-        component?.coroutineJob?.cancelChildren()
-        unloadScene()
-    }
-
-    fun onResume() {
-        log("onResume:")
-
-        component?.watchWeatherChanges()
-    }
-
     private fun WeatherRendererComponent.watchWeatherChanges() {
         log("watchWeatherChanges:")
 
@@ -90,9 +77,9 @@ internal class WeatherRenderer @AssistedInject constructor(
     }
 
     private fun onSceneChanged(weather: WeatherType) {
-        log("onSceneChanged: weather=$weather,")
-
         val mode = weather.scene
+
+        log("onSceneChanged: scene=$mode,")
 
         if (scene?.mode != mode) {
             unloadScene()
@@ -102,6 +89,8 @@ internal class WeatherRenderer @AssistedInject constructor(
 
     override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
         log("onSurfaceCreated:")
+
+        component?.close()
         component = componentFactory.create(view, gl as GL11, demoMode)
     }
 
@@ -114,16 +103,19 @@ internal class WeatherRenderer @AssistedInject constructor(
         gl.glViewport(0, 0, w, h)
         gl.setRenderDefaults()
 
-        unloadScene()
+        component?.close()
+        component?.watchWeatherChanges()
+    }
 
-        val component = component!!
-        component.models.close()
-        component.textures.close()
-        component.watchWeatherChanges()
+    private fun WeatherRendererComponent.close() {
+        coroutineJob.cancelChildren()
+        unloadScene()
+        models.close()
+        textures.close()
     }
 
     private fun unloadScene() {
-        log("onSurfaceCreated: scene=$scene, ")
+        log("unloadScene: scene=$scene,")
         val scene = scene ?: return
 
         this.scene = null

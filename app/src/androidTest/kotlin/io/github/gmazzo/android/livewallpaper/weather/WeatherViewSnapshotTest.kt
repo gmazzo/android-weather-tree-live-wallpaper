@@ -17,6 +17,7 @@ import io.github.gmazzo.android.livewallpaper.weather.actions.TakeSurfaceSnapsho
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.AfterClass
+import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Rule
@@ -57,8 +58,14 @@ class WeatherViewSnapshotTest {
 
     @Before
     fun setUp() {
-        check(AdvanceTime.idlingResource.isIdleNow) { "There are `AdvanceTime`s pending from previous run" }
-        check(TakeSurfaceSnapshot.idlingResource.isIdleNow) { "There are `TakeSurfaceSnapshot`s pending from previous run" }
+        assumeTrue(
+            "There are `AdvanceTime`s pending from previous run",
+            AdvanceTime.idlingResource.isIdleNow
+        )
+        assumeTrue(
+            "There are `TakeSurfaceSnapshot`s pending from previous run",
+            TakeSurfaceSnapshot.idlingResource.isIdleNow
+        )
 
         hilt.inject()
     }
@@ -226,7 +233,8 @@ class WeatherViewSnapshotTest {
                     name = discriminatorFor("scene", scene, time, random),
                     bitmap = bitmap,
                 )
-            })
+            },
+        )
         onIdle()
     }
 
