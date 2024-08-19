@@ -94,9 +94,8 @@ internal class WeatherRenderer @AssistedInject constructor(
 
         component?.close()
         component = componentFactory.create(view, gl as GL11, demoMode).apply {
-            coroutineScope.launch {
-                weather.collectLatest(::onSceneChanged)
-            }
+            updateCameraPosition(immediate = true)
+            coroutineScope.launch { weather.collectLatest(::onSceneChanged) }
         }
     }
 
@@ -148,7 +147,7 @@ internal class WeatherRenderer @AssistedInject constructor(
         val component = component!!
         component.time.update()
         component.timeOfDay.update()
-        component.updateCameraPosition()
+        component.updateCameraPosition(immediate = false)
         gl.updateProjection()
 
         scene.scene.value.draw()
@@ -176,11 +175,18 @@ internal class WeatherRenderer @AssistedInject constructor(
         )
     }
 
-    private fun WeatherRendererComponent.updateCameraPosition() {
-        val rate = (3.5f * time.deltaSeconds) * cameraSpeed
-        val diff = (Vector(28 * homeOffset.value - 14, 0f, 0f) - cameraPos) * rate
+    private fun WeatherRendererComponent.updateCameraPosition(immediate: Boolean) {
+        val target = Vector(28 * homeOffset.value - 14, 0f, 0f)
 
-        cameraPos += diff
+        if (immediate) {
+            cameraPos = target
+
+        } else {
+            val rate = (3.5f * time.deltaSeconds) * cameraSpeed
+            val diff = (target - cameraPos) * rate
+
+            cameraPos += diff
+        }
         cameraFOV = if (landscape) 45f else 70f
     }
 
