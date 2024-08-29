@@ -28,6 +28,8 @@ class SettingsActivity : ComponentActivity() {
     @Inject
     internal lateinit var viewFactory: WeatherView.Factory
 
+    private val weatherView by lazy { viewFactory.create(this, TAG, demoMode = true) }
+
     internal val viewModel: SettingsViewModel by viewModels()
 
     private val requestPermissionLauncher =
@@ -51,12 +53,20 @@ class SettingsActivity : ComponentActivity() {
                 onSetAsWallpaper = ::openWallpaperChooser,
                 onNavigateBack = ::finish,
                 onDragGesture = viewModel::updateHomeOffset,
-            ) {
-                AndroidView(
-                    factory = { context -> viewFactory.create(context, TAG, demoMode = true) },
-                )
-            }
+            ) { AndroidView(factory = { weatherView }) }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        weatherView.onResume()
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        weatherView.onPause()
     }
 
     override fun onResume() {

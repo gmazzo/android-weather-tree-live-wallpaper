@@ -2,7 +2,9 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.textures
 
 import android.content.res.Resources
 import android.graphics.BitmapFactory
+import android.opengl.GLException
 import android.opengl.GLUtils
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.annotation.RawRes
 import io.github.gmazzo.android.livewallpaper.weather.WeatherRendererScoped
@@ -120,7 +122,12 @@ class Textures @Inject constructor(
         val ids = textures.values.map(Texture::glId).toIntArray()
         textures.clear()
 
-        gl.glDeleteTextures(ids.size, ids, 0)
+        try {
+            gl.glDeleteTextures(ids.size, ids, 0)
+
+        } catch (e: GLException) {
+            Log.w("Textures","glDeleteTextures failed", e)
+        }
     }
 
     private val Byte.unsigned get() = toInt().absoluteValue
