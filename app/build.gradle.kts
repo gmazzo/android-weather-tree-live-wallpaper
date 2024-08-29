@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android)
     alias(libs.plugins.dropshots)
+    alias(libs.plugins.firebase.testlab)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.kapt)
@@ -49,12 +50,6 @@ android {
         buildConfig = true
         compose = true
     }
-
-    testOptions.managedDevices.localDevices.register("emulator") {
-        device = "Pixel 6 Pro"
-        apiLevel = 33
-        systemImageSource = "aosp-atd"
-    }
 }
 
 kapt.correctErrorTypes = true
@@ -96,6 +91,35 @@ dependencies {
     androidTestImplementation(libs.kotlinx.coroutines.test)
 }
 
-// FIXME does not renders well on emulator
-//  tasks.check { dependsOn("emulatorCheck") }
 tasks.connectedCheck { finalizedBy("installRelease") }
+
+firebaseTestLab {
+    File(gradle.gradleUserHomeDir, "google-service-account.json")
+        ?.takeIf { it.exists() }
+        ?.let(serviceAccountCredentials::set)
+
+    managedDevices {
+        create("firebaseTestlab") {
+            device = "Pixel2.arm"
+            apiLevel = 33
+        }
+    }
+    testOptions.results {
+        cloudStorageBucket = "weather-live-wallpaper-7b77b.appspot.com"
+        directoriesToPull = listOf("/sdcard//Download/screenshots")
+    }
+}
+
+tasks.register<Exec>("rsyncTestlabResults") {
+    val localDir = layout.buildDirectory.dir("testlab-results")
+    outputs.dir(localDir)
+    outputs.upToDateWhen { false }
+    executable = "gsutil"
+    argumentProviders += CommandLineArgumentProvider{
+        listOf(
+            "-m", "rsync", "-r",
+            "gs://weather-live-wallpaper-7b77b.appspot.com/",
+            localDir.get().asFile.apply { mkdirs() }.path,
+        )
+    }
+}

@@ -23,9 +23,6 @@ class TakeSurfaceSnapshot(
     override fun perform(uiController: UiController, view: View) {
         idlingResource.increment()
 
-        // TODO is this needed?
-        //  val hardwareDrawingEnabled = HardwareRendererCompat.isDrawingEnabled()
-        //  HardwareRendererCompat.setDrawingEnabled(true)
         (view as WeatherView).takeSnapshot { bitmap ->
             try {
                 checkNotNull(bitmap) { "Failed to get snapshot" }
@@ -35,7 +32,6 @@ class TakeSurfaceSnapshot(
 
             } finally {
                 bitmap?.recycle()
-                // TODO HardwareRendererCompat.setDrawingEnabled(hardwareDrawingEnabled)
                 idlingResource.decrement()
             }
         }

@@ -84,7 +84,7 @@ internal class WeatherRenderer @AssistedInject constructor(
     }
 
     override fun onSurfaceChanged(gl: GL10, w: Int, h: Int) {
-        log("onSurfaceChanged:")
+        log("onSurfaceChanged: width=$w, height=$h, ")
 
         screenWidth = w.toFloat()
         screenHeight = h.toFloat()

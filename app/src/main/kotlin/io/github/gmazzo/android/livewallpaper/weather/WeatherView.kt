@@ -60,13 +60,12 @@ class WeatherView @AssistedInject internal constructor(
     fun takeSnapshot(@MainThread onSnapshot: (Bitmap?) -> Unit): Unit = renderer.postRender {
         val width = renderer.screenWidth.toInt()
         val height = renderer.screenHeight.toInt()
-
-        Log.i("WeatherView", "Taking snapshot of $width x $height")
-
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
 
+        Log.i("WeatherView", "Taking snapshot of ${bitmap.width}x${bitmap.height}")
+
         PixelCopy.request(this, bitmap, { result ->
-            Log.i("WeatherView", "Got snapshot of $width x $height: result=$result")
+            Log.i("WeatherView", "Got snapshot of ${bitmap.width}x${bitmap.height}: result=$result")
             onSnapshot(bitmap.takeIf { result == PixelCopy.SUCCESS })
         }, handler)
     }
