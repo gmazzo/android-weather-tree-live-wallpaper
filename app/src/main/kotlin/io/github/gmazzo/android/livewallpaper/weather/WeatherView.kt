@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.opengl.GLSurfaceView
+import android.util.Log
 import android.view.PixelCopy
 import android.view.SurfaceHolder
 import androidx.annotation.MainThread
@@ -57,13 +58,15 @@ class WeatherView @AssistedInject internal constructor(
     }
 
     fun takeSnapshot(@MainThread onSnapshot: (Bitmap?) -> Unit): Unit = renderer.postRender {
-        val bitmap = Bitmap.createBitmap(
-            renderer.screenWidth.toInt(),
-            renderer.screenHeight.toInt(),
-            Bitmap.Config.ARGB_8888
-        )
+        val width = renderer.screenWidth.toInt()
+        val height = renderer.screenHeight.toInt()
+
+        Log.i("WeatherView", "Taking snapshot of $width x $height")
+
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
 
         PixelCopy.request(this, bitmap, { result ->
+            Log.i("WeatherView", "Got snapshot of $width x $height: result=$result")
             onSnapshot(bitmap.takeIf { result == PixelCopy.SUCCESS })
         }, handler)
     }
