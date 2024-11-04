@@ -7,7 +7,7 @@ kotlin = "2.0.21"
 [libraries]
 androidx-compose = { module = "androidx.compose:compose-bom", version = "2024.10.00" }
 androidx-compose-activity = { module = "androidx.activity:activity-compose", version = "1.9.3" }
-androidx-compose-constraintLayout = { module = "androidx.constraintlayout:constraintlayout-compose", version = "1.0.1" }
+androidx-compose-constraintLayout = { module = "androidx.constraintlayout:constraintlayout-compose", version = "1.1.0" }
 androidx-compose-material = { module = "androidx.compose.material3:material3" }
 androidx-compose-uiTooling = { module = "androidx.compose.ui:ui-tooling" }
 androidx-compose-uiToolingPreview = { module = "androidx.compose.ui:ui-tooling-preview" }
