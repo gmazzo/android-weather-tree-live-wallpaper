@@ -35,7 +35,7 @@ jobs:
         with:
           checkName: Test Results
       - name: Coverage report
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
