@@ -32,20 +32,21 @@ android {
         testInstrumentationRunner = "io.github.gmazzo.android.livewallpaper.weather.HiltJUnitRunner"
     }
 
-    signingConfigs {
-        create("release") {
-            val signingPassword = providers.gradleProperty("signingPassword").getOrElse("")
-
-            storeFile = file("release.keystore")
-            storePassword = signingPassword
-            keyAlias = "tree-wallpaper"
-            keyPassword = signingPassword
+    providers.gradleProperty("signingPassword").orNull?.let { signingPassword ->
+        buildTypes {
+            release {
+                signingConfig = signingConfigs.create("release") {
+                    storeFile = file("release.keystore")
+                    storePassword = signingPassword
+                    keyAlias = "tree-wallpaper"
+                    keyPassword = signingPassword
+                }
+            }
         }
     }
 
     buildTypes {
         release {
-            signingConfig = signingConfigs["release"]
             isMinifyEnabled = true
             isShrinkResources = true
             isEmbedMicroApp
