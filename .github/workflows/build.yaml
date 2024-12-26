@@ -14,6 +14,9 @@ permissions:
   checks: write
   pull-requests: write
 
+env:
+  ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.SIGNING_PASSWORD }}
+
 jobs:
   build:
     name: Build
