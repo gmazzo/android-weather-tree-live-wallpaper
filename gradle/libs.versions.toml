@@ -1,13 +1,13 @@
 [versions]
 androidx-hilt = "1.2.0"
-androidx-work = "2.9.1"
+androidx-work = "2.10.0"
 hilt = "2.52"
 kotlin = "2.1.0"
 
 [libraries]
-androidx-compose = { module = "androidx.compose:compose-bom", version = "2024.10.00" }
+androidx-compose = { module = "androidx.compose:compose-bom", version = "2024.12.01" }
 androidx-compose-activity = { module = "androidx.activity:activity-compose", version = "1.9.3" }
-androidx-compose-constraintLayout = { module = "androidx.constraintlayout:constraintlayout-compose", version = "1.0.1" }
+androidx-compose-constraintLayout = { module = "androidx.constraintlayout:constraintlayout-compose", version = "1.1.0" }
 androidx-compose-material = { module = "androidx.compose.material3:material3" }
 androidx-compose-uiTooling = { module = "androidx.compose.ui:ui-tooling" }
 androidx-compose-uiToolingPreview = { module = "androidx.compose.ui:ui-tooling-preview" }
@@ -34,7 +34,7 @@ retrofit = { module = "com.squareup.retrofit2:converter-kotlinx-serialization", 
 solarevents = { module = "org.shredzone.commons:commons-suncalc", version = "3.11" }
 
 [plugins]
-android = { id = "com.android.application", version = "8.7.1" }
+android = { id = "com.android.application", version = "8.7.3" }
 dropshots = { id = "com.dropbox.dropshots", version = "0.4.3-SHAPSHOT" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
