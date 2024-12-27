@@ -13,12 +13,10 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 android {
     namespace = "io.github.gmazzo.android.livewallpaper.weather"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 26
-        targetSdk = 34
-
         versionCode = 1
         versionName = "1.0"
 
