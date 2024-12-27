@@ -30,7 +30,7 @@ android {
         testInstrumentationRunner = "io.github.gmazzo.android.livewallpaper.weather.HiltJUnitRunner"
     }
 
-    providers.gradleProperty("signingPassword").orNull?.let { signingPassword ->
+    providers.gradleProperty("signingPassword").orNull?.takeUnless { it.isBlank() }?.let { signingPassword ->
         buildTypes {
             release {
                 signingConfig = signingConfigs.create("release") {
