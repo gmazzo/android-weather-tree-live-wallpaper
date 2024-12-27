@@ -1,7 +1,7 @@
 [versions]
 androidx-hilt = "1.2.0"
 androidx-work = "2.10.0"
-hilt = "2.52"
+hilt = "2.54"
 kotlin = "2.1.0"
 
 [libraries]
