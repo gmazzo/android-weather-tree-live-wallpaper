@@ -17,8 +17,9 @@ android {
 
     defaultConfig {
         minSdk = 26
+        targetSdk = compileSdk
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.0"
 
         buildConfigField("String", "FORECAST_ENDPOINT", "\"https://api.met.no/weatherapi/\"")
         buildConfigField(

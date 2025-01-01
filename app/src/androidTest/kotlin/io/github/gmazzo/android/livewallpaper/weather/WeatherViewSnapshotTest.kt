@@ -1,6 +1,7 @@
 package io.github.gmazzo.android.livewallpaper.weather
 
 import android.opengl.GLSurfaceView.RENDERMODE_WHEN_DIRTY
+import android.os.Build
 import androidx.activity.ComponentActivity
 import androidx.test.espresso.Espresso.onIdle
 import androidx.test.espresso.Espresso.onView
@@ -230,6 +231,7 @@ class WeatherViewSnapshotTest {
             AdvanceTime(5.seconds) { time += it.toJavaDuration() },
             TakeSurfaceSnapshot { bitmap ->
                 dropshots.assertSnapshot(
+                    filePath = Build.MODEL,
                     name = discriminatorFor("scene", scene, time, random),
                     bitmap = bitmap,
                 )
