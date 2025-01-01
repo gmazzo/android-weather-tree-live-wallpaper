@@ -1,6 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="All UI tests" type="AndroidTestRunConfigurationType" factoryName="Android Instrumented Tests">
-    <module name="android-weather-tree-live-wallpaper.app.androidTest" />
+    <module name="android-weather-tree-live-wallpaper.app" />
+    <option name="ANDROID_TEST_RUN_CONFIGURATION_SCHEMA_VERSION" value="0" />
     <option name="TESTING_TYPE" value="0" />
     <option name="METHOD_NAME" value="" />
     <option name="CLASS_NAME" value="io.github.gmazzo.android.livewallpaper.weather.WeatherViewSnapshotTest" />
@@ -14,8 +15,8 @@
     <option name="CLEAR_LOGCAT" value="false" />
     <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />
     <option name="TARGET_SELECTION_MODE" value="DEVICE_AND_SNAPSHOT_COMBO_BOX" />
-    <option name="SELECTED_CLOUD_MATRIX_CONFIGURATION_ID" value="-1" />
-    <option name="SELECTED_CLOUD_MATRIX_PROJECT_ID" value="" />
+    <option name="SELECTED_CLOUD_MATRIX_CONFIGURATION_ID" value="2147483645" />
+    <option name="SELECTED_CLOUD_MATRIX_PROJECT_ID" value="admob-app-id-4590347450-e3f2f" />
     <option name="DEBUGGER_TYPE" value="Auto" />
     <Auto>
       <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />

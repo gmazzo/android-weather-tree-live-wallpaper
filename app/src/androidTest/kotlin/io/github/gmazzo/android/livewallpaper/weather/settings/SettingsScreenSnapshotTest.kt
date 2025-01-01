@@ -1,5 +1,6 @@
 package io.github.gmazzo.android.livewallpaper.weather.settings
 
+import android.os.Build
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.test.espresso.Espresso.onView
@@ -83,6 +84,7 @@ class SettingsScreenSnapshotTest {
 
         onView(isRoot()).perform(captureToBitmap { bitmap ->
             dropshots.assertSnapshot(
+                filePath = Build.MODEL,
                 name = discriminatorFor(
                     "settings", scene, time, random,
                     "missingLocation".takeIf { missingLocation }),
