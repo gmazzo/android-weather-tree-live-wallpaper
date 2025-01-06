@@ -35,7 +35,7 @@ solarevents = { module = "org.shredzone.commons:commons-suncalc", version = "3.1
 
 [plugins]
 android = { id = "com.android.application", version = "8.7.3" }
-dropshots = { id = "com.dropbox.dropshots", version = "0.4.2" }
+dropshots = { id = "com.dropbox.dropshots", version = "0.4.3-SHAPSHOT" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
