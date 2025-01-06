@@ -16,6 +16,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
@@ -43,7 +45,8 @@ object WeatherModule {
 
     @Provides
     @Singleton
-    fun location() = MutableStateFlow<Location?>(null)
+    fun location(manager: LocationManager): StateFlow<Location?> =
+        manager.flow.asStateFlow()
 
     @Provides
     @Singleton

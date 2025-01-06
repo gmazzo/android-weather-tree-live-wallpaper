@@ -11,7 +11,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.work.WorkManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.github.gmazzo.android.livewallpaper.weather.Location
+import io.github.gmazzo.android.livewallpaper.weather.LocationManager
 import io.github.gmazzo.android.livewallpaper.weather.WeatherType
 import io.github.gmazzo.android.livewallpaper.weather.WeatherUpdateWorker.Companion.disableWeatherConditionsUpdate
 import io.github.gmazzo.android.livewallpaper.weather.WeatherUpdateWorker.Companion.enableWeatherConditionsUpdate
@@ -22,6 +22,7 @@ import io.github.gmazzo.android.livewallpaper.weather.hasBackgroundLocationPermi
 import io.github.gmazzo.android.livewallpaper.weather.hasLocationPermission
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -38,7 +39,7 @@ class SettingsViewModel @Inject constructor(
     @Named("homeOffset") private val homeOffset: MutableStateFlow<Float>,
     val weather: MutableStateFlow<WeatherType>,
     private val workManager: WorkManager,
-    val location: MutableStateFlow<Location?>,
+    private val locationManager: LocationManager,
     private val reverseGeocodingAPI: ReverseGeocodingAPI,
 ) : ViewModel(), DefaultLifecycleObserver {
 
@@ -48,36 +49,46 @@ class SettingsViewModel @Inject constructor(
 
     val missingLocationPermission = MutableStateFlow(false)
 
+    val location = locationManager.flow.asStateFlow()
+
     init {
-        viewModelScope.launch {
-            preferences.data.collectLatest {
-                val locationOn = it[settingLocationOn] ?: false
+        updateLocationEnabled()
+        updateUIFromLocationEnabled()
+        retrieveCityNameFromLocation()
+    }
 
-                updateLocationEnabled.value = locationOn
-            }
+    private fun updateLocationEnabled() = viewModelScope.launch {
+        preferences.data.collectLatest {
+            val locationOn = it[settingLocationOn] ?: false
+
+            updateLocationEnabled.value = locationOn
         }
-        viewModelScope.launch {
-            updateLocationEnabled.collectLatest { enabled ->
-                computeMissingLocationPermission(enabled)
-                enableWeatherConditionsUpdate(enabled)
-            }
+    }
+
+    private fun updateUIFromLocationEnabled() = viewModelScope.launch {
+        updateLocationEnabled.collectLatest { enabled ->
+            computeMissingLocationPermission(enabled)
+            enableWeatherConditionsUpdate(enabled)
         }
-        viewModelScope.launch(Dispatchers.IO) {
-            location.collectLatest {
-                if (it != null) {
-                    val city = reverseGeocodingAPI.findCity(
-                            it.latitude,
-                            it.longitude,
-                            Locale.getDefault().language
-                        )
+    }
 
-                    val cityName =
-                        sequenceOf(city.name, city.locality, city.region, city.country).filter(
-                                String::isNotBlank
-                            ).firstOrNull()
+    private fun retrieveCityNameFromLocation() = viewModelScope.launch(Dispatchers.IO) {
+        location.collectLatest {
+            if (it != null && it.city == null) {
+                val city = runCatching {
+                    reverseGeocodingAPI.findCity(
+                        it.latitude,
+                        it.longitude,
+                        Locale.getDefault().language
+                    )
+                }.onFailure { it.printStackTrace() }.getOrNull() ?: return@collectLatest
 
-                    location.value = it.copy(city = cityName)
-                }
+                val cityName =
+                    sequenceOf(city.name, city.locality, city.region, city.country).filter(
+                        String::isNotBlank
+                    ).firstOrNull()
+
+                locationManager.flow.value = it.copy(city = cityName)
             }
         }
     }

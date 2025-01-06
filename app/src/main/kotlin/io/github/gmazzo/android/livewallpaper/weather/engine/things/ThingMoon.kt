@@ -8,7 +8,7 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Texture
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDay
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import org.shredzone.commons.suncalc.MoonIllumination
 import org.shredzone.commons.suncalc.MoonPosition
 import javax.inject.Inject
@@ -24,7 +24,7 @@ class ThingMoon @Inject constructor(
     private val textures: Textures,
     @Named("scaled") private val time: GlobalTime,
     private val timeOfDay: TimeOfDay,
-    private val location: MutableStateFlow<Location?>,
+    private val location: StateFlow<Location?>,
 ) : Thing(
     gl,
     model = models[R.raw.plane_16x16],

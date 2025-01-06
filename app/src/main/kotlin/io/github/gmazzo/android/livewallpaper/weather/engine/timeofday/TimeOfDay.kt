@@ -5,7 +5,7 @@ import io.github.gmazzo.android.livewallpaper.weather.Location
 import io.github.gmazzo.android.livewallpaper.weather.WeatherRendererScoped
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.minutesSinceMidnight
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import org.shredzone.commons.suncalc.SunPosition
 import org.shredzone.commons.suncalc.SunTimes
 import java.time.ZonedDateTime
@@ -19,7 +19,7 @@ import kotlin.time.Duration.Companion.hours
 @WeatherRendererScoped
 class TimeOfDay @Inject constructor(
     @Named("scaled") private val time: GlobalTime,
-    private val location: MutableStateFlow<Location?>,
+    private val location: StateFlow<Location?>,
 ) {
 
     @FloatRange(from = 0.0, to = 1.0)
