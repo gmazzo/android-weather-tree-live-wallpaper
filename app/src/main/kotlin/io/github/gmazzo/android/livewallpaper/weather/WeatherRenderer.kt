@@ -107,7 +107,7 @@ internal class WeatherRenderer @AssistedInject constructor(
     }
 
     private fun unloadScene() {
-        log("unloadScene: scene=$scene,")
+        log("unloadScene: scene=${scene?.mode},")
         val scene = scene ?: return
 
         this.scene = null
