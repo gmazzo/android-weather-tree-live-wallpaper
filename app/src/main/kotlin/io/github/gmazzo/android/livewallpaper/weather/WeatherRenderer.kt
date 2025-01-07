@@ -141,7 +141,6 @@ internal class WeatherRenderer @AssistedInject constructor(
     }
 
     override fun onDrawFrame(gl: GL10) {
-        log("onDrawFrame:")
         val scene = scene ?: return
 
         val component = component!!
