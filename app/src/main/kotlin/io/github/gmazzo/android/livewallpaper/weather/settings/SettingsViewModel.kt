@@ -11,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.work.WorkManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.github.gmazzo.android.livewallpaper.weather.Location
 import io.github.gmazzo.android.livewallpaper.weather.LocationManager
 import io.github.gmazzo.android.livewallpaper.weather.WeatherType
 import io.github.gmazzo.android.livewallpaper.weather.WeatherUpdateWorker.Companion.disableWeatherConditionsUpdate
@@ -22,7 +23,7 @@ import io.github.gmazzo.android.livewallpaper.weather.hasBackgroundLocationPermi
 import io.github.gmazzo.android.livewallpaper.weather.hasLocationPermission
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -38,6 +39,7 @@ class SettingsViewModel @Inject constructor(
     @Named("fastTimeSpeed") val timeSpeed: MutableStateFlow<Float>,
     @Named("homeOffset") private val homeOffset: MutableStateFlow<Float>,
     val weather: MutableStateFlow<WeatherType>,
+    val location: StateFlow<Location?>,
     private val workManager: WorkManager,
     private val locationManager: LocationManager,
     private val reverseGeocodingAPI: ReverseGeocodingAPI,
@@ -48,8 +50,6 @@ class SettingsViewModel @Inject constructor(
     val updateLocationEnabled = MutableStateFlow(false)
 
     val missingLocationPermission = MutableStateFlow(false)
-
-    val location = locationManager.flow.asStateFlow()
 
     init {
         updateLocationEnabled()
