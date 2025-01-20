@@ -11,7 +11,7 @@ androidx-compose-constraintLayout = { module = "androidx.constraintlayout:constr
 androidx-compose-material = { module = "androidx.compose.material3:material3" }
 androidx-compose-uiTooling = { module = "androidx.compose.ui:ui-tooling" }
 androidx-compose-uiToolingPreview = { module = "androidx.compose.ui:ui-tooling-preview" }
-androidx-datastore = { module = "androidx.datastore:datastore-preferences", version = "1.1.1" }
+androidx-datastore = { module = "androidx.datastore:datastore-preferences", version = "1.1.2" }
 androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "androidx-hilt" }
 androidx-hilt-workManager = { module = "androidx.hilt:hilt-work", version.ref = "androidx-hilt" }
 androidx-startUp = { module = "androidx.startup:startup-runtime", version = "1.2.0" }
