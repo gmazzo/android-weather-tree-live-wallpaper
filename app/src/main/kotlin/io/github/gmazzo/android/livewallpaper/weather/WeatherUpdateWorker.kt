@@ -39,7 +39,11 @@ class WeatherUpdateWorker @AssistedInject constructor(
             }
 
         val series = response.properties.timeSeries.firstOrNull() ?: return Result.failure()
-        weather.value = series.data.nextHour.weatherType
+        weather.value = sequenceOf(
+            series.data.nextHour,
+            series.data.next6Hours,
+            series.data.next12Hours
+        ).filterNotNull().first().weatherType
         Log.i(TAG, "Weather conditions updated: ${weather.value}")
         return Result.success()
     }
