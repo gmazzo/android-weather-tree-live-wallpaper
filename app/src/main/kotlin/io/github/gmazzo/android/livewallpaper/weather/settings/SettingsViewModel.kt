@@ -17,6 +17,7 @@ import io.github.gmazzo.android.livewallpaper.weather.WeatherType
 import io.github.gmazzo.android.livewallpaper.weather.WeatherUpdateWorker.Companion.disableWeatherConditionsUpdate
 import io.github.gmazzo.android.livewallpaper.weather.WeatherUpdateWorker.Companion.enableWeatherConditionsUpdate
 import io.github.gmazzo.android.livewallpaper.weather.api.ReverseGeocodingAPI
+import io.github.gmazzo.android.livewallpaper.weather.api.ReverseGeocodingAPI.Companion.findCity
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode
 import io.github.gmazzo.android.livewallpaper.weather.hasBackgroundLocationPermission

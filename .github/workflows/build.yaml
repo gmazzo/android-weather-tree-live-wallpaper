@@ -16,6 +16,7 @@ permissions:
 
 env:
   ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.SIGNING_PASSWORD }}
+  ORG_GRADLE_PROJECT_reverseGeocodingKey: ${{ secrets.REVERSE_GEOCODING_KEY }}
 
 jobs:
   build:

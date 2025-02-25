@@ -27,6 +27,11 @@ android {
             "REVERSE_GEOCODING_ENDPOINT",
             "\"https://api.bigdatacloud.net/data/\""
         )
+        buildConfigField(
+            "String",
+            "REVERSE_GEOCODING_KEY",
+            providers.gradleProperty("reverseGeocodingKey").map { "\"$it\"" }.orNull.toString()
+        )
 
         testInstrumentationRunner = "io.github.gmazzo.android.livewallpaper.weather.HiltJUnitRunner"
     }
