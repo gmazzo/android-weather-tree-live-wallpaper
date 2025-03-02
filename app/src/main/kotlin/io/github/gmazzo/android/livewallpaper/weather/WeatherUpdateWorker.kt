@@ -14,18 +14,19 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.github.gmazzo.android.livewallpaper.weather.api.LocationForecastAPI
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
+import javax.inject.Named
 
 @HiltWorker
 class WeatherUpdateWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
     private val location: StateFlow<Location?>,
-    private val weather: MutableStateFlow<WeatherType>,
+    @Named("forecast") private val weather: MutableSharedFlow<WeatherType>,
     private val forecastAPI: LocationForecastAPI,
 ) : CoroutineWorker(context, workerParams) {
 
@@ -39,12 +40,14 @@ class WeatherUpdateWorker @AssistedInject constructor(
             }
 
         val series = response.properties.timeSeries.firstOrNull() ?: return Result.failure()
-        weather.value = sequenceOf(
+        val current = sequenceOf(
             series.data.nextHour,
             series.data.next6Hours,
             series.data.next12Hours
         ).filterNotNull().first().weatherType
-        Log.i(TAG, "Weather conditions updated: ${weather.value}")
+
+        weather.emit(current)
+        Log.i(TAG, "Weather conditions updated: $current")
         return Result.success()
     }
 
