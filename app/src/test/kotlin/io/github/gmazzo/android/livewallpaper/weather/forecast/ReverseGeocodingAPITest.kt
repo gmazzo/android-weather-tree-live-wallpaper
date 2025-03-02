@@ -2,6 +2,7 @@ package io.github.gmazzo.android.livewallpaper.weather.forecast
 
 import io.github.gmazzo.android.livewallpaper.weather.api.HttpModule
 import io.github.gmazzo.android.livewallpaper.weather.api.ReverseGeocodingAPI
+import io.github.gmazzo.android.livewallpaper.weather.api.ReverseGeocodingAPI.Companion.findCity
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test

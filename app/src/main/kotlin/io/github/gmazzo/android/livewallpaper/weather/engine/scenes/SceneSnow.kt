@@ -6,6 +6,7 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.particles.Particles
 import javax.inject.Inject
 import javax.inject.Provider
 
+@SceneScoped
 class SceneSnow @Inject constructor(
     dependencies: SceneDependencies,
     private val particle: Provider<ParticlesSnow>,
