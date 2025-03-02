@@ -1,3 +1,7 @@
+![GitHub](https://img.shields.io/github/license/gmazzo/android-weather-tree-live-wallpaper)
+[![Build Status](https://github.com/gmazzo/android-weather-tree-live-wallpaper/actions/workflows/build.yaml/badge.svg)](https://github.com/gmazzo/android-weather-tree-live-wallpaper/actions/workflows/build.yaml)
+[![Coverage](https://codecov.io/gh/gmazzo/android-weather-tree-live-wallpaper/branch/main/graph/badge.svg?token=D5cDiPWvcS)](https://codecov.io/gh/gmazzo/android-weather-tree-live-wallpaper)
+
 # android-weather-tree-live-wallpaper 
 This is a resurrected project of `Weather Wallpaper` (`com.hm.weather`) originally developed by `yitiaocaiHM`, where you can still find its APK over the Internet.
 
