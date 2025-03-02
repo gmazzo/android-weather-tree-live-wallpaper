@@ -24,6 +24,7 @@ import javax.microedition.khronos.opengles.GL10.GL_SRC_ALPHA
 import javax.microedition.khronos.opengles.GL10.GL_TEXTURE
 import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D
 
+@SceneScoped
 sealed class Scene(
     dependencies: SceneDependencies,
     @DrawableRes background: Int,

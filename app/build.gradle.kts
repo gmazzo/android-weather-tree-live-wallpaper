@@ -18,14 +18,19 @@ android {
     defaultConfig {
         minSdk = 26
         targetSdk = compileSdk
-        versionCode = 3
-        versionName = "1.0.1"
+        versionCode = 5
+        versionName = "1.0.3"
 
         buildConfigField("String", "FORECAST_ENDPOINT", "\"https://api.met.no/weatherapi/\"")
         buildConfigField(
             "String",
             "REVERSE_GEOCODING_ENDPOINT",
             "\"https://api.bigdatacloud.net/data/\""
+        )
+        buildConfigField(
+            "String",
+            "REVERSE_GEOCODING_KEY",
+            providers.gradleProperty("reverseGeocodingKey").map { "\"$it\"" }.orNull.toString()
         )
 
         testInstrumentationRunner = "io.github.gmazzo.android.livewallpaper.weather.HiltJUnitRunner"
@@ -45,6 +50,10 @@ android {
     }
 
     buildTypes {
+        debug {
+            enableUnitTestCoverage = true
+            enableAndroidTestCoverage = true
+        }
         release {
             isMinifyEnabled = true
             isShrinkResources = true

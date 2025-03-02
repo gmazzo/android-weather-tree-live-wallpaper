@@ -1,7 +1,7 @@
 // Source:
 // https://api.met.no/weatherapi/locationforecast/2.0/documentation#JSON_format_and_variables
 // Example API:
-//  https://api.met.no/weatherapi/locationforecast/2.0?lat=59.93&lon=10.72&altitude=90
+//  https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=59.93&lon=10.72&altitude=90
 package io.github.gmazzo.android.livewallpaper.weather.api
 
 import io.github.gmazzo.android.livewallpaper.weather.WeatherType
@@ -13,7 +13,7 @@ import java.util.Date
 
 interface LocationForecastAPI {
 
-    @GET("locationforecast/2.0/mini")
+    @GET("locationforecast/2.0/compact")
     suspend fun getForecast(
         @Query("lat") latitude: Double,
         @Query("lon") longitude: Double,
@@ -38,9 +38,9 @@ interface LocationForecastAPI {
 
     @Serializable
     data class Data(
-        @SerialName("next_1_hours") val nextHour: Hour,
-        @SerialName("next_6_hours") val next6Hours: Hour,
-        @SerialName("next_12_hours") val next12Hours: Hour,
+        @SerialName("next_1_hours") val nextHour: Hour? = null,
+        @SerialName("next_6_hours") val next6Hours: Hour? = null,
+        @SerialName("next_12_hours") val next12Hours: Hour? = null,
     )
 
     @Serializable

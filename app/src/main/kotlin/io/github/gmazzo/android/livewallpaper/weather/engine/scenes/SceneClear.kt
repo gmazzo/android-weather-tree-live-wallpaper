@@ -3,6 +3,7 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 import io.github.gmazzo.android.livewallpaper.weather.R
 import javax.inject.Inject
 
+@SceneScoped
 class SceneClear @Inject constructor(
     dependencies: SceneDependencies,
 ) : Scene(
