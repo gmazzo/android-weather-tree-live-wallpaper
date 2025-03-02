@@ -14,6 +14,7 @@ import javax.microedition.khronos.opengles.GL10.GL_DIFFUSE
 import javax.microedition.khronos.opengles.GL10.GL_LIGHTING
 import javax.microedition.khronos.opengles.GL10.GL_MODELVIEW
 
+@SceneScoped
 class SceneRain @Inject constructor(
     dependencies: SceneDependencies,
     private val particles: ParticlesRain,

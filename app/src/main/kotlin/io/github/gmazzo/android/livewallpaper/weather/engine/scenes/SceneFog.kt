@@ -15,6 +15,7 @@ import javax.microedition.khronos.opengles.GL10.GL_FOG_MODE
 import javax.microedition.khronos.opengles.GL10.GL_FOG_START
 import javax.microedition.khronos.opengles.GL10.GL_LINEAR
 
+@SceneScoped
 class SceneFog @Inject constructor(
     dependencies: SceneDependencies,
 ) : Scene(

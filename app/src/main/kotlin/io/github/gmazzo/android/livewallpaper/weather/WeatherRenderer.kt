@@ -111,9 +111,7 @@ internal class WeatherRenderer @AssistedInject constructor(
         val scene = scene ?: return
 
         this.scene = null
-        if (scene.scene.isInitialized()) {
-            scene.scene.value.close()
-        }
+        scene.scene.get().close()
     }
 
     private fun GL10.setRenderDefaults() {
@@ -149,7 +147,7 @@ internal class WeatherRenderer @AssistedInject constructor(
         component.updateCameraPosition(immediate = false)
         gl.updateProjection()
 
-        scene.scene.value.draw()
+        scene.scene.get().draw()
 
         if (postRenderActions.isNotEmpty()) {
             view.queueEvent {

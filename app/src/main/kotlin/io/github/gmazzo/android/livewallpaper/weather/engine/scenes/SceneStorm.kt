@@ -21,6 +21,7 @@ import javax.microedition.khronos.opengles.GL10.GL_MODELVIEW
 import javax.microedition.khronos.opengles.GL10.GL_POSITION
 import kotlin.time.Duration.Companion.milliseconds
 
+@SceneScoped
 class SceneStorm @Inject constructor(
     dependencies: SceneDependencies,
     private val particles: ParticlesRain,
