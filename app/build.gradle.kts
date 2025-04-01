@@ -1,6 +1,10 @@
+import io.github.gmazzo.gitversion.GitVersionProducer
+import io.github.gmazzo.gitversion.GitVersionValueSource
+
 plugins {
     alias(libs.plugins.android)
     alias(libs.plugins.dropshots)
+    alias(libs.plugins.gitVersion)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.kapt)
@@ -11,6 +15,17 @@ plugins {
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
+val versionTagsCount = providers.of(GitVersionValueSource::class) {
+    parameters.tagPrefix = gitVersion.tagPrefix
+    parameters.versionProducer = GitVersionProducer {
+        val prefix = parameters.tagPrefix.getOrElse("")
+
+        command(
+            "git", "log", "--tags", "--simplify-by-decoration",
+            "--decorate-refs=refs/tags/$prefix*")!!.lines().count().toString()
+    }
+}
+
 android {
     namespace = "io.github.gmazzo.android.livewallpaper.weather"
     compileSdk = 35
@@ -18,8 +33,8 @@ android {
     defaultConfig {
         minSdk = 26
         targetSdk = compileSdk
-        versionCode = 5
-        versionName = "1.0.3"
+        versionCode = versionTagsCount.get().toInt()
+        versionName = gitVersion.toString()
 
         buildConfigField("String", "FORECAST_ENDPOINT", "\"https://api.met.no/weatherapi/\"")
         buildConfigField(
