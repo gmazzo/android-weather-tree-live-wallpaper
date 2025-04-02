@@ -31,13 +31,13 @@ internal object ScenesModule {
         snow: Provider<SceneSnow>,
         storm: Provider<SceneStorm>,
         fog: Provider<SceneFog>
-    ): Scene = when (mode) {
-        SceneMode.CLEAR -> clear.get()
-        SceneMode.CLOUDY -> cloudy.get()
-        SceneMode.RAIN -> rain.get()
-        SceneMode.SNOW -> snow.get()
-        SceneMode.STORM -> storm.get()
-        SceneMode.FOG -> fog.get()
+    ): Lazy<Scene> = when (mode) {
+        SceneMode.CLEAR -> lazy(clear::get)
+        SceneMode.CLOUDY -> lazy(cloudy::get)
+        SceneMode.RAIN -> lazy(rain::get)
+        SceneMode.SNOW -> lazy(snow::get)
+        SceneMode.STORM -> lazy(storm::get)
+        SceneMode.FOG -> lazy(fog::get)
     }
 
     @Provides
