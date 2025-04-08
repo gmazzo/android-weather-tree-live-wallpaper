@@ -1,6 +1,3 @@
-import io.github.gmazzo.gitversion.GitVersionProducer
-import io.github.gmazzo.gitversion.GitVersionValueSource
-
 plugins {
     alias(libs.plugins.android)
     alias(libs.plugins.dropshots)
@@ -15,16 +12,14 @@ plugins {
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
-val versionTagsCount = providers.of(GitVersionValueSource::class) {
-    parameters.tagPrefix = gitVersion.tagPrefix
-    parameters.versionProducer = GitVersionProducer {
-        val prefix = parameters.tagPrefix.getOrElse("")
+val versionTagsCount = gitVersion.provider {
+    val prefix = parameters.tagPrefix.getOrElse("")
 
-        command(
-            "git", "log", "--tags", "--simplify-by-decoration",
-            "--decorate-refs=refs/tags/$prefix*")!!.lines().count().toString()
-    }
-}
+    command(
+        "git", "log", "--tags", "--simplify-by-decoration",
+        "--decorate-refs=refs/tags/$prefix*"
+    )!!.lines().count().toString()
+}.map { it.toInt() }
 
 android {
     namespace = "io.github.gmazzo.android.livewallpaper.weather"
@@ -33,7 +28,7 @@ android {
     defaultConfig {
         minSdk = 26
         targetSdk = compileSdk
-        versionCode = versionTagsCount.get().toInt()
+        versionCode = versionTagsCount.get()
         versionName = gitVersion.toString()
 
         buildConfigField("String", "FORECAST_ENDPOINT", "\"https://api.met.no/weatherapi/\"")
@@ -51,18 +46,19 @@ android {
         testInstrumentationRunner = "io.github.gmazzo.android.livewallpaper.weather.HiltJUnitRunner"
     }
 
-    providers.gradleProperty("signingPassword").orNull?.takeUnless { it.isBlank() }?.let { signingPassword ->
-        buildTypes {
-            release {
-                signingConfig = signingConfigs.create("release") {
-                    storeFile = file("release.keystore")
-                    storePassword = signingPassword
-                    keyAlias = "tree-wallpaper"
-                    keyPassword = signingPassword
+    providers.gradleProperty("signingPassword").orNull?.takeUnless { it.isBlank() }
+        ?.let { signingPassword ->
+            buildTypes {
+                release {
+                    signingConfig = signingConfigs.create("release") {
+                        storeFile = file("release.keystore")
+                        storePassword = signingPassword
+                        keyAlias = "tree-wallpaper"
+                        keyPassword = signingPassword
+                    }
                 }
             }
         }
-    }
 
     buildTypes {
         debug {
