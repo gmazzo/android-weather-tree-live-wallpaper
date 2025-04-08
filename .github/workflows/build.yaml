@@ -63,7 +63,7 @@ jobs:
       - name: Publish to Google Play
         env:
           ANDROID_PUBLISHER_CREDENTIALS: ${{ secrets.ANDROID_PUBLISHER_CREDENTIALS }}
-        run: ./gradlew publishReleaseBundle
+        run: ./gradlew publishReleaseBundle --track=production
 
   actionlint:
     name: Validate Workflows
