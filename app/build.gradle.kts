@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android)
     alias(libs.plugins.dropshots)
     alias(libs.plugins.gitVersion)
+    alias(libs.plugins.googlePlayPublish)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.kapt)
