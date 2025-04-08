@@ -11,6 +11,8 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things.Companion.WIND_SPEED
 import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDay.Companion.GOLDER_HOUR_FACTOR
 import io.github.gmazzo.android.livewallpaper.weather.engine.withColor
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -47,6 +49,8 @@ sealed class Scene(
     private val treesGrassModel = models[R.raw.grass_overlay]
     private val treesTreeModel = models[R.raw.trees_overlay]
     private val treesTexture = textures[R.drawable.trees_overlay]
+
+    private val sceneScope = CoroutineScope(SupervisorJob() + dispatcher)
 
     @CallSuper
     open fun draw() = gl.pushMatrix(GL_MODELVIEW) {

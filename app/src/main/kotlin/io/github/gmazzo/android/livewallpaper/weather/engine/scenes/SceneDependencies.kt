@@ -8,7 +8,6 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things
 import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDay
 import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDayTint
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 import javax.inject.Named
@@ -23,7 +22,7 @@ interface SceneDependencies {
     val random: Random
     val time: GlobalTime
     val gl: GL11
-    val sceneScope: CoroutineScope
+    val dispatcher: GLDispatcher
     val weather: MutableStateFlow<WeatherType>
     val models: Models
     val textures: Textures
@@ -36,15 +35,13 @@ interface SceneDependencies {
         override val random: Random,
         override val time: GlobalTime,
         override val gl: GL11,
-        dispatcher: GLDispatcher,
+        override val dispatcher: GLDispatcher,
         override val weather: MutableStateFlow<WeatherType>,
         override val models: Models,
         override val textures: Textures,
         override val things: Things,
         override val timeOfDay: TimeOfDay,
         override val timeOfDayTint: TimeOfDayTint
-    ) : SceneDependencies {
-        override val sceneScope = CoroutineScope(dispatcher)
-    }
+    ) : SceneDependencies
 
 }
