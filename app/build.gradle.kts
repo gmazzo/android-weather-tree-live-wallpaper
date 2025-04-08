@@ -14,11 +14,9 @@ plugins {
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 val versionTagsCount = gitVersion.provider {
-    val prefix = parameters.tagPrefix.getOrElse("")
-
     command(
-        "git", "log", "--tags", "--simplify-by-decoration",
-        "--decorate-refs=refs/tags/$prefix*"
+        "git", "log", "--tags", "--format=oneline", "--simplify-by-decoration",
+        "--decorate-refs=refs/tags/${parameters.tagPrefix.getOrElse("")}*"
     )!!.lines().count().toString()
 }.map { it.toInt() }
 
