@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.googlePlayPublish)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.kotlin.seriazliation)
     alias(libs.plugins.hilt)
@@ -89,12 +89,10 @@ android {
     }
 }
 
-kapt.correctErrorTypes = true
-
 dependencies {
-    kapt(libs.androidx.hilt.compiler)
-    kapt(libs.hilt.compiler)
-    kaptAndroidTest(libs.hilt.compiler)
+    ksp(libs.androidx.hilt.compiler)
+    ksp(libs.hilt.compiler)
+    kspAndroidTest(libs.hilt.compiler)
 
     implementation(platform(libs.androidx.compose))
     implementation(libs.androidx.compose.activity)

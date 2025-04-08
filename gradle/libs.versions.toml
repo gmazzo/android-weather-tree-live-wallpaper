@@ -2,7 +2,8 @@
 androidx-hilt = "1.2.0"
 androidx-work = "2.10.0"
 hilt = "2.56.1"
-kotlin = "2.1.10"
+kotlin = "2.1.20"
+kotlin-ksp = "2.1.20-1.0.32"
 
 [libraries]
 androidx-compose = { module = "androidx.compose:compose-bom", version = "2025.03.01" }
@@ -41,7 +42,7 @@ googlePlayPublish = { id = "com.github.triplet.play", version = "3.12.1" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlin-ksp" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlin-seriazliation = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 test-aggregation-coverage = { id = "io.github.gmazzo.test.aggregation.coverage", version = "2.4.4" }
