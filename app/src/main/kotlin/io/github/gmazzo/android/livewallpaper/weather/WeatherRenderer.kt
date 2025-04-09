@@ -9,9 +9,9 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneComponent
-import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import java.util.concurrent.ConcurrentLinkedQueue
 import javax.inject.Named
@@ -92,15 +92,15 @@ internal class WeatherRenderer @AssistedInject constructor(
         gl.glViewport(0, 0, w, h)
         gl.setRenderDefaults()
 
-        component?.close()
+        onSurfaceDestroyed()
         component = componentFactory.create(view, gl as GL11, demoMode).apply {
             updateCameraPosition(immediate = true)
             coroutineScope.launch { weather.collectLatest(::onSceneChanged) }
         }
     }
 
-    private fun WeatherRendererComponent.close() {
-        coroutineJob.cancelChildren()
+    fun onSurfaceDestroyed() = component?.apply {
+        coroutineScope.coroutineContext.job.cancel()
         unloadScene()
         models.close()
         textures.close()
