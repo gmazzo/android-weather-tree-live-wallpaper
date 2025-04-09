@@ -8,6 +8,7 @@ import android.view.PixelCopy
 import android.view.SurfaceHolder
 import androidx.annotation.MainThread
 import androidx.annotation.VisibleForTesting
+import androidx.core.graphics.createBitmap
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -63,11 +64,7 @@ class WeatherView @AssistedInject internal constructor(
     }
 
     fun takeSnapshot(@MainThread onSnapshot: (Bitmap?) -> Unit): Unit = renderer.postRender {
-        val bitmap = Bitmap.createBitmap(
-            renderer.screenWidth.toInt(),
-            renderer.screenHeight.toInt(),
-            Bitmap.Config.ARGB_8888
-        )
+        val bitmap = createBitmap(renderer.screenWidth.toInt(), renderer.screenHeight.toInt())
 
         PixelCopy.request(this, bitmap, { result ->
             onSnapshot(bitmap.takeIf { result == PixelCopy.SUCCESS })
