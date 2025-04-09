@@ -40,6 +40,12 @@ class WeatherView @AssistedInject internal constructor(
         }
     }
 
+    override fun surfaceDestroyed(holder: SurfaceHolder) {
+        super.surfaceDestroyed(holder)
+
+        renderer.onSurfaceDestroyed()
+    }
+
     override fun onResume() {
         super.onResume()
 

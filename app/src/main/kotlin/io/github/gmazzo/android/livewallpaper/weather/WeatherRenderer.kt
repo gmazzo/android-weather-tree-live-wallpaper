@@ -92,14 +92,14 @@ internal class WeatherRenderer @AssistedInject constructor(
         gl.glViewport(0, 0, w, h)
         gl.setRenderDefaults()
 
-        component?.close()
+        onSurfaceDestroyed()
         component = componentFactory.create(view, gl as GL11, demoMode).apply {
             updateCameraPosition(immediate = true)
             coroutineScope.launch { weather.collectLatest(::onSceneChanged) }
         }
     }
 
-    private fun WeatherRendererComponent.close() {
+    fun onSurfaceDestroyed() = component?.apply {
         coroutineScope.coroutineContext.job.cancel()
         unloadScene()
         models.close()
