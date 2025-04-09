@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.location.LocationListener
 import android.location.LocationManager
-import android.location.LocationManager.PASSIVE_PROVIDER
+import android.location.LocationManager.NETWORK_PROVIDER
 import android.util.Log
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.core.content.getSystemService
@@ -57,8 +57,8 @@ class LocationManager @Inject constructor(
         }
 
         Log.i(TAG, "Started listening for location updates")
-        manager.getLastKnownLocation(PASSIVE_PROVIDER)?.let(::onLocationChanged)
-        manager.requestLocationUpdates(PASSIVE_PROVIDER, 1.hours.inWholeMilliseconds, 1000f, this)
+        manager.getLastKnownLocation(NETWORK_PROVIDER)?.let(::onLocationChanged)
+        manager.requestLocationUpdates(NETWORK_PROVIDER, 1.hours.inWholeMilliseconds, 1000f, this)
     }
 
     private fun stopListening() {
