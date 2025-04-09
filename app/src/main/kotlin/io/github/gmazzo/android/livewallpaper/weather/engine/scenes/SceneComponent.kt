@@ -5,7 +5,7 @@ import dagger.Subcomponent
 import javax.inject.Named
 
 @SceneScoped
-@Subcomponent(modules = [ScenesModule::class])
+@Subcomponent(modules = [SceneModule::class])
 interface SceneComponent {
 
     val mode: SceneMode

@@ -17,9 +17,9 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.timeOfDay
 import javax.inject.Named
 import javax.inject.Provider
 
-@Module(includes = [ScenesModule.Bindings::class])
 @DisableInstallInCheck
-internal object ScenesModule {
+@Module(includes = [SceneModule.Bindings::class])
+internal object SceneModule {
 
     @Provides
     @SceneScoped
