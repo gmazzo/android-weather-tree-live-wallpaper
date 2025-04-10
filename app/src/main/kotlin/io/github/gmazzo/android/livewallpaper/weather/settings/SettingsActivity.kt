@@ -1,14 +1,10 @@
 package io.github.gmazzo.android.livewallpaper.weather.settings
 
-import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
-import android.annotation.SuppressLint
 import android.app.WallpaperManager
 import android.content.ComponentName
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -18,7 +14,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.gmazzo.android.livewallpaper.weather.WeatherView
 import io.github.gmazzo.android.livewallpaper.weather.WeatherWallpaperService
-import io.github.gmazzo.android.livewallpaper.weather.hasBackgroundLocationPermission
 import io.github.gmazzo.android.livewallpaper.weather.hasLocationPermission
 import javax.inject.Inject
 
@@ -32,8 +27,9 @@ class SettingsActivity : ComponentActivity() {
 
     internal val viewModel: SettingsViewModel by viewModels()
 
-    private val requestPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission(), ::checkPermissions)
+    private val requestPermissionLauncher = registerForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        callback = ::onRequestPermissionResult)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,11 +41,9 @@ class SettingsActivity : ComponentActivity() {
                 location = viewModel.location.collectAsState().value,
                 updateLocationEnabled = viewModel.updateLocationEnabled.collectAsState().value,
                 weather = viewModel.weather.collectAsState().value,
-                missingLocationPermission = viewModel.missingLocationPermission.collectAsState().value,
-                updateLocationEnabledChange = viewModel::updateLocationEnabled,
+                updateLocationEnabledChange = ::onUpdateLocationEnabledChange,
                 onSpeedSelected = viewModel.timeSpeed::value::set,
                 onSceneSelected = viewModel::updateSelectedScene,
-                onRequestLocationPermission = { checkPermissions(null) },
                 onSetAsWallpaper = ::openWallpaperChooser,
                 onNavigateBack = ::finish,
                 onDragGesture = viewModel::updateHomeOffset,
@@ -69,36 +63,17 @@ class SettingsActivity : ComponentActivity() {
         weatherView.onPause()
     }
 
-    override fun onResume() {
-        super.onResume()
+    private fun onUpdateLocationEnabledChange(enabled: Boolean) {
+        if (enabled && !hasLocationPermission) {
+            requestPermissionLauncher.launch(ACCESS_COARSE_LOCATION)
 
-        viewModel.onResume()
-    }
-
-    @SuppressLint("InlinedApi")
-    private fun checkPermissions(granted: Boolean?) {
-        when {
-            granted == false -> if (hasLocationPermission && !hasBackgroundLocationPermission) openAppSettings()
-            !hasLocationPermission -> requestPermissionLauncher.launch(ACCESS_COARSE_LOCATION)
-            !hasBackgroundLocationPermission ->
-                requestPermissionLauncher.launch(ACCESS_BACKGROUND_LOCATION)
-
-            granted == true -> viewModel.enableWeatherConditionsUpdate()
+        } else {
+            viewModel.updateLocationEnabled.value = enabled
         }
     }
 
-    /**
-     * When a few background permissions requests are made but the user cancels it,
-     * the SO no longer shows the dialog and denies the request automatically
-     * We open the settings in case
-     */
-    private fun openAppSettings() {
-        startActivity(
-            Intent(
-                Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                Uri.fromParts("package", packageName, null)
-            )
-        )
+    private fun onRequestPermissionResult(granted: Boolean) {
+        viewModel.updateLocationEnabled.value = granted
     }
 
     private fun openWallpaperChooser() {

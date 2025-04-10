@@ -20,7 +20,6 @@ import io.github.gmazzo.android.livewallpaper.weather.api.ReverseGeocodingAPI
 import io.github.gmazzo.android.livewallpaper.weather.api.ReverseGeocodingAPI.Companion.findCity
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode
-import io.github.gmazzo.android.livewallpaper.weather.hasBackgroundLocationPermission
 import io.github.gmazzo.android.livewallpaper.weather.hasLocationPermission
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -50,8 +49,6 @@ class SettingsViewModel @Inject constructor(
 
     val updateLocationEnabled = MutableStateFlow(false)
 
-    val missingLocationPermission = MutableStateFlow(false)
-
     init {
         updateLocationEnabled()
         updateUIFromLocationEnabled()
@@ -60,16 +57,17 @@ class SettingsViewModel @Inject constructor(
 
     private fun updateLocationEnabled() = viewModelScope.launch {
         preferences.data.collectLatest {
-            val locationOn = it[settingLocationOn] ?: false
+            val locationOn = it[settingLocationOn] == true
 
-            updateLocationEnabled.value = locationOn
+            updateLocationEnabled.value = locationOn && context.hasLocationPermission
         }
     }
 
     private fun updateUIFromLocationEnabled() = viewModelScope.launch {
         updateLocationEnabled.collectLatest { enabled ->
-            computeMissingLocationPermission(enabled)
-            enableWeatherConditionsUpdate(enabled)
+            preferences.edit { it[settingLocationOn] = enabled }
+            if (enabled) workManager.enableWeatherConditionsUpdate()
+            else workManager.disableWeatherConditionsUpdate()
         }
     }
 
@@ -92,24 +90,6 @@ class SettingsViewModel @Inject constructor(
                 locationManager.flow.value = it.copy(city = cityName)
             }
         }
-    }
-
-    fun onResume() {
-        computeMissingLocationPermission(updateLocationEnabled.value)
-    }
-
-    private fun computeMissingLocationPermission(locationOn: Boolean) {
-        missingLocationPermission.value =
-            locationOn && !(context.hasLocationPermission && context.hasBackgroundLocationPermission)
-    }
-
-    fun enableWeatherConditionsUpdate(enabled: Boolean = updateLocationEnabled.value) {
-        if (enabled) workManager.enableWeatherConditionsUpdate()
-        else workManager.disableWeatherConditionsUpdate()
-    }
-
-    fun updateLocationEnabled(enabled: Boolean) = viewModelScope.launch {
-        preferences.edit { it[settingLocationOn] = enabled }
     }
 
     fun updateSelectedScene(scene: SceneMode) {
