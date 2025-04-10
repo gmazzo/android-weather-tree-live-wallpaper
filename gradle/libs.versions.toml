@@ -10,6 +10,7 @@ androidx-compose = { module = "androidx.compose:compose-bom", version = "2025.04
 androidx-compose-activity = { module = "androidx.activity:activity-compose", version = "1.10.1" }
 androidx-compose-constraintLayout = { module = "androidx.constraintlayout:constraintlayout-compose", version = "1.1.1" }
 androidx-compose-material = { module = "androidx.compose.material3:material3" }
+androidx-compose-material-icons = { module = "androidx.compose.material:material-icons-extended", version = "1.7.8" }
 androidx-compose-uiTooling = { module = "androidx.compose.ui:ui-tooling" }
 androidx-compose-uiToolingPreview = { module = "androidx.compose.ui:ui-tooling-preview" }
 androidx-datastore = { module = "androidx.datastore:datastore-preferences", version = "1.1.4" }
@@ -23,6 +24,7 @@ androidx-test-runner = { module = "androidx.test:runner", version = "1.6.2" }
 androidx-tracing = { module = "androidx.tracing:tracing", version = "1.2.0" }
 androidx-work = { module = "androidx.work:work-runtime-ktx", version.ref = "androidx-work" }
 androidx-work-test = { module = "androidx.work:work-testing", version.ref = "androidx-work" }
+composable-icons = { module = "com.composables:icons-lucide", version = "1.0.0" }
 hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
 hilt-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt" }

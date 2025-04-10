@@ -32,6 +32,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.Speed
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults.ContentPadding
@@ -85,7 +86,6 @@ import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.WeatherType
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode
 import io.github.gmazzo.android.livewallpaper.weather.minutesSinceMidnight
-import io.github.gmazzo.android.livewallpaper.weather.theme.Speed
 import io.github.gmazzo.android.livewallpaper.weather.theme.TimeOfDay
 import java.time.ZonedDateTime
 import java.util.Locale
@@ -193,7 +193,7 @@ private fun TimeSpeedMenu(
 
     @Composable
     fun SpeedIcon() = Icon(
-        imageVector = Icons.Speed,
+        imageVector = Icons.Outlined.Speed,
         contentDescription = stringResource(R.string.settings_speed)
     )
 
