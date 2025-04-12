@@ -1,3 +1,5 @@
+import com.android.build.gradle.tasks.PackageAndroidArtifact
+
 plugins {
     alias(libs.plugins.android)
     alias(libs.plugins.dropshots)
@@ -8,6 +10,7 @@ plugins {
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.kotlin.seriazliation)
+    alias(libs.plugins.screenshot)
     alias(libs.plugins.hilt)
 }
 
@@ -80,11 +83,7 @@ android {
         compose = true
     }
 
-    testOptions.managedDevices.localDevices.register("emulator") {
-        device = "Pixel 6 Pro"
-        apiLevel = 33
-        systemImageSource = "aosp-atd"
-    }
+    experimentalProperties["android.experimental.enableScreenshotTest"] = true
 }
 
 dependencies {
@@ -116,6 +115,8 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
 
+    screenshotTestImplementation(libs.androidx.compose.uiTooling)
+
     androidTestImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.androidx.test.espresso)
     androidTestImplementation(libs.androidx.test.junit)
@@ -126,6 +127,9 @@ dependencies {
     androidTestImplementation(libs.kotlinx.coroutines.test)
 }
 
-// FIXME does not renders well on emulator
-//  tasks.check { dependsOn("emulatorCheck") }
-tasks.connectedCheck { finalizedBy("installRelease") }
+tasks.check {
+    dependsOn(
+        tasks.withType<PackageAndroidArtifact>(),
+        "validateScreenshotTest",
+    )
+}

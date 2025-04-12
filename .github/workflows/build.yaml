@@ -34,12 +34,18 @@ jobs:
         with:
           gradle-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
       - name: Test & Build
-        run: ./gradlew -s build --continue
+        run: ./gradlew build
       - name: Publish Test Report
         if: ${{ !cancelled() }}
         uses: gmazzo/publish-report-annotations@v1
         with:
           checkName: Test Results
+      - name: Upload build reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: reports
+          path: '**/build/reports'
       - name: Coverage report
         uses: codecov/codecov-action@v5
         with:
