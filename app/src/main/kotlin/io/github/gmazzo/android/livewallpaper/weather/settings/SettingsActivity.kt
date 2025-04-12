@@ -41,6 +41,7 @@ class SettingsActivity : ComponentActivity() {
                 location = viewModel.location.collectAsState().value,
                 updateLocationEnabled = viewModel.updateLocationEnabled.collectAsState().value,
                 weather = viewModel.weather.collectAsState().value,
+                forecastWeather = viewModel.forecastWeather.collectAsState().value,
                 updateLocationEnabledChange = ::onUpdateLocationEnabledChange,
                 onSpeedSelected = viewModel.timeSpeed::value::set,
                 onSceneSelected = viewModel::updateSelectedScene,

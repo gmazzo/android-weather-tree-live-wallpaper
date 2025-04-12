@@ -15,7 +15,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -56,14 +55,14 @@ object WeatherModule {
     @Provides
     @Singleton
     @Named("forecast")
-    fun forecastWeatherType() = MutableSharedFlow<WeatherType>()
+    fun forecastWeatherType() = MutableStateFlow<WeatherType>(WeatherType.UNKNOWN)
 
     @Provides
     @Singleton
     fun weatherType(
         dataStore: DataStore<Preferences>,
-        @Named("forecast") forecast: MutableSharedFlow<WeatherType>,
-    ): MutableStateFlow<WeatherType> = MutableStateFlow(WeatherType.SUNNY_DAY).apply {
+        @Named("forecast") forecast: MutableStateFlow<WeatherType>,
+    ): MutableStateFlow<WeatherType> = MutableStateFlow(WeatherType.UNKNOWN).apply {
         MainScope().launch {
             dataStore.data.firstOrNull()?.get(settingLastWeather)?.let {
                 value = WeatherType.valueOf(it)

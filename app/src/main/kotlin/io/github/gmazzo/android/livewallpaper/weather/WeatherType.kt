@@ -7,7 +7,7 @@ enum class WeatherType(
     val clouds: Int,
     val wisps: Int,
 ) {
-    SUNNY_DAY(SceneMode.CLEAR,2, 2),
+    SUNNY_DAY(SceneMode.CLEAR, 2, 2),
     MOSTLY_SUNNY_DAY(SceneMode.CLEAR, 3, 3),
     PARTLY_SUNNY_DAY(SceneMode.CLEAR, 4, 4),
     INTERMITTENT_CLOUDS_DAY(SceneMode.CLEAR, 5, 5),
@@ -43,7 +43,9 @@ enum class WeatherType(
     PARTLY_CLOUDY_WITH_THUNDER_STORMS_NIGHT(SceneMode.STORM, 15, 5),
     MOSTLY_CLOUDY_WITH_THUNDER_STORMS_NIGHT(SceneMode.STORM, 25, 5),
     MOSTLY_CLOUDY_WITH_FLURRIES_NIGHT(SceneMode.SNOW, 20, 5),
-    MOSTLY_CLOUDY_WITH_SNOW_NIGHT(SceneMode.SNOW, 20, 5);
+    MOSTLY_CLOUDY_WITH_SNOW_NIGHT(SceneMode.SNOW, 20, 5),
+
+    UNKNOWN(SceneMode.CLEAR, 2, 2);
 
     companion object {
         fun valueOf(scene: SceneMode) = WeatherType.entries.first { it.scene == scene }
