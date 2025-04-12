@@ -4,6 +4,7 @@ package io.github.gmazzo.android.livewallpaper.weather.settings
 
 import android.text.format.DateUtils
 import android.text.format.DateUtils.formatDateTime
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -33,6 +34,7 @@ import androidx.compose.material3.ButtonDefaults.ContentPadding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -97,7 +99,8 @@ fun SettingsScreen(
     timeSpeed: Float = 1f,
     location: Location? = Location(41.3825, 2.176944, "Barcelona"),
     updateLocationEnabled: Boolean = true,
-    weather: WeatherType = WeatherType.SUNNY_DAY,
+    weather: WeatherType = WeatherType.UNKNOWN,
+    forecastWeather: WeatherType = weather,
     updateLocationEnabledChange: (Boolean) -> Unit = {},
     onSpeedSelected: (Float) -> Unit = {},
     onSceneSelected: (SceneMode) -> Unit = {},
@@ -128,7 +131,8 @@ fun SettingsScreen(
             containerColor = Color.Transparent,
             topBar = {
                 Column {
-                    CenterAlignedTopAppBar(title = { Text(text = stringResource(id = weather.scene.textId)) },
+                    CenterAlignedTopAppBar(
+                        title = { Text(text = stringResource(id = weather.scene.textId)) },
                         colors = TopAppBarDefaults.topAppBarColors()
                             .copy(containerColor = Color.Transparent),
                         navigationIcon = {
@@ -160,7 +164,11 @@ fun SettingsScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(margin, Alignment.Bottom),
             ) {
-                UseDeviceLocationPanel(updateLocationEnabled, updateLocationEnabledChange)
+                UseDeviceLocationPanel(
+                    updateLocationEnabled,
+                    updateLocationEnabledChange,
+                    forecastWeather,
+                )
                 WeathersGallery(weather.scene, onSceneSelected)
             }
         }
@@ -307,15 +315,16 @@ private fun DayTimeProgression(
             imageVector = if (night) Icons.TimeOfDay.Day else Icons.TimeOfDay.Night,
             contentDescription = null
         )
-        Spacer(modifier = track
-            .alpha(middleAlpha)
-            .constrainAs(spacerEnd) {
-                start.linkTo(middleIcon.end)
-                end.linkTo(endIcon.start)
-                top.linkTo(parent.top)
-                bottom.linkTo(parent.bottom)
-                width = Dimension.fillToConstraints
-            })
+        Spacer(
+            modifier = track
+                .alpha(middleAlpha)
+                .constrainAs(spacerEnd) {
+                    start.linkTo(middleIcon.end)
+                    end.linkTo(endIcon.start)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    width = Dimension.fillToConstraints
+                })
         Icon(
             modifier = Modifier
                 .size(iconSize)
@@ -461,6 +470,7 @@ private fun <Value> Selector(
 private fun UseDeviceLocationPanel(
     updateLocationEnabled: Boolean,
     updateLocationEnabledChange: (Boolean) -> Unit,
+    forecastWeather: WeatherType,
 ) = SettingsItem(
     icon = {
         Icon(
@@ -471,8 +481,24 @@ private fun UseDeviceLocationPanel(
     title = { Text(text = stringResource(id = R.string.settings_use_location)) },
     summary = { Text(text = stringResource(id = R.string.settings_use_location_summary)) },
 ) {
-    Switch(
-        checked = updateLocationEnabled,
-        onCheckedChange = updateLocationEnabledChange
-    )
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Switch(
+            checked = updateLocationEnabled,
+            onCheckedChange = updateLocationEnabledChange
+        )
+        AnimatedVisibility(visible = updateLocationEnabled) {
+            when (forecastWeather) {
+                WeatherType.UNKNOWN -> CircularProgressIndicator(
+                    modifier = Modifier.size(18.dp),
+                    strokeWidth = 2.dp,
+                )
+
+                else -> Icon(
+                    modifier = Modifier.size(18.dp),
+                    imageVector = forecastWeather.scene.icon,
+                    contentDescription = forecastWeather.scene.name,
+                )
+            }
+        }
+    }
 }

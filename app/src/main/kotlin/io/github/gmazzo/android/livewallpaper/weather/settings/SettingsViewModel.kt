@@ -39,6 +39,7 @@ class SettingsViewModel @Inject constructor(
     @Named("fastTimeSpeed") val timeSpeed: MutableStateFlow<Float>,
     @Named("homeOffset") private val homeOffset: MutableStateFlow<Float>,
     val weather: MutableStateFlow<WeatherType>,
+    @Named("forecast") val forecastWeather: MutableStateFlow<WeatherType>,
     val location: StateFlow<Location?>,
     private val workManager: WorkManager,
     private val locationManager: LocationManager,
@@ -66,6 +67,8 @@ class SettingsViewModel @Inject constructor(
     private fun updateUIFromLocationEnabled() = viewModelScope.launch {
         updateLocationEnabled.collectLatest { enabled ->
             preferences.edit { it[settingLocationOn] = enabled }
+
+            forecastWeather.value = WeatherType.UNKNOWN
             if (enabled) workManager.enableWeatherConditionsUpdate()
             else workManager.disableWeatherConditionsUpdate()
         }
