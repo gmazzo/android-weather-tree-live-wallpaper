@@ -2,9 +2,14 @@
 
 package io.github.gmazzo.android.livewallpaper.weather.settings
 
+import android.graphics.Typeface
+import android.os.Build
+import android.text.Spanned
 import android.text.format.DateUtils
 import android.text.format.DateUtils.formatDateTime
 import androidx.compose.animation.AnimatedVisibility
+import android.text.style.StyleSpan
+import androidx.annotation.StringRes
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -29,6 +34,7 @@ import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Speed
+import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults.ContentPadding
 import androidx.compose.material3.Card
@@ -54,6 +60,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -66,7 +73,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -101,9 +112,11 @@ fun SettingsScreen(
     updateLocationEnabled: Boolean = true,
     weather: WeatherType = WeatherType.UNKNOWN,
     forecastWeather: WeatherType = weather,
+    missingLocationPermission: Boolean = true,
     updateLocationEnabledChange: (Boolean) -> Unit = {},
     onSpeedSelected: (Float) -> Unit = {},
     onSceneSelected: (SceneMode) -> Unit = {},
+    onRequestBackgroundLocationPermission: () -> Unit = {},
     onSetAsWallpaper: () -> Unit = {},
     onNavigateBack: () -> Unit = {},
     onDragGesture: (forward: Boolean) -> Unit = {},
@@ -164,6 +177,9 @@ fun SettingsScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(margin, Alignment.Bottom),
             ) {
+                if (updateLocationEnabled && missingLocationPermission) {
+                    MissingLocationPermissionPanel(onRequestBackgroundLocationPermission)
+                }
                 UseDeviceLocationPanel(
                     updateLocationEnabled,
                     updateLocationEnabledChange,
@@ -500,5 +516,56 @@ private fun UseDeviceLocationPanel(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun MissingLocationPermissionPanel(
+    onRequestBackgroundLocationPermission: () -> Unit,
+) = SettingsItem(
+    containerColor = MaterialTheme.colorScheme.errorContainer,
+    icon = { Icon(imageVector = Icons.Outlined.Warning, contentDescription = null) },
+    title = { Text(textResource(R.string.settings_missing_location_permission_title)) },
+    summary = { Text(missingLocationPermissionExplanation()) },
+) {
+    Button(onClick = onRequestBackgroundLocationPermission) {
+        Text(text = stringResource(R.string.settings_missing_location_permission_grant))
+    }
+}
+
+@Composable
+@ReadOnlyComposable
+fun missingLocationPermissionExplanation() = buildAnnotatedString {
+    append(textResource(R.string.settings_missing_location_permission_summary))
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        withStyle(SpanStyle(fontStyle = FontStyle.Italic)) {
+            appendLine()
+            append(stringResource(R.string.settings_missing_location_permission_summary_instructions))
+            append(" ")
+            withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                append(LocalContext.current.packageManager.backgroundPermissionOptionLabel)
+            }
+        }
+    }
+}
+
+@Composable
+@ReadOnlyComposable
+fun textResource(@StringRes id: Int) = buildAnnotatedString {
+    val text = LocalContext.current.resources.getText(id)
+    append(text)
+    (text as? Spanned)?.getSpans(0, text.length, StyleSpan::class.java)?.forEach {
+        addStyle(
+            start = text.getSpanStart(it), end = text.getSpanEnd(it), style = when (it.style) {
+                Typeface.ITALIC -> SpanStyle(fontStyle = FontStyle.Italic)
+                Typeface.BOLD -> SpanStyle(fontWeight = FontWeight.Bold)
+                Typeface.BOLD_ITALIC -> SpanStyle(
+                    fontWeight = FontWeight.Bold, fontStyle = FontStyle.Italic
+                )
+
+                else -> SpanStyle()
+            }
+        )
     }
 }
