@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Clima Fondo de Pantalla Animado</string>
+    <string name="description">Un hermoso paisaje with árboles que se adapta a la hora del día y las condiciones climáticas</string>
+
+    <string name="settings_use_location">Usar la ubicación del dispositivo</string>
+    <string name="settings_use_location_summary">Cambia la escena basado en las condiciones climáticas de la ubicación del dispositivo</string>
+    <string name="settings_missing_location_permission_title">Acceso a la <b>ubicación en segundo plano</b> requerido</string>
+    <string name="settings_missing_location_permission_summary">El servicio de fondo de pantalla debería tener acceso a la ubicación de tu dispositivo en todo momento, para poder obtener las condiciones climáticas actuales de tu ubicación actual. Incluso cuando no te encuentras en esta pantalla.</string>
+    <string name="settings_missing_location_permission_summary_instructions">Cuando se te solicite, selecciona la opción:</string>
+    <string name="settings_missing_location_permission_grant">Otorgar</string>
+    <string name="settings_set_as_wallpaper">Configurar como fondo de pantalla del dispositivo</string>
+    <string name="settings_speed">Velocidad del tiempo</string>
+    <string name="settings_speed_realtime">Tiempo real</string>
+    <string name="settings_speed_day_in_15secs">Día en 15s</string>
+    <string name="settings_speed_day_in_3secs">Día en 3s</string>
+
+    <string name="scene_clear">Despejado</string>
+    <string name="scene_cloudy">Nublado</string>
+    <string name="scene_rain">Lluvia</string>
+    <string name="scene_snow">Nieve</string>
+    <string name="scene_storm">Tormenta</string>
+    <string name="scene_fog">Niebla</string>
+</resources>
