@@ -5,6 +5,8 @@
 
     <string name="settings_use_location">Use device location</string>
     <string name="settings_use_location_summary">Changes the scene based on weather conditions at the device location</string>
+    <string name="settings_show_launcher_icon">Show launcher icon</string>
+    <string name="settings_show_launcher_icon_summary_off">You can re-enter this screen from the \"Settings\" option at the device\'s wallpaper selector screen</string>
     <string name="settings_missing_location_permission_title">Access to <b>background location</b> required</string>
     <string name="settings_missing_location_permission_summary">The wallpaper service should have access to your device location at any moment to be able to fetch current weather condition at your current location, event when you are not in this screen</string>
     <string name="settings_missing_location_permission_summary_instructions">When prompted, select the option:</string>

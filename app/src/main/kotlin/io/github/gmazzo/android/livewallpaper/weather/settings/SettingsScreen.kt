@@ -7,9 +7,9 @@ import android.os.Build
 import android.text.Spanned
 import android.text.format.DateUtils
 import android.text.format.DateUtils.formatDateTime
-import androidx.compose.animation.AnimatedVisibility
 import android.text.style.StyleSpan
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Speed
@@ -114,6 +115,8 @@ fun SettingsScreen(
     forecastWeather: WeatherType = weather,
     missingLocationPermission: Boolean = true,
     updateLocationEnabledChange: (Boolean) -> Unit = {},
+    showLauncherIcon: Boolean = true,
+    updateShowLauncherIcon: (Boolean) -> Unit = {},
     onSpeedSelected: (Float) -> Unit = {},
     onSceneSelected: (SceneMode) -> Unit = {},
     onRequestBackgroundLocationPermission: () -> Unit = {},
@@ -184,6 +187,10 @@ fun SettingsScreen(
                     updateLocationEnabled,
                     updateLocationEnabledChange,
                     forecastWeather,
+                )
+                ShowLauncherIconPanel(
+                    showLauncherIcon,
+                    updateShowLauncherIcon,
                 )
                 WeathersGallery(weather.scene, onSceneSelected)
             }
@@ -517,6 +524,26 @@ private fun UseDeviceLocationPanel(
             }
         }
     }
+}
+
+@Composable
+private fun ShowLauncherIconPanel(
+    showLauncherIcon: Boolean,
+    updateShowLauncherIcon: (Boolean) -> Unit,
+) = SettingsItem(
+    icon = {
+        Icon(
+            imageVector = Icons.Filled.Apps,
+            contentDescription = null,
+        )
+    },
+    title = { Text(text = stringResource(id = R.string.settings_show_launcher_icon)) },
+    summary = { if (!showLauncherIcon) Text(text = stringResource(id = R.string.settings_show_launcher_icon_summary_off)) },
+) {
+    Switch(
+        checked = showLauncherIcon,
+        onCheckedChange = updateShowLauncherIcon
+    )
 }
 
 @Composable

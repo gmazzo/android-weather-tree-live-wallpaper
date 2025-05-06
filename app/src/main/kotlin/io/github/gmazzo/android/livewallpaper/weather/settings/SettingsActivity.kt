@@ -22,6 +22,7 @@ import io.github.gmazzo.android.livewallpaper.weather.WeatherView
 import io.github.gmazzo.android.livewallpaper.weather.WeatherWallpaperService
 import io.github.gmazzo.android.livewallpaper.weather.hasBackgroundLocationPermission
 import io.github.gmazzo.android.livewallpaper.weather.hasLocationPermission
+import io.github.gmazzo.android.livewallpaper.weather.launcherIconEnabled
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -52,6 +53,8 @@ class SettingsActivity : ComponentActivity() {
                 forecastWeather = viewModel.forecastWeather.collectAsState().value,
                 missingLocationPermission = !hasBackgroundLocationPermission,
                 updateLocationEnabledChange = ::onUpdateLocationEnabledChange,
+                showLauncherIcon = viewModel.showLauncherIcon.collectAsState().value,
+                updateShowLauncherIcon = ::onUpdateShowLauncherIcon,
                 onSpeedSelected = viewModel.timeSpeed::value::set,
                 onSceneSelected = viewModel::updateSelectedScene,
                 onRequestBackgroundLocationPermission = ::requestBackgroundLocationPermission,
@@ -83,6 +86,11 @@ class SettingsActivity : ComponentActivity() {
         }
 
         viewModel.updateLocationEnabled.value = enabled && hasLocationPermission
+    }
+
+    private fun onUpdateShowLauncherIcon(enabled: Boolean) {
+        launcherIconEnabled = enabled
+        viewModel.updateLocationEnabled.value = enabled
     }
 
     private fun onRequestPermissionResult(granted: Boolean) {

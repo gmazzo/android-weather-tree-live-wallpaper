@@ -5,6 +5,8 @@
 
     <string name="settings_use_location">Usar la ubicación del dispositivo</string>
     <string name="settings_use_location_summary">Cambia la escena basado en las condiciones climáticas de la ubicación del dispositivo</string>
+    <string name="settings_show_launcher_icon">Mostrar ícono en el selector de aplicaciones</string>
+    <string name="settings_show_launcher_icon_summary_off">Puedes regresar a esta pantalla desde la opción \"Configuración\" en el selector de fondos de pantallas del dispositivo</string>
     <string name="settings_missing_location_permission_title">Acceso a la <b>ubicación en segundo plano</b> requerido</string>
     <string name="settings_missing_location_permission_summary">El servicio de fondo de pantalla debería tener acceso a la ubicación de tu dispositivo en todo momento, para poder obtener las condiciones climáticas actuales de tu ubicación actual. Incluso cuando no te encuentras en esta pantalla.</string>
     <string name="settings_missing_location_permission_summary_instructions">Cuando se te solicite, selecciona la opción:</string>

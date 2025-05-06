@@ -17,14 +17,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@android:style/Theme.Material.NoActionBar">
 
-        <activity
-            android:name=".settings.SettingsActivity"
+        <activity-alias
+            android:name=".MainActivity"
+            android:targetActivity=".settings.SettingsActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
+        </activity-alias>
+
+        <activity
+            android:name=".settings.SettingsActivity"
+            android:exported="true" />
 
         <service
             android:name=".WeatherWallpaperService"

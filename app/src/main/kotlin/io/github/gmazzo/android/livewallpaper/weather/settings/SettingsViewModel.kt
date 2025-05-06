@@ -1,6 +1,7 @@
 package io.github.gmazzo.android.livewallpaper.weather.settings
 
 import android.content.Context
+import android.content.pm.PackageManager
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
@@ -21,6 +22,7 @@ import io.github.gmazzo.android.livewallpaper.weather.api.ReverseGeocodingAPI.Co
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode
 import io.github.gmazzo.android.livewallpaper.weather.hasLocationPermission
+import io.github.gmazzo.android.livewallpaper.weather.launcherIconEnabled
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -50,8 +52,11 @@ class SettingsViewModel @Inject constructor(
 
     val updateLocationEnabled = MutableStateFlow(false)
 
+    val showLauncherIcon = MutableStateFlow(context.launcherIconEnabled)
+
     init {
         updateLocationEnabled()
+        updateShowLauncherIcon()
         updateUIFromLocationEnabled()
         retrieveCityNameFromLocation()
     }
@@ -61,6 +66,12 @@ class SettingsViewModel @Inject constructor(
             val locationOn = it[settingLocationOn] == true
 
             updateLocationEnabled.value = locationOn && context.hasLocationPermission
+        }
+    }
+
+    private fun updateShowLauncherIcon() = viewModelScope.launch {
+        showLauncherIcon.collectLatest {
+            context.launcherIconEnabled = it
         }
     }
 
