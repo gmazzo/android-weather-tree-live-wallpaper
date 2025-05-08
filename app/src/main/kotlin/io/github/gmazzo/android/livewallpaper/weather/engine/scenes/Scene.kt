@@ -50,7 +50,7 @@ sealed class Scene(
     private val treesTreeModel = models[R.raw.trees_overlay]
     private val treesTexture = textures[R.drawable.trees_overlay]
 
-    private val sceneScope = CoroutineScope(SupervisorJob() + dispatcher)
+    private val sceneScope = CoroutineScope(SupervisorJob() + renderedScope.coroutineContext)
 
     @CallSuper
     open fun draw() = gl.pushMatrix(GL_MODELVIEW) {
