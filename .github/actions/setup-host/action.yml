@@ -26,7 +26,7 @@ runs:
       shell: bash
       run: |
         echo "ANDROID_HOME=$ANDROID_HOME" >> "$GITHUB_ENV"
-        echo "$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools" >> "$GITHUB_PATH"
+        echo "$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools:$ANDROID_HOME/emulator" >> "$GITHUB_PATH"
     - name: Accept Android licences
       shell: bash
       run: yes | sdkmanager --licenses || true
