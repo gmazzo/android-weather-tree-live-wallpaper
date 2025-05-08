@@ -22,8 +22,8 @@ jobs:
           git config user.email "github.actions@users.noreply.github.com"
       - name: Update Screenshots
         run: |
-          ./gradlew updateScreenshotTest
+          ./gradlew updateScreenshotTest recordDebugAndroidTestScreenshots
           
-          git add '**/src/*/screenshotTest/**' && \
+          git add '**/src/*/screenshotTest/**' '**/src/androidTest/screenshot/**' && \
             git commit -m "Updated screenshots" && \
             git push origin

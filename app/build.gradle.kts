@@ -83,6 +83,12 @@ android {
         compose = true
     }
 
+    testOptions.managedDevices.localDevices.register("emulator") {
+        device = "Pixel 6 Pro"
+        apiLevel = 33
+        systemImageSource = "aosp-atd"
+    }
+
     experimentalProperties["android.experimental.enableScreenshotTest"] = true
 }
 
@@ -131,5 +137,6 @@ tasks.check {
     dependsOn(
         tasks.withType<PackageAndroidArtifact>(),
         "validateScreenshotTest",
+        "emulatorCheck",
     )
 }
