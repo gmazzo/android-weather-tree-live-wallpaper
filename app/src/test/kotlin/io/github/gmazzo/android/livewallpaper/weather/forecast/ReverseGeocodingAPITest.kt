@@ -22,7 +22,7 @@ class ReverseGeocodingAPITest {
 
         assertEquals(ReverseGeocodingAPI.City(
             name = "Barcelona",
-            locality = "Barcelona",
+            locality = "Barrio Gótico",
             country = "España",
             countryCode = "ES",
             continent = "Europa",
