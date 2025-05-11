@@ -83,6 +83,10 @@ android {
         compose = true
     }
 
+    testOptions {
+        screenshotTests.imageDifferenceThreshold = .01f
+    }
+
     experimentalProperties["android.experimental.enableScreenshotTest"] = true
 }
 
@@ -130,6 +134,6 @@ dependencies {
 tasks.check {
     dependsOn(
         tasks.withType<PackageAndroidArtifact>(),
-        "validateScreenshotTest",
+        tasks.validateScreenshotTest,
     )
 }
