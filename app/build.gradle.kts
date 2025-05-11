@@ -2,16 +2,15 @@ import com.android.build.gradle.tasks.PackageAndroidArtifact
 
 plugins {
     alias(libs.plugins.android)
-    alias(libs.plugins.dropshots)
     alias(libs.plugins.gitVersion)
     alias(libs.plugins.googlePlayPublish)
+    alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.kotlin.seriazliation)
     alias(libs.plugins.screenshot)
-    alias(libs.plugins.hilt)
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
@@ -84,6 +83,12 @@ android {
     }
 
     testOptions {
+        managedDevices.localDevices.create("emulator") {
+            device = "Pixel 2"
+            apiLevel = compileSdk!!
+            systemImageSource = "aosp_atd"
+        }
+
         screenshotTests.imageDifferenceThreshold = .01f
     }
 
@@ -129,6 +134,7 @@ dependencies {
     androidTestImplementation(libs.junit)
     androidTestImplementation(libs.hilt.testing)
     androidTestImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(libs.screenshot.engine)
 }
 
 tasks.check {

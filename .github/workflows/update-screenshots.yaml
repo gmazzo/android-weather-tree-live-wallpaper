@@ -21,9 +21,11 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "github.actions@users.noreply.github.com"
       - name: Update Screenshots
+        uses: ./.github/actions/start-emulator
+        with:
+          script: ./gradlew updateScreenshotTest recordDebugAndroidTestScreenshots
+      - name: Commit updated screenshots
         run: |
-          ./gradlew updateScreenshotTest
-          
-          git add '**/src/*/screenshotTest/**' && \
-            git commit -m "Updated screenshots" && \
-            git push origin
+          git add '**/src/*/screenshotTest/**' '**/src/androidTest/screenshot/**'
+          git commit -m "Updated screenshots"
+          git push origin

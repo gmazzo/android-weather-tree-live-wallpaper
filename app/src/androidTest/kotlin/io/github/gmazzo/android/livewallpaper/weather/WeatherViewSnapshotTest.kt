@@ -9,7 +9,6 @@ import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.filters.LargeTest
-import com.dropbox.dropshots.Dropshots
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -40,9 +39,6 @@ class WeatherViewSnapshotTest {
 
     @get:Rule
     val scenario = activityScenarioRule<ComponentActivity>()
-
-    @get:Rule
-    val dropshots = Dropshots()
 
     @Inject
     lateinit var random: Random
