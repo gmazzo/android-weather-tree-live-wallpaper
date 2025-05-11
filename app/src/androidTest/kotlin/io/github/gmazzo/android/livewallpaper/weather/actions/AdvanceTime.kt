@@ -4,7 +4,6 @@ import android.util.Log
 import android.view.View
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
-import androidx.test.espresso.idling.CountingIdlingResource
 import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
 import io.github.gmazzo.android.livewallpaper.weather.WeatherView
 import org.hamcrest.Matcher
@@ -21,10 +20,10 @@ class AdvanceTime(
         isAssignableFrom(WeatherView::class.java)
 
     override fun getDescription() =
-        "Advances the time by ${amount}ms"
+        "Advances the time by $amount"
 
     override fun perform(uiController: UiController, view: View) {
-        idlingResource.increment()
+        counter.increment()
         advanceTime(view as WeatherView, amount)
     }
 
@@ -40,13 +39,11 @@ class AdvanceTime(
             view.requestRender()
 
         } else {
-            idlingResource.decrement()
+            counter.decrement()
             Log.d("AdvanceTime", "finished")
         }
     }
 
-    companion object {
-        val idlingResource = CountingIdlingResource("AdvanceTime")
-    }
+    companion object : BaseCountingResource("AdvanceTime")
 
 }

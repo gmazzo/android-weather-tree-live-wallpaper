@@ -11,7 +11,7 @@
       <option name="taskNames">
         <list>
           <option value="updateScreenshotTest" />
-          <option value="screenshotRecord" />
+          <option value="updateSnapshotTests" />
         </list>
       </option>
       <option name="vmOptions" />

@@ -1,7 +1,8 @@
 package io.github.gmazzo.android.livewallpaper.weather
 
+import android.Manifest
+import android.graphics.Bitmap
 import android.opengl.GLSurfaceView.RENDERMODE_WHEN_DIRTY
-import android.os.Build
 import androidx.activity.ComponentActivity
 import androidx.test.espresso.Espresso.onIdle
 import androidx.test.espresso.Espresso.onView
@@ -9,7 +10,10 @@ import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.filters.LargeTest
-import dagger.hilt.android.testing.BindValue
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.rule.GrantPermissionRule
+import com.android.tools.screenshot.ImageDiffer
+import com.android.tools.screenshot.Verify
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.github.gmazzo.android.livewallpaper.weather.actions.AdvanceTime
@@ -17,14 +21,18 @@ import io.github.gmazzo.android.livewallpaper.weather.actions.TakeSurfaceSnapsho
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.AfterClass
-import org.junit.Assume.assumeTrue
-import org.junit.Before
+import org.junit.Assert.assertTrue
 import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
+import java.io.FileNotFoundException
 import java.time.ZonedDateTime
+import javax.imageio.ImageIO
 import javax.inject.Inject
-import kotlin.random.Random
+import kotlin.io.path.Path
+import kotlin.io.path.createFile
+import kotlin.io.path.createParentDirectories
+import kotlin.io.path.outputStream
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 
@@ -32,7 +40,8 @@ import kotlin.time.toJavaDuration
 @HiltAndroidTest
 class WeatherViewSnapshotTest {
 
-    private var time: ZonedDateTime = REFERENCE_DATE
+    @get:Rule
+    val permissions = GrantPermissionRule.grant(Manifest.permission.WRITE_EXTERNAL_STORAGE)
 
     @get:Rule
     val hilt = HiltAndroidRule(this)
@@ -41,31 +50,13 @@ class WeatherViewSnapshotTest {
     val scenario = activityScenarioRule<ComponentActivity>()
 
     @Inject
-    lateinit var random: Random
-
-    @JvmField
-    @BindValue
-    val timeProvider = { time }
-
-    @Inject
     lateinit var weather: MutableStateFlow<WeatherType>
 
     @Inject
     lateinit var viewFactory: WeatherView.Factory
 
-    @Before
-    fun setUp() {
-        assumeTrue(
-            "There are `AdvanceTime`s pending from previous run",
-            AdvanceTime.idlingResource.isIdleNow
-        )
-        assumeTrue(
-            "There are `TakeSurfaceSnapshot`s pending from previous run",
-            TakeSurfaceSnapshot.idlingResource.isIdleNow
-        )
-
-        hilt.inject()
-    }
+    private val outputDir =
+        Path(InstrumentationRegistry.getArguments().getString("additionalTestOutputDir")!!)
 
     @Test
     fun clear00hs() = testScene(SceneMode.CLEAR, REFERENCE_DATE)
@@ -212,7 +203,23 @@ class WeatherViewSnapshotTest {
     fun fog19hs() = testScene(SceneMode.FOG, REFERENCE_DATE.plusHours(19))
 
     private fun testScene(scene: SceneMode, startTime: ZonedDateTime) {
-        time = startTime
+        var time = startTime
+        currentTime = { time }
+        hilt.inject()
+
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        val referenceName = "${discriminatorFor("scene", scene, startTime)}.png"
+        val referenceFile = instrumentation.targetContext.cacheDir.resolve(referenceName).apply {
+            parentFile?.mkdirs()
+            try {
+                instrumentation.context.assets.open("screenshots/$referenceName").use { content ->
+                    outputStream().use(content::copyTo)
+                }
+            } catch (ex: FileNotFoundException) {
+                ex.printStackTrace()
+            }
+        }
+
         weather.value = WeatherType.valueOf(scene)
 
         scenario.scenario.onActivity { activity ->
@@ -223,17 +230,33 @@ class WeatherViewSnapshotTest {
             activity.setContentView(view)
         }
 
+        val actualFile = outputDir.resolve("screenshots").resolve(referenceName)
+            .createParentDirectories()
+            .createFile()
+
         onView(withId(R.id.weatherView)).perform(
-            AdvanceTime(5.seconds) { time += it.toJavaDuration() },
+            AdvanceTime(amount = 5.seconds) { time += it.toJavaDuration() },
             TakeSurfaceSnapshot { bitmap ->
-                dropshots.assertSnapshot(
-                    filePath = Build.MODEL,
-                    name = discriminatorFor("scene", scene, time, random),
-                    bitmap = bitmap,
-                )
+                actualFile.outputStream().use { out ->
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+                }
             },
         )
         onIdle()
+
+        val verify = Verify(
+            imageDiffer = ImageDiffer.PixelPerfect(imageDiffThreshold = 0.01f),
+            diffFilePath = outputDir.resolve("screenshots-diffs").resolve(referenceName),
+        )
+        val result = verify.assertMatchReference(
+            referencePath = referenceFile.toPath(),
+            image = ImageIO.read(actualFile.toFile())!!,
+        )
+
+        assertTrue(
+            "Scenes doesn't match: ${result.message}",
+            result is Verify.AnalysisResult.Passed
+        )
     }
 
     companion object {
@@ -242,8 +265,8 @@ class WeatherViewSnapshotTest {
         @BeforeClass
         fun setUpClass() {
             IdlingRegistry.getInstance().register(
-                AdvanceTime.idlingResource,
-                TakeSurfaceSnapshot.idlingResource,
+                AdvanceTime,
+                TakeSurfaceSnapshot,
             )
         }
 
@@ -251,8 +274,8 @@ class WeatherViewSnapshotTest {
         @AfterClass
         fun tearDownClass() {
             IdlingRegistry.getInstance().unregister(
-                AdvanceTime.idlingResource,
-                TakeSurfaceSnapshot.idlingResource,
+                AdvanceTime,
+                TakeSurfaceSnapshot,
             )
         }
 

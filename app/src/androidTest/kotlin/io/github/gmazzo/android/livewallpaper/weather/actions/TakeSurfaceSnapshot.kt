@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.View
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
-import androidx.test.espresso.idling.CountingIdlingResource
 import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
 import io.github.gmazzo.android.livewallpaper.weather.WeatherView
 import org.hamcrest.Matcher
@@ -21,11 +20,8 @@ class TakeSurfaceSnapshot(
         "Take a snapshot of the view"
 
     override fun perform(uiController: UiController, view: View) {
-        idlingResource.increment()
+        counter.increment()
 
-        // TODO is this needed?
-        //  val hardwareDrawingEnabled = HardwareRendererCompat.isDrawingEnabled()
-        //  HardwareRendererCompat.setDrawingEnabled(true)
         (view as WeatherView).takeSnapshot { bitmap ->
             try {
                 checkNotNull(bitmap) { "Failed to get snapshot" }
@@ -35,15 +31,12 @@ class TakeSurfaceSnapshot(
 
             } finally {
                 bitmap?.recycle()
-                // TODO HardwareRendererCompat.setDrawingEnabled(hardwareDrawingEnabled)
-                idlingResource.decrement()
+                counter.decrement()
             }
         }
         view.requestRender()
     }
 
-    companion object {
-        val idlingResource = CountingIdlingResource("TakeSnapshot")
-    }
+    companion object : BaseCountingResource("TakeSnapshot")
 
 }

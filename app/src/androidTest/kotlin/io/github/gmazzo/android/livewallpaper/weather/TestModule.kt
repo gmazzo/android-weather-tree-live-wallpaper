@@ -11,6 +11,7 @@ import dagger.Provides
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
+import java.time.ZonedDateTime
 import javax.inject.Singleton
 import kotlin.random.Random
 
@@ -20,6 +21,10 @@ import kotlin.random.Random
     replaces = [WeatherModule.ReplaceableDependencies::class]
 )
 object TestModule {
+
+    @Provides
+    @Singleton
+    fun now(): () -> ZonedDateTime = currentTime
 
     @Provides
     @Singleton

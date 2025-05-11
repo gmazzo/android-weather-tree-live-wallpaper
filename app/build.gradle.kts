@@ -1,3 +1,4 @@
+import com.android.build.gradle.internal.tasks.ManagedDeviceInstrumentationTestTask
 import com.android.build.gradle.tasks.PackageAndroidArtifact
 
 plugins {
@@ -93,6 +94,12 @@ android {
     }
 
     experimentalProperties["android.experimental.enableScreenshotTest"] = true
+
+    packaging {
+        resources {
+            excludes += "META-INF/LICENSE*"
+        }
+    }
 }
 
 dependencies {
@@ -129,12 +136,22 @@ dependencies {
     androidTestImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.androidx.test.espresso)
     androidTestImplementation(libs.androidx.test.junit)
+    androidTestImplementation(libs.androidx.test.rules)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.work.test)
     androidTestImplementation(libs.junit)
     androidTestImplementation(libs.hilt.testing)
     androidTestImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.screenshot.engine)
+}
+
+tasks.register<Sync>("updateSnapshotTests") {
+    from(provider {
+        tasks.named<ManagedDeviceInstrumentationTestTask>("emulatorDebugAndroidTest") {
+            ignoreFailures = true
+        }.flatMap { it.getAdditionalTestOutputDir().dir("screenshots") }
+    })
+    into(layout.projectDirectory.dir("src/androidTest/assets/screenshots"))
 }
 
 tasks.check {
