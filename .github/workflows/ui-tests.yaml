@@ -1,0 +1,52 @@
+name: UI tests
+on:
+  workflow_call:
+    inputs:
+      update-screenshots:
+        type: boolean
+        default: false
+
+jobs:
+  build:
+    name: UI tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GRADLE_WRAPPER_UPDATER_TOKEN }} # will push a commit
+      - name: Setup host
+        uses: ./.github/actions/setup-host
+        with:
+          gradle-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+      - name: Setup Git
+        if: ${{ inputs.update-screenshots }}
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "github.actions@users.noreply.github.com"
+      - name: Setup Emulator dependencies
+        run: sudo apt-get install libx11-dev
+      - name: Run UI tests
+        run: ./gradlew ${{ inputs.update-screenshots && 'updateScreenshotTest updateSnapshotTests' || 'emulatorCheck' }}
+      - name: Publish Test Report
+        if: ${{ !cancelled() }}
+        uses: gmazzo/publish-report-annotations@v1
+        with:
+          checkName: Screenshot Tests Results
+      - name: Archive test results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: results
+          path: '**/build/outputs/*-results/'
+      - name: Print emulator logs
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          shopt -s globstar
+          for FILE in **/build/outputs/*-results/**/*.txt; do
+            echo "::group::$FILE"
+            cat "$FILE"
+            echo "::endgroup::"
+          done

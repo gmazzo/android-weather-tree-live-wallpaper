@@ -1,29 +1,19 @@
 name: Update Screenshots
 on:
+  pull_request:
+    types: [ opened, synchronize, reopened, labeled, unlabeled ]
   workflow_dispatch:
 
 permissions:
   contents: write
+  checks: write
+  pull-requests: write
 
 jobs:
   build:
     name: Update Screenshots
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup host
-        uses: ./.github/actions/setup-host
-        with:
-          gradle-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
-      - name: Setup Git
-        run: |
-          git config user.name "GitHub Actions"
-          git config user.email "github.actions@users.noreply.github.com"
-      - name: Update Screenshots
-        run: ./gradlew updateScreenshotTest updateSnapshotTests
-      - name: Commit updated screenshots
-        run: |
-          git add '**/src/*/screenshotTest/**' '**/src/androidTest/assets/screenshots/**'
-          git commit -m "Updated screenshots"
-          git push origin
+    if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.pull_request.labels.*.name, 'update screenshots') }}
+    uses: ./.github/workflows/ui-tests.yaml
+    secrets: inherit
+    with:
+        update-screenshots: true

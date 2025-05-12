@@ -54,23 +54,8 @@ jobs:
 
   screenshot-tests:
     name: Screenshot Tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Setup host
-        uses: ./.github/actions/setup-host
-        with:
-          gradle-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
-      - name: Screenshot Tests
-        run: ./gradlew emulatorCheck
-      - name: Publish Test Report
-        if: ${{ !cancelled() }}
-        uses: gmazzo/publish-report-annotations@v1
-        with:
-          checkName: Screenshot Tests Results
+    uses: ./.github/workflows/ui-tests.yaml
+    secrets: inherit
 
   publish:
     name: Publish

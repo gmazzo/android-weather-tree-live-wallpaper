@@ -86,7 +86,7 @@ android {
     testOptions {
         managedDevices.localDevices.create("emulator") {
             device = "Pixel 2"
-            apiLevel = compileSdk!!
+            apiLevel = 30
             systemImageSource = "aosp_atd"
         }
 
