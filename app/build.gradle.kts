@@ -1,8 +1,9 @@
-import com.android.build.gradle.internal.tasks.ManagedDeviceInstrumentationTestTask
+import com.android.build.gradle.internal.tasks.ManagedDeviceTestTask
 import com.android.build.gradle.tasks.PackageAndroidArtifact
 
 plugins {
     alias(libs.plugins.android)
+    alias(libs.plugins.firebase.testlab)
     alias(libs.plugins.gitVersion)
     alias(libs.plugins.googlePlayPublish)
     alias(libs.plugins.hilt)
@@ -84,13 +85,13 @@ android {
     }
 
     testOptions {
-        managedDevices.localDevices.create("emulator") {
+        screenshotTests.imageDifferenceThreshold = .01f
+
+        managedDevices.localDevices.register("emulator") {
             device = "Pixel 2"
             apiLevel = 30
-            systemImageSource = "aosp_atd"
+            systemImageSource = "aosp-atd"
         }
-
-        screenshotTests.imageDifferenceThreshold = .01f
     }
 
     experimentalProperties["android.experimental.enableScreenshotTest"] = true
@@ -145,12 +146,35 @@ dependencies {
     androidTestImplementation(libs.screenshot.engine)
 }
 
+firebaseTestLab {
+    serviceAccountCredentials = providers
+        .environmentVariable("GOOGLE_APPLICATION_CREDENTIALS")
+        .map(layout.projectDirectory::file)
+
+    managedDevices {
+        create("firebaseTestLab") {
+            // device = "redfin" // Pixel 5 (physical)
+            device = "SmallPhone.arm" // Generic (virtual)
+            apiLevel = 30
+        }
+    }
+
+    testOptions.results {
+        cloudStorageBucket = "weather-live-wallpaper-7b77b.appspot.com"
+        directoriesToPull = listOf("/sdcard/Download/")
+    }
+}
+
 tasks.register<Sync>("updateSnapshotTests") {
-    from(provider {
-        tasks.named<ManagedDeviceInstrumentationTestTask>("emulatorDebugAndroidTest") {
-            ignoreFailures = true
-        }.flatMap { it.getAdditionalTestOutputDir().dir("screenshots") }
-    })
+    val testTask = tasks.getByName<ManagedDeviceTestTask>("firebaseTestLabDebugAndroidTest")
+
+    testTask.ignoreFailures = true
+    testTask.getAdditionalTestOutputEnabled().set(true)
+    from(
+        testTask.resultsDir.asFileTree
+            .matching { include("results/*/artifacts/sdcard/Download/screenshots/*.*") }
+            .elements)
+    from(testTask.getAdditionalTestOutputDir().dir("screenshots"))
     into(layout.projectDirectory.dir("src/androidTest/assets/screenshots"))
 }
 

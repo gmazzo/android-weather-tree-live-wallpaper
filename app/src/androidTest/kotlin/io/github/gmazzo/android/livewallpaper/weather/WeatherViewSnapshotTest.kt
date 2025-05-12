@@ -3,6 +3,8 @@ package io.github.gmazzo.android.livewallpaper.weather
 import android.Manifest
 import android.graphics.Bitmap
 import android.opengl.GLSurfaceView.RENDERMODE_WHEN_DIRTY
+import android.os.Environment.DIRECTORY_DOWNLOADS
+import android.os.Environment.getExternalStoragePublicDirectory
 import androidx.activity.ComponentActivity
 import androidx.test.espresso.Espresso.onIdle
 import androidx.test.espresso.Espresso.onView
@@ -56,7 +58,8 @@ class WeatherViewSnapshotTest {
     lateinit var viewFactory: WeatherView.Factory
 
     private val outputDir =
-        Path(InstrumentationRegistry.getArguments().getString("additionalTestOutputDir")!!)
+        InstrumentationRegistry.getArguments().getString("additionalTestOutputDir")?.let(::Path)
+            ?: getExternalStoragePublicDirectory(DIRECTORY_DOWNLOADS).toPath()
 
     @Test
     fun clear00hs() = testScene(SceneMode.CLEAR, REFERENCE_DATE)

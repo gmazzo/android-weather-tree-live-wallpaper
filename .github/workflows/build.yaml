@@ -54,8 +54,54 @@ jobs:
 
   screenshot-tests:
     name: Screenshot Tests
-    uses: ./.github/workflows/ui-tests.yaml
-    secrets: inherit
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+      checks: write
+      pull-requests: write
+    env:
+      UPDATE_SCREENSHOTS: ${{ contains(github.event.pull_request.labels.*.name, 'update screenshots') }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GRADLE_WRAPPER_UPDATER_TOKEN }} # will push a commit
+      - name: Setup host
+        uses: ./.github/actions/setup-host
+        with:
+          gradle-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+      - name: Setup Emulator dependencies
+        run: sudo apt-get install libx11-dev
+      - name: Authenticate with Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_TESTLAB_CREDENTIALS }}
+      - name: Run UI tests
+        run: ./gradlew ${{ fromJSON(env.UPDATE_SCREENSHOTS) && 'updateScreenshotTest updateSnapshotTests' || 'firebaseTestCheck' }}
+      - name: Publish Test Report
+        if: ${{ !cancelled() }}
+        uses: gmazzo/publish-report-annotations@v1
+        with:
+          checkName: Screenshot Tests Results
+      - name: Archive test results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: results
+          path: '**/build/outputs/*-results/'
+      - name: Update Screenshots
+        if: ${{ fromJSON(env.UPDATE_SCREENSHOTS) }}
+        env:
+          BRANCH: ${{ github.event.pull_request.head.ref }}
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "github.actions@users.noreply.github.com"
+          
+          git fetch origin "$BRANCH:refs/remotes/origin/$BRANCH"
+          git checkout "$BRANCH"
+          git add '**/src/*/screenshotTest/**' '**/src/androidTest/assets/screenshots/**' || exit 0
+          git commit -m "Updated screenshots" && git push origin
 
   publish:
     name: Publish
