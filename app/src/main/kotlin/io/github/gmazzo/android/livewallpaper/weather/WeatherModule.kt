@@ -2,6 +2,7 @@ package io.github.gmazzo.android.livewallpaper.weather
 
 import android.content.Context
 import android.content.res.Resources
+import android.os.HandlerThread
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -59,26 +60,8 @@ object WeatherModule {
 
     @Provides
     @Singleton
-    fun weatherType(
-        dataStore: DataStore<Preferences>,
-        @Named("forecast") forecast: MutableStateFlow<WeatherType>,
-    ): MutableStateFlow<WeatherType> = MutableStateFlow(WeatherType.UNKNOWN).apply {
-        MainScope().launch {
-            dataStore.data.firstOrNull()?.get(settingLastWeather)?.let {
-                value = WeatherType.valueOf(it)
-            }
-
-            launch {
-                collectLatest { weather ->
-                    dataStore.edit { it[settingLastWeather] = weather.name }
-                }
-            }
-
-            forecast.collectLatest {
-                value = it
-            }
-        }
-    }
+    @Named("takeSnapshot")
+    fun providerTakeSnapshotHandlerThread() = HandlerThread("TakeSnapshot").apply { start() }
 
     @Module
     @InstallIn(SingletonComponent::class)
@@ -91,6 +74,31 @@ object WeatherModule {
         @Provides
         @Singleton
         fun now(): () -> ZonedDateTime = ZonedDateTime::now
+
+        @Provides
+        @Singleton
+        fun weatherType(
+            dataStore: DataStore<Preferences>,
+            @Named("forecast") forecast: MutableStateFlow<WeatherType>,
+        ): MutableStateFlow<WeatherType> = MutableStateFlow(WeatherType.UNKNOWN).apply {
+            MainScope().launch {
+                dataStore.data.firstOrNull()?.get(settingLastWeather)?.let {
+                    value = WeatherType.valueOf(it)
+                }
+
+                launch {
+                    collectLatest { weather ->
+                        dataStore.edit { it[settingLastWeather] = weather.name }
+                    }
+                }
+
+                forecast.collectLatest {
+                    if (it != WeatherType.UNKNOWN) {
+                        value = it
+                    }
+                }
+            }
+        }
 
         @Provides
         @Singleton

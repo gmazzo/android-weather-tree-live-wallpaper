@@ -8,3 +8,6 @@ plugins {
     alias(libs.plugins.test.aggregation.coverage)
     base
 }
+
+// ensures Git LFS is installed
+providers.exec { commandLine("git", "lfs", "install") }.result.get().assertNormalExitValue()

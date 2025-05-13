@@ -1,4 +1,7 @@
+import com.android.build.gradle.internal.tasks.DeviceProviderInstrumentTestTask
+import com.android.build.gradle.internal.tasks.ManagedDeviceInstrumentationTestTask
 import com.android.build.gradle.internal.tasks.ManagedDeviceTestTask
+import com.android.build.gradle.tasks.MergeSourceSetFolders
 import com.android.build.gradle.tasks.PackageAndroidArtifact
 
 plugins {
@@ -153,8 +156,7 @@ firebaseTestLab {
 
     managedDevices {
         create("firebaseTestLab") {
-            // device = "redfin" // Pixel 5 (physical)
-            device = "SmallPhone.arm" // Generic (virtual)
+            device = "husky" // Pixel 8 Pro (physical)
             apiLevel = 30
         }
     }
@@ -165,18 +167,34 @@ firebaseTestLab {
     }
 }
 
-tasks.register<Sync>("updateSnapshotTests") {
-    val testTask = tasks.getByName<ManagedDeviceTestTask>("firebaseTestLabDebugAndroidTest")
+tasks.addRule("collect snapshots", taskName@{
+    if (this@taskName == "updateSnapshotTests") {
+        val snapshotSources = files()
 
-    testTask.ignoreFailures = true
-    testTask.getAdditionalTestOutputEnabled().set(true)
-    from(
-        testTask.resultsDir.asFileTree
-            .matching { include("results/*/artifacts/sdcard/Download/screenshots/*.*") }
-            .elements)
-    from(testTask.getAdditionalTestOutputDir().dir("screenshots"))
-    into(layout.projectDirectory.dir("src/androidTest/assets/screenshots"))
-}
+        tasks.register<Sync>(this@taskName) {
+            from(snapshotSources.asFileTree.matching { include("**/screenshots/*.png") }.elements)
+            into(layout.projectDirectory.dir("src/androidTest/assets/screenshots"))
+
+            mustRunAfter(tasks.withType<MergeSourceSetFolders>())
+        }
+
+        tasks.withType<ManagedDeviceTestTask>().configureEach {
+            ignoreFailures = true
+            snapshotSources.from(getResultsDir(), getAdditionalTestOutputDir())
+            finalizedBy(this@taskName)
+        }
+        tasks.withType<ManagedDeviceInstrumentationTestTask>().configureEach {
+            ignoreFailures = true
+            snapshotSources.from(getResultsDir(), getAdditionalTestOutputDir())
+            finalizedBy(this@taskName)
+        }
+        tasks.withType<DeviceProviderInstrumentTestTask>().configureEach {
+            ignoreFailures = true
+            snapshotSources.from(resultsDir, additionalTestOutputDir)
+            finalizedBy(this@taskName)
+        }
+    }
+})
 
 tasks.check {
     dependsOn(

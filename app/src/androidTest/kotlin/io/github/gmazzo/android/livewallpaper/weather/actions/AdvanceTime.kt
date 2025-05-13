@@ -1,6 +1,5 @@
 package io.github.gmazzo.android.livewallpaper.weather.actions
 
-import android.util.Log
 import android.view.View
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
@@ -20,30 +19,20 @@ class AdvanceTime(
         isAssignableFrom(WeatherView::class.java)
 
     override fun getDescription() =
-        "Advances the time by $amount"
+        "Advances the time by ${amount}ms"
 
     override fun perform(uiController: UiController, view: View) {
-        counter.increment()
         advanceTime(view as WeatherView, amount)
     }
 
     private fun advanceTime(view: WeatherView, amount: Duration) {
-        Log.d("AdvanceTime", "request: amount=$amount")
-        if (amount > Duration.ZERO) {
-            view.renderer.postRender {
+        view.renderer.postRender {
+            if (amount > Duration.ZERO) {
                 onTimeOffset(step)
-                Log.d("AdvanceTime", "updatedTime")
-
                 advanceTime(view, amount - step)
             }
-            view.requestRender()
-
-        } else {
-            counter.decrement()
-            Log.d("AdvanceTime", "finished")
         }
+        view.requestRender()
     }
-
-    companion object : BaseCountingResource("AdvanceTime")
 
 }
