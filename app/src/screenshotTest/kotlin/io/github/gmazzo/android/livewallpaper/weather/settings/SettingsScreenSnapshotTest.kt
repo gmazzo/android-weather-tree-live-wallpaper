@@ -17,24 +17,23 @@ class SettingsScreenSnapshotTest {
         ZoneId.of("Europe/Madrid"),
     )
 
+    @Preview
     @Composable
-    @Preview(showBackground = true)
     fun Default(@PreviewParameter(Scenes::class) scene: SceneMode) = SettingsScreen(
         now = date,
         weather = WeatherType.valueOf(scene),
     )
 
+    @Preview
     @Composable
-    @Preview(showBackground = true)
     fun RetrievingLocation() = SettingsScreen(
         now = date,
         weather = WeatherType.UNKNOWN,
         updateLocationEnabled = true,
     )
 
-    class Scenes : PreviewParameterProvider<SceneMode> {
-        override val values = SceneMode.entries.asSequence()
-        override fun toString() = "scene"
-    }
+    data class Scenes(
+        override val values: Sequence<SceneMode> = SceneMode.entries.asSequence()
+    ) : PreviewParameterProvider<SceneMode>
 
 }
