@@ -1,17 +1,21 @@
+import com.android.build.gradle.internal.tasks.DeviceProviderInstrumentTestTask
+import com.android.build.gradle.internal.tasks.ManagedDeviceInstrumentationTestTask
+import com.android.build.gradle.internal.tasks.ManagedDeviceTestTask
+import com.android.build.gradle.tasks.MergeSourceSetFolders
 import com.android.build.gradle.tasks.PackageAndroidArtifact
 
 plugins {
     alias(libs.plugins.android)
-    alias(libs.plugins.dropshots)
+    alias(libs.plugins.firebase.testlab)
     alias(libs.plugins.gitVersion)
     alias(libs.plugins.googlePlayPublish)
+    alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.kotlin.seriazliation)
     alias(libs.plugins.screenshot)
-    alias(libs.plugins.hilt)
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
@@ -85,9 +89,39 @@ android {
 
     testOptions {
         screenshotTests.imageDifferenceThreshold = .01f
+
+        managedDevices.localDevices.register("emulator") {
+            device = "Pixel 2"
+            apiLevel = 30
+            systemImageSource = "aosp-atd"
+        }
     }
 
     experimentalProperties["android.experimental.enableScreenshotTest"] = true
+
+    packaging {
+        resources {
+            excludes += "META-INF/LICENSE*"
+        }
+    }
+}
+
+firebaseTestLab {
+    serviceAccountCredentials = providers
+        .environmentVariable("GOOGLE_APPLICATION_CREDENTIALS")
+        .map(layout.projectDirectory::file)
+
+    managedDevices {
+        create("firebaseTestLab") {
+            device = "husky" // Pixel 8 Pro (physical)
+            apiLevel = 34
+        }
+    }
+
+    testOptions.results {
+        cloudStorageBucket = "weather-live-wallpaper-7b77b.appspot.com"
+        directoriesToPull = listOf("/sdcard/Download/")
+    }
 }
 
 dependencies {
@@ -124,12 +158,43 @@ dependencies {
     androidTestImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.androidx.test.espresso)
     androidTestImplementation(libs.androidx.test.junit)
+    androidTestImplementation(libs.androidx.test.rules)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.work.test)
     androidTestImplementation(libs.junit)
     androidTestImplementation(libs.hilt.testing)
     androidTestImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(libs.screenshot.engine)
 }
+
+tasks.addRule("collect snapshots", taskName@{
+    if (this@taskName == "updateSnapshotTests") {
+        val snapshotSources = files()
+
+        tasks.register<Sync>(this@taskName) {
+            from(snapshotSources.asFileTree.matching { include("**/screenshots/*.png") }.elements)
+            into(layout.projectDirectory.dir("src/androidTest/assets/screenshots"))
+
+            mustRunAfter(tasks.withType<MergeSourceSetFolders>())
+        }
+
+        tasks.withType<ManagedDeviceTestTask>().configureEach {
+            ignoreFailures = true
+            snapshotSources.from(getResultsDir(), getAdditionalTestOutputDir())
+            finalizedBy(this@taskName)
+        }
+        tasks.withType<ManagedDeviceInstrumentationTestTask>().configureEach {
+            ignoreFailures = true
+            snapshotSources.from(getResultsDir(), getAdditionalTestOutputDir())
+            finalizedBy(this@taskName)
+        }
+        tasks.withType<DeviceProviderInstrumentTestTask>().configureEach {
+            ignoreFailures = true
+            snapshotSources.from(resultsDir, additionalTestOutputDir)
+            finalizedBy(this@taskName)
+        }
+    }
+})
 
 tasks.check {
     dependsOn(

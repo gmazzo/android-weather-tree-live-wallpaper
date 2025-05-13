@@ -1,7 +1,6 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine
 
 import kotlinx.coroutines.flow.MutableStateFlow
-import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 import javax.inject.Named
@@ -9,14 +8,14 @@ import javax.inject.Singleton
 
 @Singleton
 open class GlobalTime protected constructor(
-    private val now: () -> ZonedDateTime,
+    private val clock: Clock,
     private val derived: GlobalTime? = null,
 ) {
 
     @Inject
-    constructor(now: () -> ZonedDateTime, fast: Fast) : this(now, derived = fast)
+    constructor(clock: Clock, fast: Fast) : this(clock, derived = fast)
 
-    val time = MutableStateFlow(now())
+    val time = MutableStateFlow(clock.now())
 
     var deltaSeconds = 0f
         private set
@@ -29,7 +28,7 @@ open class GlobalTime protected constructor(
 
     @Inject
     fun update() {
-        val delta = ChronoUnit.MILLIS.between(time.value, now())
+        val delta = ChronoUnit.MILLIS.between(time.value, clock.now())
 
         update(delta)
         derived?.update(delta)
@@ -45,9 +44,9 @@ open class GlobalTime protected constructor(
 
     @Singleton
     class Fast @Inject constructor(
-        now: () -> ZonedDateTime,
+        clock: Clock,
         @Named("fastTimeSpeed") private val speed: MutableStateFlow<Float>,
-    ) : GlobalTime(now) {
+    ) : GlobalTime(clock) {
 
         override val Long.scaled
             get() = (this * speed.value).toLong()

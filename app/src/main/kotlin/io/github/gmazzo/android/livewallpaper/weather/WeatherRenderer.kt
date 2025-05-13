@@ -4,6 +4,7 @@ import android.opengl.GLSurfaceView
 import android.opengl.GLSurfaceView.Renderer
 import android.opengl.GLU
 import android.util.Log
+import androidx.annotation.VisibleForTesting
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -47,17 +48,26 @@ internal class WeatherRenderer @AssistedInject constructor(
     @Assisted private val logTag: String,
     @Assisted private val demoMode: Boolean,
 ) : Renderer {
+
     var screenWidth = 0f
         private set
+
     var screenHeight = 0f
         private set
+
+    @VisibleForTesting
+    var hasPendingActions: Boolean = false
+        get() = field || postRenderActions.isNotEmpty()
+
+    @VisibleForTesting
+    var onAfterRender: Runnable? = null
 
     private val screenRatio get() = screenWidth / screenHeight
     private val landscape get() = screenRatio > 1
     private var cameraFOV = 65f
     private var cameraPos = Vector(0f, 0f, 0f)
     private val cameraSpeed: Float = 1f
-    private val postRenderActions = ConcurrentLinkedQueue<() -> Unit>()
+    private val postRenderActions = ConcurrentLinkedQueue<Runnable>()
     private var component: WeatherRendererComponent? = null
     private var scene: SceneComponent? = null
 
@@ -149,15 +159,19 @@ internal class WeatherRenderer @AssistedInject constructor(
 
         scene.scene.value.draw()
 
-        if (postRenderActions.isNotEmpty()) {
+        val it = postRenderActions.iterator()
+        hasPendingActions = it.hasNext()
+        if (hasPendingActions) {
             view.queueEvent {
                 Log.d(logTag, "Running ${postRenderActions.size} postRenderActions")
 
-                while (postRenderActions.isNotEmpty()) {
-                    postRenderActions.poll()!!()
+                while (it.hasNext()) {
+                    it.next().run()
+                    it.remove()
                 }
             }
         }
+        onAfterRender?.run()
     }
 
     private fun GL10.updateProjection() {
@@ -187,7 +201,7 @@ internal class WeatherRenderer @AssistedInject constructor(
         cameraFOV = if (landscape) 45f else 70f
     }
 
-    fun postRender(action: () -> Unit) {
+    fun postRender(action: Runnable) {
         postRenderActions.add(action)
     }
 
