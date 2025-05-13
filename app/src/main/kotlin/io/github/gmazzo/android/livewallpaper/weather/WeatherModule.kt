@@ -15,6 +15,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import io.github.gmazzo.android.livewallpaper.weather.engine.Clock
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -73,7 +74,7 @@ object WeatherModule {
 
         @Provides
         @Singleton
-        fun now(): () -> ZonedDateTime = ZonedDateTime::now
+        fun clock(): Clock = Clock(ZonedDateTime::now)
 
         @Provides
         @Singleton

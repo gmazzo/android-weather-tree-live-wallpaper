@@ -20,6 +20,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.github.gmazzo.android.livewallpaper.weather.actions.AdvanceTime
 import io.github.gmazzo.android.livewallpaper.weather.actions.TakeSurfaceSnapshot
+import io.github.gmazzo.android.livewallpaper.weather.engine.Clock
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.AfterClass
@@ -44,7 +45,7 @@ import kotlin.time.toJavaDuration
 @RunWith(Parameterized::class)
 class WeatherViewSnapshotTest(
     private val scene: SceneMode,
-    private val startTime: ZonedDateTime,
+    private var time: ZonedDateTime,
 ) {
 
     @get:Rule
@@ -59,6 +60,9 @@ class WeatherViewSnapshotTest(
     @BindValue
     val weather = MutableStateFlow<WeatherType>(WeatherType.valueOf(scene))
 
+    @BindValue
+    val clock: Clock = Clock(::time)
+
     @Inject
     lateinit var viewFactory: WeatherView.Factory
 
@@ -68,8 +72,6 @@ class WeatherViewSnapshotTest(
 
     @Test
     fun testScene() {
-        var time = startTime
-        currentTime = { time }
         hilt.inject()
 
         scenario.scenario.onActivity { activity ->

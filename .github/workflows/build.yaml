@@ -71,8 +71,6 @@ jobs:
         uses: ./.github/actions/setup-host
         with:
           gradle-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
-      - name: Setup Emulator dependencies
-        run: sudo apt-get install libx11-dev
       - name: Authenticate with Google Cloud
         uses: google-github-actions/auth@v2
         with:

@@ -106,6 +106,24 @@ android {
     }
 }
 
+firebaseTestLab {
+    serviceAccountCredentials = providers
+        .environmentVariable("GOOGLE_APPLICATION_CREDENTIALS")
+        .map(layout.projectDirectory::file)
+
+    managedDevices {
+        create("firebaseTestLab") {
+            device = "husky" // Pixel 8 Pro (physical)
+            apiLevel = 34
+        }
+    }
+
+    testOptions.results {
+        cloudStorageBucket = "weather-live-wallpaper-7b77b.appspot.com"
+        directoriesToPull = listOf("/sdcard/Download/")
+    }
+}
+
 dependencies {
     ksp(libs.androidx.hilt.compiler)
     ksp(libs.hilt.compiler)
@@ -147,24 +165,6 @@ dependencies {
     androidTestImplementation(libs.hilt.testing)
     androidTestImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.screenshot.engine)
-}
-
-firebaseTestLab {
-    serviceAccountCredentials = providers
-        .environmentVariable("GOOGLE_APPLICATION_CREDENTIALS")
-        .map(layout.projectDirectory::file)
-
-    managedDevices {
-        create("firebaseTestLab") {
-            device = "husky" // Pixel 8 Pro (physical)
-            apiLevel = 30
-        }
-    }
-
-    testOptions.results {
-        cloudStorageBucket = "weather-live-wallpaper-7b77b.appspot.com"
-        directoriesToPull = listOf("/sdcard/Download/")
-    }
 }
 
 tasks.addRule("collect snapshots", taskName@{
