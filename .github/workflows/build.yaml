@@ -12,13 +12,14 @@ on:
     types: published
 
 permissions:
-  contents: read
+  contents: write
   checks: write
   pull-requests: write
 
 env:
   ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.SIGNING_PASSWORD }}
   ORG_GRADLE_PROJECT_reverseGeocodingKey: ${{ secrets.REVERSE_GEOCODING_KEY }}
+  UPDATE_SCREENSHOTS: ${{ contains(github.event.pull_request.labels.*.name, 'update screenshots') }}
 
 jobs:
   build:
@@ -28,13 +29,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          token: ${{ secrets.GRADLE_WRAPPER_UPDATER_TOKEN }} # will push a commit
           fetch-depth: 0
       - name: Setup host
         uses: ./.github/actions/setup-host
         with:
           gradle-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
       - name: Test & Build
-        run: ./gradlew build
+        run: |
+          ./gradlew build ${{ fromJSON(env.UPDATE_SCREENSHOTS) && '-x validateScreenshotTest updateScreenshotTest' || '' }}
       - name: Publish Test Report
         if: ${{ !cancelled() }}
         uses: gmazzo/publish-report-annotations@v1
@@ -51,17 +54,16 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: '**/build/reports/jacoco/**/*.xml'
+      - name: Update Screenshots
+        if: ${{ fromJSON(env.UPDATE_SCREENSHOTS) }}
+        uses: ./.github/actions/push-commit
+        with:
+          files: '**/src/*/screenshotTest/**'
+          message: 'Updated Screenshots'
 
   screenshot-tests:
     name: Screenshot Tests
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: write
-      checks: write
-      pull-requests: write
-    env:
-      UPDATE_SCREENSHOTS: ${{ contains(github.event.pull_request.labels.*.name, 'update screenshots') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -76,7 +78,8 @@ jobs:
         with:
           credentials_json: ${{ secrets.FIREBASE_TESTLAB_CREDENTIALS }}
       - name: Run UI tests
-        run: ./gradlew firebaseTestLabCheck ${{ fromJSON(env.UPDATE_SCREENSHOTS) && 'updateScreenshotTest updateSnapshotTests' || '' }}
+        run: |
+          ./gradlew firebaseTestLabCheck ${{ fromJSON(env.UPDATE_SCREENSHOTS) && 'updateSnapshotTests' || '' }}
       - name: Publish Test Report
         if: ${{ !cancelled() }}
         uses: gmazzo/publish-report-annotations@v1
@@ -88,18 +91,12 @@ jobs:
         with:
           name: results
           path: '**/build/outputs/*-results/'
-      - name: Update Screenshots
+      - name: Update Snapshots
         if: ${{ fromJSON(env.UPDATE_SCREENSHOTS) }}
-        env:
-          BRANCH: ${{ github.event.pull_request.head.ref }}
-        run: |
-          git config user.name "GitHub Actions"
-          git config user.email "github.actions@users.noreply.github.com"
-          
-          git fetch origin "$BRANCH:refs/remotes/origin/$BRANCH"
-          git checkout "$BRANCH"
-          git add '**/src/*/screenshotTest/**' '**/src/androidTest/assets/screenshots/**' || exit 0
-          git commit -m "Updated screenshots" && git push origin
+        uses: ./.github/actions/push-commit
+        with:
+          files: '**/src/androidTest/assets/screenshots/**'
+          message: 'Updated Snapshots'
 
   publish:
     name: Publish

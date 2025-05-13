@@ -1,0 +1,50 @@
+name: 'Push commit'
+description: 'Pushes a commit to the repository'
+
+inputs:
+  user-name:
+    description: 'The git user name to associate with the commit'
+    required: false
+    default: 'GitHub Actions'
+  user-email:
+    description: 'The git user email to associate with the commit'
+    required: false
+    default: 'github.actions@users.noreply.github.com'
+  files:
+    description: 'The files to commit (glob)'
+    required: true
+  message:
+    description: 'The commit message'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Git
+      env:
+        USER_NAME: ${{ inputs.user-name }}
+        USER_EMAIL: ${{ inputs.user-email }}
+      shell: bash
+      run: |
+        git config user.name "$USER_NAME"
+        git config user.email "$USER_EMAIL"
+    - name: Fetch branch
+      env:
+        BRANCH: ${{ github.event.pull_request.head.ref }}
+      shell: bash
+      run: |
+        git fetch origin "$BRANCH:refs/remotes/origin/$BRANCH"
+        git checkout "$BRANCH"
+    - name: Commit files
+      env:
+        FILES: ${{ inputs.files }}
+        MESSAGE: ${{ inputs.message }}
+      shell: bash
+      run: |
+        git add "$FILES"
+        git commit -m "$MESSAGE"
+      continue-on-error: true
+    - name: Push branch
+      shell: bash
+      run: |
+        git push origin
