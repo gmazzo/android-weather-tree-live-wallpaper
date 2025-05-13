@@ -19,21 +19,32 @@ class SettingsScreenSnapshotTest {
 
     @Preview
     @Composable
-    fun Default(@PreviewParameter(Scenes::class) scene: SceneMode) = SettingsScreen(
+    fun SelectedScene(@PreviewParameter(Scenes::class) scene: SceneMode) = SettingsScreen(
         now = date,
+        updateLocationEnabled = false,
         weather = WeatherType.valueOf(scene),
     )
 
     @Preview
     @Composable
-    fun RetrievingLocation() = SettingsScreen(
+    fun ForecastEnabled() = SettingsScreen(
         now = date,
-        weather = WeatherType.UNKNOWN,
         updateLocationEnabled = true,
+        missingLocationPermission = false,
+        forecastWeather = WeatherType.THUNDER_STORMS,
     )
 
-    data class Scenes(
-        override val values: Sequence<SceneMode> = SceneMode.entries.asSequence()
-    ) : PreviewParameterProvider<SceneMode>
+    @Preview
+    @Composable
+    fun ForecastEnabledMissingPermission() = SettingsScreen(
+        now = date,
+        updateLocationEnabled = true,
+        missingLocationPermission = true,
+    )
+
+    class Scenes : PreviewParameterProvider<SceneMode> {
+        override val values = SceneMode.entries.asSequence()
+        override fun toString() = "scene"
+    }
 
 }
