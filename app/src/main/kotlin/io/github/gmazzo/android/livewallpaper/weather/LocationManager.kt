@@ -38,27 +38,28 @@ class LocationManager @Inject constructor(
                 Log.d(TAG, "Subscription count: prev=$prev, actual=$actual")
 
                 if (prev == 0 && actual > 0) {
-                    startListening()
+                    if (!startListening()) return@fold 0
 
                 } else if (prev > 0 && actual == 0) {
                     stopListening()
                 }
-                actual
+                return@fold actual
             }
         }
     }
 
-    private fun startListening() {
-        val manager = this.manager ?: return
+    private fun startListening(): Boolean {
+        val manager = this.manager ?: return false
 
         if (checkSelfPermission(context, ACCESS_COARSE_LOCATION) != PERMISSION_GRANTED) {
             Log.e(TAG, "Missing $ACCESS_COARSE_LOCATION to access location")
-            return
+            return false
         }
 
         Log.i(TAG, "Started listening for location updates")
         manager.getLastKnownLocation(NETWORK_PROVIDER)?.let(::onLocationChanged)
         manager.requestLocationUpdates(NETWORK_PROVIDER, 1.hours.inWholeMilliseconds, 1000f, this)
+        return true
     }
 
     private fun stopListening() {
