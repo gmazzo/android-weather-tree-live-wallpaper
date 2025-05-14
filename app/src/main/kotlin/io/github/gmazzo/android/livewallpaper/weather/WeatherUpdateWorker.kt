@@ -15,9 +15,12 @@ import dagger.assisted.AssistedInject
 import io.github.gmazzo.android.livewallpaper.weather.api.LocationForecastAPI
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.withTimeoutOrNull
 import java.util.concurrent.TimeUnit
 import javax.inject.Named
+import kotlin.time.Duration.Companion.seconds
 
 @HiltWorker
 class WeatherUpdateWorker @AssistedInject constructor(
@@ -31,7 +34,7 @@ class WeatherUpdateWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
         Log.i(TAG, "Updating weather conditions")
 
-        val location = location.firstOrNull() ?: return Result.retry()
+        val location = updatedLocation() ?: return Result.retry()
         val response = forecastAPI.getForecast(location.latitude, location.longitude, null)
         val series = response.properties.timeSeries.firstOrNull() ?: return Result.failure()
         val current = sequenceOf(
@@ -44,6 +47,12 @@ class WeatherUpdateWorker @AssistedInject constructor(
         Log.i(TAG, "Weather conditions updated: $current")
         return Result.success()
     }
+
+    /**
+     * tries to await for a new location for 5 seconds, if not available returns the last known location
+     */
+    private suspend fun updatedLocation() =
+        withTimeoutOrNull(5.seconds) { location.drop(1).firstOrNull() } ?: location.value
 
     companion object {
         private const val TAG = "weatherUpdate"
