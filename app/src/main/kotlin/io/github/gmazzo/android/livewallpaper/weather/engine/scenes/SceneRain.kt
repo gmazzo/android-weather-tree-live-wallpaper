@@ -44,7 +44,7 @@ class SceneRain @Inject constructor(
     private fun renderRain() = gl.pushMatrix(GL_MODELVIEW) {
         gl.glTranslatef(0f, 0f, -5f)
 
-        particles.update(time.deltaSeconds)
+        particles.update(clock.value.deltaSeconds)
         particles.render(particleRainOrigin)
     }
 

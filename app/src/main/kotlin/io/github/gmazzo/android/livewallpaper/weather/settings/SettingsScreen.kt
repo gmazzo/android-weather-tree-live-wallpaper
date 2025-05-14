@@ -7,9 +7,9 @@ import android.os.Build
 import android.text.Spanned
 import android.text.format.DateUtils
 import android.text.format.DateUtils.formatDateTime
-import androidx.compose.animation.AnimatedVisibility
 import android.text.style.StyleSpan
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -98,23 +98,23 @@ import kotlin.time.Duration.Companion.seconds
 private const val opacity = .6f
 private val margin = 8.dp
 private val timeSpeeds = listOf(
-    1f to R.string.settings_speed_realtime,
-    (1.days / 15.seconds).toFloat() to R.string.settings_speed_day_in_15secs,
-    (1.days / 3.seconds).toFloat() to R.string.settings_speed_day_in_3secs,
+    1.0 to R.string.settings_speed_realtime,
+    1.days / 15.seconds to R.string.settings_speed_day_in_15secs,
+    1.days / 3.seconds to R.string.settings_speed_day_in_3secs,
 )
 
 @Preview
 @Composable
 fun SettingsScreen(
     now: ZonedDateTime = ZonedDateTime.now(),
-    timeSpeed: Float = 1f,
+    timeSpeed: Double = 1.0,
     location: Location? = Location(41.3825, 2.176944, "Barcelona"),
     updateLocationEnabled: Boolean = true,
     weather: WeatherType = WeatherType.UNKNOWN,
     forecastWeather: WeatherType = weather,
     missingLocationPermission: Boolean = true,
     updateLocationEnabledChange: (Boolean) -> Unit = {},
-    onSpeedSelected: (Float) -> Unit = {},
+    onSpeedSelected: (Double) -> Unit = {},
     onSceneSelected: (SceneMode) -> Unit = {},
     onRequestBackgroundLocationPermission: () -> Unit = {},
     onSetAsWallpaper: () -> Unit = {},
@@ -193,8 +193,8 @@ fun SettingsScreen(
 
 @Composable
 private fun TimeSpeedMenu(
-    selectedSpeed: Float,
-    onSpeedSelected: (Float) -> Unit,
+    selectedSpeed: Double,
+    onSpeedSelected: (Double) -> Unit,
 ) {
     var showMenu by remember { mutableStateOf(false) }
     val selected = timeSpeeds.find { it.first == selectedSpeed }

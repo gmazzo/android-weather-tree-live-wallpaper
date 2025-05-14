@@ -15,7 +15,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import io.github.gmazzo.android.livewallpaper.weather.engine.Clock
+import io.github.gmazzo.android.livewallpaper.weather.engine.time.Clock
+import io.github.gmazzo.android.livewallpaper.weather.engine.time.TimeSource
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -41,8 +42,21 @@ object WeatherModule {
 
     @Provides
     @Singleton
+    @Named("real")
+    fun clock(source: TimeSource) = MutableStateFlow(Clock(source.now()))
+
+    @Provides
+    @Singleton
+    @Named("fast")
+    fun fastClock(
+        @Named("real") real: MutableStateFlow<Clock>,
+        @Named("fastTimeSpeed") speed: MutableStateFlow<Double>,
+    ) = MutableStateFlow<Clock>(real.value)
+
+    @Provides
+    @Singleton
     @Named("fastTimeSpeed")
-    fun fastTimeSpeed() = MutableStateFlow((1.days / 15.seconds).toFloat())
+    fun fastTimeSpeed() = MutableStateFlow(1.days / 15.seconds)
 
     @Provides
     @Singleton
@@ -74,7 +88,7 @@ object WeatherModule {
 
         @Provides
         @Singleton
-        fun clock(): Clock = Clock(ZonedDateTime::now)
+        fun timeSource() = TimeSource(ZonedDateTime::now)
 
         @Provides
         @Singleton

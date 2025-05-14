@@ -5,11 +5,12 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
-import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
+import io.github.gmazzo.android.livewallpaper.weather.engine.time.Clock
+import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Named
 import javax.microedition.khronos.opengles.GL10.GL_ONE
 import javax.microedition.khronos.opengles.GL10.GL_SRC_ALPHA
@@ -21,7 +22,7 @@ class ThingDarkCloud @AssistedInject constructor(
     gl: GL11,
     models: Models,
     textures: Textures,
-    time: GlobalTime,
+    @Named("real") clock: MutableStateFlow<Clock>,
     sceneMode: SceneMode,
     @Named("clouds") cloudsColor: EngineColor,
     @Assisted which: Int,
@@ -29,7 +30,7 @@ class ThingDarkCloud @AssistedInject constructor(
     random, gl,
     model = models[MODELS[which % MODELS.size]],
     texture = textures[TEXTURES[which % TEXTURES.size]],
-    time,
+    clock,
     cloudsColor,
 ) {
 
@@ -55,9 +56,9 @@ class ThingDarkCloud @AssistedInject constructor(
 
         if (flare != null) {
             if (flashIntensity > 0f) {
-                flashIntensity -= 1.25f * time.deltaSeconds
+                flashIntensity -= 1.25f * clock.value.deltaSeconds
             }
-            if (flashIntensity <= 0f && random.nextFloat(0f, 4.5f) < time.deltaSeconds) {
+            if (flashIntensity <= 0f && random.nextFloat(0f, 4.5f) < clock.value.deltaSeconds) {
                 flashIntensity = .5f
             }
         }

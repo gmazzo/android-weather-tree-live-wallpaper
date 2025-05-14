@@ -3,7 +3,6 @@ package io.github.gmazzo.android.livewallpaper.weather
 import android.opengl.GLSurfaceView
 import dagger.BindsInstance
 import dagger.Subcomponent
-import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneComponent
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
@@ -15,8 +14,6 @@ import javax.microedition.khronos.opengles.GL11
 @WeatherRendererScoped
 @Subcomponent(modules = [WeatherRendererModule::class])
 interface WeatherRendererComponent {
-
-    val time: GlobalTime
 
     val timeOfDay: TimeOfDay
 

@@ -1,12 +1,13 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.things
 
 import io.github.gmazzo.android.livewallpaper.weather.R
-import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
+import io.github.gmazzo.android.livewallpaper.weather.engine.time.Clock
 import io.github.gmazzo.android.livewallpaper.weather.engine.withColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.withFlags
+import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 import javax.microedition.khronos.opengles.GL10.GL_ADD
 import javax.microedition.khronos.opengles.GL10.GL_COLOR_BUFFER_BIT
@@ -22,7 +23,7 @@ class ThingLightning @Inject constructor(
     gl: GL11,
     models: Models,
     textures: Textures,
-    private val time: GlobalTime,
+    private val clock: MutableStateFlow<Clock>,
 ) : Thing(
     gl,
     model = models[MODELS[random.nextInt(MODELS.size)]],
@@ -46,7 +47,7 @@ class ThingLightning @Inject constructor(
     override fun update() {
         super.update()
 
-        color.a -= 2f * time.deltaSeconds
+        color.a -= 2f * clock.value.deltaSeconds
         if (color.a <= 0f) {
             delete()
         }

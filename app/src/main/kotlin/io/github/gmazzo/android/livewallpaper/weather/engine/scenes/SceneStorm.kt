@@ -48,7 +48,7 @@ class SceneStorm @Inject constructor(
         super.draw()
 
         timeOfDayTint.color.toArray(lightAmbientLight)
-        if (random.nextFloat(0f, boltFrequency * .75f) < time.deltaSeconds) {
+        if (random.nextFloat(0f, boltFrequency * .75f) < clock.value.deltaSeconds) {
             spawnLightning()
         }
     }
@@ -72,7 +72,7 @@ class SceneStorm @Inject constructor(
     private fun renderRain() = gl.pushMatrix(GL_MODELVIEW) {
         gl.glTranslatef(0f, 0f, -5f)
 
-        particles.update(time.deltaSeconds)
+        particles.update(clock.value.deltaSeconds)
         particles.render(particleRainOrigin)
     }
 
@@ -93,7 +93,7 @@ class SceneStorm @Inject constructor(
     }
 
     private fun updateLightValues() {
-        val timeDelta = time.deltaSeconds
+        val timeDelta = clock.value.deltaSeconds
 
         wave.timeElapsed += (timeDelta * 1000).toInt().milliseconds
 

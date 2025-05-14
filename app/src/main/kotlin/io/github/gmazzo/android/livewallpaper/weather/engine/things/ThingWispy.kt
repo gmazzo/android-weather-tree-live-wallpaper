@@ -6,12 +6,13 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
-import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things.Companion.WIND_SPEED
+import io.github.gmazzo.android.livewallpaper.weather.engine.time.Clock
+import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Named
 import javax.microedition.khronos.opengles.GL10.GL_ONE_MINUS_SRC_ALPHA
 import javax.microedition.khronos.opengles.GL10.GL_SRC_ALPHA
@@ -23,14 +24,14 @@ class ThingWispy @AssistedInject constructor(
     gl: GL11,
     models: Models,
     textures: Textures,
-    time: GlobalTime,
+    @Named("real") clock: MutableStateFlow<Clock>,
     @Named("clouds") private val cloudsColor: EngineColor,
     @Assisted which: Int,
 ) : ThingMoving(
     gl,
     model = models[R.raw.plane_16x16],
     texture = textures[WISPY_TEXTURES[which % WISPY_TEXTURES.size]],
-    time,
+    clock,
     velocity = Vector(WIND_SPEED / 2, 0f, 0f),
 ) {
 
