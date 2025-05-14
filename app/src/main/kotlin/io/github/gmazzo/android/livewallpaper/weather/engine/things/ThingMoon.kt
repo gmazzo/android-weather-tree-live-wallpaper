@@ -22,7 +22,7 @@ class ThingMoon @Inject constructor(
     gl: GL11,
     models: Models,
     private val textures: Textures,
-    @Named("scaled") private val time: GlobalTime,
+    @Named("forPreview") private val time: GlobalTime,
     private val timeOfDay: TimeOfDay,
     private val location: StateFlow<Location?>,
 ) : Thing(

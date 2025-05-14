@@ -18,7 +18,7 @@ import kotlin.time.Duration.Companion.hours
 
 @WeatherRendererScoped
 class TimeOfDay @Inject constructor(
-    @Named("scaled") private val time: GlobalTime,
+    @Named("forPreview") private val time: GlobalTime,
     private val location: StateFlow<Location?>,
 ) {
 

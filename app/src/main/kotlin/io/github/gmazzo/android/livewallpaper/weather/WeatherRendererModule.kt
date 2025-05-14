@@ -16,7 +16,7 @@ object WeatherRendererModule {
 
     @Provides
     @WeatherRendererScoped
-    @Named("scaled")
+    @Named("forPreview")
     fun fastTime(
         @Named("fastTime") fastTime: Boolean,
         real: Provider<GlobalTime>,
