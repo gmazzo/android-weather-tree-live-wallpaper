@@ -6,6 +6,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.migration.DisableInstallInCheck
+import io.github.gmazzo.android.livewallpaper.weather.GLDispatcher
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingCloud
@@ -14,12 +15,23 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingLightCl
 import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDayColors
 import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDayTint
 import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.timeOfDayColors
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.job
 import javax.inject.Named
 import javax.inject.Provider
 
 @DisableInstallInCheck
 @Module(includes = [SceneModule.Bindings::class])
 internal object SceneModule {
+
+    @Provides
+    @SceneScoped
+    @Named("scene")
+    fun coroutineScope(
+        @Named("renderer") renderedScope: CoroutineScope,
+        dispatcher: GLDispatcher,
+    ) = CoroutineScope(SupervisorJob(renderedScope.coroutineContext.job) + dispatcher)
 
     @Provides
     @SceneScoped
