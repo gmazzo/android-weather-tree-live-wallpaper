@@ -1,6 +1,5 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 
-import io.github.gmazzo.android.livewallpaper.weather.WeatherRendererScoped
 import io.github.gmazzo.android.livewallpaper.weather.WeatherType
 import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
@@ -23,7 +22,7 @@ interface SceneDependencies {
     val random: Random
     val time: GlobalTime
     val gl: GL11
-    val renderedScope: CoroutineScope
+    val coroutineScope: CoroutineScope
     val weather: MutableStateFlow<WeatherType>
     val models: Models
     val textures: Textures
@@ -36,7 +35,7 @@ interface SceneDependencies {
         override val random: Random,
         override val time: GlobalTime,
         override val gl: GL11,
-        @WeatherRendererScoped override val renderedScope: CoroutineScope,
+        @Named("scene") override val coroutineScope: CoroutineScope,
         override val weather: MutableStateFlow<WeatherType>,
         override val models: Models,
         override val textures: Textures,

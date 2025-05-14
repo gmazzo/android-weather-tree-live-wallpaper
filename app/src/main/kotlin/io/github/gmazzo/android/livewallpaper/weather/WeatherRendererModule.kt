@@ -24,6 +24,7 @@ object WeatherRendererModule {
     ): GlobalTime = (if (fastTime) fast else real).get()
 
     @Provides
+    @Named("renderer")
     @WeatherRendererScoped
     fun coroutineScope(dispatcher: GLDispatcher) =
         CoroutineScope(SupervisorJob() + dispatcher)

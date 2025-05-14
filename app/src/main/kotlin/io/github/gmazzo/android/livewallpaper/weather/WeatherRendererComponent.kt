@@ -24,6 +24,7 @@ interface WeatherRendererComponent {
 
     val models: Models
 
+    @get:Named("renderer")
     val coroutineScope: CoroutineScope
 
     val sceneFactory: SceneComponent.Factory
