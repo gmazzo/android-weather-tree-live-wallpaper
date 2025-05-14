@@ -5,9 +5,10 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
-import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
+import io.github.gmazzo.android.livewallpaper.weather.engine.time.Clock
+import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Named
 import javax.microedition.khronos.opengles.GL11
 import kotlin.random.Random
@@ -17,14 +18,14 @@ open class ThingLightCloud @AssistedInject constructor(
     gl: GL11,
     models: Models,
     textures: Textures,
-    time: GlobalTime,
+    @Named("real") clock: MutableStateFlow<Clock>,
     @Named("clouds") cloudsColor: EngineColor,
     @Assisted which: Int,
 ) : ThingCloud(
     random, gl,
     model = models[MODELS[which % MODELS.size]],
     texture = textures[TEXTURES[which % TEXTURES.size]],
-    time,
+    clock,
     cloudsColor,
 ) {
 

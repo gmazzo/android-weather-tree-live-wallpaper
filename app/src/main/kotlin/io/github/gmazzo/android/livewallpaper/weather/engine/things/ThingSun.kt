@@ -1,13 +1,14 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.things
 
 import io.github.gmazzo.android.livewallpaper.weather.R
-import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
+import io.github.gmazzo.android.livewallpaper.weather.engine.time.Clock
 import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDay
 import io.github.gmazzo.android.livewallpaper.weather.engine.withColor
+import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 import javax.microedition.khronos.opengles.GL10.GL_MODELVIEW
 import javax.microedition.khronos.opengles.GL10.GL_MODULATE
@@ -21,7 +22,7 @@ class ThingSun @Inject constructor(
     gl: GL11,
     models: Models,
     textures: Textures,
-    private val time: GlobalTime,
+    private val clock: MutableStateFlow<Clock>,
     private val timeOfDay: TimeOfDay,
 ) : Thing(
     gl,
@@ -37,7 +38,7 @@ class ThingSun @Inject constructor(
     }
 
     override fun render() = gl.pushMatrix(GL_MODELVIEW) {
-        val timeElapsed = time.elapsedSeconds
+        val timeElapsed = clock.value.elapsedSeconds
 
         gl.glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR)
         gl.glTranslatef(origin.x, origin.y, origin.z)

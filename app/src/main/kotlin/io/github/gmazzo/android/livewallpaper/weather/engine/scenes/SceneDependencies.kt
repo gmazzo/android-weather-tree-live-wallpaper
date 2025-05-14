@@ -1,10 +1,10 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 
 import io.github.gmazzo.android.livewallpaper.weather.WeatherType
-import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things
+import io.github.gmazzo.android.livewallpaper.weather.engine.time.Clock
 import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDay
 import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDayTint
 import kotlinx.coroutines.CoroutineScope
@@ -20,7 +20,7 @@ import kotlin.random.Random
 interface SceneDependencies {
     val landscape: Boolean
     val random: Random
-    val time: GlobalTime
+    val clock: MutableStateFlow<Clock>
     val gl: GL11
     val coroutineScope: CoroutineScope
     val weather: MutableStateFlow<WeatherType>
@@ -33,7 +33,7 @@ interface SceneDependencies {
     class Impl @Inject constructor(
         @Named("landscape") override val landscape: Boolean,
         override val random: Random,
-        override val time: GlobalTime,
+        @Named("real") override val clock: MutableStateFlow<Clock>,
         override val gl: GL11,
         @Named("scene") override val coroutineScope: CoroutineScope,
         override val weather: MutableStateFlow<WeatherType>,

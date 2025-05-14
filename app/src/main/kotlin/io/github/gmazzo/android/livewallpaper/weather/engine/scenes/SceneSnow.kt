@@ -31,7 +31,7 @@ class SceneSnow @Inject constructor(
     }
 
     private fun renderSnow() = particles.forEachIndexed { i, it ->
-        it.update(time.deltaSeconds)
+        it.update(clock.value.deltaSeconds)
         it.render(snowPositions[i])
     }
 

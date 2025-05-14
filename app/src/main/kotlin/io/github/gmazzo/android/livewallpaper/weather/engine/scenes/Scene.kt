@@ -94,7 +94,7 @@ sealed class Scene(
         pushMatrix(GL_TEXTURE) {
             gl.glBindTexture(GL_TEXTURE_2D, backgroundTexture.glId)
             gl.glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA)
-            gl.glTranslatef(((WIND_SPEED * time.elapsedSeconds) * -.005f) % 1f, 0f, 0f)
+            gl.glTranslatef((WIND_SPEED * clock.value.elapsedSeconds * -.005f) % 1f, 0f, 0f)
 
             withColor(backgroundTint, alpha = 1f) {
                 backgroundModel.render()
@@ -112,7 +112,7 @@ sealed class Scene(
 
         if (alpha > 0) {
             gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE)
-            gl.glTranslatef((.1f * time.elapsedSeconds) % 1f, 300f, -100f)
+            gl.glTranslatef((.1f * clock.value.elapsedSeconds) % 1f, 300f, -100f)
 
             gl.withColor(1f, 1f, 1f, alpha) {
                 starModel.render(starNoiseTexture, starTexture, GL_MODULATE)
@@ -122,7 +122,7 @@ sealed class Scene(
 
     private fun drawTrees() = gl.pushMatrix(GL_MODELVIEW) {
         if (treesAnim.count > 0) {
-            treesAnimateDelay -= time.deltaSeconds
+            treesAnimateDelay -= clock.value.deltaSeconds
 
             if (treesAnimateDelay <= 0f) {
                 treesAnimateDelay = 3f + (7f * random.nextFloat())
@@ -141,7 +141,7 @@ sealed class Scene(
 
         treesGrassModel.animator = treesAnim
         treesTreeModel.animator = treesAnim
-        treesAnim.update(time.deltaSeconds)
+        treesAnim.update(clock.value.deltaSeconds)
 
         treesTreeModel.render()
         treesGrassModel.render()

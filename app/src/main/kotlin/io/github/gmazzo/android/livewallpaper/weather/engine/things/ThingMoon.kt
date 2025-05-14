@@ -2,17 +2,17 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.things
 
 import io.github.gmazzo.android.livewallpaper.weather.Location
 import io.github.gmazzo.android.livewallpaper.weather.R
-import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Texture
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
+import io.github.gmazzo.android.livewallpaper.weather.engine.time.Clock
 import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.shredzone.commons.suncalc.MoonIllumination
 import org.shredzone.commons.suncalc.MoonPosition
 import javax.inject.Inject
-import javax.inject.Named
 import javax.microedition.khronos.opengles.GL10.GL_ONE_MINUS_SRC_ALPHA
 import javax.microedition.khronos.opengles.GL10.GL_SRC_ALPHA
 import javax.microedition.khronos.opengles.GL11
@@ -22,7 +22,7 @@ class ThingMoon @Inject constructor(
     gl: GL11,
     models: Models,
     private val textures: Textures,
-    @Named("forPreview") private val time: GlobalTime,
+    private val clock: MutableStateFlow<Clock>,
     private val timeOfDay: TimeOfDay,
     private val location: StateFlow<Location?>,
 ) : Thing(
@@ -43,7 +43,7 @@ class ThingMoon @Inject constructor(
     override fun update() {
         super.update()
 
-        val now = time.time.value
+        val now = clock.value.time
         val location = location.value
 
         val position = if (location != null) {

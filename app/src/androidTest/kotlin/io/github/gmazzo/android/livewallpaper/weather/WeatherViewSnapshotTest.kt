@@ -20,8 +20,8 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.github.gmazzo.android.livewallpaper.weather.actions.AdvanceTime
 import io.github.gmazzo.android.livewallpaper.weather.actions.TakeSurfaceSnapshot
-import io.github.gmazzo.android.livewallpaper.weather.engine.Clock
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode
+import io.github.gmazzo.android.livewallpaper.weather.engine.time.TimeSource
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.AfterClass
 import org.junit.Assert.assertEquals
@@ -61,7 +61,7 @@ class WeatherViewSnapshotTest(
     val weather = MutableStateFlow<WeatherType>(WeatherType.valueOf(scene))
 
     @BindValue
-    val clock: Clock = Clock(::time)
+    val timeSource: TimeSource = TimeSource(::time)
 
     @Inject
     lateinit var viewFactory: WeatherView.Factory

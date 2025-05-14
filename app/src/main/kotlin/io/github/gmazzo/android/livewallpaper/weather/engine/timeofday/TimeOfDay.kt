@@ -3,14 +3,14 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.timeofday
 import androidx.annotation.FloatRange
 import io.github.gmazzo.android.livewallpaper.weather.Location
 import io.github.gmazzo.android.livewallpaper.weather.WeatherRendererScoped
-import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
+import io.github.gmazzo.android.livewallpaper.weather.engine.time.Clock
 import io.github.gmazzo.android.livewallpaper.weather.minutesSinceMidnight
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.shredzone.commons.suncalc.SunPosition
 import org.shredzone.commons.suncalc.SunTimes
 import java.time.ZonedDateTime
 import javax.inject.Inject
-import javax.inject.Named
 import kotlin.math.max
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
@@ -18,7 +18,7 @@ import kotlin.time.Duration.Companion.hours
 
 @WeatherRendererScoped
 class TimeOfDay @Inject constructor(
-    @Named("forPreview") private val time: GlobalTime,
+    private val clock: MutableStateFlow<Clock>,
     private val location: StateFlow<Location?>,
 ) {
 
@@ -29,7 +29,7 @@ class TimeOfDay @Inject constructor(
 
     @Inject
     fun update() {
-        val now = time.time.value
+        val now = clock.value.time
         val minutes = now.minutesSinceMidnight
         val location = location.value
 

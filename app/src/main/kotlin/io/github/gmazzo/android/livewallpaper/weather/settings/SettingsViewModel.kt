@@ -18,8 +18,8 @@ import io.github.gmazzo.android.livewallpaper.weather.WeatherUpdateWorker.Compan
 import io.github.gmazzo.android.livewallpaper.weather.WeatherUpdateWorker.Companion.enableWeatherConditionsUpdate
 import io.github.gmazzo.android.livewallpaper.weather.api.ReverseGeocodingAPI
 import io.github.gmazzo.android.livewallpaper.weather.api.ReverseGeocodingAPI.Companion.findCity
-import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode
+import io.github.gmazzo.android.livewallpaper.weather.engine.time.Clock
 import io.github.gmazzo.android.livewallpaper.weather.hasLocationPermission
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,8 +35,8 @@ import javax.inject.Named
 class SettingsViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val preferences: DataStore<Preferences>,
-    val time: GlobalTime.Fast,
-    @Named("fastTimeSpeed") val timeSpeed: MutableStateFlow<Float>,
+    @Named("fast") val clock: MutableStateFlow<Clock>,
+    @Named("fastTimeSpeed") val timeSpeed: MutableStateFlow<Double>,
     @Named("homeOffset") private val homeOffset: MutableStateFlow<Float>,
     val weather: MutableStateFlow<WeatherType>,
     @Named("forecast") val forecastWeather: MutableStateFlow<WeatherType>,

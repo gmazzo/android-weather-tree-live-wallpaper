@@ -2,12 +2,13 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.things
 
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
-import io.github.gmazzo.android.livewallpaper.weather.engine.GlobalTime
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Model
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Texture
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things.Companion.WIND_SPEED
+import io.github.gmazzo.android.livewallpaper.weather.engine.time.Clock
+import kotlinx.coroutines.flow.MutableStateFlow
 import javax.microedition.khronos.opengles.GL11
 import kotlin.math.absoluteValue
 import kotlin.random.Random
@@ -17,10 +18,10 @@ sealed class ThingCloud(
     gl: GL11,
     model: Model,
     texture: Texture,
-    time: GlobalTime,
+    clock: MutableStateFlow<Clock>,
     private val cloudsColor: EngineColor,
 ) : ThingMoving(
-    gl, model, texture, time,
+    gl, model, texture, clock,
     velocity = Vector(WIND_SPEED * 1.5f, 0f, 0f),
 ) {
 

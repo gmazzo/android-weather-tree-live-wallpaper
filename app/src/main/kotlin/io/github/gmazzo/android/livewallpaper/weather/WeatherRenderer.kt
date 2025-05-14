@@ -10,6 +10,8 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneComponent
+import io.github.gmazzo.android.livewallpaper.weather.engine.time.Clock
+import io.github.gmazzo.android.livewallpaper.weather.engine.time.TimeManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.job
@@ -43,6 +45,8 @@ import javax.microedition.khronos.opengles.GL11
 internal class WeatherRenderer @AssistedInject constructor(
     private val componentFactory: WeatherRendererComponent.Factory,
     private val weather: MutableStateFlow<WeatherType>,
+    private val timeManager: TimeManager,
+    @Named("real") private val clock: MutableStateFlow<Clock>,
     @Named("homeOffset") private val homeOffset: MutableStateFlow<Float>,
     @Assisted private val view: GLSurfaceView,
     @Assisted private val logTag: String,
@@ -151,11 +155,13 @@ internal class WeatherRenderer @AssistedInject constructor(
     override fun onDrawFrame(gl: GL10) {
         val scene = scene ?: return
 
-        val component = component!!
-        component.time.update()
-        component.timeOfDay.update()
-        component.updateCameraPosition(immediate = false)
-        gl.updateProjection()
+
+        with(component!!) {
+            timeManager.update()
+            timeOfDay.update()
+            updateCameraPosition(immediate = false)
+            gl.updateProjection()
+        }
 
         scene.scene.value.draw()
 
@@ -193,7 +199,7 @@ internal class WeatherRenderer @AssistedInject constructor(
             cameraPos = target
 
         } else {
-            val rate = (3.5f * time.deltaSeconds) * cameraSpeed
+            val rate = 3.5f * clock.value.deltaSeconds * cameraSpeed
             val diff = (target - cameraPos) * rate
 
             cameraPos += diff

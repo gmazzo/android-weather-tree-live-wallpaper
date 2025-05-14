@@ -44,7 +44,7 @@ class SettingsActivity : ComponentActivity() {
 
         setContent {
             SettingsScreen(
-                now = viewModel.time.time.collectAsState().value,
+                now = viewModel.clock.collectAsState().value.time,
                 timeSpeed = viewModel.timeSpeed.collectAsState().value,
                 location = viewModel.location.collectAsState().value,
                 updateLocationEnabled = viewModel.updateLocationEnabled.collectAsState().value,
