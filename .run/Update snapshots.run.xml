@@ -11,7 +11,7 @@
       <option name="taskNames">
         <list>
           <option value="updateScreenshotTest" />
-          <option value="connectedCheck" />
+          <option value="firebaseTestLabCheck" />
           <option value="updateSnapshotTests" />
         </list>
       </option>
