@@ -1,3 +1,0 @@
-README*.gif filter=lfs diff=lfs merge=lfs -text
-**/src/debug/screenshotTest/**/*.png filter=lfs diff=lfs merge=lfs -text
-**/src/androidTest/assets/screenshots/**/*.png filter=lfs diff=lfs merge=lfs -text
