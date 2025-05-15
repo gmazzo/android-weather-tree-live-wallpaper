@@ -6,11 +6,13 @@ import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.annotation.SuppressLint
 import android.app.WallpaperManager
+import android.content.ActivityNotFoundException
 import android.content.ComponentName
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -18,6 +20,7 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.viewinterop.AndroidView
 import dagger.hilt.android.AndroidEntryPoint
+import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.WeatherView
 import io.github.gmazzo.android.livewallpaper.weather.WeatherWallpaperService
 import io.github.gmazzo.android.livewallpaper.weather.hasBackgroundLocationPermission
@@ -113,13 +116,21 @@ class SettingsActivity : ComponentActivity() {
     }
 
     private fun openWallpaperChooser() {
-        startActivity(
-            Intent(WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER).putExtra(
-                WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT,
-                ComponentName(this, WeatherWallpaperService::class.java)
+        try {
+            startActivity(
+                Intent(WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER).putExtra(
+                    WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT,
+                    ComponentName(this, WeatherWallpaperService::class.java)
+                )
             )
-        )
-        finish()
+            finish()
+
+        } catch (ex: ActivityNotFoundException) {
+            ex.printStackTrace()
+
+            Toast.makeText(this, R.string.settings_wallpaper_chooser_not_found, Toast.LENGTH_LONG)
+                .show()
+        }
     }
 
     companion object {
