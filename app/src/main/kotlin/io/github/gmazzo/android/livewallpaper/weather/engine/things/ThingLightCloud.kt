@@ -37,6 +37,11 @@ open class ThingLightCloud @AssistedInject constructor(
             R.drawable.cloud1, R.drawable.cloud2, R.drawable.cloud3,
             R.drawable.cloud4, R.drawable.cloud5
         )
+
+        fun Textures.preload() {
+            TEXTURES.forEach(::get)
+        }
+
     }
 
 }

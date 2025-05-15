@@ -50,7 +50,8 @@ class ThingWispy @AssistedInject constructor(
     override fun update() {
         super.update()
 
-        color.set(Color.WHITE).a = ((cloudsColor.r + cloudsColor.g + cloudsColor.b) / 3).coerceIn(.2f, 1f)
+        color.set(Color.WHITE).a =
+            ((cloudsColor.r + cloudsColor.g + cloudsColor.b) / 3).coerceIn(.2f, 1f)
 
         if (origin.x > 123.75f) {
             origin = origin.let { it.copy(x = it.x - 247.5f) }
@@ -64,6 +65,10 @@ class ThingWispy @AssistedInject constructor(
 
     companion object {
         private val WISPY_TEXTURES = intArrayOf(R.raw.wispy1, R.raw.wispy2, R.raw.wispy3)
+
+        fun Textures.preload() {
+            WISPY_TEXTURES.forEach(::get)
+        }
     }
 
 }
