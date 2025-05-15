@@ -36,6 +36,7 @@ dependencies {
 dependencyRepackager {
     configuration = repackagedImplementation
     relocations.put("com.google.api", "repackaged.com.google.api")
+    relocations.put("com.google.testing", "repackaged.com.google.testing")
     remapStrings = true
     removeEmptyDirs = true
 }
