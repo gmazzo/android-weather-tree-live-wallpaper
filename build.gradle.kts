@@ -1,18 +1,6 @@
-buildscript {
-    configurations.classpath {
-        /**
-         * TODO forced version to allow both plugins to work together
-         * `googlePlayPublish` uses latest version of `google-api-client:2.+`
-         * `firebase.testlab` is using very old google apis sdk, which required up to `google-api-client:1.x`
-         */
-        resolutionStrategy.force("com.google.api-client:google-api-client:1.22.0")
-    }
-}
-
 plugins {
     alias(libs.plugins.android) apply false
-    alias(libs.plugins.firebase.testlab) apply false
-    alias(libs.plugins.googlePlayPublish) apply false
+    id("com.google.firebase.testlab") apply false
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.ksp) apply false
     alias(libs.plugins.kotlin.parcelize) apply false

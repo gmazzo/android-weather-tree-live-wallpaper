@@ -58,7 +58,7 @@ jobs:
 
   ui-tests:
     name: UI Tests
-    if: ${{ github.event_name == 'pull_request' }}
+    if: ${{ github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'Ignore UI Tests') }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
