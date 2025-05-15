@@ -14,6 +14,7 @@
     <string name="settings_speed_realtime">Realtime</string>
     <string name="settings_speed_day_in_15secs">Day in 15s</string>
     <string name="settings_speed_day_in_3secs">Day in 3s</string>
+    <string name="settings_wallpaper_chooser_not_found">Couldn\'t\ to open system\'s wallpaper chooser. Select it manually from your device\'s settings</string>
 
     <string name="scene_clear">Clear</string>
     <string name="scene_cloudy">Cloudy</string>

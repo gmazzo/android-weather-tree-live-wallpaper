@@ -14,6 +14,7 @@
     <string name="settings_speed_realtime">Tiempo real</string>
     <string name="settings_speed_day_in_15secs">Día en 15s</string>
     <string name="settings_speed_day_in_3secs">Día en 3s</string>
+    <string name="settings_wallpaper_chooser_not_found">No se pudo abrir el selector de fondos de pantallas del sistema. Seleccionelo manualmente desde la configuración del dispositivo</string>
 
     <string name="scene_clear">Despejado</string>
     <string name="scene_cloudy">Nublado</string>
