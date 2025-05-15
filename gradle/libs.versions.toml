@@ -50,5 +50,6 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlin-ksp" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlin-seriazliation = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+repackager = { id = "net.lenni0451.repackager", version = "1.0.1" }
 screenshot = { id = "com.android.compose.screenshot", version.ref = "screenshot" }
 test-aggregation-coverage = { id = "io.github.gmazzo.test.aggregation.coverage", version = "2.4.4" }

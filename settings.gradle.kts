@@ -15,4 +15,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "android-weather-tree-live-wallpaper"
 
+includeBuild("testlab-plugin")
 include("app")
