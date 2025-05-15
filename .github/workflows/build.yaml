@@ -1,7 +1,5 @@
 name: Build
 on:
-  workflow_dispatch:
-  workflow_call:
   push:
     branches:
       - main
@@ -16,9 +14,14 @@ permissions:
   checks: write
   pull-requests: write
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 env:
   ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.SIGNING_PASSWORD }}
   ORG_GRADLE_PROJECT_reverseGeocodingKey: ${{ secrets.REVERSE_GEOCODING_KEY }}
+  ANDROID_PUBLISHER_CREDENTIALS: ${{ secrets.ANDROID_PUBLISHER_CREDENTIALS }}
 
 jobs:
   build:
@@ -35,7 +38,7 @@ jobs:
           gradle-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
       - name: Test & Build
         run: |
-          ./gradlew build
+          ./gradlew build bootstrapListing
       - name: Publish Test Report
         if: ${{ !cancelled() }}
         uses: gmazzo/publish-report-annotations@v1
@@ -55,6 +58,7 @@ jobs:
 
   ui-tests:
     name: UI Tests
+    if: ${{ github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'Skip UI Tests') }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -97,8 +101,6 @@ jobs:
         with:
           gradle-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
       - name: Publish to Google Play
-        env:
-          ANDROID_PUBLISHER_CREDENTIALS: ${{ secrets.ANDROID_PUBLISHER_CREDENTIALS }}
         run: |
           ./gradlew \
             publishReleaseBundle --track=internal \

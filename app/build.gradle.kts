@@ -6,7 +6,7 @@ import com.android.build.gradle.tasks.PackageAndroidArtifact
 
 plugins {
     alias(libs.plugins.android)
-    alias(libs.plugins.firebase.testlab)
+    id("com.google.firebase.testlab")
     alias(libs.plugins.gitVersion)
     alias(libs.plugins.googlePlayPublish)
     alias(libs.plugins.hilt)
