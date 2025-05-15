@@ -8,6 +8,9 @@ import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.AnimPlayer
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
+import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingDarkCloud
+import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingLightCloud
+import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingWispy
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things.Companion.WIND_SPEED
 import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDay.Companion.GOLDER_HOUR_FACTOR
 import io.github.gmazzo.android.livewallpaper.weather.engine.withColor
@@ -69,6 +72,8 @@ sealed class Scene(
 
     @Inject
     fun load() {
+        preloadTextures()
+
         if (withSunAndMoon) {
             things.spawnSun()
             things.spawnMoon()
@@ -80,6 +85,19 @@ sealed class Scene(
                 things.spawnWisps(it.wisps)
             }
         }
+    }
+
+    /**
+     * FIXME this is a workaround to prevent crashes when spawning clouds at weather change and
+     *  the GL thread is dead already
+     *  Cancelling the scope at unload seems is not helping
+     *  Refactor it in a way that each scene can preload its textures by DI
+     */
+    @Deprecated("Temporary workaround for texture loading issues")
+    fun preloadTextures() {
+        with(ThingLightCloud) { textures.preload() }
+        with(ThingDarkCloud) { textures.preload() }
+        with(ThingWispy) { textures.preload() }
     }
 
     override fun close() {

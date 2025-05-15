@@ -76,5 +76,10 @@ class ThingDarkCloud @AssistedInject constructor(
             R.drawable.cloudflare1, R.drawable.cloudflare2, R.drawable.cloudflare3,
             R.drawable.cloudflare4, R.drawable.cloudflare5
         )
+
+        fun Textures.preload() {
+            TEXTURES.forEach(::get)
+            FLARES.forEach(::get)
+        }
     }
 }
