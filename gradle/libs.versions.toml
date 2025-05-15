@@ -27,6 +27,8 @@ androidx-tracing = { module = "androidx.tracing:tracing", version = "1.3.0" }
 androidx-work = { module = "androidx.work:work-runtime-ktx", version.ref = "androidx-work" }
 androidx-work-test = { module = "androidx.work:work-testing", version.ref = "androidx-work" }
 composable-icons = { module = "com.composables:icons-lucide", version = "1.1.0" }
+google-http-client-bom = { module = "com.google.http-client:google-http-client-bom", version = "1.47.0" }
+google-http-client-jackson = { module = "com.google.http-client:google-http-client-jackson2" }
 hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
 hilt-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt" }
