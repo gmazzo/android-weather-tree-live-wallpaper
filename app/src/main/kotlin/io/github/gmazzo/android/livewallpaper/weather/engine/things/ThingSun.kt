@@ -10,6 +10,7 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDay
 import io.github.gmazzo.android.livewallpaper.weather.engine.withColor
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
+import javax.inject.Named
 import javax.microedition.khronos.opengles.GL10.GL_MODELVIEW
 import javax.microedition.khronos.opengles.GL10.GL_MODULATE
 import javax.microedition.khronos.opengles.GL10.GL_ONE
@@ -22,7 +23,7 @@ class ThingSun @Inject constructor(
     gl: GL11,
     models: Models,
     textures: Textures,
-    private val clock: MutableStateFlow<Clock>,
+    @Named("real") private val clock: MutableStateFlow<Clock>,
     private val timeOfDay: TimeOfDay,
 ) : Thing(
     gl,
