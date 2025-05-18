@@ -11,6 +11,7 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.time.Clock
 import kotlinx.coroutines.flow.MutableStateFlow
+import javax.inject.Inject
 import javax.inject.Named
 import javax.microedition.khronos.opengles.GL10.GL_ONE
 import javax.microedition.khronos.opengles.GL10.GL_SRC_ALPHA
@@ -20,22 +21,21 @@ import kotlin.random.Random
 class ThingDarkCloud @AssistedInject constructor(
     random: Random,
     gl: GL11,
-    models: Models,
-    textures: Textures,
+    resources: Resources,
     @Named("real") clock: MutableStateFlow<Clock>,
     sceneMode: SceneMode,
     @Named("clouds") cloudsColor: EngineColor,
     @Assisted which: Int,
 ) : ThingCloud(
     random, gl,
-    model = models[MODELS[which % MODELS.size]],
-    texture = textures[TEXTURES[which % TEXTURES.size]],
+    model = resources.models[which % resources.models.size],
+    texture = resources.textures[which % resources.textures.size],
     clock,
     cloudsColor,
 ) {
 
     private val flare = when (sceneMode) {
-        SceneMode.STORM -> textures[FLARES[which % MODELS.size]]
+        SceneMode.STORM -> resources.flares[which % resources.flares.size]
         else -> null
     }
 
@@ -67,19 +67,23 @@ class ThingDarkCloud @AssistedInject constructor(
     @AssistedFactory
     fun interface Factory : ThingCloud.Factory<ThingDarkCloud>
 
-    companion object {
-        private val TEXTURES = intArrayOf(
-            R.drawable.clouddark1, R.drawable.clouddark2, R.drawable.clouddark3,
-            R.drawable.clouddark4, R.drawable.clouddark5
-        )
-        private val FLARES = intArrayOf(
-            R.drawable.cloudflare1, R.drawable.cloudflare2, R.drawable.cloudflare3,
-            R.drawable.cloudflare4, R.drawable.cloudflare5
-        )
+    class Resources @Inject constructor(
+        models: Models,
+        textures: Textures,
+    ) : ThingCloud.Resources(models) {
+        val cloudDark1 = textures[R.drawable.clouddark1]
+        val cloudDark2 = textures[R.drawable.clouddark2]
+        val cloudDark3 = textures[R.drawable.clouddark3]
+        val cloudDark4 = textures[R.drawable.clouddark4]
+        val cloudDark5 = textures[R.drawable.clouddark5]
+        val cloudflare1 = textures[R.drawable.cloudflare1]
+        val cloudflare2 = textures[R.drawable.cloudflare2]
+        val cloudflare3 = textures[R.drawable.cloudflare3]
+        val cloudflare4 = textures[R.drawable.cloudflare4]
+        val cloudflare5 = textures[R.drawable.cloudflare5]
 
-        fun Textures.preload() {
-            TEXTURES.forEach(::get)
-            FLARES.forEach(::get)
-        }
+        val textures = arrayOf(cloudDark1, cloudDark2, cloudDark3, cloudDark4, cloudDark5)
+        val flares = arrayOf(cloudflare1, cloudflare2, cloudflare3, cloudflare4, cloudflare5)
     }
+
 }

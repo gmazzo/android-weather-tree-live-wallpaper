@@ -134,7 +134,7 @@ class WeatherViewSnapshotTest(
         )
 
         assertTrue(
-            "Scenes doesn't match: ${result.message}",
+            "Scene $scene does not match: ${result.message}",
             result is Verify.AnalysisResult.Passed
         )
 
