@@ -1,7 +1,5 @@
-import org.gradle.api.artifacts.type.ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE
-
 plugins {
-    alias(libs.plugins.repackager)
+    alias(libs.plugins.embeddedDependencies)
     `java-gradle-plugin`
 }
 
@@ -22,30 +20,18 @@ gradlePlugin {
     }
 }
 
-val repackagedImplementation by configurations.creating
-
 dependencies {
     fun plugin(plugin: Provider<PluginDependency>) =
         plugin.get().run { "$pluginId:$pluginId.gradle.plugin:$version" }
 
-    repackagedImplementation(plugin(libs.plugins.firebase.testlab)) {
+    embedded(plugin(libs.plugins.firebase.testlab)) {
         exclude(group = "org.jetbrains.kotlin")
+        exclude(group = "com.google.guava")
     }
 }
 
-dependencyRepackager {
-    configuration = repackagedImplementation
-    relocations.put("com.google.api", "repackaged.com.google.api")
-    relocations.put("com.google.testing", "repackaged.com.google.testing")
-    remapStrings = true
-    removeEmptyDirs = true
-}
-
-tasks.jar {
-    from(repackagedImplementation.incoming.artifactView {
-        attributes {
-            attribute(ARTIFACT_TYPE_ATTRIBUTE, "repackaged-jar-${repackagedImplementation.name}")
-        }
-    }.files.map(::zipTree))
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+configurations.embedded.embedding {
+    exclude("META-INF/gradle-plugins/com.google.firebase.testlab.properties")
+    repackage("com.google.api", "repackaged.com.google.api")
+    repackage("com.google.testing", "repackaged.com.google.testing")
 }
