@@ -21,16 +21,13 @@ import kotlin.random.Random
 class ThingLightning @Inject constructor(
     random: Random,
     gl: GL11,
-    models: Models,
-    textures: Textures,
+    private val resources: Resources,
     private val clock: MutableStateFlow<Clock>,
 ) : Thing(
     gl,
-    model = models[MODELS[random.nextInt(MODELS.size)]],
-    texture = textures[R.raw.lightning_pieces_core],
+    model = resources.models[random.nextInt(resources.models.size)],
+    texture = resources.lightningPiecesCore,
 ) {
-
-    private val glow = textures[R.raw.lightning_pieces_glow]
 
     override fun render() = gl.pushMatrix(GL_MODELVIEW) {
         withFlags(GL_LIGHTING, GL_COLOR_BUFFER_BIT) {
@@ -39,7 +36,7 @@ class ThingLightning @Inject constructor(
             glScalef(scale.x, scale.x, scale.x)
 
             withColor(color) {
-                model.render(glow, texture, GL_ADD)
+                model.render(resources.lightningPiecesGlow, texture, GL_ADD)
             }
         }
     }
@@ -53,10 +50,17 @@ class ThingLightning @Inject constructor(
         }
     }
 
-    companion object {
-        private val MODELS = intArrayOf(
-            R.raw.lightning1, R.raw.lightning2, R.raw.lightning3
-        )
+    class Resources @Inject constructor(
+        models: Models,
+        textures: Textures,
+    ) {
+        val lightning1 = models[R.raw.lightning1]
+        val lightning2 = models[R.raw.lightning2]
+        val lightning3 = models[R.raw.lightning3]
+        val lightningPiecesCore = textures[R.raw.lightning_pieces_core]
+        val lightningPiecesGlow = textures[R.raw.lightning_pieces_glow]
+
+        val models = arrayOf(lightning1, lightning2, lightning3)
     }
 
 }

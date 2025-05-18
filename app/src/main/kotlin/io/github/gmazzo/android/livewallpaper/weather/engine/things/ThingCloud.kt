@@ -4,6 +4,7 @@ import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Model
+import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Texture
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things.Companion.WIND_SPEED
@@ -56,12 +57,14 @@ sealed class ThingCloud(
         fun create(which: Int): Type
     }
 
-    companion object {
-        @JvmStatic
-        protected val MODELS = intArrayOf(
-            R.raw.cloud1m, R.raw.cloud2m, R.raw.cloud3m,
-            R.raw.cloud4m, R.raw.cloud5m
-        )
+    abstract class Resources(models: Models) {
+        val cloud1m = models[R.raw.cloud1m]
+        val cloud2m = models[R.raw.cloud2m]
+        val cloud3m = models[R.raw.cloud3m]
+        val cloud4m = models[R.raw.cloud4m]
+        val cloud5m = models[R.raw.cloud5m]
+
+        val models = arrayOf(cloud1m, cloud2m, cloud3m, cloud4m, cloud5m)
     }
 
 }

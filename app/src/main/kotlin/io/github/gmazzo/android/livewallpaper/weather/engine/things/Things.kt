@@ -14,6 +14,8 @@ class Things @Inject constructor(
     private val cloudFactory: ThingCloud.Factory<*>,
     private val wispyFactory: ThingWispy.Factory,
     private val sceneMode: SceneMode,
+    @Suppress("unused") cloudResources: ThingCloud.Resources, // preloading textures
+    @Suppress("unused") wispyResources: ThingWispy.Resources, // preloading textures
 ) {
 
     private val items = mutableListOf<Thing>()

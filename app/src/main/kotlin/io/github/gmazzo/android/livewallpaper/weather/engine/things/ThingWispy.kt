@@ -13,6 +13,7 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things.Companion.WIND_SPEED
 import io.github.gmazzo.android.livewallpaper.weather.engine.time.Clock
 import kotlinx.coroutines.flow.MutableStateFlow
+import javax.inject.Inject
 import javax.inject.Named
 import javax.microedition.khronos.opengles.GL10.GL_ONE_MINUS_SRC_ALPHA
 import javax.microedition.khronos.opengles.GL10.GL_SRC_ALPHA
@@ -22,15 +23,14 @@ import kotlin.random.Random
 class ThingWispy @AssistedInject constructor(
     random: Random,
     gl: GL11,
-    models: Models,
-    textures: Textures,
+    resources: Resources,
     @Named("real") clock: MutableStateFlow<Clock>,
     @Named("clouds") private val cloudsColor: EngineColor,
     @Assisted which: Int,
 ) : ThingMoving(
     gl,
-    model = models[R.raw.plane_16x16],
-    texture = textures[WISPY_TEXTURES[which % WISPY_TEXTURES.size]],
+    model = resources.model,
+    texture = resources.textures[which % resources.textures.size],
     clock,
     velocity = Vector(WIND_SPEED / 2, 0f, 0f),
 ) {
@@ -63,12 +63,16 @@ class ThingWispy @AssistedInject constructor(
         fun create(which: Int): ThingWispy
     }
 
-    companion object {
-        private val WISPY_TEXTURES = intArrayOf(R.raw.wispy1, R.raw.wispy2, R.raw.wispy3)
+    class Resources @Inject constructor(
+        models: Models,
+        textures: Textures,
+    ) {
+        val wispy1 = textures[R.raw.wispy1]
+        val wispy2 = textures[R.raw.wispy2]
+        val wispy3 = textures[R.raw.wispy3]
+        val model =  models[R.raw.plane_16x16]
 
-        fun Textures.preload() {
-            WISPY_TEXTURES.forEach(::get)
-        }
+        val textures = arrayOf(wispy1, wispy2, wispy3)
     }
 
 }
