@@ -2,8 +2,8 @@
 androidx-hilt = "1.2.0"
 androidx-work = "2.10.1"
 hilt = "2.56.2"
-kotlin = "2.1.20"
-kotlin-ksp = "2.1.20-2.0.1"
+kotlin = "2.1.21"
+kotlin-ksp = "2.1.21-2.0.1"
 screenshot = "0.0.1-alpha09"
 
 [libraries]
