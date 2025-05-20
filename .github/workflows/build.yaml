@@ -73,7 +73,7 @@ jobs:
           credentials_json: ${{ secrets.FIREBASE_TESTLAB_CREDENTIALS }}
       - name: Run UI tests
         run: |
-          ./gradlew firebaseTestLabCheck
+          ./gradlew firebaseTestLabCheck -Pminified=true
       - name: Publish Test Report
         if: ${{ !cancelled() }}
         uses: gmazzo/publish-report-annotations@v1

@@ -22,6 +22,7 @@ import io.github.gmazzo.android.livewallpaper.weather.actions.AdvanceTime
 import io.github.gmazzo.android.livewallpaper.weather.actions.TakeSurfaceSnapshot
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode
 import io.github.gmazzo.android.livewallpaper.weather.engine.time.TimeSource
+import io.github.gmazzo.android.livewallpaper.weather.settings.SettingsActivity
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.AfterClass
 import org.junit.Assert.assertEquals
@@ -30,6 +31,7 @@ import org.junit.Assert.assertTrue
 import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.RuleChain
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import java.io.File
@@ -48,23 +50,21 @@ class WeatherViewSnapshotTest(
     private var time: ZonedDateTime,
 ) {
 
-    @get:Rule
-    val permissions = GrantPermissionRule.grant(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-
-    @get:Rule
     val hilt = HiltAndroidRule(this)
 
+    val activity = activityScenarioRule<SettingsActivity>()
+
     @get:Rule
-    val scenario = activityScenarioRule<ComponentActivity>()
+    val rules: RuleChain = RuleChain
+        .outerRule(GrantPermissionRule.grant(Manifest.permission.WRITE_EXTERNAL_STORAGE))
+        .around(hilt)
+        .around(activity)
 
     @BindValue
     val weather = MutableStateFlow<WeatherType>(WeatherType.valueOf(scene))
 
     @BindValue
     val timeSource: TimeSource = TimeSource(::time)
-
-    @Inject
-    lateinit var viewFactory: WeatherView.Factory
 
     private val outputDir =
         InstrumentationRegistry.getArguments().getString("additionalTestOutputDir")?.let(::File)
@@ -74,13 +74,9 @@ class WeatherViewSnapshotTest(
     fun testScene() {
         hilt.inject()
 
-        scenario.scenario.onActivity { activity ->
-            val view = viewFactory.create(activity, "WeatherViewSnapshotTest", false)
-            view.id = R.id.weatherView
-            view.renderMode = RENDERMODE_WHEN_DIRTY
-            AwaitRenderer.view = view
-
-            activity.setContentView(view)
+        activity.scenario.onActivity { activity ->
+            AwaitRenderer.view = activity.findViewById<WeatherView>(R.id.weatherView)
+                .apply { renderMode = RENDERMODE_WHEN_DIRTY }
         }
 
         val failures = mutableListOf<Throwable>()

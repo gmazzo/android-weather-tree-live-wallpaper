@@ -3,6 +3,7 @@ import com.android.build.gradle.internal.tasks.ManagedDeviceInstrumentationTestT
 import com.android.build.gradle.internal.tasks.ManagedDeviceTestTask
 import com.android.build.gradle.tasks.MergeSourceSetFolders
 import com.android.build.gradle.tasks.PackageAndroidArtifact
+import com.slack.keeper.optInToKeeper
 
 plugins {
     alias(libs.plugins.android)
@@ -10,6 +11,7 @@ plugins {
     alias(libs.plugins.gitVersion)
     alias(libs.plugins.googlePlayPublish)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.keeper)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.ksp)
@@ -71,14 +73,16 @@ android {
             enableUnitTestCoverage = true
             enableAndroidTestCoverage = true
         }
-        release {
-            isMinifyEnabled = true
-            isShrinkResources = true
-            isEmbedMicroApp
+        configureEach {
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+            testProguardFile("proguard-rules-uitests.pro")
+
+            isMinifyEnabled =
+                providers.gradleProperty("minified").map(String::toBoolean).getOrElse(!isDebuggable)
+            isShrinkResources = isMinifyEnabled
         }
     }
 
@@ -104,6 +108,11 @@ android {
             excludes += "META-INF/LICENSE*"
         }
     }
+}
+
+keeper.automaticR8RepoManagement = false
+androidComponents {
+    beforeVariants { it.optInToKeeper() }
 }
 
 firebaseTestLab {

@@ -10,6 +10,10 @@ dependencyResolutionManagement {
     repositories {
         mavenCentral()
         google()
+        maven("https://storage.googleapis.com/r8-releases/raw") {
+            name = "R8"
+            content { includeModule("com.android.tools", "r8") }
+        }
     }
 }
 
