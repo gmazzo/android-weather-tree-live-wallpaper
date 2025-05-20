@@ -33,7 +33,9 @@ class SettingsActivity : ComponentActivity() {
     @Inject
     internal lateinit var viewFactory: WeatherView.Factory
 
-    private val weatherView by lazy { viewFactory.create(this, TAG, demoMode = true) }
+    private val weatherView by lazy {
+        viewFactory.create(this, TAG, demoMode = true).also { it.id = R.id.weatherView }
+    }
 
     internal val viewModel: SettingsViewModel by viewModels()
 

@@ -62,6 +62,7 @@ internal class WeatherRenderer @AssistedInject constructor(
     @VisibleForTesting
     var hasPendingActions: Boolean = false
         get() = field || postRenderActions.isNotEmpty()
+        internal set
 
     @VisibleForTesting
     var onAfterRender: Runnable? = null

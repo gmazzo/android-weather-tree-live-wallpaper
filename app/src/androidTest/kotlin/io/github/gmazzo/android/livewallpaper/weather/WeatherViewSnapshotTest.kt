@@ -5,9 +5,7 @@ import android.graphics.Bitmap
 import android.opengl.GLSurfaceView.RENDERMODE_WHEN_DIRTY
 import android.os.Environment.DIRECTORY_DOWNLOADS
 import android.os.Environment.getExternalStoragePublicDirectory
-import androidx.activity.ComponentActivity
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.filters.LargeTest
@@ -22,21 +20,20 @@ import io.github.gmazzo.android.livewallpaper.weather.actions.AdvanceTime
 import io.github.gmazzo.android.livewallpaper.weather.actions.TakeSurfaceSnapshot
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode
 import io.github.gmazzo.android.livewallpaper.weather.engine.time.TimeSource
+import io.github.gmazzo.android.livewallpaper.weather.settings.SettingsActivity
 import kotlinx.coroutines.flow.MutableStateFlow
-import org.junit.AfterClass
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
-import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.RuleChain
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import java.io.File
 import java.io.FileNotFoundException
 import java.time.ZonedDateTime
 import javax.imageio.ImageIO
-import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 
@@ -48,23 +45,21 @@ class WeatherViewSnapshotTest(
     private var time: ZonedDateTime,
 ) {
 
-    @get:Rule
-    val permissions = GrantPermissionRule.grant(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-
-    @get:Rule
     val hilt = HiltAndroidRule(this)
 
+    val activity = activityScenarioRule<SettingsActivity>()
+
     @get:Rule
-    val scenario = activityScenarioRule<ComponentActivity>()
+    val rules: RuleChain = RuleChain
+        .outerRule(GrantPermissionRule.grant(Manifest.permission.WRITE_EXTERNAL_STORAGE))
+        .around(hilt)
+        .around(activity)
 
     @BindValue
     val weather = MutableStateFlow<WeatherType>(WeatherType.valueOf(scene))
 
     @BindValue
     val timeSource: TimeSource = TimeSource(::time)
-
-    @Inject
-    lateinit var viewFactory: WeatherView.Factory
 
     private val outputDir =
         InstrumentationRegistry.getArguments().getString("additionalTestOutputDir")?.let(::File)
@@ -74,13 +69,8 @@ class WeatherViewSnapshotTest(
     fun testScene() {
         hilt.inject()
 
-        scenario.scenario.onActivity { activity ->
-            val view = viewFactory.create(activity, "WeatherViewSnapshotTest", false)
-            view.id = R.id.weatherView
-            view.renderMode = RENDERMODE_WHEN_DIRTY
-            AwaitRenderer.view = view
-
-            activity.setContentView(view)
+        activity.scenario.onActivity {
+            it.findViewById<WeatherView>(R.id.weatherView).renderMode = RENDERMODE_WHEN_DIRTY
         }
 
         val failures = mutableListOf<Throwable>()
@@ -147,18 +137,6 @@ class WeatherViewSnapshotTest(
         @Parameterized.Parameters
         fun parameters() = SceneMode.entries.flatMap { scene ->
             TEST_HOURS.map { arrayOf(scene, REFERENCE_DATE.plusHours(it)) }
-        }
-
-        @JvmStatic
-        @BeforeClass
-        fun setUpClass() {
-            IdlingRegistry.getInstance().register(AwaitRenderer, TakeSurfaceSnapshot)
-        }
-
-        @JvmStatic
-        @AfterClass
-        fun tearDownClass() {
-            IdlingRegistry.getInstance().unregister(AwaitRenderer, TakeSurfaceSnapshot)
         }
 
     }
