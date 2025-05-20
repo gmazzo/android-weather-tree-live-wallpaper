@@ -5,9 +5,7 @@ import android.graphics.Bitmap
 import android.opengl.GLSurfaceView.RENDERMODE_WHEN_DIRTY
 import android.os.Environment.DIRECTORY_DOWNLOADS
 import android.os.Environment.getExternalStoragePublicDirectory
-import androidx.activity.ComponentActivity
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.filters.LargeTest
@@ -24,11 +22,9 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode
 import io.github.gmazzo.android.livewallpaper.weather.engine.time.TimeSource
 import io.github.gmazzo.android.livewallpaper.weather.settings.SettingsActivity
 import kotlinx.coroutines.flow.MutableStateFlow
-import org.junit.AfterClass
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
-import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.RuleChain
@@ -38,7 +34,6 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.time.ZonedDateTime
 import javax.imageio.ImageIO
-import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 
@@ -74,9 +69,8 @@ class WeatherViewSnapshotTest(
     fun testScene() {
         hilt.inject()
 
-        activity.scenario.onActivity { activity ->
-            AwaitRenderer.view = activity.findViewById<WeatherView>(R.id.weatherView)
-                .apply { renderMode = RENDERMODE_WHEN_DIRTY }
+        activity.scenario.onActivity {
+            it.findViewById<WeatherView>(R.id.weatherView).renderMode = RENDERMODE_WHEN_DIRTY
         }
 
         val failures = mutableListOf<Throwable>()
@@ -143,18 +137,6 @@ class WeatherViewSnapshotTest(
         @Parameterized.Parameters
         fun parameters() = SceneMode.entries.flatMap { scene ->
             TEST_HOURS.map { arrayOf(scene, REFERENCE_DATE.plusHours(it)) }
-        }
-
-        @JvmStatic
-        @BeforeClass
-        fun setUpClass() {
-            IdlingRegistry.getInstance().register(AwaitRenderer, TakeSurfaceSnapshot)
-        }
-
-        @JvmStatic
-        @AfterClass
-        fun tearDownClass() {
-            IdlingRegistry.getInstance().unregister(AwaitRenderer, TakeSurfaceSnapshot)
         }
 
     }
