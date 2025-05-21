@@ -43,15 +43,14 @@ object WeatherModule {
     @Provides
     @Singleton
     @Named("real")
-    fun clock(source: TimeSource) = MutableStateFlow(Clock(source.now()))
+    fun clock(source: TimeSource) =
+        MutableStateFlow(Clock(source.now()))
 
     @Provides
     @Singleton
     @Named("fast")
-    fun fastClock(
-        @Named("real") real: MutableStateFlow<Clock>,
-        @Named("fastTimeSpeed") speed: MutableStateFlow<Double>,
-    ) = MutableStateFlow<Clock>(real.value)
+    fun fastClock(@Named("real") real: MutableStateFlow<Clock>) =
+        MutableStateFlow<Clock>(real.value)
 
     @Provides
     @Singleton
