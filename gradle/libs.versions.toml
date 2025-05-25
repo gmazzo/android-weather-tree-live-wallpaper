@@ -40,7 +40,7 @@ solarevents = { module = "org.shredzone.commons:commons-suncalc", version = "3.1
 screenshot-engine = { module = "com.android.tools.screenshot:screenshot-validation-junit-engine", version.ref = "screenshot" }
 
 [plugins]
-android = { id = "com.android.application", version = "8.9.2" }
+android = { id = "com.android.application", version = "8.10.0" }
 gitVersion = { id = "io.github.gmazzo.gitversion", version = "1.4.0" }
 googlePlayPublish = { id = "com.github.triplet.play", version = "3.12.1" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
