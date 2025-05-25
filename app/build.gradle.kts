@@ -21,13 +21,6 @@ plugins {
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
-val versionTagsCount = gitVersion.provider {
-    command(
-        "git", "log", "--tags", "--format=oneline", "--simplify-by-decoration",
-        "--decorate-refs=refs/tags/${parameters.tagPrefix.getOrElse("")}*"
-    )!!.lines().count().toString()
-}.map { it.toInt() }
-
 android {
     namespace = "io.github.gmazzo.android.livewallpaper.weather"
     compileSdk = 35
@@ -35,7 +28,7 @@ android {
     defaultConfig {
         minSdk = 26
         targetSdk = compileSdk
-        versionCode = versionTagsCount.get() + 60
+        versionCode = gitVersion.provider { (tagsCount() + 61).toString() }.get().toInt()
         versionName = gitVersion.toString()
 
         buildConfigField("String", "FORECAST_ENDPOINT", "\"https://api.met.no/weatherapi/\"")
