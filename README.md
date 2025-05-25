@@ -7,7 +7,7 @@
 # android-weather-tree-live-wallpaper 
 This is a resurrected project of `Weather Wallpaper` (`com.hm.weather`) originally developed by `yitiaocaiHM`, where you can still find its APK over the Internet.
 
-Partially migrated to a modern stack (WIP):
+Project migrated to a modern stack:
 - Kotlin
 - KotlinX Serialzation JSON
 - Hilt
