@@ -97,8 +97,8 @@ internal object SceneModule {
         cloudLightResources: Provider<ThingLightCloud.Resources>,
         cloudDarkResources: Provider<ThingDarkCloud.Resources>,
     ): ThingCloud.Resources = when (mode) {
-        SceneMode.STORM, SceneMode.RAIN -> cloudLightResources.get()
-        else -> cloudDarkResources.get()
+        SceneMode.STORM, SceneMode.RAIN -> cloudDarkResources.get()
+        else -> cloudLightResources.get()
     }
 
     @Provides
