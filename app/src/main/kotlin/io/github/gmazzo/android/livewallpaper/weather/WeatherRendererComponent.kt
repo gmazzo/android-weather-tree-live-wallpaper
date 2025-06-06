@@ -15,6 +15,8 @@ import javax.microedition.khronos.opengles.GL11
 @Subcomponent(modules = [WeatherRendererModule::class])
 interface WeatherRendererComponent {
 
+    val gl: GL11
+
     val timeOfDay: TimeOfDay
 
     val textures: Textures

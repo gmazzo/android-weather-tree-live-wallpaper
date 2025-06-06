@@ -79,7 +79,7 @@ internal class WeatherRenderer @AssistedInject constructor(
     private fun log(message: String, logger: (String?, String) -> Int = Log::d) {
         logger(
             logTag,
-            "$message demoMode=$demoMode, thread=${Thread.currentThread().name}"
+            "$message demoMode=$demoMode, gl=${System.identityHashCode(component?.gl)} thread=${Thread.currentThread().name}"
         )
     }
 
@@ -90,6 +90,8 @@ internal class WeatherRenderer @AssistedInject constructor(
 
         if (scene?.mode != mode) {
             unloadScene()
+
+            log("loadScene: scene=$mode,")
             scene = component?.sceneFactory?.create(mode, landscape)
         }
     }
@@ -110,6 +112,7 @@ internal class WeatherRenderer @AssistedInject constructor(
         onSurfaceDestroyed()
         component = componentFactory.create(view, gl as GL11, demoMode).apply {
             updateCameraPosition(immediate = true)
+
             coroutineScope.launch { weather.collectLatest(::onSceneChanged) }
         }
     }
@@ -119,6 +122,7 @@ internal class WeatherRenderer @AssistedInject constructor(
         unloadScene()
         models.close()
         textures.close()
+        component = null
     }
 
     private fun unloadScene() {
@@ -155,7 +159,6 @@ internal class WeatherRenderer @AssistedInject constructor(
 
     override fun onDrawFrame(gl: GL10) {
         val scene = scene ?: return
-
 
         with(component!!) {
             timeManager.update()
