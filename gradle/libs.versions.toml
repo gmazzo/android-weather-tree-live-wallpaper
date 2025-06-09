@@ -7,7 +7,7 @@ kotlin-ksp = "2.1.21-2.0.1"
 screenshot = "0.0.1-alpha09"
 
 [libraries]
-androidx-compose = { module = "androidx.compose:compose-bom", version = "2025.05.01" }
+androidx-compose = { module = "androidx.compose:compose-bom", version = "2025.06.00" }
 androidx-compose-activity = { module = "androidx.activity:activity-compose", version = "1.10.1" }
 androidx-compose-constraintLayout = { module = "androidx.constraintlayout:constraintlayout-compose", version = "1.1.1" }
 androidx-compose-material = { module = "androidx.compose.material3:material3" }
