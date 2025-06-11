@@ -1,4 +1,7 @@
-![GitHub](https://img.shields.io/github/license/gmazzo/android-weather-tree-live-wallpaper)
+[![Stars](https://img.shields.io/github/stars/gmazzo/android-weather-tree-live-wallpaper)](https://github.com/gmazzo/android-weather-tree-live-wallpaper/stargazers)
+[![Forks](https://img.shields.io/github/forks/gmazzo/android-weather-tree-live-wallpaper)](https://github.com/gmazzo/android-weather-tree-live-wallpaper/forks)
+[![Issues](https://img.shields.io/github/issues/gmazzo/android-weather-tree-live-wallpaper)](https://github.com/gmazzo/android-weather-tree-live-wallpaper/issues)
+[![PRs](https://img.shields.io/github/issues-pr/gmazzo/android-weather-tree-live-wallpaper)](https://github.com/gmazzo/android-weather-tree-live-wallpaper/pulls)
 [![Build Status](https://github.com/gmazzo/android-weather-tree-live-wallpaper/actions/workflows/build.yaml/badge.svg)](https://github.com/gmazzo/android-weather-tree-live-wallpaper/actions/workflows/build.yaml)
 [![Coverage](https://codecov.io/gh/gmazzo/android-weather-tree-live-wallpaper/branch/main/graph/badge.svg?token=D5cDiPWvcS)](https://codecov.io/gh/gmazzo/android-weather-tree-live-wallpaper)
 
