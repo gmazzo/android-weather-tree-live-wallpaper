@@ -11,8 +11,8 @@ import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
-import com.android.tools.screenshot.ImageDiffer
-import com.android.tools.screenshot.Verify
+import com.android.tools.screenshot.differ.ImageVerifier
+import com.android.tools.screenshot.differ.PixelPerfect
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -24,7 +24,6 @@ import io.github.gmazzo.android.livewallpaper.weather.settings.SettingsActivity
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.RuleChain
@@ -33,7 +32,6 @@ import org.junit.runners.Parameterized
 import java.io.File
 import java.io.FileNotFoundException
 import java.time.ZonedDateTime
-import javax.imageio.ImageIO
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 
@@ -92,7 +90,7 @@ class WeatherViewSnapshotTest(
         bitmap: Bitmap?,
         time: ZonedDateTime,
         failures: MutableList<Throwable>,
-    ) = runCatching {
+    ) {
         assertEquals(scene, weather.value.scene)
         assertNotNull("Failed to get snapshot", bitmap)
 
@@ -114,21 +112,17 @@ class WeatherViewSnapshotTest(
             outputStream().use { bitmap!!.compress(Bitmap.CompressFormat.PNG, 100, it) }
         }
 
-        val verify = Verify(
-            imageDiffer = ImageDiffer.PixelPerfect(imageDiffThreshold = 0.01f),
-            diffFilePath = outputDir.resolve("screenshots-diffs").resolve(referenceName).toPath(),
-        )
-        val result = verify.assertMatchReference(
-            referencePath = referenceFile.toPath(),
-            image = ImageIO.read(actualFile)!!,
-        )
+        try {
+            ImageVerifier(PixelPerfect(imageDiffThreshold = 0.01f)).verify(
+                actualFile.absolutePath,
+                referenceFile.absolutePath,
+                outputDir.resolve("screenshots-diffs").resolve(referenceName).absolutePath,
+            )
 
-        assertTrue(
-            "Scene $scene does not match: ${result.message}",
-            result is Verify.AnalysisResult.Passed
-        )
-
-    }.exceptionOrNull()?.let(failures::add)
+        } catch (ex: Throwable) {
+            failures.add(AssertionError("Scene $scene does not match", ex))
+        }
+    }
 
     companion object {
         private val TEST_HOURS = longArrayOf(0, 5, 6, 7, 12, 17, 18, 19)
