@@ -82,7 +82,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import com.example.compose.AppTheme
+import io.github.gmazzo.android.livewallpaper.weather.theme.AppTheme
 import io.github.gmazzo.android.livewallpaper.weather.Location
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.WeatherType

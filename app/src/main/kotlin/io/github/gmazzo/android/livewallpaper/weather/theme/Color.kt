@@ -1,4 +1,5 @@
-package com.example.compose
+package io.github.gmazzo.android.livewallpaper.weather.theme
+
 import androidx.compose.ui.graphics.Color
 
 val primaryLight = Color(0xFF515B92)
