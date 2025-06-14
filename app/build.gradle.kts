@@ -165,7 +165,9 @@ dependencies {
     androidTestImplementation(libs.junit)
     androidTestImplementation(libs.hilt.testing)
     androidTestImplementation(libs.kotlinx.coroutines.test)
-    androidTestImplementation(libs.screenshot.engine)
+    androidTestImplementation(libs.bundles.screenshot.validation) {
+        isTransitive = false
+    }
 }
 
 tasks.addRule("collect snapshots", taskName@{
