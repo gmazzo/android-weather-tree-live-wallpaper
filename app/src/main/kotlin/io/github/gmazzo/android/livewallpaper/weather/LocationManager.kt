@@ -6,9 +6,11 @@ import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.location.LocationListener
 import android.location.LocationManager
 import android.location.LocationManager.NETWORK_PROVIDER
+import android.os.Bundle
 import android.util.Log
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.core.content.getSystemService
+import androidx.core.location.LocationListenerCompat
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -23,7 +25,7 @@ import android.location.Location as AndroidLocation
 @Singleton
 class LocationManager @Inject constructor(
     @ApplicationContext private val context: Context,
-) : LocationListener {
+) : LocationListenerCompat {
 
     val flow = MutableStateFlow<Location?>(null)
 
