@@ -54,4 +54,4 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlin-ksp" }
 kotlin-seriazliation = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 screenshot = { id = "com.android.compose.screenshot", version.ref = "screenshot" }
-test-aggregation-coverage = { id = "io.github.gmazzo.test.aggregation.coverage", version = "2.4.4" }
+test-aggregation-coverage = { id = "io.github.gmazzo.test.aggregation.coverage", version = "2.4.6" }
