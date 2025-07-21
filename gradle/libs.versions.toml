@@ -46,7 +46,7 @@ screenshot-validation = ["screenshot-validation-api", "screenshot-validation-eng
 [plugins]
 android = { id = "com.android.application", version = "8.9.2" }
 embeddedDependencies = { id = "io.github.gmazzo.dependencies.embedded", version = "1.1.0" }
-firebase-testlab = { id = "com.google.firebase.testlab", version = "0.0.1-alpha09" }
+firebase-testlab = { id = "com.google.firebase.testlab", version = "0.0.1-alpha10" }
 gitVersion = { id = "io.github.gmazzo.gitversion", version = "1.4.0" }
 googlePlayPublish = { id = "com.github.triplet.play", version = "3.12.1" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
