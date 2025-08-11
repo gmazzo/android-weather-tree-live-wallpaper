@@ -4,7 +4,7 @@ androidx-work = "2.10.3"
 hilt = "2.57"
 kotlin = "2.2.0"
 kotlin-ksp = "2.2.0-2.0.2"
-screenshot = "0.0.1-alpha10"
+screenshot = "0.0.1-alpha11"
 
 [libraries]
 androidx-compose = { module = "androidx.compose:compose-bom", version = "2025.07.00" }
