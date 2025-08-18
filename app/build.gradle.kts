@@ -7,7 +7,7 @@ import com.slack.keeper.optInToKeeper
 
 plugins {
     alias(libs.plugins.android)
-    id("com.google.firebase.testlab")
+    alias(libs.plugins.firebase.testlab)
     alias(libs.plugins.gitVersion)
     alias(libs.plugins.googlePlayPublish)
     alias(libs.plugins.hilt)
