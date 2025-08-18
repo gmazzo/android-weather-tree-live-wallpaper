@@ -18,7 +18,7 @@ class ParticlesSnow @Inject constructor(
     models: Models,
     textures: Textures,
     private val timeOfDayTint: TimeOfDayTint,
-    @Named("homeOffset") private val homeOffset: MutableStateFlow<Float>,
+    @param:Named("homeOffset") private val homeOffset: MutableStateFlow<Float>,
 ) : Particles(
     random, gl,
     model = models[R.raw.flakes],

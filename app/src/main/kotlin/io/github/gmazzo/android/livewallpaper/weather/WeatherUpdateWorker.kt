@@ -27,7 +27,7 @@ class WeatherUpdateWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
     private val location: StateFlow<Location?>,
-    @Named("forecast") private val weather: MutableStateFlow<WeatherType>,
+    @param:Named("forecast") private val weather: MutableStateFlow<WeatherType>,
     private val forecastAPI: LocationForecastAPI,
 ) : CoroutineWorker(context, workerParams) {
 

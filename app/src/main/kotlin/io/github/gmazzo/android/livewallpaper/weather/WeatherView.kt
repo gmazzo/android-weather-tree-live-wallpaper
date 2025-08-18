@@ -22,7 +22,7 @@ class WeatherView @AssistedInject internal constructor(
     @Assisted logTag: String,
     @Assisted demoMode: Boolean,
     rendererFactory: WeatherRenderer.Factory,
-    @Named("takeSnapshot") private val snapshotThread: Lazy<HandlerThread>,
+    @param:Named("takeSnapshot") private val snapshotThread: Lazy<HandlerThread>,
 ) : GLSurfaceView(context) {
 
     @VisibleForTesting

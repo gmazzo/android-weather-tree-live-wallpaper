@@ -13,7 +13,7 @@ sealed class ThingMoving(
     gl: GL11,
     model: Model,
     texture: Texture,
-    @Named("real") protected val clock: MutableStateFlow<Clock>,
+    @param:Named("real") protected val clock: MutableStateFlow<Clock>,
     private val velocity: Vector,
 ) : Thing(gl, model, texture) {
 

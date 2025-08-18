@@ -25,7 +25,7 @@ class ThingWispy @AssistedInject constructor(
     gl: GL11,
     resources: Resources,
     @Named("real") clock: MutableStateFlow<Clock>,
-    @Named("clouds") private val cloudsColor: EngineColor,
+    @param:Named("clouds") private val cloudsColor: EngineColor,
     @Assisted which: Int,
 ) : ThingMoving(
     gl,

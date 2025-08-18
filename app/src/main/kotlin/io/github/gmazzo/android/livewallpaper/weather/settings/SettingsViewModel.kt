@@ -33,13 +33,13 @@ import javax.inject.Named
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val preferences: DataStore<Preferences>,
-    @Named("fast") val clock: MutableStateFlow<Clock>,
-    @Named("fastTimeSpeed") val timeSpeed: MutableStateFlow<Double>,
-    @Named("homeOffset") private val homeOffset: MutableStateFlow<Float>,
+    @param:Named("fast") val clock: MutableStateFlow<Clock>,
+    @param:Named("fastTimeSpeed") val timeSpeed: MutableStateFlow<Double>,
+    @param:Named("homeOffset") private val homeOffset: MutableStateFlow<Float>,
     val weather: MutableStateFlow<WeatherType>,
-    @Named("forecast") val forecastWeather: MutableStateFlow<WeatherType>,
+    @param:Named("forecast") val forecastWeather: MutableStateFlow<WeatherType>,
     val location: StateFlow<Location?>,
     private val workManager: WorkManager,
     private val locationManager: LocationManager,

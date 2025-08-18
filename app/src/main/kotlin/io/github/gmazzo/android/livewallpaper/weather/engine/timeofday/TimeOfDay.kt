@@ -111,7 +111,7 @@ class TimeOfDay @Inject constructor(
     data class TintSpec(
         val main: TintColor,
         val blend: TintColor,
-        @FloatRange(from = 0.0, to = 1.0) val amount: Float,
+        @param:FloatRange(from = 0.0, to = 1.0) val amount: Float,
     )
 
     companion object {
