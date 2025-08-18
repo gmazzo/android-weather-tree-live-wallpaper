@@ -13,9 +13,9 @@ import kotlin.time.toJavaDuration
 @Singleton
 class TimeManager @Inject constructor(
     source: TimeSource,
-    @Named("real") private val clock: MutableStateFlow<Clock>,
-    @Named("fast") private val fastClock: MutableStateFlow<Clock>,
-    @Named("fastTimeSpeed") private val speed: MutableStateFlow<Double>,
+    @param:Named("real") private val clock: MutableStateFlow<Clock>,
+    @param:Named("fast") private val fastClock: MutableStateFlow<Clock>,
+    @param:Named("fastTimeSpeed") private val speed: MutableStateFlow<Double>,
 ) : TimeSource by source {
 
     fun update() {

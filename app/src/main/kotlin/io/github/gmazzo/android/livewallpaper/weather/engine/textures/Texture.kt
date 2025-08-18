@@ -5,7 +5,7 @@ import androidx.annotation.RawRes
 
 class Texture(
     val name: String,
-    @DrawableRes @RawRes val resId: Int,
+    @param:DrawableRes @param:RawRes val resId: Int,
     val glId: Int
 ) {
     override fun toString() = "$name (resId=$resId, glId=$glId)"

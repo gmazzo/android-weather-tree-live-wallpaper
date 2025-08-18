@@ -31,11 +31,11 @@ interface SceneDependencies {
     val timeOfDayTint: TimeOfDayTint
 
     class Impl @Inject constructor(
-        @Named("landscape") override val landscape: Boolean,
+        @param:Named("landscape") override val landscape: Boolean,
         override val random: Random,
-        @Named("real") override val clock: MutableStateFlow<Clock>,
+        @param:Named("real") override val clock: MutableStateFlow<Clock>,
         override val gl: GL11,
-        @Named("scene") override val coroutineScope: CoroutineScope,
+        @param:Named("scene") override val coroutineScope: CoroutineScope,
         override val weather: MutableStateFlow<WeatherType>,
         override val models: Models,
         override val textures: Textures,

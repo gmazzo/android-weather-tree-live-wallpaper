@@ -23,7 +23,7 @@ import javax.microedition.khronos.opengles.GL11.GL_TEXTURE_ENV_MODE
 
 class Model(
     val name: String,
-    @RawRes val resId: Int,
+    @param:RawRes val resId: Int,
     internal val gl: GL11,
     private val indicesCount: Int,
     private val bufTCHandle: Int,

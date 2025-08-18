@@ -6,7 +6,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.theme.Weather
 
-enum class SceneMode(@StringRes val textId: Int, val icon: ImageVector) {
+enum class SceneMode(@param:StringRes val textId: Int, val icon: ImageVector) {
     CLEAR(R.string.scene_clear, Icons.Weather.Sunny),
     CLOUDY(R.string.scene_cloudy, Icons.Weather.Cloudy),
     RAIN(R.string.scene_rain, Icons.Weather.Rain),

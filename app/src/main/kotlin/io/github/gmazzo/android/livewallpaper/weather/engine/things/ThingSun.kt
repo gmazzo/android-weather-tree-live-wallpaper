@@ -23,7 +23,7 @@ class ThingSun @Inject constructor(
     gl: GL11,
     models: Models,
     textures: Textures,
-    @Named("real") private val clock: MutableStateFlow<Clock>,
+    @param:Named("real") private val clock: MutableStateFlow<Clock>,
     private val timeOfDay: TimeOfDay,
 ) : Thing(
     gl,

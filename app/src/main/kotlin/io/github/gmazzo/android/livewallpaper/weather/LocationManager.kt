@@ -24,7 +24,7 @@ import android.location.Location as AndroidLocation
 
 @Singleton
 class LocationManager @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
 ) : LocationListenerCompat {
 
     val flow = MutableStateFlow<Location?>(null)
