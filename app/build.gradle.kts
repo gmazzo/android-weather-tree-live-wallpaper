@@ -1,13 +1,16 @@
+import com.android.build.api.artifact.SingleArtifact
 import com.android.build.gradle.internal.tasks.DeviceProviderInstrumentTestTask
 import com.android.build.gradle.internal.tasks.ManagedDeviceInstrumentationTestTask
 import com.android.build.gradle.internal.tasks.ManagedDeviceTestTask
 import com.android.build.gradle.tasks.MergeSourceSetFolders
 import com.android.build.gradle.tasks.PackageAndroidArtifact
 import com.slack.keeper.optInToKeeper
+import org.gradle.internal.impldep.org.joda.time.format.ISODateTimeFormat
+import java.text.SimpleDateFormat
+import java.util.Date
 
 plugins {
     alias(libs.plugins.android)
-    id("com.google.firebase.testlab")
     alias(libs.plugins.gitVersion)
     alias(libs.plugins.googlePlayPublish)
     alias(libs.plugins.hilt)
@@ -108,21 +111,29 @@ androidComponents {
     beforeVariants { it.optInToKeeper() }
 }
 
-firebaseTestLab {
-    serviceAccountCredentials = providers
-        .environmentVariable("GOOGLE_APPLICATION_CREDENTIALS")
-        .map(layout.projectDirectory::file)
+val firebaseTestLabCheck by tasks.registering {
+    group = "verification"
+    description = "Runs the tests in Firebase Test Lab. Make sure to run 'gcloud auth login' before running this task."
+}
 
-    managedDevices {
-        create("firebaseTestLab") {
-            device = "husky" // Pixel 8 Pro (physical)
-            apiLevel = 34
+val firebaseBucketFolder = providers
+    .gradleProperty("firebaseBucketFolder")
+    .getOrElse("local-${SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'").format(Date())}")
+
+androidComponents.onVariants { variant ->
+    if (variant.androidTest != null) {
+        val testLabVariantTask = tasks.register<GCloudFirebaseTest>("${variant.name}FirebaseTestLab") {
+            applicationAPK.from(variant.artifacts.get(SingleArtifact.APK))
+            testAPK.from(variant.androidTest!!.artifacts.get(SingleArtifact.APK))
+            device.set("model=husky,version=34,orientation=portrait") // Pixel 8 Pro (physical)
+            resultsBucket.set("test-lab-x50ujfd79y0nq-y4b15w5ykx92s")
+            resultsBucketDir.set("firebase-test-lab/$firebaseBucketFolder/${variant.name}")
+            resultsLocalDir.set(layout.buildDirectory.dir("test-results/firebase-testlab/${variant.name}"))
         }
-    }
 
-    testOptions.results {
-        cloudStorageBucket = "weather-live-wallpaper-7b77b.appspot.com"
-        directoriesToPull = listOf("/sdcard/Download/")
+        firebaseTestLabCheck {
+            dependsOn(testLabVariantTask)
+        }
     }
 }
 
