@@ -44,7 +44,7 @@ screenshot-validation-engine = { module = "com.android.tools.screenshot:screensh
 screenshot-validation = ["screenshot-validation-api", "screenshot-validation-engine"]
 
 [plugins]
-android = { id = "com.android.application", version = "8.11.1" }
+android = { id = "com.android.application", version = "8.12.1" }
 embeddedDependencies = { id = "io.github.gmazzo.dependencies.embedded", version = "1.1.0" }
 firebase-testlab = { id = "com.google.firebase.testlab", version = "0.0.1-alpha10" }
 gitVersion = { id = "io.github.gmazzo.gitversion", version = "1.4.0" }
