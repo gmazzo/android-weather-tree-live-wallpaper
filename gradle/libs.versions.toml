@@ -1,6 +1,6 @@
 [versions]
 androidx-hilt = "1.2.0"
-androidx-work = "2.10.3"
+androidx-work = "2.10.4"
 hilt = "2.57.1"
 kotlin = "2.2.10"
 kotlin-ksp = "2.2.10-2.0.2"
