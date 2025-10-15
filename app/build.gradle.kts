@@ -99,6 +99,7 @@ android {
     packaging {
         resources {
             excludes += "META-INF/LICENSE*"
+            excludes += "META-INF/**/MANIFEST.MF"
         }
     }
 }
