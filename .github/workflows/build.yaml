@@ -45,7 +45,7 @@ jobs:
         with:
           checkName: Test Results
       - name: Upload build reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: always()
         with:
           name: reports
@@ -81,7 +81,7 @@ jobs:
           checkName: Screenshot Tests Results
       - name: Archive test results
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: results
           path: '**/build/outputs/*-results/'
