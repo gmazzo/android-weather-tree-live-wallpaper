@@ -3,7 +3,6 @@ import com.android.build.gradle.internal.tasks.ManagedDeviceInstrumentationTestT
 import com.android.build.gradle.internal.tasks.ManagedDeviceTestTask
 import com.android.build.gradle.tasks.MergeSourceSetFolders
 import com.android.build.gradle.tasks.PackageAndroidArtifact
-import com.android.compose.screenshot.tasks.PreviewScreenshotValidationTask
 import com.slack.keeper.optInToKeeper
 
 plugins {
