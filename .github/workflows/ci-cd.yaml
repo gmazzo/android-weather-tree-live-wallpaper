@@ -24,8 +24,8 @@ env:
   ANDROID_PUBLISHER_CREDENTIALS: ${{ secrets.ANDROID_PUBLISHER_CREDENTIALS }}
 
 jobs:
-  ci-cd:
-    name: CI-CD
+  build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
