@@ -115,6 +115,7 @@ internal class WeatherRenderer @AssistedInject constructor(
 
             coroutineScope.launch { weather.collectLatest(::onSceneChanged) }
         }
+        scene = component?.sceneFactory?.create(weather.value.scene, landscape)
     }
 
     fun onSurfaceDestroyed() = component?.apply {
@@ -127,10 +128,8 @@ internal class WeatherRenderer @AssistedInject constructor(
 
     private fun unloadScene() {
         log("unloadScene: scene=${scene?.mode},")
-        val sceneLazy = scene?.scene ?: return
-
+        this.scene?.scene?.get()
         this.scene = null
-        if (sceneLazy.isInitialized()) sceneLazy.value.close()
     }
 
     private fun GL10.setRenderDefaults() {
@@ -167,7 +166,7 @@ internal class WeatherRenderer @AssistedInject constructor(
             gl.updateProjection()
         }
 
-        scene.scene.value.draw()
+        scene.scene.get().draw()
 
         val it = postRenderActions.iterator()
         hasPendingActions = it.hasNext()
