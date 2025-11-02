@@ -115,6 +115,9 @@ internal class WeatherRenderer @AssistedInject constructor(
 
             coroutineScope.launch { weather.collectLatest(::onSceneChanged) }
         }
+
+        onSceneChanged(weather.value)
+        scene?.scene?.value // early loads the scene
     }
 
     fun onSurfaceDestroyed() = component?.apply {
