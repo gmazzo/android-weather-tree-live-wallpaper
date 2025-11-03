@@ -2,7 +2,7 @@
 [![Forks](https://img.shields.io/github/forks/gmazzo/android-weather-tree-live-wallpaper)](https://github.com/gmazzo/android-weather-tree-live-wallpaper/forks)
 [![Issues](https://img.shields.io/github/issues/gmazzo/android-weather-tree-live-wallpaper)](https://github.com/gmazzo/android-weather-tree-live-wallpaper/issues)
 [![PRs](https://img.shields.io/github/issues-pr/gmazzo/android-weather-tree-live-wallpaper)](https://github.com/gmazzo/android-weather-tree-live-wallpaper/pulls)
-[![Build Status](https://github.com/gmazzo/android-weather-tree-live-wallpaper/actions/workflows/build.yaml/badge.svg)](https://github.com/gmazzo/android-weather-tree-live-wallpaper/actions/workflows/build.yaml)
+[![Build Status](https://github.com/gmazzo/android-weather-tree-live-wallpaper/actions/workflows/ci-cd.yaml/badge.svg)](https://github.com/gmazzo/android-weather-tree-live-wallpaper/actions/workflows/ci-cd.yaml)
 [![Coverage](https://codecov.io/gh/gmazzo/android-weather-tree-live-wallpaper/branch/main/graph/badge.svg?token=D5cDiPWvcS)](https://codecov.io/gh/gmazzo/android-weather-tree-live-wallpaper)
 
 [![Contributors](https://contrib.rocks/image?repo=gmazzo/kotlin-container)](https://github.com/gmazzo/kotlin-container/graphs/contributors)
