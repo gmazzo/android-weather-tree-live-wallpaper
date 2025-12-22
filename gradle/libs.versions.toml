@@ -8,7 +8,7 @@ screenshot = "0.0.1-alpha11"
 
 [libraries]
 androidx-compose = { module = "androidx.compose:compose-bom", version = "2025.12.00" }
-androidx-compose-activity = { module = "androidx.activity:activity-compose", version = "1.12.1" }
+androidx-compose-activity = { module = "androidx.activity:activity-compose", version = "1.12.2" }
 androidx-compose-constraintLayout = { module = "androidx.constraintlayout:constraintlayout-compose", version = "1.1.1" }
 androidx-compose-material = { module = "androidx.compose.material3:material3" }
 androidx-compose-material-icons = { module = "androidx.compose.material:material-icons-extended", version = "1.7.8" }
