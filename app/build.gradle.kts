@@ -129,6 +129,7 @@ firebaseTestLab {
 dependencies {
     ksp(libs.androidx.hilt.compiler)
     ksp(libs.hilt.compiler)
+    ksp(libs.kotlin.metadata)
     kspAndroidTest(libs.hilt.compiler)
 
     implementation(platform(libs.androidx.compose))
@@ -145,15 +146,15 @@ dependencies {
     implementation(libs.androidx.work)
     implementation(libs.composable.icons)
     implementation(libs.hilt)
-    implementation(platform(libs.kotlinx.coroutines))
-    implementation(libs.kotlinx.serialization.json)
+    implementation(platform(libs.kotlin.coroutines))
+    implementation(libs.kotlin.serialization.json)
     implementation(libs.okhttp)
     implementation(libs.retrofit)
     implementation(libs.solarevents)
 
     testImplementation(libs.hilt.testing)
     testImplementation(libs.junit)
-    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.kotlin.coroutines.test)
 
     screenshotTestImplementation(libs.androidx.compose.uiTooling)
 
@@ -165,7 +166,7 @@ dependencies {
     androidTestImplementation(libs.androidx.work.test)
     androidTestImplementation(libs.junit)
     androidTestImplementation(libs.hilt.testing)
-    androidTestImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(libs.kotlin.coroutines.test)
     androidTestImplementation(libs.bundles.screenshot.validation) {
         isTransitive = false
     }
