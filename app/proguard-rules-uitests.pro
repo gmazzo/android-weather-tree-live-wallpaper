@@ -1,3 +1,1 @@
--dontobfuscate
--dontshrink
 -dontwarn **
