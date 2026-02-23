@@ -47,7 +47,7 @@ screenshot-validation = ["screenshot-validation-api", "screenshot-validation-eng
 [plugins]
 android = { id = "com.android.application", version = "8.11.1" }
 gitVersion = { id = "io.github.gmazzo.gitversion", version = "1.5.1" }
-googlePlayPublish = { id = "com.github.triplet.play", version = "3.13.0" }
+googlePlayPublish = { id = "com.github.triplet.play", version = "4.0.0" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 keeper = { id = "com.slack.keeper", version = "0.16.1" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
