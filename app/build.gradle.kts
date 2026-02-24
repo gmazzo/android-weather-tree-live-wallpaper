@@ -15,7 +15,6 @@ plugins {
     alias(libs.plugins.googlePlayPublish)
     alias(libs.plugins.hilt)
     alias(libs.plugins.keeper)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.kotlin.seriazliation)
@@ -108,7 +107,7 @@ android {
 
 keeper.automaticR8RepoManagement = false
 androidComponents {
-    beforeVariants { it.optInToKeeper() }
+    beforeVariants { if (it.isMinifyEnabled) it.optInToKeeper() }
 }
 
 val firebaseTestLabCheck by tasks.registering {
@@ -143,6 +142,7 @@ dependencies {
     ksp(libs.kotlin.metadata)
     kspAndroidTest(libs.hilt.compiler)
 
+    implementation(platform(libs.kotlin.bom))
     implementation(platform(libs.androidx.compose))
     implementation(libs.androidx.compose.activity)
     implementation(libs.androidx.compose.constraintLayout)

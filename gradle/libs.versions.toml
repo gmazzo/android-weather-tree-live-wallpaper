@@ -1,8 +1,8 @@
 [versions]
 androidx-hilt = "1.3.0"
 androidx-work = "2.11.1"
-hilt = "2.58"
-kotlin = "2.3.10"
+hilt = "2.59.1"
+kotlin = "2.2.10"
 kotlin-ksp = "2.3.6"
 screenshot = "0.0.1-alpha13"
 
@@ -31,7 +31,8 @@ hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
 hilt-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt" }
 junit = { module = "junit:junit", version = "4.13.2" }
-kotlin-metadata = { module = "org.jetbrains.kotlin:kotlin-metadata-jvm", version.ref = "kotlin" }
+kotlin-bom = { module = "org.jetbrains.kotlin:kotlin-bom", version.ref = "kotlin" }
+kotlin-metadata = { module = "org.jetbrains.kotlin:kotlin-metadata-jvm" }
 kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-bom", version = "1.10.2" }
 kotlin-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test" }
 kotlin-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.10.0" }
@@ -45,12 +46,11 @@ screenshot-validation-engine = { module = "com.android.tools.screenshot:screensh
 screenshot-validation = ["screenshot-validation-api", "screenshot-validation-engine"]
 
 [plugins]
-android = { id = "com.android.application", version = "8.11.1" }
+android = { id = "com.android.application", version = "9.0.1" }
 gitVersion = { id = "io.github.gmazzo.gitversion", version = "1.5.1" }
-googlePlayPublish = { id = "com.github.triplet.play", version = "3.13.0" }
+googlePlayPublish = { id = "com.github.triplet.play", version = "4.0.0" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
-keeper = { id = "com.slack.keeper", version = "0.16.1" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+keeper = { id = "com.slack.keeper", version = "0.17.0-agp9fix" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlin-ksp" }
 kotlin-seriazliation = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

@@ -2,6 +2,15 @@ pluginManagement{
     repositories {
         gradlePluginPortal()
         google()
+        maven("https://maven.pkg.github.com/gmazzo/slackhq-keeper") {
+            credentials {
+                username = ""
+                password = providers.environmentVariable("GITHUB_TOKEN").orNull
+            }
+            content {
+                includeGroup("com.slack.keeper")
+            }
+        }
     }
 }
 
