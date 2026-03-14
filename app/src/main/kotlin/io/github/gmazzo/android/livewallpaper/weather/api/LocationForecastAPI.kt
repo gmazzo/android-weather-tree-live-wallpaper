@@ -2,11 +2,13 @@
 // https://api.met.no/weatherapi/locationforecast/2.0/documentation#JSON_format_and_variables
 // Example API:
 //  https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=59.93&lon=10.72&altitude=90
+@file:UseSerializers(DateSerializer::class)
 package io.github.gmazzo.android.livewallpaper.weather.api
 
 import io.github.gmazzo.android.livewallpaper.weather.WeatherType
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.UseSerializers
 import retrofit2.http.GET
 import retrofit2.http.Query
 import java.util.Date
@@ -32,7 +34,7 @@ interface LocationForecastAPI {
 
     @Serializable
     data class Time(
-        @Serializable(DateSerializer::class) val time: Date,
+        val time: Date,
         val data: Data,
     )
 
