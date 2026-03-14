@@ -43,8 +43,8 @@ class Model(
         animator?.renderAnimated(frame) ?: renderStatic(frame)
 
         // cleanup
-        gl.glBindBuffer(GL_ARRAY_BUFFER, 0);
-        gl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        gl.glBindBuffer(GL_ARRAY_BUFFER, 0)
+        gl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
     }
 
     private fun renderStatic(frame: Frame) {
