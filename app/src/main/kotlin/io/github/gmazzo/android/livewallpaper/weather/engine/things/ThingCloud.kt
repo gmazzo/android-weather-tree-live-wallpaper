@@ -1,6 +1,5 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.things
 
-import androidx.compose.ui.graphics.Color
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Model
@@ -45,18 +44,7 @@ sealed class ThingCloud(
         }
 
         color = scene.cloudsColor.copy(alpha = color.alpha)
-
-        if (timeElapsed < 2f) {
-            val alpha = (timeElapsed * .5f).coerceIn(0f, 1f)
-
-            color = Color(
-                color.red * alpha,
-                color.green * alpha,
-                color.blue * alpha,
-                alpha,
-            )
-        }
-    }
+  }
 
     fun interface Factory<Type : ThingCloud> {
         fun create(which: Int): Type
