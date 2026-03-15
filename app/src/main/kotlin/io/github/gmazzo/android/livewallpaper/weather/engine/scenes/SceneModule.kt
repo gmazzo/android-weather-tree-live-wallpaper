@@ -1,19 +1,16 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 
 import android.content.res.Resources
-import android.graphics.Color
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.migration.DisableInstallInCheck
 import io.github.gmazzo.android.livewallpaper.weather.GLDispatcher
 import io.github.gmazzo.android.livewallpaper.weather.R
-import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingCloud
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingDarkCloud
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingLightCloud
 import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDayColors
-import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDayTint
 import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.timeOfDayColors
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -35,7 +32,7 @@ internal object SceneModule {
 
     @Provides
     @SceneScoped
-    fun scene(
+    fun sceneLazy(
         mode: SceneMode,
         clear: Provider<SceneClear>,
         cloudy: Provider<SceneCloudy>,
@@ -51,6 +48,9 @@ internal object SceneModule {
         SceneMode.STORM -> lazy(storm::get)
         SceneMode.FOG -> lazy(fog::get)
     }
+
+    @Provides
+    fun scene(lazy: Lazy<@JvmSuppressWildcards Scene>): Scene = lazy.value
 
     @Provides
     @SceneScoped
@@ -99,18 +99,6 @@ internal object SceneModule {
     ): ThingCloud.Resources = when (mode) {
         SceneMode.STORM, SceneMode.RAIN -> cloudDarkResources.get()
         else -> cloudLightResources.get()
-    }
-
-    @Provides
-    @SceneScoped
-    @Named("clouds")
-    fun cloudsColor(
-        mode: SceneMode,
-        timeOfDayTint: TimeOfDayTint,
-    ) = when (mode) {
-        SceneMode.STORM -> EngineColor(.2f, .2f, .2f)
-        SceneMode.RAIN -> EngineColor(Color.WHITE)
-        else -> timeOfDayTint.color
     }
 
     @Module

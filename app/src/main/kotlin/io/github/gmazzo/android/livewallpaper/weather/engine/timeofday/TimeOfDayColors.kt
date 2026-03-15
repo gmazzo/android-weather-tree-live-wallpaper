@@ -1,27 +1,31 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.timeofday
 
 import android.content.res.Resources
-import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
+import androidx.compose.ui.graphics.Color
 
-typealias TimeOfDayColors = Array<Int>
+data class TimeOfDayColors(
+    val sunrise: Color,
+    val day: Color,
+    val sunset: Color,
+    val night: Color,
+)
 
 fun Resources.timeOfDayColors(
     @ColorRes sunrise: Int,
     @ColorRes day: Int,
     @ColorRes sunset: Int,
     @ColorRes night: Int,
-) = arrayOf(
-    getColor(sunrise, null),
-    getColor(day, null),
-    getColor(sunset, null),
-    getColor(night, null),
+) = TimeOfDayColors(
+    Color(getColor(sunrise, null)),
+    Color(getColor(day, null)),
+    Color(getColor(sunset, null)),
+    Color(getColor(night, null)),
 )
 
-@ColorInt
-operator fun TimeOfDayColors.get(color: TimeOfDay.TintColor) = this[when (color) {
-    TimeOfDay.TintColor.SUNRISE -> 0
-    TimeOfDay.TintColor.DAY -> 1
-    TimeOfDay.TintColor.SUNSET -> 2
-    TimeOfDay.TintColor.NIGHT -> 3
-}]
+operator fun TimeOfDayColors.get(color: TimeOfDay.TintColor) = when (color) {
+    TimeOfDay.TintColor.SUNRISE -> sunrise
+    TimeOfDay.TintColor.DAY -> day
+    TimeOfDay.TintColor.SUNSET -> sunset
+    TimeOfDay.TintColor.NIGHT -> night
+}

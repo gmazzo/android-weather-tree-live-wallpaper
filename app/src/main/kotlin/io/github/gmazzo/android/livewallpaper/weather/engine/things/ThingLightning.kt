@@ -44,8 +44,8 @@ class ThingLightning @Inject constructor(
     override fun update() {
         super.update()
 
-        color.a -= 2f * clock.value.deltaSeconds
-        if (color.a <= 0f) {
+        color = color.copy(alpha = color.alpha - 2f * clock.value.deltaSeconds)
+        if (color.alpha <= 0f) {
             delete()
         }
     }

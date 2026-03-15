@@ -67,7 +67,7 @@ class ThingMoon @Inject constructor(
         texture = resources.phases[phase]
 
         val altitude = position * 175f
-        color.a = (altitude / 25f).coerceIn(0f, 1f)
+        color = color.copy(alpha = altitude / 25f)
         origin = origin.copy(z = min(altitude - 80f, 0f))
     }
 
