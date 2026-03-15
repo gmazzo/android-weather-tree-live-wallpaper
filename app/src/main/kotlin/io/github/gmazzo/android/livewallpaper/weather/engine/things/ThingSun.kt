@@ -1,5 +1,6 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.things
 
+import android.graphics.Color
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
@@ -35,7 +36,7 @@ class ThingSun @Inject constructor(
 
     init {
         scale = Vector(2f)
-        color.set(1f, 1f, .95f, 1f)
+        color = Color.valueOf(1f, 1f, .95f, 1f)
     }
 
     override fun render() = gl.pushMatrix(GL_MODELVIEW) {

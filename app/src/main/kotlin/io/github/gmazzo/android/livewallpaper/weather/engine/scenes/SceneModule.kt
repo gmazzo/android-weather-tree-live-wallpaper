@@ -8,7 +8,6 @@ import dagger.Provides
 import dagger.hilt.migration.DisableInstallInCheck
 import io.github.gmazzo.android.livewallpaper.weather.GLDispatcher
 import io.github.gmazzo.android.livewallpaper.weather.R
-import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingCloud
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingDarkCloud
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingLightCloud
@@ -108,8 +107,8 @@ internal object SceneModule {
         mode: SceneMode,
         timeOfDayTint: TimeOfDayTint,
     ) = when (mode) {
-        SceneMode.STORM -> EngineColor(.2f, .2f, .2f)
-        SceneMode.RAIN -> EngineColor(Color.WHITE)
+        SceneMode.STORM -> Color.valueOf(.2f, .2f, .2f)
+        SceneMode.RAIN -> Color.valueOf(Color.WHITE)
         else -> timeOfDayTint.color
     }
 
