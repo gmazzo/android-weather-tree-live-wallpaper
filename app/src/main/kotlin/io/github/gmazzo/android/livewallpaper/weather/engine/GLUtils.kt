@@ -1,5 +1,6 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine
 
+import android.graphics.Color
 import androidx.annotation.FloatRange
 import androidx.annotation.IntDef
 import java.nio.FloatBuffer
@@ -40,8 +41,8 @@ fun <R> GL11.withFlags(@GLFlags vararg flags: Int, block: GL11.() -> R): R {
     }
 }
 
-fun <R> GL11.withColor(color: EngineColor, alpha: Float = color.a, block: GL11.() -> R) =
-    withColor(color.r, color.g, color.b, alpha, block)
+fun <R> GL11.withColor(color: Color, alpha: Float = color.alpha(), block: GL11.() -> R) =
+    withColor(color.red(), color.green(), color.blue(), alpha, block)
 
 fun <R> GL11.withColor(
     @FloatRange(from = 0.0, to = 1.0) r: Float,

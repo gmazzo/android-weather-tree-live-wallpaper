@@ -5,6 +5,7 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.time.Clock
+import io.github.gmazzo.android.livewallpaper.weather.engine.withAlpha
 import io.github.gmazzo.android.livewallpaper.weather.engine.withColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.withFlags
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,8 +45,8 @@ class ThingLightning @Inject constructor(
     override fun update() {
         super.update()
 
-        color.a -= 2f * clock.value.deltaSeconds
-        if (color.a <= 0f) {
+        color = color.withAlpha(color.alpha() - 2f * clock.value.deltaSeconds)
+        if (color.alpha() <= 0f) {
             delete()
         }
     }

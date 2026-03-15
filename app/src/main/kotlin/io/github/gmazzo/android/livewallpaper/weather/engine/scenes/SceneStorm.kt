@@ -2,13 +2,13 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 
 import android.graphics.Color
 import io.github.gmazzo.android.livewallpaper.weather.R
-import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.Wave
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.particles.ParticlesRain
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingLightning
+import io.github.gmazzo.android.livewallpaper.weather.engine.toArray
 import io.github.gmazzo.android.livewallpaper.weather.engine.withFlags
 import javax.inject.Inject
 import javax.inject.Provider
@@ -29,7 +29,7 @@ class SceneStorm @Inject constructor(
 ) : Scene(
     dependencies,
     background = R.drawable.storm_bg,
-    backgroundTint = EngineColor(Color.WHITE),
+    backgroundTint = Color.valueOf(Color.WHITE),
 ) {
 
     private val lightAmbientLight = FloatArray(4)

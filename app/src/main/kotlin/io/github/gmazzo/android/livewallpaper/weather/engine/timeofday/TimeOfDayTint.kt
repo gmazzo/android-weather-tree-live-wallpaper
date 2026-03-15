@@ -1,7 +1,7 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.timeofday
 
-import androidx.core.graphics.ColorUtils
-import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
+import android.graphics.Color
+import io.github.gmazzo.android.livewallpaper.weather.engine.blendWith
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneScoped
 import javax.inject.Inject
 
@@ -11,10 +11,10 @@ class TimeOfDayTint @Inject constructor(
     private val timeOfDayColors: TimeOfDayColors,
 ) {
 
-    val color = EngineColor()
+    var color = Color.valueOf(Color.WHITE)
 
     fun update() = with(timeOfDay.tintSpec) {
-        color.set(ColorUtils.blendARGB(timeOfDayColors[main], timeOfDayColors[blend], amount))
+        color = timeOfDayColors[main].blendWith(timeOfDayColors[blend], amount)
     }
 
 }

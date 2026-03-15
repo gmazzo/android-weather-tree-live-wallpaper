@@ -5,7 +5,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.github.gmazzo.android.livewallpaper.weather.R
-import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
@@ -25,7 +24,7 @@ class ThingWispy @AssistedInject constructor(
     gl: GL11,
     resources: Resources,
     @Named("real") clock: MutableStateFlow<Clock>,
-    @param:Named("clouds") private val cloudsColor: EngineColor,
+    @param:Named("clouds") private val cloudsColor: Color,
     @Assisted which: Int,
 ) : ThingMoving(
     gl,
@@ -50,8 +49,12 @@ class ThingWispy @AssistedInject constructor(
     override fun update() {
         super.update()
 
-        color.set(Color.WHITE).a =
-            ((cloudsColor.r + cloudsColor.g + cloudsColor.b) / 3).coerceIn(.2f, 1f)
+        color = Color.valueOf(
+            1f,
+            1f,
+            1f,
+            ((cloudsColor.red() + cloudsColor.green() + cloudsColor.blue()) / 3).coerceIn(.2f, 1f)
+        )
 
         if (origin.x > 123.75f) {
             origin = origin.let { it.copy(x = it.x - 247.5f) }
@@ -70,7 +73,7 @@ class ThingWispy @AssistedInject constructor(
         val wispy1 = textures[R.raw.wispy1]
         val wispy2 = textures[R.raw.wispy2]
         val wispy3 = textures[R.raw.wispy3]
-        val model =  models[R.raw.plane_16x16]
+        val model = models[R.raw.plane_16x16]
 
         val textures = arrayOf(wispy1, wispy2, wispy3)
     }
