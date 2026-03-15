@@ -8,7 +8,6 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Texture
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.time.Clock
 import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDay
-import io.github.gmazzo.android.livewallpaper.weather.engine.withAlpha
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.shredzone.commons.suncalc.MoonIllumination
@@ -68,7 +67,7 @@ class ThingMoon @Inject constructor(
         texture = resources.phases[phase]
 
         val altitude = position * 175f
-        color = color.withAlpha(altitude / 25f)
+        color.a = (altitude / 25f).coerceIn(0f, 1f)
         origin = origin.copy(z = min(altitude - 80f, 0f))
     }
 

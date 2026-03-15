@@ -1,7 +1,7 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.things
 
-import android.graphics.Color
 import io.github.gmazzo.android.livewallpaper.weather.R
+import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Model
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
@@ -9,7 +9,6 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Texture
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things.Companion.WIND_SPEED
 import io.github.gmazzo.android.livewallpaper.weather.engine.time.Clock
-import io.github.gmazzo.android.livewallpaper.weather.engine.withAlpha
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.microedition.khronos.opengles.GL11
 import kotlin.math.absoluteValue
@@ -21,7 +20,7 @@ sealed class ThingCloud(
     model: Model,
     texture: Texture,
     clock: MutableStateFlow<Clock>,
-    private val cloudsColor: Color,
+    private val cloudsColor: EngineColor,
 ) : ThingMoving(
     gl, model, texture, clock,
     velocity = Vector(WIND_SPEED * 1.5f, 0f, 0f),
@@ -44,17 +43,13 @@ sealed class ThingCloud(
             timeElapsed = 0f
         }
 
-        color = cloudsColor.withAlpha(color.alpha())
+        color.set(cloudsColor, color.a)
 
         if (timeElapsed < 2f) {
             val alpha = (timeElapsed * .5f).coerceIn(0f, 1f)
 
-            color = Color.valueOf(
-                color.red() * alpha,
-                color.green() * alpha,
-                color.blue() * alpha,
-                color.alpha(),
-            )
+            color *= alpha
+            color.a = alpha
         }
     }
 

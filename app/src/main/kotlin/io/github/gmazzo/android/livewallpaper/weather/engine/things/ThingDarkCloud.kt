@@ -1,16 +1,15 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.things
 
-import android.graphics.Color
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.github.gmazzo.android.livewallpaper.weather.R
+import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.SceneMode
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.time.Clock
-import io.github.gmazzo.android.livewallpaper.weather.engine.withAlpha
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 import javax.inject.Named
@@ -25,7 +24,7 @@ class ThingDarkCloud @AssistedInject constructor(
     resources: Resources,
     @Named("real") clock: MutableStateFlow<Clock>,
     sceneMode: SceneMode,
-    @Named("clouds") cloudsColor: Color,
+    @Named("clouds") cloudsColor: EngineColor,
     @Assisted which: Int,
 ) : ThingCloud(
     random, gl,
@@ -46,9 +45,9 @@ class ThingDarkCloud @AssistedInject constructor(
         super.render()
 
         if (flare != null && flashIntensity > 0f) {
-            color = color.withAlpha(flashIntensity)
+            color.a = flashIntensity
             super.render(GL_SRC_ALPHA, GL_ONE)
-            color = color.withAlpha(1f)
+            color.a = 1f
         }
     }
 

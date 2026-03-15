@@ -6,7 +6,6 @@ import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDayTint
-import io.github.gmazzo.android.livewallpaper.weather.engine.withAlpha
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 import javax.inject.Named
@@ -55,8 +54,8 @@ class ParticlesSnow @Inject constructor(
         super.update(timeDelta)
 
         val color = timeOfDayTint.color
-        startColor = color.withAlpha(1f)
-        destColor= color.withAlpha(0f)
+        startEngineColor.set(color, 1f)
+        destEngineColor.set(color, 0f)
     }
 
     companion object {

@@ -1,7 +1,7 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.things
 
-import android.graphics.Color
 import androidx.annotation.CallSuper
+import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.GLBlendFactor
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Model
@@ -23,7 +23,7 @@ sealed class Thing(
 
     var foreground: Boolean = false
 
-    open var color = Color.valueOf(Color.WHITE)
+    open val color: EngineColor = EngineColor()
 
     var deleted: Boolean = false
         private set

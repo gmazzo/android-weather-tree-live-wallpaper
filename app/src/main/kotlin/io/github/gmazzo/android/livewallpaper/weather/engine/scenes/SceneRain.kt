@@ -2,10 +2,10 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 
 import android.graphics.Color
 import io.github.gmazzo.android.livewallpaper.weather.R
+import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.particles.ParticlesRain
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
-import io.github.gmazzo.android.livewallpaper.weather.engine.toArray
 import io.github.gmazzo.android.livewallpaper.weather.engine.withFlags
 import javax.inject.Inject
 import javax.microedition.khronos.opengles.GL10.GL_AMBIENT
@@ -21,7 +21,7 @@ class SceneRain @Inject constructor(
 ) : Scene(
     dependencies,
     background = R.drawable.storm_bg,
-    backgroundTint = Color.valueOf(Color.WHITE),
+    backgroundTint = EngineColor(Color.WHITE),
 ) {
 
     private val particleRainOrigin = Vector(0f, 25f, 10f)

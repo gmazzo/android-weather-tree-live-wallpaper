@@ -1,8 +1,8 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.particles
 
 import android.graphics.Color
+import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
-import io.github.gmazzo.android.livewallpaper.weather.engine.blendWith
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Model
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
@@ -43,12 +43,12 @@ sealed class Particles(
     private var flowDirection: Vector? = null
     private var orientScratch = Vector()
     private var spawnBurst = 0
-    protected var destColor = Color.valueOf(Color.WHITE)
-    protected var startColor = Color.valueOf(Color.WHITE)
+    protected val destEngineColor = EngineColor(Color.WHITE)
+    protected val startEngineColor = EngineColor(Color.WHITE)
 
     inner class Particle {
         private var angle = 0f
-        private var color = Color.valueOf(Color.WHITE)
+        private val color = EngineColor()
         lateinit var position: Vector
         private var scale = Vector()
         private var timeElapsed = 0f
@@ -103,12 +103,16 @@ sealed class Particles(
                 alive = false
                 return false
             }
-            val percentage = (timeElapsed / lifetime).coerceIn(0f, 1f)
+            val percentage = timeElapsed / lifetime
             val invPercentage = 1f - percentage
             updateVelocity(percentage, invPercentage)
 
-            color = startColor.blendWith(destColor, percentage)
-
+            color.set(
+                (startEngineColor.r * invPercentage) + (destEngineColor.r * percentage),
+                (startEngineColor.g * invPercentage) + (destEngineColor.g * percentage),
+                (startEngineColor.b * invPercentage) + (destEngineColor.b * percentage),
+                (startEngineColor.a * invPercentage) + (destEngineColor.a * percentage)
+            )
             if (useScale) {
                 scale = Vector(
                     (startScale.x * invPercentage) + (destScale.x * percentage),
