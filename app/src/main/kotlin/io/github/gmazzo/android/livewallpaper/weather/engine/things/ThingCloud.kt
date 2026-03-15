@@ -1,11 +1,12 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.things
 
+import androidx.compose.ui.graphics.Color
 import io.github.gmazzo.android.livewallpaper.weather.R
-import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Model
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
+import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.Scene
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Texture
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things.Companion.WIND_SPEED
 import io.github.gmazzo.android.livewallpaper.weather.engine.time.Clock
@@ -20,7 +21,7 @@ sealed class ThingCloud(
     model: Model,
     texture: Texture,
     clock: MutableStateFlow<Clock>,
-    private val cloudsColor: EngineColor,
+    private val scene: Scene,
 ) : ThingMoving(
     gl, model, texture, clock,
     velocity = Vector(WIND_SPEED * 1.5f, 0f, 0f),
@@ -43,13 +44,17 @@ sealed class ThingCloud(
             timeElapsed = 0f
         }
 
-        color.set(cloudsColor, color.a)
+        color = scene.cloudsColor.copy(alpha = color.alpha)
 
         if (timeElapsed < 2f) {
             val alpha = (timeElapsed * .5f).coerceIn(0f, 1f)
 
-            color *= alpha
-            color.a = alpha
+            color = Color(
+                color.red * alpha,
+                color.green * alpha,
+                color.blue * alpha,
+                alpha,
+            )
         }
     }
 

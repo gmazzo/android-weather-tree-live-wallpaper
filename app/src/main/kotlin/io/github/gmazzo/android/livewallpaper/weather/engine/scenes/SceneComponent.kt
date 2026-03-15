@@ -11,7 +11,7 @@ interface SceneComponent {
     val mode: SceneMode
 
     // Lazy to delay instantiation until OpenGL is properly switched (at draw phase)
-    // we we instead of `dagger.Lazy`, because we want to be able to ask if it was initialized
+    // we use `kotlin.Lazy` instead of `dagger.Lazy`, because we want to be able to ask if it was initialized
     val scene: Lazy<Scene>
 
     @Subcomponent.Factory

@@ -1,14 +1,14 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.things
 
-import android.graphics.Color
+import androidx.compose.ui.graphics.Color
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.github.gmazzo.android.livewallpaper.weather.R
-import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.models.Models
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
+import io.github.gmazzo.android.livewallpaper.weather.engine.scenes.Scene
 import io.github.gmazzo.android.livewallpaper.weather.engine.textures.Textures
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things.Companion.WIND_SPEED
 import io.github.gmazzo.android.livewallpaper.weather.engine.time.Clock
@@ -25,7 +25,7 @@ class ThingWispy @AssistedInject constructor(
     gl: GL11,
     resources: Resources,
     @Named("real") clock: MutableStateFlow<Clock>,
-    @param:Named("clouds") private val cloudsColor: EngineColor,
+    private val scene: Scene,
     @Assisted which: Int,
 ) : ThingMoving(
     gl,
@@ -50,8 +50,8 @@ class ThingWispy @AssistedInject constructor(
     override fun update() {
         super.update()
 
-        color.set(Color.WHITE).a =
-            ((cloudsColor.r + cloudsColor.g + cloudsColor.b) / 3).coerceIn(.2f, 1f)
+         color = Color.White.copy(alpha = 
+             scene.cloudsColor.let { (it.red + it.green + it.blue) / 3f }.coerceIn(.2f, 1f))
 
         if (origin.x > 123.75f) {
             origin = origin.let { it.copy(x = it.x - 247.5f) }
@@ -70,7 +70,7 @@ class ThingWispy @AssistedInject constructor(
         val wispy1 = textures[R.raw.wispy1]
         val wispy2 = textures[R.raw.wispy2]
         val wispy3 = textures[R.raw.wispy3]
-        val model =  models[R.raw.plane_16x16]
+        val model = models[R.raw.plane_16x16]
 
         val textures = arrayOf(wispy1, wispy2, wispy3)
     }

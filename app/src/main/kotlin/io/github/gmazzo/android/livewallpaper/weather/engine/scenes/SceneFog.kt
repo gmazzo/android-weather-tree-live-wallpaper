@@ -1,8 +1,8 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 
-import android.graphics.Color
+import androidx.compose.ui.graphics.Color
 import io.github.gmazzo.android.livewallpaper.weather.R
-import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
+import io.github.gmazzo.android.livewallpaper.weather.engine.toArray
 import io.github.gmazzo.android.livewallpaper.weather.engine.withFlags
 import javax.inject.Inject
 import javax.microedition.khronos.opengles.GL10.GL_DONT_CARE
@@ -21,11 +21,12 @@ class SceneFog @Inject constructor(
 ) : Scene(
     dependencies,
     background = R.drawable.bg1,
-    backgroundTint = EngineColor(Color.WHITE),
 ) {
 
     private val fogColors =
         floatArrayOf(.8f, .8f, .8f, 1f)
+
+    override val backgroundTint = Color.White
 
     override fun draw() = gl.withFlags(GL_FOG) {
         super.draw()

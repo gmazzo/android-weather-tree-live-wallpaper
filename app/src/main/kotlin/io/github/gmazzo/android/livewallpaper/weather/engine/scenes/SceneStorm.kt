@@ -1,14 +1,14 @@
 package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 
-import android.graphics.Color
+import androidx.compose.ui.graphics.Color
 import io.github.gmazzo.android.livewallpaper.weather.R
-import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.Vector
 import io.github.gmazzo.android.livewallpaper.weather.engine.Wave
 import io.github.gmazzo.android.livewallpaper.weather.engine.nextFloat
 import io.github.gmazzo.android.livewallpaper.weather.engine.particles.ParticlesRain
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.ThingLightning
+import io.github.gmazzo.android.livewallpaper.weather.engine.toArray
 import io.github.gmazzo.android.livewallpaper.weather.engine.withFlags
 import javax.inject.Inject
 import javax.inject.Provider
@@ -29,7 +29,6 @@ class SceneStorm @Inject constructor(
 ) : Scene(
     dependencies,
     background = R.drawable.storm_bg,
-    backgroundTint = EngineColor(Color.WHITE),
 ) {
 
     private val lightAmbientLight = FloatArray(4)
@@ -43,6 +42,10 @@ class SceneStorm @Inject constructor(
     private val boltFrequency = 5f
     private val diffuseLight = floatArrayOf(1.5f, 1.5f, 1.5f, 1f)
     private val wave = Wave(0.0, 500.0, 0.0, .005)
+
+    override val backgroundTint = Color.White
+
+    override val cloudsColor = Color(.2f, .2f, .2f)
 
     override fun draw() {
         super.draw()

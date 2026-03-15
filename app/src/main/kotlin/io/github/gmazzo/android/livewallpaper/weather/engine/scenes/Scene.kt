@@ -4,9 +4,9 @@ package io.github.gmazzo.android.livewallpaper.weather.engine.scenes
 
 import androidx.annotation.CallSuper
 import androidx.annotation.DrawableRes
+import androidx.compose.ui.graphics.Color
 import io.github.gmazzo.android.livewallpaper.weather.R
 import io.github.gmazzo.android.livewallpaper.weather.engine.AnimPlayer
-import io.github.gmazzo.android.livewallpaper.weather.engine.EngineColor
 import io.github.gmazzo.android.livewallpaper.weather.engine.pushMatrix
 import io.github.gmazzo.android.livewallpaper.weather.engine.things.Things.Companion.WIND_SPEED
 import io.github.gmazzo.android.livewallpaper.weather.engine.timeofday.TimeOfDay.Companion.GOLDER_HOUR_FACTOR
@@ -28,7 +28,6 @@ import javax.microedition.khronos.opengles.GL10.GL_TEXTURE_2D
 sealed class Scene(
     dependencies: SceneDependencies,
     @DrawableRes background: Int,
-    private val backgroundTint: EngineColor = dependencies.timeOfDayTint.color,
     private val withSunAndMoon: Boolean = false,
     private val withStars: Boolean = false,
 ) : SceneDependencies by dependencies, Closeable {
@@ -38,6 +37,8 @@ sealed class Scene(
 
     private val backgroundModel = models[R.raw.plane_16x16]
     private val backgroundTexture = textures[background]
+    open val backgroundTint: Color get() = timeOfDayTint.color
+    open val cloudsColor: Color get() = timeOfDayTint.color
 
     private val starModel = models[R.raw.stars]
     private val starTexture = textures[R.drawable.stars]
