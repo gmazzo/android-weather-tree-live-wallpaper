@@ -35,7 +35,7 @@ kotlin-bom = { module = "org.jetbrains.kotlin:kotlin-bom", version.ref = "kotlin
 kotlin-metadata = { module = "org.jetbrains.kotlin:kotlin-metadata-jvm" }
 kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-bom", version = "1.10.2" }
 kotlin-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test" }
-kotlin-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.10.0" }
+kotlin-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.11.0" }
 okhttp = { module = "com.squareup.okhttp3:logging-interceptor", version = "5.3.2" }
 retrofit = { module = "com.squareup.retrofit2:converter-kotlinx-serialization", version = "3.0.0" }
 solarevents = { module = "org.shredzone.commons:commons-suncalc", version = "3.11" }
