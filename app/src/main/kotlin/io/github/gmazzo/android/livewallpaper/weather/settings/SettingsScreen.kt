@@ -9,6 +9,7 @@ import android.text.format.DateUtils
 import android.text.format.DateUtils.formatDateTime
 import android.text.style.StyleSpan
 import androidx.annotation.StringRes
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -363,7 +364,7 @@ private fun DayTimeProgression(
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.ExtraBold,
             text = location.city ?: String.format(
-                Locale.getDefault(),
+                LocalLocale.current.platformLocale,
                 "%.3f lat, %.3f lng",
                 location.latitude,
                 location.longitude
