@@ -114,9 +114,10 @@ class WeatherViewSnapshotTest(
 
         try {
             ImageVerifier(PixelPerfect(imageDiffThreshold = 0.01f)).verify(
-                actualFile.absolutePath,
-                referenceFile.absolutePath,
-                outputDir.resolve("screenshots-diffs").resolve(referenceName).absolutePath,
+                newImageFile = actualFile,
+                referenceImageFile = referenceFile,
+                diffOutputFile = outputDir.resolve("screenshots-diffs").resolve(referenceName),
+                projectRoot = outputDir,
             )
 
         } catch (ex: Throwable) {
