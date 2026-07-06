@@ -1,5 +1,5 @@
 [versions]
-androidx-hilt = "1.3.0"
+androidx-hilt = "1.4.0"
 androidx-work = "2.11.2"
 hilt = "2.59.2"
 kotlin = "2.3.21"
