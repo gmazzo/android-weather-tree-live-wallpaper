@@ -2,7 +2,7 @@
 androidx-hilt = "1.4.0"
 androidx-work = "2.11.2"
 hilt = "2.60.1"
-kotlin = "2.4.0"
+kotlin = "2.4.10"
 kotlin-ksp = "2.3.10"
 screenshot = "0.0.1-alpha15"
 
