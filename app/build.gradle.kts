@@ -4,8 +4,8 @@ import com.android.build.gradle.internal.tasks.ManagedDeviceInstrumentationTestT
 import com.android.build.gradle.internal.tasks.ManagedDeviceTestTask
 import com.android.build.gradle.tasks.MergeSourceSetFolders
 import com.android.build.gradle.tasks.PackageAndroidArtifact
+import com.android.compose.screenshot.tasks.PreviewScreenshotValidationTask
 import com.slack.keeper.optInToKeeper
-import org.gradle.internal.impldep.org.joda.time.format.ISODateTimeFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -86,8 +86,6 @@ android {
     }
 
     testOptions {
-        screenshotTests.imageDifferenceThreshold = .01f
-
         managedDevices.localDevices.register("emulator") {
             device = "Pixel 2"
             apiLevel = 30
@@ -110,7 +108,7 @@ androidComponents {
     beforeVariants { if (it.isMinifyEnabled) it.optInToKeeper() }
 }
 
-val firebaseTestLabCheck by tasks.registering {
+val firebaseTestLabCheck = tasks.register("firebaseTestLabCheck") {
     group = "verification"
     description = "Runs the tests in Firebase Test Lab. Make sure to run 'gcloud auth login' before running this task."
 }
@@ -221,4 +219,8 @@ tasks.check {
         tasks.withType<PackageAndroidArtifact>(),
         tasks.validateScreenshotTest,
     )
+}
+
+tasks.withType<PreviewScreenshotValidationTask>().configureEach {
+    testEngineInput.threshold = .01f
 }
