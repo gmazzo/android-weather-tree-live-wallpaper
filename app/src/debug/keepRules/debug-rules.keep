@@ -1,0 +1,8 @@
+-keep,allowobfuscation public class android.** { public *; }
+-keep,allowobfuscation public class androidx.** { public *; }
+-keep,allowobfuscation public class kotlin.** { public *; }
+-keep,allowobfuscation public class kotlinx.** { public *; }
+-keep,allowobfuscation public class dagger.** { public *; }
+
+-keep,allowobfuscation @io.github.gmazzo.android.livewallpaper.weather.KeepForUITests class ** { public *; }
+-keepclassmembers,allowobfuscation class ** { @io.github.gmazzo.android.livewallpaper.weather.KeepForUITests public *; }

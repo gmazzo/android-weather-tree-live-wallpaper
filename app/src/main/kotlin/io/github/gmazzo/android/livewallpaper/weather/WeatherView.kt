@@ -67,6 +67,7 @@ class WeatherView @AssistedInject internal constructor(
         super.onDetachedFromWindow()
     }
 
+    @KeepForUITests
     fun takeSnapshot(onSnapshot: SnapshotCallback) = renderer.postRender {
         val bitmap = createBitmap(renderer.screenWidth.toInt(), renderer.screenHeight.toInt())
 
@@ -80,6 +81,7 @@ class WeatherView @AssistedInject internal constructor(
         fun create(context: Context, logTag: String, demoMode: Boolean): WeatherView
     }
 
+    @KeepForUITests
     fun interface SnapshotCallback {
         fun onSnapshot(result: Int, bitmap: Bitmap?)
     }

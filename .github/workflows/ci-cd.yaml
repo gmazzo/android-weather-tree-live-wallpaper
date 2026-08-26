@@ -90,7 +90,7 @@ jobs:
         env:
           ORG_GRADLE_PROJECT_firebaseBucketFolder: run_${{ github.run_id }}
         run: |
-          ./gradlew firebaseTestLabCheck -Pminified=true
+          ./gradlew firebaseTestLabCheck
       - name: Publish Test Report
         if: ${{ !cancelled() }}
         uses: gmazzo/publish-report-annotations@v1
