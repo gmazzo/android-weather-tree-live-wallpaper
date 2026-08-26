@@ -199,7 +199,7 @@ internal class WeatherRenderer @AssistedInject constructor(
         )
     }
 
-    private fun WeatherRendererComponent.updateCameraPosition(immediate: Boolean) {
+    private fun updateCameraPosition(immediate: Boolean) {
         val target = Vector(28 * homeOffset.value - 14, 0f, 0f)
 
         if (immediate) {
@@ -214,6 +214,7 @@ internal class WeatherRenderer @AssistedInject constructor(
         cameraFOV = if (landscape) 45f else 70f
     }
 
+    @KeepForUITests
     fun postRender(action: Runnable) {
         postRenderActions.add(action)
     }
