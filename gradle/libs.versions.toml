@@ -46,7 +46,7 @@ screenshot-validation-engine = { module = "com.android.tools.screenshot:screensh
 screenshot-validation = ["screenshot-validation-api", "screenshot-validation-engine"]
 
 [plugins]
-android = { id = "com.android.application", version = "9.3.1" }
+android = { id = "com.android.application", version = "9.3.2" }
 gitVersion = { id = "io.github.gmazzo.gitversion", version = "1.6.1" }
 googlePlayPublish = { id = "com.github.triplet.play", version = "4.1.1" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
