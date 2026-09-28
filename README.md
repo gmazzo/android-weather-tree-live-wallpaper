@@ -10,7 +10,7 @@
 # android-weather-tree-live-wallpaper 
 This is a resurrected project of `Weather Wallpaper` (`com.hm.weather`) originally developed by `yitiaocaiHM`, where you can still find its APK over the Internet.
 
-<a href="https://play.google.com/store/apps/details?id=io.github.gmazzo.android.livewallpaper.weather"><img alt="Get it on Google Play" src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Google_Play_Store_badge_EN.svg/2560px-Google_Play_Store_badge_EN.svg.png" width="135" height="40" /></a>
+<a href="https://play.google.com/store/apps/details?id=io.github.gmazzo.android.livewallpaper.weather"><img alt="Get it on Google Play" src="https://appure.io/badges/playstore/en.svg" height="60" /></a>
 
 Project migrated to a modern stack:
 - Kotlin
