@@ -48,7 +48,7 @@ screenshot-validation = ["screenshot-validation-api", "screenshot-validation-eng
 [plugins]
 android = { id = "com.android.application", version = "9.5.1" }
 gitVersion = { id = "io.github.gmazzo.gitversion", version = "1.6.2" }
-googlePlayPublish = { id = "com.github.triplet.play", version = "4.1.1" }
+googlePlayPublish = { id = "com.github.triplet.play", version = "4.1.2" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlin-ksp" }
